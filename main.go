@@ -7,6 +7,7 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"rxdrag.com/entity-engine/auth"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 		"hello": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				fmt.Println(p.Context.Value("data"))
 				return "world", nil
 			},
 		},
@@ -68,7 +70,7 @@ func main() {
 		GraphiQL: true,
 	})
 
-	http.Handle("/graphql", h)
+	http.Handle("/graphql", auth.AuthMiddleware(h))
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {
