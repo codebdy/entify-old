@@ -31,6 +31,14 @@ func main() {
 	mutationFields := graphql.Fields{
 		"login": &graphql.Field{
 			Type: graphql.String,
+			Args: graphql.FieldConfigArgument{
+				"loginName": &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{OfType: graphql.String},
+				},
+				"password": &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{OfType: graphql.String},
+				},
+			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "world", nil
 			},
