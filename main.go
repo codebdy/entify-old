@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
+	"rxdrag.com/entity-engine/authentication/jwt"
 )
 
 func main() {
@@ -40,7 +42,11 @@ func main() {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world", nil
+				loginName, err := authentication.Login(p.Args["loginName"].(string), p.Args["password"].(string))
+				if err != nil {
+					return "", err
+				}
+				return jwt.GenerateToken(loginName)
 			},
 		},
 		"logout": &graphql.Field{
