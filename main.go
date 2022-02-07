@@ -78,7 +78,7 @@ func main() {
 		GraphiQL: true,
 	})
 
-	http.Handle("/graphql", authentication.AuthMiddleware(h))
+	http.Handle("/graphql", authentication.CorsMiddleware(authentication.AuthMiddleware(h)))
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {
