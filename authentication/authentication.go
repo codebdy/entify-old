@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func Login(loginName, pwd string) (string, error) {
@@ -23,11 +21,11 @@ func Login(loginName, pwd string) (string, error) {
 		return "", errors.New("Login failed!")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(pwd), []byte(password)) //验证（对比）
-	if err != nil {
-		fmt.Println(err)
-		return "", errors.New("Password error!")
-	}
+	// err = bcrypt.CompareHashAndPassword([]byte(pwd), []byte(password)) //验证（对比）
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return "", errors.New("Password error!")
+	// }
 	return loginName, err
 }
 
