@@ -28,6 +28,24 @@ func main() {
 				return "world2", nil
 			},
 		},
+		"draftMeta": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world2", nil
+			},
+		},
+		"metas": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world2", nil
+			},
+		},
+		"metaById": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world2", nil
+			},
+		},
 	}
 
 	mutationFields := graphql.Fields{
