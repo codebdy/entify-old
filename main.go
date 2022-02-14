@@ -30,6 +30,20 @@ func main() {
 		},
 		"_meta": &graphql.Field{
 			Type: graphql.String,
+			Args: graphql.FieldConfigArgument{
+				"where": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"distinctOn": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"orderBy": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"pagination": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "world2", nil
 			},
