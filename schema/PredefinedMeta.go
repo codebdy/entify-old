@@ -7,5 +7,9 @@ var Meta = model.EntityMeta{
 	Name:       "Meta",
 	TableName:  "meta",
 	EntityType: model.Entity_NORMAL,
-	Columns:    []model.ColumnMeta{},
+	Columns: []model.ColumnMeta{
+		{
+			Uuid: "_META_COLUMN_ID_UUID",
+		},
+	},
 }
