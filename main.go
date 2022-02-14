@@ -10,34 +10,35 @@ import (
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
+	"rxdrag.com/entity-engine/schema"
 )
 
 func main() {
-	metaFields := graphql.Fields{
-		"id": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fmt.Println(p.Context.Value("data"))
-				return "world", nil
-			},
-		},
-		"metasContent": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
-	}
+	// metaFields := graphql.Fields{
+	// 	"id": &graphql.Field{
+	// 		Type: graphql.String,
+	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+	// 			fmt.Println(p.Context.Value("data"))
+	// 			return "world", nil
+	// 		},
+	// 	},
+	// 	"metasContent": &graphql.Field{
+	// 		Type: graphql.String,
+	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+	// 			return "world2", nil
+	// 		},
+	// 	},
+	// }
 
-	metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
-	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
-		Name: "MetaDistinctExp",
-		Values: graphql.EnumValueConfigMap{
-			"name": &graphql.EnumValueConfig{
-				Value: "name",
-			},
-		},
-	})
+	// metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
+	// metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
+	// 	Name: "MetaDistinctExp",
+	// 	Values: graphql.EnumValueConfigMap{
+	// 		"name": &graphql.EnumValueConfig{
+	// 			Value: "name",
+	// 		},
+	// 	},
+	// })
 
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
@@ -95,30 +96,32 @@ func main() {
 				return "world2", nil
 			},
 		},
-		"_meta": &graphql.Field{
-			Type: graphql.NewList(metaType),
-			Args: graphql.FieldConfigArgument{
-				"distinctOn": &graphql.ArgumentConfig{
-					Type: metaDistinctType,
-				},
-				"limit": &graphql.ArgumentConfig{
-					Type: graphql.Int,
-				},
-				"offset": &graphql.ArgumentConfig{
-					Type: graphql.Int,
-				},
-				"orderBy": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"where": &graphql.ArgumentConfig{
-					Type: metaBoolExp,
-				},
-			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
+		// "_meta": &graphql.Field{
+		// 	Type: graphql.NewList(metaType),
+		// 	Args: graphql.FieldConfigArgument{
+		// 		"distinctOn": &graphql.ArgumentConfig{
+		// 			Type: metaDistinctType,
+		// 		},
+		// 		"limit": &graphql.ArgumentConfig{
+		// 			Type: graphql.Int,
+		// 		},
+		// 		"offset": &graphql.ArgumentConfig{
+		// 			Type: graphql.Int,
+		// 		},
+		// 		"orderBy": &graphql.ArgumentConfig{
+		// 			Type: graphql.String,
+		// 		},
+		// 		"where": &graphql.ArgumentConfig{
+		// 			Type: metaBoolExp,
+		// 		},
+		// 	},
+		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		// 		return "world2", nil
+		// 	},
+		// },
 	}
+
+	schema.AppendEntityToQueryFields(schema.MetaEntity, &queryFields)
 
 	mutationFields := graphql.Fields{
 		"login": &graphql.Field{
