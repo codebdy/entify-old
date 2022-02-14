@@ -31,13 +31,22 @@ func main() {
 
 	metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
 	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
-		Name: "MetaDistinct",
+		Name: "MetaDistinctExp",
 		Values: graphql.EnumValueConfigMap{
 			"name": &graphql.EnumValueConfig{
 				Value: "name",
 			},
 		},
 	})
+
+	metaBoolExp := graphql.NewInputObject(graphql.InputObjectConfig{Name: "MetaBoolExp", Fields: graphql.InputObjectConfigFieldMap{
+		"and": &graphql.InputObjectFieldConfig{
+			Type: graphql.String,
+		},
+		"not": &graphql.InputObjectFieldConfig{
+			Type: graphql.String,
+		},
+	}})
 
 	// Schema
 	queryFields := graphql.Fields{
@@ -55,19 +64,22 @@ func main() {
 			},
 		},
 		"_meta": &graphql.Field{
-			Type: metaType,
+			Type: graphql.NewList(metaType),
 			Args: graphql.FieldConfigArgument{
-				"where": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
 				"distinctOn": &graphql.ArgumentConfig{
 					Type: metaDistinctType,
+				},
+				"limit": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
+				"offset": &graphql.ArgumentConfig{
+					Type: graphql.Int,
 				},
 				"orderBy": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
-				"pagination": &graphql.ArgumentConfig{
-					Type: graphql.String,
+				"where": &graphql.ArgumentConfig{
+					Type: metaBoolExp,
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -103,8 +115,8 @@ func main() {
 		},
 	}
 
-	rootQuery := graphql.ObjectConfig{Name: "Query", Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: "RootMutation", Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: graphql.NewObject(rootMutation)}
 	schema, err := graphql.NewSchema(schemaConfig)
 	if err != nil {
