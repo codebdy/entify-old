@@ -30,6 +30,15 @@ func main() {
 	}
 
 	metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
+	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
+		Name: "MetaDistinct",
+		Values: graphql.EnumValueConfigMap{
+			"name": &graphql.EnumValueConfig{
+				Value: "name",
+			},
+		},
+	})
+
 	// Schema
 	queryFields := graphql.Fields{
 		"hello": &graphql.Field{
@@ -52,7 +61,7 @@ func main() {
 					Type: graphql.String,
 				},
 				"distinctOn": &graphql.ArgumentConfig{
-					Type: graphql.String,
+					Type: metaDistinctType,
 				},
 				"orderBy": &graphql.ArgumentConfig{
 					Type: graphql.String,
