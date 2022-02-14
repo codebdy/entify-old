@@ -28,19 +28,7 @@ func main() {
 				return "world2", nil
 			},
 		},
-		"draftMeta": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
-		"metas": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
-		"metaById": &graphql.Field{
+		"_meta": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "world2", nil
@@ -74,8 +62,8 @@ func main() {
 			},
 		},
 	}
-	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: "RootMutation", Fields: mutationFields}
+	rootQuery := graphql.ObjectConfig{Name: "Query", Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: graphql.NewObject(rootMutation)}
 	schema, err := graphql.NewSchema(schemaConfig)
 	if err != nil {
