@@ -39,14 +39,34 @@ func main() {
 		},
 	})
 
+	andExp := graphql.InputObjectFieldConfig{}
+	notExp := graphql.InputObjectFieldConfig{}
+	orExp := graphql.InputObjectFieldConfig{}
+	intComparisonExp := graphql.InputObjectFieldConfig{Type: graphql.NewInputObject(graphql.InputObjectConfig{Name: "IntComparisonExp", Fields: graphql.InputObjectConfigFieldMap{
+		"eq": &graphql.InputObjectFieldConfig{
+			Type: graphql.Int,
+		},
+		"gt": &graphql.InputObjectFieldConfig{
+			Type: graphql.Int,
+		},
+		"gte": &graphql.InputObjectFieldConfig{
+			Type: graphql.Int,
+		},
+		"in": &graphql.InputObjectFieldConfig{
+			Type: graphql.String,
+		},
+	}})}
+
 	metaBoolExp := graphql.NewInputObject(graphql.InputObjectConfig{Name: "MetaBoolExp", Fields: graphql.InputObjectConfigFieldMap{
-		"and": &graphql.InputObjectFieldConfig{
-			Type: graphql.String,
-		},
-		"not": &graphql.InputObjectFieldConfig{
-			Type: graphql.String,
-		},
+		"and": &andExp,
+		"not": &notExp,
+		"or":  &orExp,
+		"id":  &intComparisonExp,
 	}})
+
+	andExp.Type = metaBoolExp
+	notExp.Type = metaBoolExp
+	orExp.Type = metaBoolExp
 
 	// Schema
 	queryFields := graphql.Fields{
