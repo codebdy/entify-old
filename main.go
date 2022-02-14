@@ -13,6 +13,23 @@ import (
 )
 
 func main() {
+	metaFields := graphql.Fields{
+		"id": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				fmt.Println(p.Context.Value("data"))
+				return "world", nil
+			},
+		},
+		"metasContent": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world2", nil
+			},
+		},
+	}
+
+	metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
 	// Schema
 	queryFields := graphql.Fields{
 		"hello": &graphql.Field{
@@ -29,7 +46,7 @@ func main() {
 			},
 		},
 		"_meta": &graphql.Field{
-			Type: graphql.String,
+			Type: metaType,
 			Args: graphql.FieldConfigArgument{
 				"where": &graphql.ArgumentConfig{
 					Type: graphql.String,
@@ -76,6 +93,7 @@ func main() {
 			},
 		},
 	}
+
 	rootQuery := graphql.ObjectConfig{Name: "Query", Fields: queryFields}
 	rootMutation := graphql.ObjectConfig{Name: "Mutation", Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: graphql.NewObject(rootMutation)}
