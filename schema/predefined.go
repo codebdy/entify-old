@@ -3,9 +3,9 @@ package schema
 import "rxdrag.com/entity-engine/model"
 
 var MetaEntity = model.EntityMeta{
-	Uuid:       "_META_UUID",
-	Name:       "Meta",
-	TableName:  "meta",
+	Uuid:       "_META_ENTITY_UUID",
+	Name:       "_meta",
+	TableName:  "_meta",
 	EntityType: model.Entity_NORMAL,
 	Columns: []model.ColumnMeta{
 		{
