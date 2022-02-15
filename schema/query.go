@@ -8,6 +8,12 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
+const (
+	DISTINCTEXP       string = "DistinctExp"
+	INT_COMPARISONEXP string = "IntComparisonExp"
+	BOOLEXP           string = "BoolExp"
+)
+
 func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) {
 	metaFields := graphql.Fields{
 		"id": &graphql.Field{
@@ -24,9 +30,9 @@ func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) 
 			},
 		},
 	}
-	metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
+	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: metaFields})
 	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
-		Name: "MetaDistinctExp",
+		Name: entity.Name + DISTINCTEXP,
 		Values: graphql.EnumValueConfigMap{
 			"name": &graphql.EnumValueConfig{
 				Value: "name",
@@ -40,7 +46,7 @@ func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) 
 	intComparisonExp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{
-				Name: "IntComparisonExp",
+				Name: INT_COMPARISONEXP,
 				Fields: graphql.InputObjectConfigFieldMap{
 					"eq": &graphql.InputObjectFieldConfig{
 						Type: graphql.Int,
@@ -61,7 +67,7 @@ func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) 
 
 	metaBoolExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name: "MetaBoolExp",
+			Name: entity.Name + BOOLEXP,
 			Fields: graphql.InputObjectConfigFieldMap{
 				"and": &andExp,
 				"not": &notExp,
