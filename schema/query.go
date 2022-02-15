@@ -16,21 +16,29 @@ const (
 
 func CreateEntityFields(entity *model.EntityMeta) *graphql.Fields {
 	fields := &graphql.Fields{
-		"id": &graphql.Field{
+		// "id": &graphql.Field{
+		// 	Type: graphql.String,
+		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		// 		fmt.Println(p.Context.Value("data"))
+		// 		return "world", nil
+		// 	},
+		// },
+		// "metasContent": &graphql.Field{
+		// 	Type: graphql.String,
+		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		// 		return "world2", nil
+		// 	},
+		// },
+	}
+	for _, column := range entity.Columns {
+		(*fields)[column.Name] = &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				fmt.Println(p.Context.Value("data"))
 				return "world", nil
 			},
-		},
-		"metasContent": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
+		}
 	}
-
 	return fields
 }
 

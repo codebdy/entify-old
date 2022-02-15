@@ -23,11 +23,11 @@ var MetaEntity = model.EntityMeta{
 			Type: model.COLUMN_STRING,
 			Name: "content",
 		},
-		{
-			Uuid: "_META_COLUMN_PUBLISHED_UUID",
-			Type: model.COLUMN_BOOLEAN,
-			Name: "published",
-		},
+		// {
+		// 	Uuid: "_META_COLUMN_PUBLISHED_UUID",
+		// 	Type: model.COLUMN_BOOLEAN,
+		// 	Name: "published",
+		// },
 		{
 			Uuid: "_META_COLUMN_PUBLISHED_AT_UUID",
 			Type: model.COLUMN_DATE,
