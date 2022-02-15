@@ -14,8 +14,8 @@ const (
 	BOOLEXP           string = "BoolExp"
 )
 
-func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) {
-	metaFields := graphql.Fields{
+func CreateEntityFields(entity *model.EntityMeta) *graphql.Fields {
+	fields := &graphql.Fields{
 		"id": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -30,7 +30,12 @@ func AppendEntityToQueryFields(entity model.EntityMeta, feilds *graphql.Fields) 
 			},
 		},
 	}
-	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: metaFields})
+
+	return fields
+}
+
+func AppendEntityToQueryFields(entity *model.EntityMeta, feilds *graphql.Fields) {
+	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: *CreateEntityFields(entity)})
 	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
 		Name: entity.Name + DISTINCTEXP,
 		Values: graphql.EnumValueConfigMap{
