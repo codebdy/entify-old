@@ -43,12 +43,16 @@ func createFieldType(column *model.ColumnMeta) graphql.Output {
 	panic("No column type:" + column.Type)
 }
 
+func createEnumEntityType() {
+
+}
+
 func createFieldExp(column *model.ColumnMeta) *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case model.COLUMN_NUMBER:
 		return &comparisons.IntComparisonExp
 	case model.COLUMN_BOOLEAN:
-		return graphql.Boolean
+		return &comparisons.BooleanComparisonExp
 	case model.COLUMN_STRING:
 		return &comparisons.StringComparisonExp
 	case model.COLUMN_TEXT:
@@ -58,15 +62,17 @@ func createFieldExp(column *model.ColumnMeta) *graphql.InputObjectFieldConfig {
 	case model.COLUMN_LONG_TEXT:
 		return &comparisons.StringComparisonExp
 	case model.COLUMN_DATE:
-		return graphql.DateTime
-	case model.COLUMN_SIMPLE_JSON:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_SIMPLE_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_JSON_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_ENUM:
-		return graphql.EnumValueType
+		return &comparisons.DateTimeComparisonExp
+		// case model.COLUMN_SIMPLE_JSON:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case model.COLUMN_SIMPLE_ARRAY:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case model.COLUMN_JSON_ARRAY:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case model.COLUMN_ENUM:
+		// 	return graphql.InputObjectFieldConfig{
+		// 		Type:graphql.NewEnum()
+		// 	}
 	}
 
 	panic("No column type: " + column.Type)
