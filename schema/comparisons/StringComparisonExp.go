@@ -4,6 +4,10 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+const (
+	STRING_COMPARISONEXP string = "StringComparisonExp"
+)
+
 var StringComparisonExp = graphql.InputObjectFieldConfig{
 	Type: graphql.NewInputObject(
 		graphql.InputObjectConfig{
