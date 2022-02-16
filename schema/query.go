@@ -14,7 +14,7 @@ const (
 	BOOLEXP     string = "BoolExp"
 )
 
-func createFieldFtype(column *model.ColumnMeta) graphql.Output {
+func createFieldType(column *model.ColumnMeta) graphql.Output {
 	switch column.Type {
 	case model.COLUMN_NUMBER:
 		return graphql.Int
@@ -40,14 +40,47 @@ func createFieldFtype(column *model.ColumnMeta) graphql.Output {
 		return graphql.EnumValueType
 	}
 
-	panic("No column type")
+	panic("No column type:" + column.Type)
+}
+
+func createFieldExp(column *model.ColumnMeta) *graphql.InputObjectFieldConfig {
+	switch column.Type {
+	case model.COLUMN_NUMBER:
+		return &comparisons.IntComparisonExp
+	case model.COLUMN_BOOLEAN:
+		return graphql.Boolean
+	case model.COLUMN_STRING:
+		return &comparisons.StringComparisonExp
+	case model.COLUMN_TEXT:
+		return &comparisons.StringComparisonExp
+	case model.COLUMN_MEDIUM_TEXT:
+		return &comparisons.StringComparisonExp
+	case model.COLUMN_LONG_TEXT:
+		return &comparisons.StringComparisonExp
+	case model.COLUMN_DATE:
+		return graphql.DateTime
+	case model.COLUMN_SIMPLE_JSON:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case model.COLUMN_SIMPLE_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case model.COLUMN_JSON_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case model.COLUMN_ENUM:
+		return graphql.EnumValueType
+	}
+
+	panic("No column type: " + column.Type)
+}
+
+func appendEntityFieldExps(entity *model.EntityMeta, fieldsMap *graphql.InputObjectConfigFieldMap) {
+
 }
 
 func CreateEntityFields(entity *model.EntityMeta) *graphql.Fields {
 	fields := &graphql.Fields{}
 	for _, column := range entity.Columns {
 		(*fields)[column.Name] = &graphql.Field{
-			Type: createFieldFtype(&column),
+			Type: createFieldType(&column),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				fmt.Println(p.Context.Value("data"))
 				return "world", nil
