@@ -5,13 +5,13 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/schema/comparisons"
 	"rxdrag.com/entity-engine/utils"
 )
 
 const (
-	DISTINCTEXP       string = "DistinctExp"
-	INT_COMPARISONEXP string = "IntComparisonExp"
-	BOOLEXP           string = "BoolExp"
+	DISTINCTEXP string = "DistinctExp"
+	BOOLEXP     string = "BoolExp"
 )
 
 func createFieldFtype(column *model.ColumnMeta) graphql.Output {
@@ -38,7 +38,6 @@ func createFieldFtype(column *model.ColumnMeta) graphql.Output {
 		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
 	case model.COLUMN_ENUM:
 		return graphql.EnumValueType
-
 	}
 
 	panic("No column type")
@@ -72,27 +71,6 @@ func AppendEntityToQueryFields(entity *model.EntityMeta, feilds *graphql.Fields)
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
-	intComparisonExp := graphql.InputObjectFieldConfig{
-		Type: graphql.NewInputObject(
-			graphql.InputObjectConfig{
-				Name: INT_COMPARISONEXP,
-				Fields: graphql.InputObjectConfigFieldMap{
-					"eq": &graphql.InputObjectFieldConfig{
-						Type: graphql.Int,
-					},
-					"gt": &graphql.InputObjectFieldConfig{
-						Type: graphql.Int,
-					},
-					"gte": &graphql.InputObjectFieldConfig{
-						Type: graphql.Int,
-					},
-					"in": &graphql.InputObjectFieldConfig{
-						Type: graphql.NewList(graphql.Int),
-					},
-				},
-			},
-		),
-	}
 
 	metaBoolExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
@@ -101,7 +79,7 @@ func AppendEntityToQueryFields(entity *model.EntityMeta, feilds *graphql.Fields)
 				"and": &andExp,
 				"not": &notExp,
 				"or":  &orExp,
-				"id":  &intComparisonExp,
+				"id":  &comparisons.IntComparisonExp,
 			},
 		},
 	)
