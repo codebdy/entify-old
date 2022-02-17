@@ -95,7 +95,7 @@ func CreateEntityFields(entity *EntityMeta) *graphql.Fields {
 	return fields
 }
 
-func AppendEntityToQueryFields(entity *EntityMeta, feilds *graphql.Fields) {
+func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: *CreateEntityFields(entity)})
 	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
 		Name: entity.Name + DISTINCTEXP,

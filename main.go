@@ -121,7 +121,7 @@ func main() {
 		// },
 	}
 
-	schema.AppendEntityToQueryFields(&schema.MetaEntity, &queryFields)
+	schema.MetaEntity.AppendToQueryFields(&queryFields)
 
 	mutationFields := graphql.Fields{
 		"login": &graphql.Field{
