@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/schema/comparisons"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -12,14 +11,6 @@ const (
 	DISTINCTEXP string = "DistinctExp"
 	BOOLEXP     string = "BoolExp"
 )
-
-func createEnumEntityType() {
-
-}
-
-func appendEntityFieldExps(entity *EntityMeta, fieldsMap *graphql.InputObjectConfigFieldMap) {
-
-}
 
 func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	metaDistinctType := graphql.NewEnum(
@@ -32,25 +23,6 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 			},
 		},
 	)
-
-	andExp := graphql.InputObjectFieldConfig{}
-	notExp := graphql.InputObjectFieldConfig{}
-	orExp := graphql.InputObjectFieldConfig{}
-
-	metaBoolExp := graphql.NewInputObject(
-		graphql.InputObjectConfig{
-			Name: entity.Name + BOOLEXP,
-			Fields: graphql.InputObjectConfigFieldMap{
-				"and": &andExp,
-				"not": &notExp,
-				"or":  &orExp,
-				"id":  &comparisons.IntComparisonExp,
-			},
-		},
-	)
-	andExp.Type = metaBoolExp
-	notExp.Type = metaBoolExp
-	orExp.Type = metaBoolExp
 
 	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type: entity.toOutputType(),
