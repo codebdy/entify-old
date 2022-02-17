@@ -1,5 +1,7 @@
 package schema
 
+import "github.com/graphql-go/graphql"
+
 const (
 	COLUMN_NUMBER       string = "Number"
 	COLUMN_BOOLEAN      string = "Boolean"
@@ -30,4 +32,33 @@ type ColumnMeta struct {
 	Length        int    `json:"length"`
 	TypeEnityUuid string `json:"typeEnityUuid"`
 	Description   string `json:"description"`
+}
+
+func (column *ColumnMeta) toOutputType() graphql.Output {
+	switch column.Type {
+	case COLUMN_NUMBER:
+		return graphql.Int
+	case COLUMN_BOOLEAN:
+		return graphql.Boolean
+	case COLUMN_STRING:
+		return graphql.String
+	case COLUMN_TEXT:
+		return graphql.String
+	case COLUMN_MEDIUM_TEXT:
+		return graphql.String
+	case COLUMN_LONG_TEXT:
+		return graphql.String
+	case COLUMN_DATE:
+		return graphql.DateTime
+	case COLUMN_SIMPLE_JSON:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_SIMPLE_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_JSON_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_ENUM:
+		return graphql.EnumValueType
+	}
+
+	panic("No column type:" + column.Type)
 }

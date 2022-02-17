@@ -1,5 +1,11 @@
 package schema
 
+import (
+	"fmt"
+
+	"github.com/graphql-go/graphql"
+)
+
 const (
 	Entity_NORMAL    string = "Normal"
 	Entity_ENUM      string = "Enum"
@@ -14,4 +20,27 @@ type EntityMeta struct {
 	Columns     []ColumnMeta `json:"columns"`
 	Eventable   bool         `json:"eventable"`
 	Description string       `json:"description"`
+}
+
+func (entity *EntityMeta) createQueryFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		fields[column.Name] = &graphql.Field{
+			Type: column.toOutputType(),
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				fmt.Println(p.Context.Value("data"))
+				return "world", nil
+			},
+		}
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toQueryType() *graphql.Object {
+	return graphql.NewObject(
+		graphql.ObjectConfig{
+			Name:   entity.Name,
+			Fields: entity.createQueryFields(),
+		},
+	)
 }

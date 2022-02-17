@@ -13,35 +13,6 @@ const (
 	BOOLEXP     string = "BoolExp"
 )
 
-func createFieldType(column *ColumnMeta) graphql.Output {
-	switch column.Type {
-	case COLUMN_NUMBER:
-		return graphql.Int
-	case COLUMN_BOOLEAN:
-		return graphql.Boolean
-	case COLUMN_STRING:
-		return graphql.String
-	case COLUMN_TEXT:
-		return graphql.String
-	case COLUMN_MEDIUM_TEXT:
-		return graphql.String
-	case COLUMN_LONG_TEXT:
-		return graphql.String
-	case COLUMN_DATE:
-		return graphql.DateTime
-	case COLUMN_SIMPLE_JSON:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_SIMPLE_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_JSON_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_ENUM:
-		return graphql.EnumValueType
-	}
-
-	panic("No column type:" + column.Type)
-}
-
 func createEnumEntityType() {
 
 }
@@ -81,30 +52,17 @@ func appendEntityFieldExps(entity *EntityMeta, fieldsMap *graphql.InputObjectCon
 
 }
 
-func CreateEntityFields(entity *EntityMeta) *graphql.Fields {
-	fields := &graphql.Fields{}
-	for _, column := range entity.Columns {
-		(*fields)[column.Name] = &graphql.Field{
-			Type: createFieldType(&column),
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fmt.Println(p.Context.Value("data"))
-				return "world", nil
-			},
-		}
-	}
-	return fields
-}
-
 func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
-	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: *CreateEntityFields(entity)})
-	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
-		Name: entity.Name + DISTINCTEXP,
-		Values: graphql.EnumValueConfigMap{
-			"name": &graphql.EnumValueConfig{
-				Value: "name",
+	metaDistinctType := graphql.NewEnum(
+		graphql.EnumConfig{
+			Name: entity.Name + DISTINCTEXP,
+			Values: graphql.EnumValueConfigMap{
+				"name": &graphql.EnumValueConfig{
+					Value: "name",
+				},
 			},
 		},
-	})
+	)
 
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
@@ -126,7 +84,7 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	orExp.Type = metaBoolExp
 
 	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
-		Type: metaType,
+		Type: entity.toQueryType(),
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
 				Type: metaDistinctType,
