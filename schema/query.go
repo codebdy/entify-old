@@ -9,7 +9,6 @@ import (
 
 const (
 	DISTINCTEXP string = "DistinctExp"
-	BOOLEXP     string = "BoolExp"
 )
 
 func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
@@ -37,7 +36,7 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			"orderBy": &graphql.ArgumentConfig{
-				Type: EnumOrderBy,
+				Type: entity.toOrderby(),
 			},
 			"where": &graphql.ArgumentConfig{
 				Type: entity.toWhereExp(),

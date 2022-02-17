@@ -7,6 +7,11 @@ import (
 )
 
 const (
+	BOOLEXP string = "BoolExp"
+	ORDERBY string = "OrderBy"
+)
+
+const (
 	Entity_NORMAL    string = "Normal"
 	Entity_ENUM      string = "Enum"
 	Entity_INTERFACE string = "Interface"
@@ -75,4 +80,25 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 	}
 
 	return boolExp
+}
+
+func (entity *EntityMeta) toOrderby() *graphql.InputObject {
+	fields := graphql.InputObjectConfigFieldMap{}
+
+	orderByExp := graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   entity.Name + ORDERBY,
+			Fields: fields,
+		},
+	)
+
+	for _, column := range entity.Columns {
+		columnOrderBy := column.ToOrderBy()
+
+		if columnOrderBy != nil {
+			fields[column.Name] = &graphql.InputObjectFieldConfig{Type: columnOrderBy}
+		}
+	}
+
+	return orderByExp
 }

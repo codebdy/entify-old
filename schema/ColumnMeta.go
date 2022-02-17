@@ -94,3 +94,16 @@ func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 
 	panic("No column type: " + column.Type)
 }
+
+func (column *ColumnMeta) ToOrderBy() *graphql.Enum {
+	switch column.Type {
+	case COLUMN_SIMPLE_JSON:
+		return nil
+	case COLUMN_SIMPLE_ARRAY:
+		return nil
+	case COLUMN_JSON_ARRAY:
+		return nil
+	}
+
+	return EnumOrderBy
+}
