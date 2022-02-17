@@ -82,7 +82,7 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 	return boolExp
 }
 
-func (entity *EntityMeta) toOrderby() *graphql.InputObject {
+func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(

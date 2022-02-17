@@ -36,7 +36,7 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			"orderBy": &graphql.ArgumentConfig{
-				Type: entity.toOrderby(),
+				Type: entity.toOrderBy(),
 			},
 			"where": &graphql.ArgumentConfig{
 				Type: entity.toWhereExp(),
