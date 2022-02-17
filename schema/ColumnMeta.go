@@ -1,6 +1,9 @@
 package schema
 
-import "github.com/graphql-go/graphql"
+import (
+	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/schema/comparisons"
+)
 
 const (
 	COLUMN_NUMBER       string = "Number"
@@ -61,4 +64,35 @@ func (column *ColumnMeta) toOutputType() graphql.Output {
 	}
 
 	panic("No column type:" + column.Type)
+}
+
+func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
+	switch column.Type {
+	case COLUMN_NUMBER:
+		return &comparisons.IntComparisonExp
+	case COLUMN_BOOLEAN:
+		return &comparisons.BooleanComparisonExp
+	case COLUMN_STRING:
+		return &comparisons.StringComparisonExp
+	case COLUMN_TEXT:
+		return &comparisons.StringComparisonExp
+	case COLUMN_MEDIUM_TEXT:
+		return &comparisons.StringComparisonExp
+	case COLUMN_LONG_TEXT:
+		return &comparisons.StringComparisonExp
+	case COLUMN_DATE:
+		return &comparisons.DateTimeComparisonExp
+		// case COLUMN_SIMPLE_JSON:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case COLUMN_SIMPLE_ARRAY:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case COLUMN_JSON_ARRAY:
+		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		// case COLUMN_ENUM:
+		// 	return graphql.InputObjectFieldConfig{
+		// 		Type:graphql.NewEnum()
+		// 	}
+	}
+
+	panic("No column type: " + column.Type)
 }

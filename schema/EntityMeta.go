@@ -36,7 +36,7 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	return fields
 }
 
-func (entity *EntityMeta) toQueryType() *graphql.Object {
+func (entity *EntityMeta) toOutputType() *graphql.Object {
 	return graphql.NewObject(
 		graphql.ObjectConfig{
 			Name:   entity.Name,
