@@ -1,4 +1,4 @@
-package model
+package schema
 
 const (
 	COLUMN_NUMBER       string = "Number"

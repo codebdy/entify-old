@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/schema/comparisons"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -14,29 +13,29 @@ const (
 	BOOLEXP     string = "BoolExp"
 )
 
-func createFieldType(column *model.ColumnMeta) graphql.Output {
+func createFieldType(column *ColumnMeta) graphql.Output {
 	switch column.Type {
-	case model.COLUMN_NUMBER:
+	case COLUMN_NUMBER:
 		return graphql.Int
-	case model.COLUMN_BOOLEAN:
+	case COLUMN_BOOLEAN:
 		return graphql.Boolean
-	case model.COLUMN_STRING:
+	case COLUMN_STRING:
 		return graphql.String
-	case model.COLUMN_TEXT:
+	case COLUMN_TEXT:
 		return graphql.String
-	case model.COLUMN_MEDIUM_TEXT:
+	case COLUMN_MEDIUM_TEXT:
 		return graphql.String
-	case model.COLUMN_LONG_TEXT:
+	case COLUMN_LONG_TEXT:
 		return graphql.String
-	case model.COLUMN_DATE:
+	case COLUMN_DATE:
 		return graphql.DateTime
-	case model.COLUMN_SIMPLE_JSON:
+	case COLUMN_SIMPLE_JSON:
 		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_SIMPLE_ARRAY:
+	case COLUMN_SIMPLE_ARRAY:
 		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_JSON_ARRAY:
+	case COLUMN_JSON_ARRAY:
 		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case model.COLUMN_ENUM:
+	case COLUMN_ENUM:
 		return graphql.EnumValueType
 	}
 
@@ -47,29 +46,29 @@ func createEnumEntityType() {
 
 }
 
-func createFieldExp(column *model.ColumnMeta) *graphql.InputObjectFieldConfig {
+func createFieldExp(column *ColumnMeta) *graphql.InputObjectFieldConfig {
 	switch column.Type {
-	case model.COLUMN_NUMBER:
+	case COLUMN_NUMBER:
 		return &comparisons.IntComparisonExp
-	case model.COLUMN_BOOLEAN:
+	case COLUMN_BOOLEAN:
 		return &comparisons.BooleanComparisonExp
-	case model.COLUMN_STRING:
+	case COLUMN_STRING:
 		return &comparisons.StringComparisonExp
-	case model.COLUMN_TEXT:
+	case COLUMN_TEXT:
 		return &comparisons.StringComparisonExp
-	case model.COLUMN_MEDIUM_TEXT:
+	case COLUMN_MEDIUM_TEXT:
 		return &comparisons.StringComparisonExp
-	case model.COLUMN_LONG_TEXT:
+	case COLUMN_LONG_TEXT:
 		return &comparisons.StringComparisonExp
-	case model.COLUMN_DATE:
+	case COLUMN_DATE:
 		return &comparisons.DateTimeComparisonExp
-		// case model.COLUMN_SIMPLE_JSON:
+		// case COLUMN_SIMPLE_JSON:
 		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case model.COLUMN_SIMPLE_ARRAY:
+		// case COLUMN_SIMPLE_ARRAY:
 		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case model.COLUMN_JSON_ARRAY:
+		// case COLUMN_JSON_ARRAY:
 		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case model.COLUMN_ENUM:
+		// case COLUMN_ENUM:
 		// 	return graphql.InputObjectFieldConfig{
 		// 		Type:graphql.NewEnum()
 		// 	}
@@ -78,11 +77,11 @@ func createFieldExp(column *model.ColumnMeta) *graphql.InputObjectFieldConfig {
 	panic("No column type: " + column.Type)
 }
 
-func appendEntityFieldExps(entity *model.EntityMeta, fieldsMap *graphql.InputObjectConfigFieldMap) {
+func appendEntityFieldExps(entity *EntityMeta, fieldsMap *graphql.InputObjectConfigFieldMap) {
 
 }
 
-func CreateEntityFields(entity *model.EntityMeta) *graphql.Fields {
+func CreateEntityFields(entity *EntityMeta) *graphql.Fields {
 	fields := &graphql.Fields{}
 	for _, column := range entity.Columns {
 		(*fields)[column.Name] = &graphql.Field{
@@ -96,7 +95,7 @@ func CreateEntityFields(entity *model.EntityMeta) *graphql.Fields {
 	return fields
 }
 
-func AppendEntityToQueryFields(entity *model.EntityMeta, feilds *graphql.Fields) {
+func AppendEntityToQueryFields(entity *EntityMeta, feilds *graphql.Fields) {
 	metaType := graphql.NewObject(graphql.ObjectConfig{Name: entity.Name, Fields: *CreateEntityFields(entity)})
 	metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
 		Name: entity.Name + DISTINCTEXP,

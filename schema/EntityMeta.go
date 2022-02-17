@@ -1,4 +1,4 @@
-package model
+package schema
 
 const (
 	Entity_NORMAL    string = "Normal"
