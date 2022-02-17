@@ -44,3 +44,35 @@ func (entity *EntityMeta) toOutputType() *graphql.Object {
 		},
 	)
 }
+
+func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
+	andExp := graphql.InputObjectFieldConfig{}
+	notExp := graphql.InputObjectFieldConfig{}
+	orExp := graphql.InputObjectFieldConfig{}
+
+	fields := graphql.InputObjectConfigFieldMap{
+		"and": &andExp,
+		"not": &notExp,
+		"or":  &orExp,
+	}
+
+	boolExp := graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   entity.Name + BOOLEXP,
+			Fields: fields,
+		},
+	)
+	andExp.Type = boolExp
+	notExp.Type = boolExp
+	orExp.Type = boolExp
+
+	for _, column := range entity.Columns {
+		columnExp := column.ToExp()
+
+		if columnExp != nil {
+			fields[column.Name] = columnExp
+		}
+	}
+
+	return boolExp
+}

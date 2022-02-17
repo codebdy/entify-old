@@ -82,16 +82,14 @@ func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 		return &comparisons.StringComparisonExp
 	case COLUMN_DATE:
 		return &comparisons.DateTimeComparisonExp
-		// case COLUMN_SIMPLE_JSON:
-		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case COLUMN_SIMPLE_ARRAY:
-		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case COLUMN_JSON_ARRAY:
-		// 	return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-		// case COLUMN_ENUM:
-		// 	return graphql.InputObjectFieldConfig{
-		// 		Type:graphql.NewEnum()
-		// 	}
+	case COLUMN_SIMPLE_JSON:
+		return nil
+	case COLUMN_SIMPLE_ARRAY:
+		return nil
+	case COLUMN_JSON_ARRAY:
+		return nil
+	case COLUMN_ENUM:
+		return &comparisons.EnumComparisonExp
 	}
 
 	panic("No column type: " + column.Type)

@@ -68,7 +68,7 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: graphql.String,
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: metaBoolExp,
+				Type: entity.toWhereExp(),
 			},
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
