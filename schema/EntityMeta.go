@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	BOOLEXP string = "BoolExp"
-	ORDERBY string = "OrderBy"
+	BOOLEXP     string = "BoolExp"
+	ORDERBY     string = "OrderBy"
+	DISTINCTEXP string = "DistinctExp"
 )
 
 const (
@@ -101,4 +102,20 @@ func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
 	}
 
 	return orderByExp
+}
+
+func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
+	enumValueConfigMap := graphql.EnumValueConfigMap{}
+	for _, column := range entity.Columns {
+		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
+			Value: column.Name,
+		}
+	}
+
+	return graphql.NewEnum(
+		graphql.EnumConfig{
+			Name:   entity.Name + DISTINCTEXP,
+			Values: enumValueConfigMap,
+		},
+	)
 }

@@ -7,27 +7,17 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-const (
-	DISTINCTEXP string = "DistinctExp"
-)
-
 func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
-	metaDistinctType := graphql.NewEnum(
-		graphql.EnumConfig{
-			Name: entity.Name + DISTINCTEXP,
-			Values: graphql.EnumValueConfigMap{
-				"name": &graphql.EnumValueConfig{
-					Value: "name",
-				},
-			},
-		},
-	)
+	//如果是枚举
+	if entity.EntityType == Entity_ENUM {
+		return
+	}
 
 	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
-				Type: metaDistinctType,
+				Type: entity.toDistinctOnEnum(),
 			},
 			"limit": &graphql.ArgumentConfig{
 				Type: graphql.Int,
