@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/graphql-go/graphql"
@@ -26,6 +27,7 @@ type EntityMeta struct {
 	Columns     []ColumnMeta `json:"columns"`
 	Eventable   bool         `json:"eventable"`
 	Description string       `json:"description"`
+	EnumValues  []byte       `json:"enumValues"`
 }
 
 func (entity *EntityMeta) createQueryFields() graphql.Fields {
@@ -42,7 +44,27 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	return fields
 }
 
-func (entity *EntityMeta) toOutputType() *graphql.Object {
+func (entity *EntityMeta) toOutputType() graphql.Output {
+	if entity.EntityType == Entity_ENUM {
+		enumValues := make(map[string]interface{})
+		json.Unmarshal(entity.EnumValues, &enumValues)
+		enumValueConfigMap := graphql.EnumValueConfigMap{}
+		for enumName, enumValue := range enumValues {
+			var value, ok = enumValue.(string)
+			if !ok {
+				value = enumValue.(map[string]string)["value"]
+			}
+			enumValueConfigMap[enumName] = &graphql.EnumValueConfig{
+				Value: value,
+			}
+		}
+		return graphql.NewEnum(
+			graphql.EnumConfig{
+				Name:   entity.Name + DISTINCTEXP,
+				Values: enumValueConfigMap,
+			},
+		)
+	}
 	return graphql.NewObject(
 		graphql.ObjectConfig{
 			Name:   entity.Name,
