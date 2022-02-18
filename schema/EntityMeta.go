@@ -30,6 +30,12 @@ type EntityMeta struct {
 	EnumValues  []byte       `json:"enumValues"`
 }
 
+//where表达式缓存，query跟mutation都用
+var WhereExpMap = make(map[string]*graphql.InputObject)
+
+//类型缓存， query mutaion通用
+var OutputTypeMap = make(map[string]*graphql.Output)
+
 func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
@@ -45,6 +51,11 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 }
 
 func (entity *EntityMeta) toOutputType() graphql.Output {
+	if OutputTypeMap[entity.Name] != nil {
+		return *OutputTypeMap[entity.Name]
+	}
+	var returnValue graphql.Output
+
 	if entity.EntityType == Entity_ENUM {
 		enumValues := make(map[string]interface{})
 		json.Unmarshal(entity.EnumValues, &enumValues)
@@ -58,22 +69,30 @@ func (entity *EntityMeta) toOutputType() graphql.Output {
 				Value: value,
 			}
 		}
-		return graphql.NewEnum(
+		returnValue = graphql.NewEnum(
 			graphql.EnumConfig{
-				Name:   entity.Name + DISTINCTEXP,
+				Name:   entity.Name,
 				Values: enumValueConfigMap,
 			},
 		)
+	} else {
+		returnValue = graphql.NewObject(
+			graphql.ObjectConfig{
+				Name:   entity.Name,
+				Fields: entity.createQueryFields(),
+			},
+		)
 	}
-	return graphql.NewObject(
-		graphql.ObjectConfig{
-			Name:   entity.Name,
-			Fields: entity.createQueryFields(),
-		},
-	)
+	OutputTypeMap[entity.Name] = &returnValue
+	return returnValue
 }
 
 func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
+	expName := entity.Name + BOOLEXP
+	if WhereExpMap[expName] != nil {
+		return WhereExpMap[expName]
+	}
+
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -86,7 +105,7 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 
 	boolExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + BOOLEXP,
+			Name:   expName,
 			Fields: fields,
 		},
 	)
@@ -101,7 +120,7 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 			fields[column.Name] = columnExp
 		}
 	}
-
+	WhereExpMap[expName] = boolExp
 	return boolExp
 }
 
