@@ -35,10 +35,10 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	for _, column := range entity.Columns {
 		fields[column.Name] = &graphql.Field{
 			Type: column.toOutputType(),
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fmt.Println(p.Context.Value("data"))
-				return "world", nil
-			},
+			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			// 	fmt.Println(p.Context.Value("data"))
+			// 	return "world", nil
+			// },
 		}
 	}
 	return fields
@@ -147,6 +147,8 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		fmt.Println("Resolve entity:" + entity.Name)
 		fmt.Println(p.Args)
 		fmt.Println(p.Context.Value("data"))
-		return "world", nil
+		rtValue := make(map[string]interface{})
+		rtValue["content"] = "content"
+		return rtValue, nil
 	}
 }
