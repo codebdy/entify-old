@@ -19,4 +19,13 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
+	(*feilds)["delete"+entity.Name+"ByPK"] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		//Resolve: entity.QueryResolve(),
+	}
 }
