@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -32,9 +30,6 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: entity.toWhereExp(),
 			},
 		},
-		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			fmt.Println(p.Context.Value("data"))
-			return "world", nil
-		},
+		Resolve: entity.QueryResolve(),
 	}
 }

@@ -141,3 +141,12 @@ func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
 		},
 	)
 }
+
+func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		fmt.Println("Resolve entity:" + entity.Name)
+		fmt.Println(p.Args)
+		fmt.Println(p.Context.Value("data"))
+		return "world", nil
+	}
+}
