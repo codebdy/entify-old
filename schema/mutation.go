@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/utils"
 )
 
 func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
@@ -10,7 +11,9 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		return
 	}
 
-	(*feilds)["delete"+entity.Name] = &graphql.Field{
+	name := utils.FirstUpper(entity.Name)
+
+	(*feilds)["delete"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
 			"where": &graphql.ArgumentConfig{
@@ -19,7 +22,44 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)["delete"+entity.Name+"ByPK"] = &graphql.Field{
+	(*feilds)["delete"+name+"ById"] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		//Resolve: entity.QueryResolve(),
+	}
+	(*feilds)["insert"+name] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		//Resolve: entity.QueryResolve(),
+	}
+	(*feilds)["insertOne"+name] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		//Resolve: entity.QueryResolve(),
+	}
+	(*feilds)["update"+name] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		//Resolve: entity.QueryResolve(),
+	}
+
+	(*feilds)["update"+name+"ById"] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
 			"id": &graphql.ArgumentConfig{
