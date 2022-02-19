@@ -12,8 +12,10 @@ var InsertInputMap = make(map[string]*graphql.Input)
 func (entity *EntityMeta) createInsertFields() graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
-		fields[column.Name] = &graphql.InputObjectFieldConfig{
-			Type: column.toInputType(),
+		if column.Name != "id" {
+			fields[column.Name] = &graphql.InputObjectFieldConfig{
+				Type: column.toInputType(),
+			}
 		}
 	}
 
