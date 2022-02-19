@@ -34,19 +34,19 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 	(*feilds)["insert"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
-				Type: graphql.Int,
+			"objects": &graphql.ArgumentConfig{
+				Type: entity.toInsertInput(),
 			},
 		},
-		//Resolve: entity.QueryResolve(),
 	}
+	//Resolve: entity.QueryResolve(),
 	(*feilds)["insertOne"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
-		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-		},
+		// Args: graphql.FieldConfigArgument{
+		// 	"object": &graphql.ArgumentConfig{
+		// 		Type: entity.toInsertInput(),
+		// 	},
+		// },
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)["update"+name] = &graphql.Field{

@@ -66,6 +66,35 @@ func (column *ColumnMeta) toOutputType() graphql.Output {
 	panic("No column type:" + column.Type)
 }
 
+func (column *ColumnMeta) toInputType() graphql.Input {
+	switch column.Type {
+	case COLUMN_NUMBER:
+		return graphql.Int
+	case COLUMN_BOOLEAN:
+		return graphql.Boolean
+	case COLUMN_STRING:
+		return graphql.String
+	case COLUMN_TEXT:
+		return graphql.String
+	case COLUMN_MEDIUM_TEXT:
+		return graphql.String
+	case COLUMN_LONG_TEXT:
+		return graphql.String
+	case COLUMN_DATE:
+		return graphql.DateTime
+	case COLUMN_SIMPLE_JSON:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_SIMPLE_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_JSON_ARRAY:
+		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+	case COLUMN_ENUM:
+		return graphql.EnumValueType
+	}
+
+	panic("No column type:" + column.Type)
+}
+
 func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case COLUMN_NUMBER:
