@@ -81,6 +81,107 @@ func (entity *EntityMeta) toStddevFields() graphql.Fields {
 	return fields
 }
 
+func (entity *EntityMeta) toStddevPopFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toStddevSampFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toSumFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toVarPopFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toVarSampFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toVarianceFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
 func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 	fields := graphql.Fields{}
 	avgFields := entity.toAvgFields()
@@ -150,14 +251,75 @@ func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 			),
 		}
 	}
-	//count(columns: [user_select_column!]distinct: Boolean): Int!
 
-	// "stddevPop": user_stddev_pop_fields
-	// "stddevSamp": user_stddev_samp_fields
-	// "sum": user_sum_fields
-	// "varPop": user_var_pop_fields
-	// "varSamp": user_var_samp_fields
-	// "variance": user_variance_fields
+	stddevPopFields := entity.toStddevPopFields()
+	if len(stddevPopFields) > 0 {
+		fields["stddevPop"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "StddevPopFields",
+					Fields: stddevPopFields,
+				},
+			),
+		}
+	}
+
+	stddevSampFields := entity.toStddevSampFields()
+	if len(stddevSampFields) > 0 {
+		fields["stddevSamp"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "StddevSampFields",
+					Fields: stddevSampFields,
+				},
+			),
+		}
+	}
+
+	sumFields := entity.toSumFields()
+	if len(sumFields) > 0 {
+		fields["sum"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "SumFields",
+					Fields: sumFields,
+				},
+			),
+		}
+	}
+	varPopFields := entity.toVarPopFields()
+	if len(varPopFields) > 0 {
+		fields["varPop"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "VarPopFields",
+					Fields: varPopFields,
+				},
+			),
+		}
+	}
+	varSampFields := entity.toVarSampFields()
+	if len(varSampFields) > 0 {
+		fields["varSamp"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "VarSampFields",
+					Fields: varSampFields,
+				},
+			),
+		}
+	}
+	varianceFields := entity.toVarianceFields()
+	if len(varianceFields) > 0 {
+		fields["variance"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "VarianceFields",
+					Fields: varianceFields,
+				},
+			),
+		}
+	}
 	return fields
 }
 
