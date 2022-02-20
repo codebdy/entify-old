@@ -71,7 +71,7 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 				},
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: graphql.Int,
+				Type: entity.toWhereExp(),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
