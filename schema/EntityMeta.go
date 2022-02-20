@@ -44,7 +44,7 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		fields[column.Name] = &graphql.Field{
-			Type: column.toOutputType(),
+			Type: column.toType(),
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
 			// 	return "world", nil
@@ -183,23 +183,4 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		rtValue["content"] = "content"
 		return rtValue, nil
 	}
-}
-
-func (entity *EntityMeta) toAggregateType() graphql.Output {
-	var returnValue graphql.Output
-
-	returnValue = graphql.NewObject(
-		graphql.ObjectConfig{
-			Name: entity.Name + "Aggregate",
-			Fields: graphql.Fields{
-				"nodes": &graphql.Field{
-					Type: &graphql.List{
-						OfType: entity.toOutputType(),
-					},
-				},
-			},
-		},
-	)
-
-	return returnValue
 }

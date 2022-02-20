@@ -16,7 +16,7 @@ func (entity *EntityMeta) createInputFields(isPost bool) graphql.InputObjectConf
 	for _, column := range entity.Columns {
 		if column.Name != "id" || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type: column.toInputType(),
+				Type: column.toType(),
 			}
 		}
 	}

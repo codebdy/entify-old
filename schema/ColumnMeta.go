@@ -6,12 +6,11 @@ import (
 )
 
 const (
-	COLUMN_NUMBER       string = "Number"
+	COLUMN_ID           string = "ID"
+	COLUMN_INT          string = "Int"
+	COLUMN_FLOAT        string = "Float"
 	COLUMN_BOOLEAN      string = "Boolean"
 	COLUMN_STRING       string = "String"
-	COLUMN_TEXT         string = "Text"
-	COLUMN_MEDIUM_TEXT  string = "MediumText"
-	COLUMN_LONG_TEXT    string = "LongText"
 	COLUMN_DATE         string = "Date"
 	COLUMN_SIMPLE_JSON  string = "SimpleJson"
 	COLUMN_SIMPLE_ARRAY string = "simpleArray"
@@ -37,48 +36,18 @@ type ColumnMeta struct {
 	Description   string `json:"description"`
 }
 
-func (column *ColumnMeta) toOutputType() graphql.Output {
+func (column *ColumnMeta) toType() graphql.Output {
 	switch column.Type {
-	case COLUMN_NUMBER:
+	case COLUMN_ID:
+		return graphql.String
+	case COLUMN_INT:
 		return graphql.Int
+	case COLUMN_FLOAT:
+		return graphql.Float
 	case COLUMN_BOOLEAN:
 		return graphql.Boolean
 	case COLUMN_STRING:
 		return graphql.String
-	case COLUMN_TEXT:
-		return graphql.String
-	case COLUMN_MEDIUM_TEXT:
-		return graphql.String
-	case COLUMN_LONG_TEXT:
-		return graphql.String
-	case COLUMN_DATE:
-		return graphql.DateTime
-	case COLUMN_SIMPLE_JSON:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_SIMPLE_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_JSON_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
-	case COLUMN_ENUM:
-		return graphql.EnumValueType
-	}
-
-	panic("No column type:" + column.Type)
-}
-
-func (column *ColumnMeta) toInputType() graphql.Input {
-	switch column.Type {
-	case COLUMN_NUMBER:
-		return graphql.Int
-	case COLUMN_BOOLEAN:
-		return graphql.Boolean
-	case COLUMN_STRING:
-		return graphql.String
-	case COLUMN_TEXT:
-		return graphql.String
-	case COLUMN_MEDIUM_TEXT:
-		return graphql.String
-	case COLUMN_LONG_TEXT:
 		return graphql.String
 	case COLUMN_DATE:
 		return graphql.DateTime
@@ -97,17 +66,13 @@ func (column *ColumnMeta) toInputType() graphql.Input {
 
 func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 	switch column.Type {
-	case COLUMN_NUMBER:
+	case COLUMN_INT:
 		return &comparison.IntComparisonExp
+	case COLUMN_FLOAT:
+		return &comparison.FloatComparisonExp
 	case COLUMN_BOOLEAN:
 		return &comparison.BooleanComparisonExp
 	case COLUMN_STRING:
-		return &comparison.StringComparisonExp
-	case COLUMN_TEXT:
-		return &comparison.StringComparisonExp
-	case COLUMN_MEDIUM_TEXT:
-		return &comparison.StringComparisonExp
-	case COLUMN_LONG_TEXT:
 		return &comparison.StringComparisonExp
 	case COLUMN_DATE:
 		return &comparison.DateTimeComparisonExp
