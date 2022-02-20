@@ -8,7 +8,7 @@ var MetaEntity = EntityMeta{
 	Columns: []ColumnMeta{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
-			Type: COLUMN_INT,
+			Type: COLUMN_ID,
 			Name: "id",
 		},
 		{
@@ -20,6 +20,16 @@ var MetaEntity = EntityMeta{
 			Uuid: "META_COLUMN_CONTENT_UUID",
 			Type: COLUMN_STRING,
 			Name: "content",
+		},
+		{
+			Uuid: "META_COLUMN_INT_TEST_UUID",
+			Type: COLUMN_INT,
+			Name: "int_test",
+		},
+		{
+			Uuid: "META_COLUMN_FLOAT_TEST_UUID",
+			Type: COLUMN_FLOAT,
+			Name: "float_test",
 		},
 		// {
 		// 	Uuid: "_META_COLUMN_PUBLISHED_UUID",

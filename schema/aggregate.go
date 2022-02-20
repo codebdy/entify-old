@@ -21,14 +21,18 @@ func (entity *EntityMeta) toAvgFields() graphql.Fields {
 
 func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 	fields := graphql.Fields{}
-	fields["avg"] = &graphql.Field{
-		Type: graphql.NewObject(
-			graphql.ObjectConfig{
-				Name:   entity.Name + "AvgFields",
-				Fields: entity.toAvgFields(),
-			},
-		),
+	avgFields := entity.toAvgFields()
+	if len(avgFields) > 0 {
+		fields["avg"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "AvgFields",
+					Fields: avgFields,
+				},
+			),
+		}
 	}
+
 	//count(columns: [user_select_column!]distinct: Boolean): Int!
 	// "max": user_max_fields
 	// "min": user_min_fields
@@ -45,24 +49,31 @@ func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 func (entity *EntityMeta) toAggregateType() graphql.Output {
 	var returnValue graphql.Output
 
+	fields := graphql.Fields{
+		"nodes": &graphql.Field{
+			Type: &graphql.List{
+				OfType: entity.toOutputType(),
+			},
+		},
+	}
+
+	aggregateFields := entity.createAggregateFields()
+
+	if len(aggregateFields) > 0 {
+		fields["aggregate"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "AggregateFields",
+					Fields: aggregateFields,
+				},
+			),
+		}
+	}
+
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
-			Name: entity.Name + "Aggregate",
-			Fields: graphql.Fields{
-				"aggregate": &graphql.Field{
-					Type: graphql.NewObject(
-						graphql.ObjectConfig{
-							Name:   entity.Name + "AggregateFields",
-							Fields: entity.createAggregateFields(),
-						},
-					),
-				},
-				"nodes": &graphql.Field{
-					Type: &graphql.List{
-						OfType: entity.toOutputType(),
-					},
-				},
-			},
+			Name:   entity.Name + "Aggregate",
+			Fields: fields,
 		},
 	)
 

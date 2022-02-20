@@ -48,7 +48,6 @@ func (column *ColumnMeta) toType() graphql.Output {
 		return graphql.Boolean
 	case COLUMN_STRING:
 		return graphql.String
-		return graphql.String
 	case COLUMN_DATE:
 		return graphql.DateTime
 	case COLUMN_SIMPLE_JSON:
@@ -81,6 +80,8 @@ func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 	case COLUMN_SIMPLE_ARRAY:
 		return nil
 	case COLUMN_JSON_ARRAY:
+		return nil
+	case COLUMN_ID:
 		return nil
 	case COLUMN_ENUM:
 		return &comparison.EnumComparisonExp
