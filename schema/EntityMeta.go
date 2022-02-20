@@ -1,10 +1,13 @@
 package schema
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/utils"
 )
 
 const (
@@ -182,8 +185,32 @@ func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
 	return entEnum
 }
 
+func (entity *EntityMeta) getTableName() string {
+	if (*entity).TableName != "" {
+		return (*entity).TableName
+	}
+	return utils.SnakeString((*entity).Name)
+}
+
 func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
+		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
+		defer db.Close()
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		queryStr := "select * from %s"
+
+		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
+		result, err := db.Query(queryStr)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+
+		result.Scan()
+
 		fmt.Println("Resolve entity:" + entity.Name)
 		fmt.Println(p.Args)
 		fmt.Println(p.Context.Value("data"))

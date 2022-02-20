@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
+	"rxdrag.com/entity-engine/config"
 )
 
 func Login(loginName, pwd string) (string, error) {
-	db, err := sql.Open("mysql", "root:RxDragDb@tcp(localhost:3306)/rxdrag")
+	db, err := sql.Open("mysql", config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
