@@ -113,9 +113,17 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 			Fields: fields,
 		},
 	)
-	andExp.Type = boolExp
+	andExp.Type = &graphql.List{
+		OfType: &graphql.NonNull{
+			OfType: boolExp,
+		},
+	}
 	notExp.Type = boolExp
-	orExp.Type = boolExp
+	orExp.Type = &graphql.List{
+		OfType: &graphql.NonNull{
+			OfType: boolExp,
+		},
+	}
 
 	for _, column := range entity.Columns {
 		columnExp := column.ToExp()
