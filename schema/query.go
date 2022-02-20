@@ -47,7 +47,7 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	}
 
 	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
-		Type: entity.toOutputType(),
+		Type: entity.toAggregateType(),
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
 				Type: entity.toDistinctOnEnum(),

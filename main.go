@@ -42,19 +42,19 @@ func main() {
 
 	// Schema
 	queryFields := graphql.Fields{
-		"hello": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				fmt.Println(p.Context.Value("data"))
-				return "world", nil
-			},
-		},
-		"hello2": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
+		// "hello": &graphql.Field{
+		// 	Type: graphql.String,
+		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		// 		fmt.Println(p.Context.Value("data"))
+		// 		return "world", nil
+		// 	},
+		// },
+		// "hello2": &graphql.Field{
+		// 	Type: graphql.String,
+		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+		// 		return "world2", nil
+		// 	},
+		// },
 		// "_meta": &graphql.Field{
 		// 	Type: graphql.NewList(metaType),
 		// 	Args: graphql.FieldConfigArgument{

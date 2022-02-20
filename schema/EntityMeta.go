@@ -184,3 +184,22 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		return rtValue, nil
 	}
 }
+
+func (entity *EntityMeta) toAggregateType() graphql.Output {
+	var returnValue graphql.Output
+
+	returnValue = graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: entity.Name + "Aggregate",
+			Fields: graphql.Fields{
+				"nodes": &graphql.Field{
+					Type: &graphql.List{
+						OfType: entity.toOutputType(),
+					},
+				},
+			},
+		},
+	)
+
+	return returnValue
+}

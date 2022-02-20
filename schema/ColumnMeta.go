@@ -2,7 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/schema/comparisons"
+	"rxdrag.com/entity-engine/schema/comparison"
 )
 
 const (
@@ -98,19 +98,19 @@ func (column *ColumnMeta) toInputType() graphql.Input {
 func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case COLUMN_NUMBER:
-		return &comparisons.IntComparisonExp
+		return &comparison.IntComparisonExp
 	case COLUMN_BOOLEAN:
-		return &comparisons.BooleanComparisonExp
+		return &comparison.BooleanComparisonExp
 	case COLUMN_STRING:
-		return &comparisons.StringComparisonExp
+		return &comparison.StringComparisonExp
 	case COLUMN_TEXT:
-		return &comparisons.StringComparisonExp
+		return &comparison.StringComparisonExp
 	case COLUMN_MEDIUM_TEXT:
-		return &comparisons.StringComparisonExp
+		return &comparison.StringComparisonExp
 	case COLUMN_LONG_TEXT:
-		return &comparisons.StringComparisonExp
+		return &comparison.StringComparisonExp
 	case COLUMN_DATE:
-		return &comparisons.DateTimeComparisonExp
+		return &comparison.DateTimeComparisonExp
 	case COLUMN_SIMPLE_JSON:
 		return nil
 	case COLUMN_SIMPLE_ARRAY:
@@ -118,7 +118,7 @@ func (column *ColumnMeta) ToExp() *graphql.InputObjectFieldConfig {
 	case COLUMN_JSON_ARRAY:
 		return nil
 	case COLUMN_ENUM:
-		return &comparisons.EnumComparisonExp
+		return &comparison.EnumComparisonExp
 	}
 
 	panic("No column type: " + column.Type)

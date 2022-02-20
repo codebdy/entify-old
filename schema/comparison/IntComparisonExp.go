@@ -1,4 +1,4 @@
-package comparisons
+package comparison
 
 import (
 	"github.com/graphql-go/graphql"
