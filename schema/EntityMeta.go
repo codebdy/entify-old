@@ -33,8 +33,11 @@ type EntityMeta struct {
 //where表达式缓存，query跟mutation都用
 var WhereExpMap = make(map[string]*graphql.InputObject)
 
-//类型缓存， query mutaion通用
+//类型缓存， query用
 var OutputTypeMap = make(map[string]*graphql.Output)
+
+//mutition类型缓存， mutaion用
+var MutationResponseMap = make(map[string]*graphql.Output)
 
 func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	fields := graphql.Fields{}
@@ -170,4 +173,32 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		rtValue["content"] = "content"
 		return rtValue, nil
 	}
+}
+
+func (entity *EntityMeta) toMutationResponseType() graphql.Output {
+	if MutationResponseMap[entity.Name] != nil {
+		return *MutationResponseMap[entity.Name]
+	}
+	var returnValue graphql.Output
+
+	returnValue = graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: entity.Name + "MutationResponse",
+			Fields: graphql.Fields{
+				"affectedRows": &graphql.Field{
+					Type: graphql.Int,
+				},
+				"returning": &graphql.Field{
+					Type: &graphql.NonNull{
+						OfType: &graphql.List{
+							OfType: entity.toOutputType(),
+						},
+					},
+				},
+			},
+		},
+	)
+
+	MutationResponseMap[entity.Name] = &returnValue
+	return returnValue
 }

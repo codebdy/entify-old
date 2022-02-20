@@ -12,7 +12,11 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	}
 
 	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
-		Type: entity.toOutputType(),
+		Type: &graphql.NonNull{
+			OfType: &graphql.List{
+				OfType: entity.toOutputType(),
+			},
+		},
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
 				Type: entity.toDistinctOnEnum(),
@@ -28,6 +32,15 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 			},
 			"where": &graphql.ArgumentConfig{
 				Type: entity.toWhereExp(),
+			},
+		},
+		Resolve: entity.QueryResolve(),
+	}
+	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
 			},
 		},
 		Resolve: entity.QueryResolve(),
