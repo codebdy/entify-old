@@ -1,18 +1,17 @@
 package schema
 
 import (
-	"encoding/json"
-
 	"github.com/graphql-go/graphql"
 )
 
 //类型缓存， query mutaion通用
-var InsertInputMap = make(map[string]*graphql.Input)
+var UpdateInputMap = make(map[string]*graphql.Input)
+var PostInputMap = make(map[string]*graphql.Input)
 
-func (entity *EntityMeta) createInsertFields() graphql.InputObjectConfigFieldMap {
+func (entity *EntityMeta) createInputFields(isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
-		if column.Name != "id" {
+		if column.Name != "id" || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type: column.toInputType(),
 			}
@@ -22,39 +21,34 @@ func (entity *EntityMeta) createInsertFields() graphql.InputObjectConfigFieldMap
 	return fields
 }
 
-func (entity *EntityMeta) toInsertInput() graphql.Input {
-	if InsertInputMap[entity.Name] != nil {
-		return *InsertInputMap[entity.Name]
+func (entity *EntityMeta) toUpdateInput() *graphql.Input {
+	if UpdateInputMap[entity.Name] != nil {
+		return UpdateInputMap[entity.Name]
 	}
 	var returnValue graphql.Input
 
-	if entity.EntityType == Entity_ENUM {
-		enumValues := make(map[string]interface{})
-		json.Unmarshal(entity.EnumValues, &enumValues)
-		enumValueConfigMap := graphql.EnumValueConfigMap{}
-		for enumName, enumValue := range enumValues {
-			var value, ok = enumValue.(string)
-			if !ok {
-				value = enumValue.(map[string]string)["value"]
-			}
-			enumValueConfigMap[enumName] = &graphql.EnumValueConfig{
-				Value: value,
-			}
-		}
-		returnValue = graphql.NewEnum(
-			graphql.EnumConfig{
-				Name:   entity.Name,
-				Values: enumValueConfigMap,
-			},
-		)
-	} else {
-		returnValue = graphql.NewInputObject(
-			graphql.InputObjectConfig{
-				Name:   entity.Name + "InsertInput",
-				Fields: entity.createInsertFields(),
-			},
-		)
+	returnValue = graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   entity.Name + "UpdateInput",
+			Fields: entity.createInputFields(false),
+		},
+	)
+	UpdateInputMap[entity.Name] = &returnValue
+	return &returnValue
+}
+
+func (entity *EntityMeta) toPostInput() *graphql.Input {
+	if PostInputMap[entity.Name] != nil {
+		return PostInputMap[entity.Name]
 	}
-	InsertInputMap[entity.Name] = &returnValue
-	return returnValue
+	var returnValue graphql.Input
+
+	returnValue = graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   entity.Name + "PostInput",
+			Fields: entity.createInputFields(true),
+		},
+	)
+	PostInputMap[entity.Name] = &returnValue
+	return &returnValue
 }

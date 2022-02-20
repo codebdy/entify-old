@@ -31,14 +31,14 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)["insert"+name] = &graphql.Field{
+	(*feilds)["post"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
 			"objects": &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: entity.toInsertInput(),
+							OfType: *entity.toPostInput(),
 						},
 					},
 				},
@@ -46,31 +46,31 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		},
 	}
 	//Resolve: entity.QueryResolve(),
-	(*feilds)["insertOne"+name] = &graphql.Field{
+	(*feilds)["postOne"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
 			"object": &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: entity.toInsertInput(),
+					OfType: *entity.toPostInput(),
 				},
 			},
 		},
 		//Resolve: entity.QueryResolve(),
 	}
+
 	(*feilds)["update"+name] = &graphql.Field{
 		Type: entity.toOutputType(),
 		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
-				Type: graphql.Int,
+			"objects": &graphql.ArgumentConfig{
+				Type: &graphql.NonNull{
+					OfType: &graphql.List{
+						OfType: &graphql.NonNull{
+							OfType: *entity.toUpdateInput(),
+						},
+					},
+				},
 			},
-		},
-		//Resolve: entity.QueryResolve(),
-	}
-
-	(*feilds)["update"+name+"ById"] = &graphql.Field{
-		Type: entity.toOutputType(),
-		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
+			"where": &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
 		},
