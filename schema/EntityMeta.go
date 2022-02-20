@@ -31,13 +31,14 @@ type EntityMeta struct {
 }
 
 //where表达式缓存，query跟mutation都用
-var WhereExpMap = make(map[string]*graphql.InputObject)
+var whereExpMap = make(map[string]*graphql.InputObject)
 
 //类型缓存， query用
-var OutputTypeMap = make(map[string]*graphql.Output)
+var outputTypeMap = make(map[string]*graphql.Output)
 
-//mutition类型缓存， mutaion用
-var MutationResponseMap = make(map[string]*graphql.Output)
+var distinctOnEnumMap = make(map[string]*graphql.Enum)
+
+var orderByMap = make(map[string]*graphql.InputObject)
 
 func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	fields := graphql.Fields{}
@@ -54,8 +55,8 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 }
 
 func (entity *EntityMeta) toOutputType() graphql.Output {
-	if OutputTypeMap[entity.Name] != nil {
-		return *OutputTypeMap[entity.Name]
+	if outputTypeMap[entity.Name] != nil {
+		return *outputTypeMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
@@ -86,14 +87,14 @@ func (entity *EntityMeta) toOutputType() graphql.Output {
 			},
 		)
 	}
-	OutputTypeMap[entity.Name] = &returnValue
+	outputTypeMap[entity.Name] = &returnValue
 	return returnValue
 }
 
 func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
-	if WhereExpMap[expName] != nil {
-		return WhereExpMap[expName]
+	if whereExpMap[expName] != nil {
+		return whereExpMap[expName]
 	}
 
 	andExp := graphql.InputObjectFieldConfig{}
@@ -123,11 +124,14 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 			fields[column.Name] = columnExp
 		}
 	}
-	WhereExpMap[expName] = boolExp
+	whereExpMap[expName] = boolExp
 	return boolExp
 }
 
 func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
+	if orderByMap[entity.Name] != nil {
+		return orderByMap[entity.Name]
+	}
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
@@ -145,10 +149,14 @@ func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
 		}
 	}
 
+	orderByMap[entity.Name] = orderByExp
 	return orderByExp
 }
 
 func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
+	if distinctOnEnumMap[entity.Name] != nil {
+		return distinctOnEnumMap[entity.Name]
+	}
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	for _, column := range entity.Columns {
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
@@ -156,12 +164,14 @@ func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
 		}
 	}
 
-	return graphql.NewEnum(
+	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
 			Name:   entity.Name + DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)
+	distinctOnEnumMap[entity.Name] = entEnum
+	return entEnum
 }
 
 func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
@@ -173,32 +183,4 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		rtValue["content"] = "content"
 		return rtValue, nil
 	}
-}
-
-func (entity *EntityMeta) toMutationResponseType() graphql.Output {
-	if MutationResponseMap[entity.Name] != nil {
-		return *MutationResponseMap[entity.Name]
-	}
-	var returnValue graphql.Output
-
-	returnValue = graphql.NewObject(
-		graphql.ObjectConfig{
-			Name: entity.Name + "MutationResponse",
-			Fields: graphql.Fields{
-				"affectedRows": &graphql.Field{
-					Type: graphql.Int,
-				},
-				"returning": &graphql.Field{
-					Type: &graphql.NonNull{
-						OfType: &graphql.List{
-							OfType: entity.toOutputType(),
-						},
-					},
-				},
-			},
-		},
-	)
-
-	MutationResponseMap[entity.Name] = &returnValue
-	return returnValue
 }

@@ -45,4 +45,26 @@ func (entity *EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 		},
 		Resolve: entity.QueryResolve(),
 	}
+
+	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"distinctOn": &graphql.ArgumentConfig{
+				Type: entity.toDistinctOnEnum(),
+			},
+			"limit": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"offset": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"orderBy": &graphql.ArgumentConfig{
+				Type: entity.toOrderBy(),
+			},
+			"where": &graphql.ArgumentConfig{
+				Type: entity.toWhereExp(),
+			},
+		},
+		Resolve: entity.QueryResolve(),
+	}
 }
