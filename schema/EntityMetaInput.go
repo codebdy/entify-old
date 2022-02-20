@@ -11,7 +11,7 @@ var PostInputMap = make(map[string]*graphql.Input)
 //mutition类型缓存， mutaion用
 var mutationResponseMap = make(map[string]*graphql.Output)
 
-func (entity *EntityMeta) createInputFields(isPost bool) graphql.InputObjectConfigFieldMap {
+func (entity *EntityMeta) toInputFields(isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
 		if column.Name != "id" || isPost {
@@ -33,7 +33,7 @@ func (entity *EntityMeta) toUpdateInput() *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "UpdateInput",
-			Fields: entity.createInputFields(false),
+			Fields: entity.toInputFields(false),
 		},
 	)
 	UpdateInputMap[entity.Name] = &returnValue
@@ -49,7 +49,7 @@ func (entity *EntityMeta) toPostInput() *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "PostInput",
-			Fields: entity.createInputFields(true),
+			Fields: entity.toInputFields(true),
 		},
 	)
 	PostInputMap[entity.Name] = &returnValue

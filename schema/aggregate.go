@@ -19,6 +19,68 @@ func (entity *EntityMeta) toAvgFields() graphql.Fields {
 	return fields
 }
 
+func (entity *EntityMeta) toMaxFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toMinFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func (entity *EntityMeta) toSelectFields() graphql.InputObjectConfigFieldMap {
+	fields := graphql.InputObjectConfigFieldMap{}
+	for _, column := range entity.Columns {
+		fields[column.Name] = &graphql.InputObjectFieldConfig{
+			Type: column.toType(),
+		}
+	}
+
+	return fields
+}
+
+func (entity *EntityMeta) toStddevFields() graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: column.toType(),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
 func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 	fields := graphql.Fields{}
 	avgFields := entity.toAvgFields()
@@ -33,10 +95,63 @@ func (entity *EntityMeta) createAggregateFields() graphql.Fields {
 		}
 	}
 
+	maxFields := entity.toMaxFields()
+	if len(maxFields) > 0 {
+		fields["max"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "MaxFields",
+					Fields: maxFields,
+				},
+			),
+		}
+	}
+
+	minFields := entity.toMinFields()
+	if len(minFields) > 0 {
+		fields["min"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "MinFields",
+					Fields: minFields,
+				},
+			),
+		}
+	}
+
+	countFields := entity.toSelectFields()
+	if len(countFields) > 0 {
+		fields["count"] = &graphql.Field{
+			Args: graphql.FieldConfigArgument{
+				"columns": &graphql.ArgumentConfig{
+					Type: graphql.NewInputObject(
+						graphql.InputObjectConfig{
+							Name:   entity.Name + "SelectColumn",
+							Fields: countFields,
+						},
+					),
+				},
+				"distinct": &graphql.ArgumentConfig{
+					Type: graphql.Boolean,
+				},
+			},
+			Type: graphql.Int,
+		}
+	}
+
+	stddevFields := entity.toStddevFields()
+	if len(stddevFields) > 0 {
+		fields["stddev"] = &graphql.Field{
+			Type: graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:   entity.Name + "StddevFields",
+					Fields: stddevFields,
+				},
+			),
+		}
+	}
 	//count(columns: [user_select_column!]distinct: Boolean): Int!
-	// "max": user_max_fields
-	// "min": user_min_fields
-	// "stddev": user_stddev_fields
+
 	// "stddevPop": user_stddev_pop_fields
 	// "stddevSamp": user_stddev_samp_fields
 	// "sum": user_sum_fields
