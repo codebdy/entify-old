@@ -1,12 +1,11 @@
 package schema
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/graphql-go/graphql"
+	"github.com/jmoiron/sqlx"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -195,45 +194,28 @@ func (entity *EntityMeta) getTableName() string {
 
 func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
+		db, err := sqlx.Open("mysql", config.MYSQL_CONFIG)
 		defer db.Close()
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
 		queryStr := "select * from %s"
+		var instances []map[string]interface{}
 
 		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
-		rows, err := db.Query(queryStr)
-		defer rows.Close()
+		//err = db.Select(&instances, queryStr)
+		rows, err := db.Queryx(queryStr)
+		for rows.Next() {
+			row := make(map[string]interface{})
+			err = rows.MapScan(row)
+			fmt.Println("单行数据:")
+			fmt.Println(row)
+			instances = append(instances, row)
+		}
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
-		}
-		fields, _ := rows.Columns()
-
-		var instances []map[string]interface{}
-		for rows.Next() {
-			scans := make([]interface{}, len(fields))
-			row := make(map[string]interface{})
-
-			for i := range scans {
-				scans[i] = &scans[i]
-			}
-
-			err := rows.Scan(scans...)
-
-			for i, v := range scans {
-				row[fields[i]] = v
-			}
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			instances = append(instances, row)
-		}
-		if err := rows.Err(); err != nil {
-			log.Fatal(err)
 		}
 
 		fmt.Println("Resolve entity:" + entity.Name)
