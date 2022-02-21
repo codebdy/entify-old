@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
@@ -203,19 +204,41 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		queryStr := "select * from %s"
 
 		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
-		result, err := db.Query(queryStr)
+		rows, err := db.Query(queryStr)
+		defer rows.Close()
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
+		fields, _ := rows.Columns()
 
-		result.Scan()
+		var instances []map[string]interface{}
+		for rows.Next() {
+			scans := make([]interface{}, len(fields))
+			row := make(map[string]interface{})
+
+			for i := range scans {
+				scans[i] = &scans[i]
+			}
+
+			err := rows.Scan(scans...)
+
+			for i, v := range scans {
+				row[fields[i]] = v
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			instances = append(instances, row)
+		}
+		if err := rows.Err(); err != nil {
+			log.Fatal(err)
+		}
 
 		fmt.Println("Resolve entity:" + entity.Name)
 		fmt.Println(p.Args)
 		fmt.Println(p.Context.Value("data"))
-		rtValue := make(map[string]interface{})
-		rtValue["content"] = "content"
-		return rtValue, nil
+		return instances, nil
 	}
 }
