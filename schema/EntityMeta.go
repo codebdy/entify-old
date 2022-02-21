@@ -3,6 +3,7 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/graphql-go/graphql"
 	"github.com/jmoiron/sqlx"
@@ -209,8 +210,26 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		for rows.Next() {
 			row := make(map[string]interface{})
 			err = rows.MapScan(row)
-			fmt.Println("单行数据:")
-			fmt.Println(row)
+			for i, encoded := range row {
+				switch encoded.(type) {
+				case byte:
+					row[i] = encoded.(byte)
+					break
+				case []byte:
+					row[i] = string(encoded.([]byte))
+					break
+				case time.Time:
+					row[i] = encoded
+					// if val.IsZero() {
+					// 	ret[columns[i]] = nil
+					// } else {
+					// 	ret[columns[i]] = val.Format("2006-01-02 15:04:05")
+					// }
+					break
+				default:
+					row[i] = encoded
+				}
+			}
 			instances = append(instances, row)
 		}
 		if err != nil {
