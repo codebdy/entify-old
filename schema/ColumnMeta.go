@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/scalars"
 	"rxdrag.com/entity-engine/schema/comparison"
 )
 
@@ -51,7 +52,7 @@ func (column *ColumnMeta) toType() graphql.Output {
 	case COLUMN_DATE:
 		return graphql.DateTime
 	case COLUMN_SIMPLE_JSON:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		return scalars.JSONType
 	case COLUMN_SIMPLE_ARRAY:
 		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
 	case COLUMN_JSON_ARRAY:
