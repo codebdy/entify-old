@@ -1,11 +1,11 @@
 package schema
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 
 	"github.com/graphql-go/graphql"
-	"github.com/jmoiron/sqlx"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -194,7 +194,7 @@ func (entity *EntityMeta) getTableName() string {
 
 func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		db, err := sqlx.Open("mysql", config.MYSQL_CONFIG)
+		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
 		defer db.Close()
 		if err != nil {
 			fmt.Println(err)
@@ -204,7 +204,7 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 
 		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
 		//err = db.Select(&instances, queryStr)
-		rows, err := db.Queryx(queryStr)
+		rows, err := db.Query(queryStr)
 		columns, err := rows.Columns()
 		var instances []utils.JSON
 		for rows.Next() {
@@ -258,85 +258,3 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		return instances, nil
 	}
 }
-
-/*
-func QueryRows(db *DB, sqlStr string, val ...interface{}) (list []map[string]interface{}, err error) {
-    var rows *sql.Rows
-    rows, err = db.Raw(sqlStr, val...).Rows()
-    if err != nil {
-        return
-    }
-    defer rows.Close()
-    var columns []string
-    columns, err = rows.Columns()
-    if err != nil {
-        return
-    }
-    values := make([]interface{}, len(columns))
-    scanArgs := make([]interface{}, len(values))
-    for i := range values {
-        scanArgs[i] = &values[i]
-    }
-    // 这里需要初始化为空数组，否则在查询结果为空的时候，返回的会是一个未初始化的指针
-    for rows.Next() {
-        err = rows.Scan(scanArgs...)
-        if err != nil {
-            return
-        }
-
-        ret := make(map[string]interface{})
-        for i, col := range values {
-            if col == nil {
-                ret[columns[i]] = nil
-            } else {
-                switch val := (*scanArgs[i].(*interface{})).(type) {
-                case byte:
-                    ret[columns[i]] = val
-                    break
-                case []byte:
-                    v := string(val)
-                    switch v {
-                    case "\x00": // 处理数据类型为bit的情况
-                        ret[columns[i]] = 0
-                    case "\x01": // 处理数据类型为bit的情况
-                        ret[columns[i]] = 1
-                    default:
-                        ret[columns[i]] = v
-                        break
-                    }
-                    break
-                case time.Time:
-                    if val.IsZero() {
-                        ret[columns[i]] = nil
-                    } else {
-                        ret[columns[i]] = val.Format("2006-01-02 15:04:05")
-                    }
-                    break
-                default:
-                    ret[columns[i]] = val
-                }
-            }
-        }
-        list = append(list, ret)
-    }
-    if err = rows.Err(); err != nil {
-        return
-    }
-    return
-}
-因此数据库表中某些列的类型是bit(1)，所有需要在类型转换的时候处理一下
-    switch v {
-        case "\x00": // 处理数据类型为bit的情况
-            ret[columns[i]] = 0
-        case "\x01": // 处理数据类型为bit的情况
-            ret[columns[i]] = 1
-        default:
-            ret[columns[i]] = v
-            break
-        }
-
-作者：承诺一时的华丽
-链接：https://www.jianshu.com/p/6d43ffe747ef
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-*/
