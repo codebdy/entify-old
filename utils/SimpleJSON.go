@@ -6,9 +6,9 @@ import (
 	"errors"
 )
 
-type JSON map[string]interface{}
+type SimpleJSON map[string]interface{}
 
-func (m JSON) Value() (driver.Value, error) {
+func (m SimpleJSON) Value() (driver.Value, error) {
 	if len(m) == 0 {
 		return nil, nil
 	}
@@ -19,7 +19,7 @@ func (m JSON) Value() (driver.Value, error) {
 	return driver.Value([]byte(j)), nil
 }
 
-func (m *JSON) Scan(src interface{}) error {
+func (m *SimpleJSON) Scan(src interface{}) error {
 	var source []byte
 	_m := make(map[string]interface{})
 
@@ -35,6 +35,6 @@ func (m *JSON) Scan(src interface{}) error {
 	if err != nil {
 		return err
 	}
-	*m = JSON(_m)
+	*m = SimpleJSON(_m)
 	return nil
 }

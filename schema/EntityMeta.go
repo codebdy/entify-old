@@ -206,13 +206,13 @@ func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
 		//err = db.Select(&instances, queryStr)
 		rows, err := db.Query(queryStr)
 		columns, err := rows.Columns()
-		var instances []utils.JSON
+		var instances []utils.SimpleJSON
 		for rows.Next() {
 			row := make(map[string]interface{})
 			values := make([]interface{}, len(columns))
 			for i, columnName := range columns {
 				if columnName == "content" {
-					var value utils.JSON
+					var value utils.SimpleJSON
 					values[i] = &value
 				} else {
 					var value string
