@@ -18,7 +18,7 @@ var MetaEntity = EntityMeta{
 		},
 		{
 			Uuid: "META_COLUMN_CONTENT_UUID",
-			Type: COLUMN_STRING,
+			Type: COLUMN_SIMPLE_JSON,
 			Name: "content",
 		},
 		{
