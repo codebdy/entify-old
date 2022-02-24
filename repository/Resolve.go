@@ -10,7 +10,7 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func QueryResolve(entity *meta.EntityMeta) graphql.FieldResolveFn {
+func QueryResolveFn(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
 		defer db.Close()
@@ -56,7 +56,7 @@ func QueryResolve(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	}
 }
 
-func PostOneResolve(entity *meta.EntityMeta) graphql.FieldResolveFn {
+func PostOneResolveFn(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		fmt.Println(p.Args["object"])
 		db, err := sql.Open("mysql", config.MYSQL_CONFIG)

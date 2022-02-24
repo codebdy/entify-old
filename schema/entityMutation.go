@@ -57,7 +57,7 @@ func AppendToMutationFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 				},
 			},
 		},
-		Resolve: repository.PostOneResolve(entity),
+		Resolve: repository.PostOneResolveFn(entity),
 	}
 
 	(*feilds)["update"+name] = &graphql.Field{

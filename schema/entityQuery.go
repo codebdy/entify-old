@@ -196,7 +196,7 @@ func AppendToQueryFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryResolve(entity),
+		Resolve: repository.QueryResolveFn(entity),
 	}
 	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
 		Type: OutputType(entity),
@@ -205,7 +205,7 @@ func AppendToQueryFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 				Type: graphql.Int,
 			},
 		},
-		Resolve: repository.QueryResolve(entity),
+		Resolve: repository.QueryResolveFn(entity),
 	}
 
 	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
@@ -227,6 +227,6 @@ func AppendToQueryFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryResolve(entity),
+		Resolve: repository.QueryResolveFn(entity),
 	}
 }
