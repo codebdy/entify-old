@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
@@ -36,7 +37,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)["post"+name] = &graphql.Field{
 		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
-			"objects": &graphql.ArgumentConfig{
+			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
@@ -51,7 +52,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)["postOne"+name] = &graphql.Field{
 		Type: MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
-			"object": &graphql.ArgumentConfig{
+			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: *PostInput(entity),
 				},
@@ -63,7 +64,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)["update"+name] = &graphql.Field{
 		Type: MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
-			"objects": &graphql.ArgumentConfig{
+			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
