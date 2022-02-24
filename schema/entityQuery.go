@@ -9,6 +9,12 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
+const (
+	BOOLEXP     string = "BoolExp"
+	ORDERBY     string = "OrderBy"
+	DISTINCTEXP string = "DistinctExp"
+)
+
 //where表达式缓存，query跟mutation都用
 var whereExpMap = make(map[string]*graphql.InputObject)
 
@@ -19,11 +25,11 @@ var distinctOnEnumMap = make(map[string]*graphql.Enum)
 
 var orderByMap = make(map[string]*graphql.InputObject)
 
-func (entity *EntityMeta) createQueryFields() graphql.Fields {
+func createQueryFields(entity *meta.EntityMeta) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		fields[column.Name] = &graphql.Field{
-			Type: column.toType(),
+			Type: ColumnType(&column),
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
 			// 	return "world", nil
@@ -33,13 +39,13 @@ func (entity *EntityMeta) createQueryFields() graphql.Fields {
 	return fields
 }
 
-func (entity *EntityMeta) toOutputType() graphql.Output {
+func OutputType(entity *meta.EntityMeta) graphql.Output {
 	if outputTypeMap[entity.Name] != nil {
 		return *outputTypeMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
-	if entity.EntityType == Entity_ENUM {
+	if entity.EntityType == meta.Entity_ENUM {
 		enumValues := make(map[string]interface{})
 		json.Unmarshal(entity.EnumValues, &enumValues)
 		enumValueConfigMap := graphql.EnumValueConfigMap{}
@@ -62,7 +68,7 @@ func (entity *EntityMeta) toOutputType() graphql.Output {
 		returnValue = graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:   entity.Name,
-				Fields: entity.createQueryFields(),
+				Fields: createQueryFields(entity),
 			},
 		)
 	}
@@ -70,7 +76,7 @@ func (entity *EntityMeta) toOutputType() graphql.Output {
 	return returnValue
 }
 
-func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
+func WhereExp(entity *meta.EntityMeta) *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
 	if whereExpMap[expName] != nil {
 		return whereExpMap[expName]
@@ -105,7 +111,7 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 	}
 
 	for _, column := range entity.Columns {
-		columnExp := column.ToExp()
+		columnExp := ColumnExp(&column)
 
 		if columnExp != nil {
 			fields[column.Name] = columnExp
@@ -115,7 +121,7 @@ func (entity *EntityMeta) toWhereExp() *graphql.InputObject {
 	return boolExp
 }
 
-func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
+func OrderBy(entity *meta.EntityMeta) *graphql.InputObject {
 	if orderByMap[entity.Name] != nil {
 		return orderByMap[entity.Name]
 	}
@@ -129,7 +135,7 @@ func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
 	)
 
 	for _, column := range entity.Columns {
-		columnOrderBy := column.ToOrderBy()
+		columnOrderBy := ColumnOrderBy(&column)
 
 		if columnOrderBy != nil {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{Type: columnOrderBy}
@@ -140,7 +146,7 @@ func (entity *EntityMeta) toOrderBy() *graphql.InputObject {
 	return orderByExp
 }
 
-func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
+func DistinctOnEnum(entity *meta.EntityMeta) *graphql.Enum {
 	if distinctOnEnumMap[entity.Name] != nil {
 		return distinctOnEnumMap[entity.Name]
 	}
@@ -161,7 +167,7 @@ func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
 	return entEnum
 }
 
-func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
+func AppendToQueryFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.Entity_ENUM {
 		return
@@ -170,12 +176,12 @@ func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
-				OfType: entity.toOutputType(),
+				OfType: OutputType(entity),
 			},
 		},
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
-				Type: entity.toDistinctOnEnum(),
+				Type: DistinctOnEnum(entity),
 			},
 			"limit": &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -184,16 +190,16 @@ func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			"orderBy": &graphql.ArgumentConfig{
-				Type: entity.toOrderBy(),
+				Type: OrderBy(entity),
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: entity.toWhereExp(),
+				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryResolve(entity),
 	}
 	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
-		Type: entity.toOutputType(),
+		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			"id": &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -203,10 +209,10 @@ func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 	}
 
 	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
-		Type: entity.toAggregateType(),
+		Type: AggregateType(entity),
 		Args: graphql.FieldConfigArgument{
 			"distinctOn": &graphql.ArgumentConfig{
-				Type: entity.toDistinctOnEnum(),
+				Type: DistinctOnEnum(entity),
 			},
 			"limit": &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -215,10 +221,10 @@ func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			"orderBy": &graphql.ArgumentConfig{
-				Type: entity.toOrderBy(),
+				Type: OrderBy(entity),
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: entity.toWhereExp(),
+				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryResolve(entity),

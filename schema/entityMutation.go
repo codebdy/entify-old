@@ -2,29 +2,30 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
 
-func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
+func AppendToMutationFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 	//如果是枚举
-	if entity.EntityType == Entity_ENUM {
+	if entity.EntityType == meta.Entity_ENUM {
 		return
 	}
 
 	name := utils.FirstUpper(entity.Name)
 
 	(*feilds)["delete"+name] = &graphql.Field{
-		Type: entity.toMutationResponseType(),
+		Type: MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
 			"where": &graphql.ArgumentConfig{
-				Type: entity.toWhereExp(),
+				Type: WhereExp(entity),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)["delete"+name+"ById"] = &graphql.Field{
-		Type: entity.toOutputType(),
+		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			"id": &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -33,13 +34,13 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)["post"+name] = &graphql.Field{
-		Type: entity.toOutputType(),
+		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			"objects": &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *entity.toPostInput(),
+							OfType: *PostInput(entity),
 						},
 					},
 				},
@@ -48,11 +49,11 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 	}
 	//Resolve: entity.QueryResolve(),
 	(*feilds)["postOne"+name] = &graphql.Field{
-		Type: entity.toMutationResponseType(),
+		Type: MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
 			"object": &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: *entity.toPostInput(),
+					OfType: *PostInput(entity),
 				},
 			},
 		},
@@ -60,19 +61,19 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 	}
 
 	(*feilds)["update"+name] = &graphql.Field{
-		Type: entity.toMutationResponseType(),
+		Type: MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
 			"objects": &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *entity.toUpdateInput(),
+							OfType: *UpdateInput(entity),
 						},
 					},
 				},
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: entity.toWhereExp(),
+				Type: WhereExp(entity),
 			},
 		},
 		//Resolve: entity.QueryResolve(),

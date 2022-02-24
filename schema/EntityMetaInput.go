@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/meta"
 )
 
 //类型缓存， query mutaion通用
@@ -11,12 +12,12 @@ var PostInputMap = make(map[string]*graphql.Input)
 //mutition类型缓存， mutaion用
 var mutationResponseMap = make(map[string]*graphql.Output)
 
-func (entity *EntityMeta) toInputFields(isPost bool) graphql.InputObjectConfigFieldMap {
+func InputFields(entity *meta.EntityMeta, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
 		if column.Name != "id" || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type: column.toType(),
+				Type: ColumnType(&column),
 			}
 		}
 	}
@@ -24,7 +25,7 @@ func (entity *EntityMeta) toInputFields(isPost bool) graphql.InputObjectConfigFi
 	return fields
 }
 
-func (entity *EntityMeta) toUpdateInput() *graphql.Input {
+func UpdateInput(entity *meta.EntityMeta) *graphql.Input {
 	if UpdateInputMap[entity.Name] != nil {
 		return UpdateInputMap[entity.Name]
 	}
@@ -33,14 +34,14 @@ func (entity *EntityMeta) toUpdateInput() *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "UpdateInput",
-			Fields: entity.toInputFields(false),
+			Fields: InputFields(entity, false),
 		},
 	)
 	UpdateInputMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
-func (entity *EntityMeta) toPostInput() *graphql.Input {
+func PostInput(entity *meta.EntityMeta) *graphql.Input {
 	if PostInputMap[entity.Name] != nil {
 		return PostInputMap[entity.Name]
 	}
@@ -49,14 +50,14 @@ func (entity *EntityMeta) toPostInput() *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "PostInput",
-			Fields: entity.toInputFields(true),
+			Fields: InputFields(entity, true),
 		},
 	)
 	PostInputMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
-func (entity *EntityMeta) toMutationResponseType() graphql.Output {
+func MutationResponseType(entity *meta.EntityMeta) graphql.Output {
 	if mutationResponseMap[entity.Name] != nil {
 		return *mutationResponseMap[entity.Name]
 	}
@@ -72,7 +73,7 @@ func (entity *EntityMeta) toMutationResponseType() graphql.Output {
 				"returning": &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: entity.toOutputType(),
+							OfType: OutputType(entity),
 						},
 					},
 				},

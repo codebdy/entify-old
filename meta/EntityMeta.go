@@ -5,12 +5,6 @@ import (
 )
 
 const (
-	BOOLEXP     string = "BoolExp"
-	ORDERBY     string = "OrderBy"
-	DISTINCTEXP string = "DistinctExp"
-)
-
-const (
 	Entity_NORMAL    string = "Normal"
 	Entity_ENUM      string = "Enum"
 	Entity_INTERFACE string = "Interface"

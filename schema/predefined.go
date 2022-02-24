@@ -1,34 +1,36 @@
 package schema
 
-var MetaEntity = EntityMeta{
+import "rxdrag.com/entity-engine/meta"
+
+var MetaEntity = meta.EntityMeta{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       "Meta",
 	TableName:  "meta",
-	EntityType: Entity_NORMAL,
-	Columns: []ColumnMeta{
+	EntityType: meta.Entity_NORMAL,
+	Columns: []meta.ColumnMeta{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
-			Type: COLUMN_ID,
+			Type: meta.COLUMN_ID,
 			Name: "id",
 		},
 		{
 			Uuid: "META_COLUMN_VERSION_UUID",
-			Type: COLUMN_STRING,
+			Type: meta.COLUMN_STRING,
 			Name: "version",
 		},
 		{
 			Uuid: "META_COLUMN_CONTENT_UUID",
-			Type: COLUMN_SIMPLE_JSON,
+			Type: meta.COLUMN_SIMPLE_JSON,
 			Name: "content",
 		},
 		{
 			Uuid: "META_COLUMN_INT_TEST_UUID",
-			Type: COLUMN_INT,
+			Type: meta.COLUMN_INT,
 			Name: "int_test",
 		},
 		{
 			Uuid: "META_COLUMN_FLOAT_TEST_UUID",
-			Type: COLUMN_FLOAT,
+			Type: meta.COLUMN_FLOAT,
 			Name: "float_test",
 		},
 		// {
@@ -38,17 +40,17 @@ var MetaEntity = EntityMeta{
 		// },
 		{
 			Uuid: "META_COLUMN_PUBLISHED_AT_UUID",
-			Type: COLUMN_DATE,
+			Type: meta.COLUMN_DATE,
 			Name: "publishedAt",
 		},
 		{
 			Uuid: "META_COLUMN_CREATED_AT_UUID",
-			Type: COLUMN_DATE,
+			Type: meta.COLUMN_DATE,
 			Name: "createdAt",
 		},
 		{
 			Uuid: "META_COLUMN_UPDATED_AT_UUID",
-			Type: COLUMN_DATE,
+			Type: meta.COLUMN_DATE,
 			Name: "updatedAt",
 		},
 	},
