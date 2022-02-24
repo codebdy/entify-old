@@ -3,6 +3,7 @@ package authentication
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 // ContextValue is a context key
@@ -11,7 +12,8 @@ type ContextValue map[string]interface{}
 // AuthMiddleware 传递公共参数中间件
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		//为了测试loading状态，生产版需要删掉
+		time.Sleep(time.Duration(300) * time.Millisecond)
 		data := ContextValue{
 			"1": "one",
 			"2": "two",
