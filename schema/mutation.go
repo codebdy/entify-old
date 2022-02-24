@@ -55,7 +55,7 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 				},
 			},
 		},
-		//Resolve: entity.QueryResolve(),
+		Resolve: entity.PostOneResolve(),
 	}
 
 	(*feilds)["update"+name] = &graphql.Field{
