@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
@@ -20,19 +21,19 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 			},
 		},
 		Args: graphql.FieldConfigArgument{
-			"distinctOn": &graphql.ArgumentConfig{
+			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			"limit": &graphql.ArgumentConfig{
+			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			"offset": &graphql.ArgumentConfig{
+			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			"orderBy": &graphql.ArgumentConfig{
+			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			"where": &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},
@@ -41,7 +42,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
 		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
+			consts.ARG_ID: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
 		},
@@ -51,19 +52,19 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
 		Type: AggregateType(entity),
 		Args: graphql.FieldConfigArgument{
-			"distinctOn": &graphql.ArgumentConfig{
+			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			"limit": &graphql.ArgumentConfig{
+			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			"offset": &graphql.ArgumentConfig{
+			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			"orderBy": &graphql.ArgumentConfig{
+			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			"where": &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},
