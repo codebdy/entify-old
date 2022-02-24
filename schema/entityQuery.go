@@ -1,37 +1,13 @@
 package schema
 
 import (
-	"database/sql"
 	"encoding/json"
-	"fmt"
 
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
-
-const (
-	BOOLEXP     string = "BoolExp"
-	ORDERBY     string = "OrderBy"
-	DISTINCTEXP string = "DistinctExp"
-)
-
-const (
-	Entity_NORMAL    string = "Normal"
-	Entity_ENUM      string = "Enum"
-	Entity_INTERFACE string = "Interface"
-)
-
-type EntityMeta struct {
-	Uuid        string       `json:"uuid"`
-	Name        string       `json:"name"`
-	TableName   string       `json:"tableName"`
-	EntityType  string       `json:"entityType"`
-	Columns     []ColumnMeta `json:"columns"`
-	Eventable   bool         `json:"eventable"`
-	Description string       `json:"description"`
-	EnumValues  []byte       `json:"enumValues"`
-}
 
 //where表达式缓存，query跟mutation都用
 var whereExpMap = make(map[string]*graphql.InputObject)
@@ -185,102 +161,66 @@ func (entity *EntityMeta) toDistinctOnEnum() *graphql.Enum {
 	return entEnum
 }
 
-func (entity *EntityMeta) getTableName() string {
-	if (*entity).TableName != "" {
-		return (*entity).TableName
+func (entity *meta.EntityMeta) AppendToQueryFields(feilds *graphql.Fields) {
+	//如果是枚举
+	if entity.EntityType == meta.Entity_ENUM {
+		return
 	}
-	return utils.SnakeString((*entity).Name)
-}
 
-func (entity *EntityMeta) QueryResolve() graphql.FieldResolveFn {
-	return func(p graphql.ResolveParams) (interface{}, error) {
-		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
-		defer db.Close()
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-		queryStr := "select * from %s"
-
-		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
-		//err = db.Select(&instances, queryStr)
-		rows, err := db.Query(queryStr)
-		columns, err := rows.Columns()
-		var instances []utils.SimpleJSON
-		for rows.Next() {
-			row := make(map[string]interface{})
-			values := make([]interface{}, len(columns))
-			for i, columnName := range columns {
-				if columnName == "content" {
-					var value utils.SimpleJSON
-					values[i] = &value
-				} else {
-					var value string
-					values[i] = &value
-				}
-
-			}
-			err = rows.Scan(values...)
-			for i, value := range values {
-				row[columns[i]] = value
-			}
-			instances = append(instances, row)
-		}
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-
-		fmt.Println("Resolve entity:" + entity.Name)
-		//fmt.Println(p.Args)
-		//fmt.Println(p.Context.Value("data"))
-		return instances, nil
+	(*feilds)[utils.FirstLower(entity.Name)] = &graphql.Field{
+		Type: &graphql.NonNull{
+			OfType: &graphql.List{
+				OfType: entity.toOutputType(),
+			},
+		},
+		Args: graphql.FieldConfigArgument{
+			"distinctOn": &graphql.ArgumentConfig{
+				Type: entity.toDistinctOnEnum(),
+			},
+			"limit": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"offset": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"orderBy": &graphql.ArgumentConfig{
+				Type: entity.toOrderBy(),
+			},
+			"where": &graphql.ArgumentConfig{
+				Type: entity.toWhereExp(),
+			},
+		},
+		Resolve: repository.QueryResolve(entity),
 	}
-}
+	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
+		Type: entity.toOutputType(),
+		Args: graphql.FieldConfigArgument{
+			"id": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+		},
+		Resolve: repository.QueryResolve(entity),
+	}
 
-func (entity *EntityMeta) PostOneResolve() graphql.FieldResolveFn {
-	return func(p graphql.ResolveParams) (interface{}, error) {
-		fmt.Println(p.Args["object"])
-		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
-		defer db.Close()
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-		queryStr := "select * from %s"
-
-		queryStr = fmt.Sprintf(queryStr, entity.getTableName())
-		//err = db.Select(&instances, queryStr)
-		rows, err := db.Query(queryStr)
-		columns, err := rows.Columns()
-		var instances []utils.SimpleJSON
-		for rows.Next() {
-			row := make(map[string]interface{})
-			values := make([]interface{}, len(columns))
-			for i, columnName := range columns {
-				if columnName == "content" {
-					var value utils.SimpleJSON
-					values[i] = &value
-				} else {
-					var value string
-					values[i] = &value
-				}
-
-			}
-			err = rows.Scan(values...)
-			for i, value := range values {
-				row[columns[i]] = value
-			}
-			instances = append(instances, row)
-		}
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-
-		fmt.Println("Resolve entity:" + entity.Name)
-		//fmt.Println(p.Args)
-		//fmt.Println(p.Context.Value("data"))
-		return instances, nil
+	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
+		Type: entity.toAggregateType(),
+		Args: graphql.FieldConfigArgument{
+			"distinctOn": &graphql.ArgumentConfig{
+				Type: entity.toDistinctOnEnum(),
+			},
+			"limit": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"offset": &graphql.ArgumentConfig{
+				Type: graphql.Int,
+			},
+			"orderBy": &graphql.ArgumentConfig{
+				Type: entity.toOrderBy(),
+			},
+			"where": &graphql.ArgumentConfig{
+				Type: entity.toWhereExp(),
+			},
+		},
+		Resolve: repository.QueryResolve(entity),
 	}
 }

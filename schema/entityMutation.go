@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -55,7 +56,7 @@ func (entity *EntityMeta) AppendToMutationFields(feilds *graphql.Fields) {
 				},
 			},
 		},
-		Resolve: entity.PostOneResolve(),
+		Resolve: repository.PostOneResolve(entity),
 	}
 
 	(*feilds)["update"+name] = &graphql.Field{

@@ -1,11 +1,14 @@
 package schema
 
-import "github.com/graphql-go/graphql"
+import (
+	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/meta"
+)
 
-func (entity *EntityMeta) toAvgFields() graphql.Fields {
+func toAvgFields(entity *meta.EntityMeta) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == COLUMN_INT || column.Type == COLUMN_FLOAT {
+		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: column.toType(),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
