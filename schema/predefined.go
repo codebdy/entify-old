@@ -2,12 +2,12 @@ package schema
 
 import "rxdrag.com/entity-engine/meta"
 
-var MetaEntity = meta.EntityMeta{
+var MetaEntity = meta.Entity{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       "Meta",
 	TableName:  "meta",
 	EntityType: meta.Entity_NORMAL,
-	Columns: []meta.ColumnMeta{
+	Columns: []meta.Column{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
 			Type: meta.COLUMN_ID,

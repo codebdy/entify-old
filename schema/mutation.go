@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func AppendToMutationFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
+func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.Entity_ENUM {
 		return

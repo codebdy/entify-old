@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/schema/comparison"
 )
 
-func ColumnType(column *meta.ColumnMeta) graphql.Output {
+func ColumnType(column *meta.Column) graphql.Output {
 	switch column.Type {
 	case meta.COLUMN_ID:
 		return graphql.String
@@ -34,7 +34,7 @@ func ColumnType(column *meta.ColumnMeta) graphql.Output {
 	panic("No column type:" + column.Type)
 }
 
-func ColumnExp(column *meta.ColumnMeta) *graphql.InputObjectFieldConfig {
+func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case meta.COLUMN_INT:
 		return &comparison.IntComparisonExp
@@ -61,7 +61,7 @@ func ColumnExp(column *meta.ColumnMeta) *graphql.InputObjectFieldConfig {
 	panic("No column type: " + column.Type)
 }
 
-func ColumnOrderBy(column *meta.ColumnMeta) *graphql.Enum {
+func ColumnOrderBy(column *meta.Column) *graphql.Enum {
 	switch column.Type {
 	case meta.COLUMN_SIMPLE_JSON:
 		return nil

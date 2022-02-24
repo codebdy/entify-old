@@ -5,6 +5,6 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func SaveOneEntity(instance utils.SimpleJSON, entity *meta.EntityMeta) {
+func SaveOneEntity(instance utils.SimpleJSON, entity *meta.Entity) {
 
 }

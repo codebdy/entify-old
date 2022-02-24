@@ -13,7 +13,7 @@ const (
 	COLUMN_ENUM         string = "Enum"
 )
 
-type ColumnMeta struct {
+type Column struct {
 	Uuid          string `json:"uuid"`
 	Type          string `json:"type"`
 	Name          string `json:"name"`
