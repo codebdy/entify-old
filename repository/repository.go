@@ -11,12 +11,12 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func objectFields(object map[string]interface{}) string {
+func fields(object map[string]interface{}) string {
 	keys := utils.MapStringKeys(object, "`")
 	return strings.Join(keys, ",")
 }
 
-func objectValueSymbols(object map[string]interface{}) string {
+func valueSymbols(object map[string]interface{}) string {
 	array := make([]string, len(object))
 	for i := range array {
 		array[i] = "?"
@@ -53,7 +53,7 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 		return nil, err
 	}
 
-	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), objectFields(object), objectValueSymbols(object))
+	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), fields(object), valueSymbols(object))
 
 	fmt.Println(saveStr)
 
