@@ -4,18 +4,24 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 func objectFields(object map[string]interface{}) string {
-	var fieldsStr string
-	for key := range object {
-		fieldsStr = fieldsStr + "`" + key + "`"
-	}
+	keys := utils.MapStringKeys(object, "`")
+	return strings.Join(keys, ",")
+}
 
-	return fieldsStr
+func objectValueSymbols(object map[string]interface{}) string {
+	array := make([]string, len(object))
+	for i := range array {
+		array[i] = "?"
+	}
+	return strings.Join(array, ",")
 }
 
 func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
@@ -27,7 +33,7 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 		return nil, err
 	}
 
-	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(?)", entity.GetTableName(), objectFields(object))
+	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), objectFields(object), objectValueSymbols(object))
 
 	fmt.Println(saveStr)
 
