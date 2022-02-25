@@ -53,6 +53,8 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 		return nil, err
 	}
 
+	tx, err := db.Begin()
+
 	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), fields(object), valueSymbols(object))
 
 	fmt.Println(saveStr)
@@ -61,7 +63,7 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 		return nil, err
 	}
 
-	result, err := db.Exec(saveStr, values(object, entity)...)
+	result, err := tx.Exec(saveStr, values(object, entity)...)
 	if err != nil {
 		fmt.Println("insert data failed:", err.Error())
 		return nil, err
@@ -71,6 +73,7 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 		fmt.Println("fetch last insert id failed:", err.Error())
 		return nil, err
 	}
+	tx.Commit()
 	fmt.Println("insert new record", id)
 	return nil, nil
 }
