@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -25,8 +26,20 @@ func objectValueSymbols(object map[string]interface{}) string {
 
 func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	objValues := make([]interface{}, 0, len(object))
-	for k := range object {
-		objValues = append(objValues, object[k])
+	for key := range object {
+		value := object[key]
+		column := entity.GetColumn(key)
+
+		if column == nil {
+			panic("Can not find column:" + key)
+		}
+
+		if column.Type == meta.COLUMN_SIMPLE_JSON ||
+			column.Type == meta.COLUMN_SIMPLE_ARRAY ||
+			column.Type == meta.COLUMN_JSON_ARRAY {
+			value, _ = json.Marshal(value)
+		}
+		objValues = append(objValues, value)
 	}
 	//content, err := json.Marshal(object["content"])
 	return objValues

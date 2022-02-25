@@ -21,6 +21,16 @@ type Entity struct {
 	EnumValues  []byte   `json:"enumValues"`
 }
 
+func (entity *Entity) GetColumn(name string) *Column {
+	for _, column := range entity.Columns {
+		if column.Name == name {
+			return &column
+		}
+	}
+
+	return nil
+}
+
 func (entity *Entity) GetTableName() string {
 	if (*entity).TableName != "" {
 		return (*entity).TableName
