@@ -41,7 +41,6 @@ func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 		}
 		objValues = append(objValues, value)
 	}
-	//content, err := json.Marshal(object["content"])
 	return objValues
 }
 
@@ -74,6 +73,4 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 	}
 	fmt.Println("insert new record", id)
 	return nil, nil
-	//fmt.Println(p.Args)
-	//fmt.Println(p.Conte
 }
