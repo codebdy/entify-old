@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -24,6 +23,15 @@ func objectValueSymbols(object map[string]interface{}) string {
 	return strings.Join(array, ",")
 }
 
+func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
+	objValues := make([]interface{}, 0, len(object))
+	for k := range object {
+		objValues = append(objValues, object[k])
+	}
+	//content, err := json.Marshal(object["content"])
+	return objValues
+}
+
 func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
 	fmt.Println(object)
 	db, err := sql.Open("mysql", config.MYSQL_CONFIG)
@@ -37,12 +45,11 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 
 	fmt.Println(saveStr)
 
-	content, err := json.Marshal(object["content"])
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := db.Exec(saveStr, content)
+	result, err := db.Exec(saveStr, values(object, entity)...)
 	if err != nil {
 		fmt.Println("insert data failed:", err.Error())
 		return nil, err

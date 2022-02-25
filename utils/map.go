@@ -7,3 +7,11 @@ func MapStringKeys(m map[string]interface{}, wapper string) []string {
 	}
 	return keys
 }
+
+func MapValues(m map[string]interface{}, wapper string) []interface{} {
+	values := make([]interface{}, 0, len(m))
+	for k := range m {
+		values = append(values, m[k])
+	}
+	return values
+}
