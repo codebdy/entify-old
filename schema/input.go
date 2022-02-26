@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 )
 
@@ -67,10 +68,10 @@ func MutationResponseType(entity *meta.Entity) graphql.Output {
 		graphql.ObjectConfig{
 			Name: entity.Name + "MutationResponse",
 			Fields: graphql.Fields{
-				"affectedRows": &graphql.Field{
+				consts.RESPONSE_AFFECTEDROWS: &graphql.Field{
 					Type: graphql.Int,
 				},
-				"returning": &graphql.Field{
+				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
 							OfType: OutputType(entity),

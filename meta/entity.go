@@ -21,6 +21,15 @@ type Entity struct {
 	EnumValues  []byte   `json:"enumValues"`
 }
 
+func (entity *Entity) ColumnNames() []string {
+	names := make([]string, len(entity.Columns))
+
+	for i, column := range entity.Columns {
+		names[i] = column.Name
+	}
+	return names
+}
+
 func (entity *Entity) GetColumn(name string) *Column {
 	for _, column := range entity.Columns {
 		if column.Name == name {

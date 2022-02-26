@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
@@ -10,9 +11,48 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
+func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
+	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+	defer db.Close()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	names := entity.ColumnNames()
+
+	queryStr := "select %s from %s where id = ?"
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
+
+	object := make(map[string]interface{})
+	values := make([]interface{}, len(names))
+	for i, columnName := range names {
+		column := entity.GetColumn(columnName)
+		if column.Type == meta.COLUMN_SIMPLE_JSON {
+			var value utils.SimpleJSON
+			values[i] = &value
+		} else {
+			var value string
+			values[i] = &value
+		}
+	}
+
+	err = db.QueryRow(queryStr, id).Scan(values...)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	for i, value := range values {
+		object[names[i]] = value
+	}
+
+	fmt.Println("Query one entity:" + entity.Name)
+	return object, nil
+}
+
 func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		db, err := sql.Open("mysql", config.MYSQL_CONFIG)
+		db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 		defer db.Close()
 		if err != nil {
 			fmt.Println(err)

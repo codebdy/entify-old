@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -44,9 +46,9 @@ func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	return objValues
 }
 
-func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
 	fmt.Println(object)
-	db, err := sql.Open("mysql", config.MYSQL_CONFIG)
+	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
@@ -70,10 +72,30 @@ func SaveOneEntity(object map[string]interface{}, entity *meta.Entity) (interfac
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		fmt.Println("fetch last insert id failed:", err.Error())
+		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
 	tx.Commit()
 	fmt.Println("insert new record", id)
-	return nil, nil
+	insertedObject, err := QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	affectedRows, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("RowsAffected failed:", err.Error())
+		return nil, err
+	}
+	return map[string]interface{}{
+		consts.RESPONSE_AFFECTEDROWS: affectedRows,
+		consts.RESPONSE_RETURNING:    insertedObject,
+	}, nil
+}
+
+func PostOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
+		return SaveOne(object, entity)
+	}
 }
