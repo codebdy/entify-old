@@ -56,26 +56,26 @@ func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string
 		column := entity.GetColumn(columnName)
 		switch column.Type {
 		case meta.COLUMN_INT:
-			nullValue, ok := value.(*sql.NullInt64)
-			if ok {
+			nullValue := value.(*sql.NullInt64)
+			if nullValue.Valid {
 				object[columnName] = nullValue.Int64
 			}
 			break
 		case meta.COLUMN_FLOAT:
-			nullValue, ok := value.(*sql.NullFloat64)
-			if ok {
+			nullValue := value.(*sql.NullFloat64)
+			if nullValue.Valid {
 				object[columnName] = nullValue.Float64
 			}
 			break
 		case meta.COLUMN_BOOLEAN:
-			nullValue, ok := value.(*sql.NullBool)
-			if ok {
+			nullValue := value.(*sql.NullBool)
+			if nullValue.Valid {
 				object[columnName] = nullValue.Bool
 			}
 			break
 		case meta.COLUMN_DATE:
-			nullValue, ok := value.(*sql.NullTime)
-			if ok {
+			nullValue := value.(*sql.NullTime)
+			if nullValue.Valid {
 				object[columnName] = nullValue.Time
 			}
 			break
@@ -89,8 +89,8 @@ func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string
 			object[columnName] = value
 			break
 		default:
-			nullValue, ok := value.(*sql.NullString)
-			if ok {
+			nullValue := value.(*sql.NullString)
+			if nullValue.Valid {
 				object[columnName] = nullValue.String
 			}
 		}
