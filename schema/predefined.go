@@ -23,16 +23,16 @@ var MetaEntity = meta.Entity{
 			Type: meta.COLUMN_SIMPLE_JSON,
 			Name: "content",
 		},
-		{
-			Uuid: "META_COLUMN_INT_TEST_UUID",
-			Type: meta.COLUMN_INT,
-			Name: "int_test",
-		},
-		{
-			Uuid: "META_COLUMN_FLOAT_TEST_UUID",
-			Type: meta.COLUMN_FLOAT,
-			Name: "float_test",
-		},
+		// {
+		// 	Uuid: "META_COLUMN_INT_TEST_UUID",
+		// 	Type: meta.COLUMN_INT,
+		// 	Name: "int_test",
+		// },
+		// {
+		// 	Uuid: "META_COLUMN_FLOAT_TEST_UUID",
+		// 	Type: meta.COLUMN_FLOAT,
+		// 	Name: "float_test",
+		// },
 		// {
 		// 	Uuid: "_META_COLUMN_PUBLISHED_UUID",
 		// 	Type: COLUMN_BOOLEAN,

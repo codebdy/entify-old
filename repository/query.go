@@ -13,6 +13,7 @@ import (
 
 func makeValues(entity *meta.Entity) []interface{} {
 	names := entity.ColumnNames()
+	fmt.Println("names", names)
 	values := make([]interface{}, len(names))
 	for i, columnName := range names {
 		column := entity.GetColumn(columnName)
@@ -35,15 +36,30 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		fmt.Println(err)
 		return nil, err
 	}
+	fmt.Println("呵呵")
 	rows, err := db.Query(queryStr)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 	columns, err := rows.Columns()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 	var instances []interface{}
 	for rows.Next() {
 		row := make(map[string]interface{})
 		values := makeValues(entity)
 		err = rows.Scan(values...)
+		fmt.Println("呵呵2", values, columns)
 		for i, value := range values {
-			row[columns[i]] = value
+			if nullValue, ok := value.(sql.NullString); ok {
+				row[columns[i]] = nullValue.String
+			} else {
+				row[columns[i]] = value
+			}
+
 		}
 		instances = append(instances, row)
 	}
@@ -52,7 +68,7 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		return nil, err
 	}
 
-	//fmt.Println(p.Args)
+	fmt.Println(instances)
 	//fmt.Println(p.Context.Value("data"))
 	return instances, nil
 }
@@ -87,9 +103,9 @@ func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
 
 func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		queryStr := "select * from %s"
-
-		queryStr = fmt.Sprintf(queryStr, entity.GetTableName())
+		names := entity.ColumnNames()
+		queryStr := "select %s from %s "
+		queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
 		//err = db.Select(&instances, queryStr)
 		return Query(entity, queryStr)
 	}
