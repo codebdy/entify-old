@@ -13,7 +13,6 @@ import (
 
 func makeValues(entity *meta.Entity) []interface{} {
 	names := entity.ColumnNames()
-	fmt.Println("names", names)
 	values := make([]interface{}, len(names))
 	for i, columnName := range names {
 		column := entity.GetColumn(columnName)
@@ -36,7 +35,6 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	fmt.Println("呵呵")
 	rows, err := db.Query(queryStr)
 	if err != nil {
 		fmt.Println(err)
@@ -52,7 +50,6 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		row := make(map[string]interface{})
 		values := makeValues(entity)
 		err = rows.Scan(values...)
-		fmt.Println("呵呵2", values, columns)
 		for i, value := range values {
 			if nullValue, ok := value.(sql.NullString); ok {
 				row[columns[i]] = nullValue.String
@@ -68,7 +65,6 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		return nil, err
 	}
 
-	fmt.Println(instances)
 	//fmt.Println(p.Context.Value("data"))
 	return instances, nil
 }
