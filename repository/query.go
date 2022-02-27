@@ -54,14 +54,45 @@ func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string
 	for i, value := range values {
 		columnName := names[i]
 		column := entity.GetColumn(columnName)
-		if column.Type != meta.COLUMN_SIMPLE_JSON {
+		switch column.Type {
+		case meta.COLUMN_INT:
+			nullValue, ok := value.(*sql.NullInt64)
+			if ok {
+				object[columnName] = nullValue.Int64
+			}
+			break
+		case meta.COLUMN_FLOAT:
+			nullValue, ok := value.(*sql.NullFloat64)
+			if ok {
+				object[columnName] = nullValue.Float64
+			}
+			break
+		case meta.COLUMN_BOOLEAN:
+			nullValue, ok := value.(*sql.NullBool)
+			if ok {
+				object[columnName] = nullValue.Bool
+			}
+			break
+		case meta.COLUMN_DATE:
+			nullValue, ok := value.(*sql.NullTime)
+			if ok {
+				object[columnName] = nullValue.Time
+			}
+			break
+		case meta.COLUMN_SIMPLE_JSON:
+			object[columnName] = value
+			break
+		case meta.COLUMN_JSON_ARRAY:
+			object[columnName] = value
+			break
+		case meta.COLUMN_SIMPLE_ARRAY:
+			object[columnName] = value
+			break
+		default:
 			nullValue, ok := value.(*sql.NullString)
 			if ok {
 				object[columnName] = nullValue.String
 			}
-
-		} else {
-			object[columnName] = value
 		}
 
 	}
