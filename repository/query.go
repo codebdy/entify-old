@@ -16,16 +16,56 @@ func makeValues(entity *meta.Entity) []interface{} {
 	values := make([]interface{}, len(names))
 	for i, columnName := range names {
 		column := entity.GetColumn(columnName)
-		if column.Type == meta.COLUMN_SIMPLE_JSON {
+		switch column.Type {
+		case meta.COLUMN_INT:
+			var value sql.NullInt32
+			values[i] = &value
+			break
+		case meta.COLUMN_FLOAT:
+			var value sql.NullFloat64
+			values[i] = &value
+			break
+		case meta.COLUMN_BOOLEAN:
+			var value sql.NullBool
+			values[i] = &value
+			break
+		case meta.COLUMN_DATE:
+			var value sql.NullTime
+			values[i] = &value
+			break
+		case meta.COLUMN_SIMPLE_JSON:
 			var value utils.SimpleJSON
 			values[i] = &value
-		} else {
+			break
+			// COLUMN_SIMPLE_ARRAY string = "simpleArray" ##待添加代码
+			// COLUMN_JSON_ARRAY   string = "JsonArray"
+		default:
 			var value sql.NullString
 			values[i] = &value
 		}
 	}
 
 	return values
+}
+
+func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string]interface{} {
+	object := make(map[string]interface{})
+	names := entity.ColumnNames()
+	for i, value := range values {
+		columnName := names[i]
+		column := entity.GetColumn(columnName)
+		if column.Type != meta.COLUMN_SIMPLE_JSON {
+			nullValue, ok := value.(*sql.NullString)
+			if ok {
+				object[columnName] = nullValue.String
+			}
+
+		} else {
+			object[columnName] = value
+		}
+
+	}
+	return object
 }
 
 func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
@@ -40,25 +80,15 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	columns, err := rows.Columns()
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
 	var instances []interface{}
 	for rows.Next() {
-		row := make(map[string]interface{})
 		values := makeValues(entity)
 		err = rows.Scan(values...)
-		for i, value := range values {
-			if nullValue, ok := value.(sql.NullString); ok {
-				row[columns[i]] = nullValue.String
-			} else {
-				row[columns[i]] = value
-			}
-
-		}
-		instances = append(instances, row)
+		instances = append(instances, convertValuesToObject(values, entity))
 	}
 	if err != nil {
 		fmt.Println(err)
@@ -81,7 +111,6 @@ func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
 	queryStr := "select %s from %s where id = ?"
 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
 
-	object := make(map[string]interface{})
 	values := makeValues(entity)
 	err = db.QueryRow(queryStr, id).Scan(values...)
 	if err != nil {
@@ -89,12 +118,8 @@ func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
 		return nil, err
 	}
 
-	for i, value := range values {
-		object[names[i]] = value
-	}
-
 	fmt.Println("Query one entity:" + entity.Name)
-	return object, nil
+	return convertValuesToObject(values, entity), nil
 }
 
 func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
