@@ -111,9 +111,18 @@ func main() {
 
 	schema.AppendToMutationFields(&schema.MetaEntity, &mutationFields)
 
-	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: "RootMutation", Fields: mutationFields}
-	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery), Mutation: graphql.NewObject(rootMutation)}
+	rootQuery := graphql.ObjectConfig{Name: "QueryRoot", Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: "MutationRoot", Fields: mutationFields}
+	schemaConfig := graphql.SchemaConfig{
+		Query:    graphql.NewObject(rootQuery),
+		Mutation: graphql.NewObject(rootMutation),
+		Directives: []*graphql.Directive{
+			graphql.NewDirective(graphql.DirectiveConfig{
+				Name:      "testDirective",
+				Locations: []string{graphql.DirectiveLocationField},
+			}),
+		},
+	}
 	schema, err := graphql.NewSchema(schemaConfig)
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
