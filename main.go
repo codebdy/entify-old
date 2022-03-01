@@ -111,8 +111,8 @@ func main() {
 
 	schema.AppendToMutationFields(&schema.MetaEntity, &mutationFields)
 
-	rootQuery := graphql.ObjectConfig{Name: "QueryRoot", Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: "MutationRoot", Fields: mutationFields}
+	rootQuery := graphql.ObjectConfig{Name: schema.DefaultRootQueryName, Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: schema.DefaultRootMutationName, Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{
 		Query:    graphql.NewObject(rootQuery),
 		Mutation: graphql.NewObject(rootMutation),
