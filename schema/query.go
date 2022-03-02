@@ -2,7 +2,6 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
@@ -21,50 +20,59 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 			},
 		},
 		Args: graphql.FieldConfigArgument{
-			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
+			ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			consts.ARG_LIMIT: &graphql.ArgumentConfig{
+			ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			consts.ARG_OFFSET: &graphql.ArgumentConfig{
+			ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+			ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
+			ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryResolveFn(entity),
 	}
-	(*feilds)[utils.FirstLower(entity.Name)+"ById"] = &graphql.Field{
+	(*feilds)[CONST_ONE+entity.Name] = &graphql.Field{
 		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
-			consts.ARG_ID: &graphql.ArgumentConfig{
+			ARG_DISTINCTON: &graphql.ArgumentConfig{
+				Type: DistinctOnEnum(entity),
+			},
+			ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
+			},
+			ARG_ORDERBY: &graphql.ArgumentConfig{
+				Type: OrderBy(entity),
+			},
+			ARG_WHERE: &graphql.ArgumentConfig{
+				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryResolveFn(entity),
 	}
 
-	(*feilds)[utils.FirstLower(entity.Name)+"Aggregate"] = &graphql.Field{
+	(*feilds)[utils.FirstLower(entity.Name)+CONST_AGGREGATE] = &graphql.Field{
 		Type: AggregateType(entity),
 		Args: graphql.FieldConfigArgument{
-			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
+			ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			consts.ARG_LIMIT: &graphql.ArgumentConfig{
+			ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			consts.ARG_OFFSET: &graphql.ArgumentConfig{
+			ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+			ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
+			ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},

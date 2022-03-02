@@ -85,9 +85,9 @@ func WhereExp(entity *meta.Entity) *graphql.InputObject {
 	orExp := graphql.InputObjectFieldConfig{}
 
 	fields := graphql.InputObjectConfigFieldMap{
-		"and": &andExp,
-		"not": &notExp,
-		"or":  &orExp,
+		ARG_AND: &andExp,
+		ARG_NOT: &notExp,
+		ARG_OR:  &orExp,
 	}
 
 	boolExp := graphql.NewInputObject(
