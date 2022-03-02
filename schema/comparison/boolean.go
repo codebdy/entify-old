@@ -9,31 +9,31 @@ var BooleanComparisonExp = graphql.InputObjectFieldConfig{
 		graphql.InputObjectConfig{
 			Name: "BooleanComparisonExp",
 			Fields: graphql.InputObjectConfigFieldMap{
-				"eq": &graphql.InputObjectFieldConfig{
+				ARG_EQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"gt": &graphql.InputObjectFieldConfig{
+				ARG_GT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"gte": &graphql.InputObjectFieldConfig{
+				ARG_GTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"in": &graphql.InputObjectFieldConfig{
+				ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Boolean),
 				},
-				"isNull": &graphql.InputObjectFieldConfig{
+				ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"lt": &graphql.InputObjectFieldConfig{
+				ARG_LT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"lte": &graphql.InputObjectFieldConfig{
+				ARG_LTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"notEq": &graphql.InputObjectFieldConfig{
+				ARG_NOTEQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"notIn": &graphql.InputObjectFieldConfig{
+				ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Boolean),
 				},
 			},

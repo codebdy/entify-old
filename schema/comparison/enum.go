@@ -9,19 +9,19 @@ var EnumComparisonExp = graphql.InputObjectFieldConfig{
 		graphql.InputObjectConfig{
 			Name: "EnumComparisonExp",
 			Fields: graphql.InputObjectConfigFieldMap{
-				"eq": &graphql.InputObjectFieldConfig{
+				ARG_EQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.EnumValueType,
 				},
-				"in": &graphql.InputObjectFieldConfig{
+				ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Boolean),
 				},
-				"isNull": &graphql.InputObjectFieldConfig{
+				ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"notEq": &graphql.InputObjectFieldConfig{
+				ARG_NOTEQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"notIn": &graphql.InputObjectFieldConfig{
+				ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Boolean),
 				},
 			},

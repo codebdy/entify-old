@@ -9,31 +9,31 @@ var IntComparisonExp = graphql.InputObjectFieldConfig{
 		graphql.InputObjectConfig{
 			Name: "IntComparisonExp",
 			Fields: graphql.InputObjectConfigFieldMap{
-				"eq": &graphql.InputObjectFieldConfig{
+				ARG_EQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"gt": &graphql.InputObjectFieldConfig{
+				ARG_GT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"gte": &graphql.InputObjectFieldConfig{
+				ARG_GTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"in": &graphql.InputObjectFieldConfig{
+				ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Int),
 				},
-				"isNull": &graphql.InputObjectFieldConfig{
+				ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"lt": &graphql.InputObjectFieldConfig{
+				ARG_LT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"lte": &graphql.InputObjectFieldConfig{
+				ARG_LTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"notEq": &graphql.InputObjectFieldConfig{
+				ARG_NOTEQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Int,
 				},
-				"notIn": &graphql.InputObjectFieldConfig{
+				ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Int),
 				},
 			},

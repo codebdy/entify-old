@@ -18,4 +18,6 @@ const (
 	ARG_AND string = "_and"
 	ARG_NOT string = "_not"
 	ARG_OR  string = "_or"
+
+	AEG_EQ string = "_eq"
 )

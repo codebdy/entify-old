@@ -9,61 +9,61 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 		graphql.InputObjectConfig{
 			Name: "StringComparisonExp",
 			Fields: graphql.InputObjectConfigFieldMap{
-				"eq": &graphql.InputObjectFieldConfig{
+				ARG_EQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"gt": &graphql.InputObjectFieldConfig{
+				ARG_GT: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"gte": &graphql.InputObjectFieldConfig{
+				ARG_GTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"iLike": &graphql.InputObjectFieldConfig{
+				ARG_ILIKE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"in": &graphql.InputObjectFieldConfig{
+				ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.String),
 				},
-				"iregex": &graphql.InputObjectFieldConfig{
+				ARG_IREGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"isNull": &graphql.InputObjectFieldConfig{
+				ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"like": &graphql.InputObjectFieldConfig{
+				ARG_LIKE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"lt": &graphql.InputObjectFieldConfig{
+				ARG_LT: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"lte": &graphql.InputObjectFieldConfig{
+				ARG_LTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notEq": &graphql.InputObjectFieldConfig{
+				ARG_NOTEQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notILike": &graphql.InputObjectFieldConfig{
+				ARG_NOTILIKE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notIn": &graphql.InputObjectFieldConfig{
+				ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.String),
 				},
-				"notIRegex": &graphql.InputObjectFieldConfig{
+				ARG_NOTIREGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notLike": &graphql.InputObjectFieldConfig{
+				ARG_NOTLIKE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notRegex": &graphql.InputObjectFieldConfig{
+				ARG_NOTREGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"notSimilar": &graphql.InputObjectFieldConfig{
+				ARG_NOTSIMILAR: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"regex": &graphql.InputObjectFieldConfig{
+				ARG_REGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				"similar": &graphql.InputObjectFieldConfig{
+				ARG_SIMILAR: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
 			},

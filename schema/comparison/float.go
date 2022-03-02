@@ -9,31 +9,31 @@ var FloatComparisonExp = graphql.InputObjectFieldConfig{
 		graphql.InputObjectConfig{
 			Name: "FloatComparisonExp",
 			Fields: graphql.InputObjectConfigFieldMap{
-				"eq": &graphql.InputObjectFieldConfig{
+				ARG_EQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"gt": &graphql.InputObjectFieldConfig{
+				ARG_GT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"gte": &graphql.InputObjectFieldConfig{
+				ARG_GTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"in": &graphql.InputObjectFieldConfig{
+				ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Float),
 				},
-				"isNull": &graphql.InputObjectFieldConfig{
+				ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
-				"lt": &graphql.InputObjectFieldConfig{
+				ARG_LT: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"lte": &graphql.InputObjectFieldConfig{
+				ARG_LTE: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"notEq": &graphql.InputObjectFieldConfig{
+				ARG_NOTEQ: &graphql.InputObjectFieldConfig{
 					Type: graphql.Float,
 				},
-				"notIn": &graphql.InputObjectFieldConfig{
+				ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.Float),
 				},
 			},
