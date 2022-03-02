@@ -24,9 +24,9 @@ func ColumnType(column *meta.Column) graphql.Output {
 	case meta.COLUMN_SIMPLE_JSON:
 		return scalars.JSONType
 	case meta.COLUMN_SIMPLE_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		return scalars.JSONType
 	case meta.COLUMN_JSON_ARRAY:
-		return graphql.NewScalar(graphql.ScalarConfig{Name: "JSON"})
+		return scalars.JSONType
 	case meta.COLUMN_ENUM:
 		return graphql.EnumValueType
 	}
