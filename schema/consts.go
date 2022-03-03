@@ -6,7 +6,8 @@ const (
 	DefaultRootSubscriptionName = "Subscription"
 
 	CONST_ONE       = "one"
-	CONST_AGGREGATE = "Aggregate"
+	CONST_QUERY     = "query"
+	CONST_AGGREGATE = "aggregate"
 
 	ARG_DISTINCTON string = "_distinctOn"
 	ARG_LIMIT      string = "_limit"
