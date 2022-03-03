@@ -54,7 +54,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryResolveFn(entity),
+		Resolve: repository.QueryOneResolveFn(entity),
 	}
 
 	(*feilds)[utils.FirstLower(entity.Name)+CONST_AGGREGATE] = &graphql.Field{

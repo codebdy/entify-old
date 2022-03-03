@@ -154,6 +154,31 @@ func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
 	return convertValuesToObject(values, entity), nil
 }
 
+func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+		defer db.Close()
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		names := entity.ColumnNames()
+
+		queryStr := "select %s from %s order by id desc"
+		queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
+
+		values := makeValues(entity)
+		err = db.QueryRow(queryStr).Scan(values...)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+
+		fmt.Println("Query one entity:" + entity.Name)
+		return convertValuesToObject(values, entity), nil
+	}
+}
+
 func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		names := entity.ColumnNames()
