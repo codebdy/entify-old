@@ -50,7 +50,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	}
 	//Resolve: entity.QueryResolve(),
 	(*feilds)["postOne"+name] = &graphql.Field{
-		Type: MutationResponseType(entity),
+		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{

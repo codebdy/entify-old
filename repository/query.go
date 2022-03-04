@@ -131,7 +131,7 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 	return instances, nil
 }
 
-func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
+func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -144,6 +144,7 @@ func QueryOneById(entity *meta.Entity, id int64) (interface{}, error) {
 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
 
 	values := makeValues(entity)
+	fmt.Print("哈哈", queryStr, id)
 	err = db.QueryRow(queryStr, id).Scan(values...)
 	if err != nil {
 		fmt.Println(err)

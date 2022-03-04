@@ -96,30 +96,38 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 
 	result, err := tx.Exec(saveStr, values(object, entity)...)
 	if err != nil {
-		fmt.Println("insert data failed:", err.Error())
+		fmt.Println("save data failed:", err.Error())
 		return nil, err
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println("LastInsertId failed:", err.Error())
-		return nil, err
+	var id interface{}
+	if object["id"] == nil {
+		id, err = result.LastInsertId()
+		if err != nil {
+			fmt.Println("LastInsertId failed:", err.Error())
+			return nil, err
+		}
+	} else {
+		id = object["id"]
 	}
+
 	tx.Commit()
 	fmt.Println("insert new record", id)
-	insertedObject, err := QueryOneById(entity, id)
+	savedObject, err := QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
 	}
-	affectedRows, err := result.RowsAffected()
+	//affectedRows, err := result.RowsAffected()
 	if err != nil {
 		fmt.Println("RowsAffected failed:", err.Error())
 		return nil, err
 	}
-	return map[string]interface{}{
-		consts.RESPONSE_AFFECTEDROWS: affectedRows,
-		consts.RESPONSE_RETURNING:    insertedObject,
-	}, nil
+
+	return savedObject, nil
+	// return map[string]interface{}{
+	// 	consts.RESPONSE_AFFECTEDROWS: affectedRows,
+	// 	consts.RESPONSE_RETURNING:    insertedObject,
+	// }, nil
 }
 
 func PostOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
