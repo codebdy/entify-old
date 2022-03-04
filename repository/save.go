@@ -29,6 +29,9 @@ func valueSymbols(object map[string]interface{}) string {
 func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	objValues := make([]interface{}, 0, len(object))
 	for key := range object {
+		if key == "id" {
+			continue
+		}
 		value := object[key]
 		column := entity.GetColumn(key)
 
@@ -46,6 +49,27 @@ func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	return objValues
 }
 
+func insertString(object map[string]interface{}, entity *meta.Entity) string {
+	return fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), fields(object), valueSymbols(object))
+}
+
+func updateSetFields(object map[string]interface{}) string {
+	keys := utils.StringFilter(utils.MapStringKeys(object, ""), func(value string) bool {
+		return value == "id"
+	})
+	if len(keys) == 0 {
+		panic("No update fields")
+	}
+	for i, key := range keys {
+		keys[i] = key + "=?"
+	}
+	return strings.Join(keys, ",")
+}
+
+func updateString(object map[string]interface{}, entity *meta.Entity) string {
+	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = '%s'", entity.GetTableName(), updateSetFields(object), object["id"])
+}
+
 func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
 	fmt.Println(object)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
@@ -57,7 +81,12 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 
 	tx, err := db.Begin()
 
-	saveStr := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), fields(object), valueSymbols(object))
+	var saveStr string
+	if object["id"] == nil {
+		saveStr = insertString(object, entity)
+	} else {
+		saveStr = updateString(object, entity)
+	}
 
 	fmt.Println(saveStr)
 
