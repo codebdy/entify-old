@@ -13,8 +13,14 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func fields(object map[string]interface{}) string {
-	keys := utils.MapStringKeys(object, "`")
+func dataFields(object map[string]interface{}) []string {
+	return utils.StringFilter(utils.MapStringKeys(object, ""), func(value string) bool {
+		return value == "id"
+	})
+}
+
+func insertFields(object map[string]interface{}) string {
+	keys := dataFields(object)
 	return strings.Join(keys, ",")
 }
 
@@ -50,13 +56,11 @@ func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 }
 
 func insertString(object map[string]interface{}, entity *meta.Entity) string {
-	return fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), fields(object), valueSymbols(object))
+	return fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(object), valueSymbols(object))
 }
 
 func updateSetFields(object map[string]interface{}) string {
-	keys := utils.StringFilter(utils.MapStringKeys(object, ""), func(value string) bool {
-		return value == "id"
-	})
+	keys := dataFields(object)
 	if len(keys) == 0 {
 		panic("No update fields")
 	}
