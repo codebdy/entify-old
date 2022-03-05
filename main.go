@@ -10,6 +10,7 @@ import (
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
+	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/schema"
 )
 
@@ -106,6 +107,16 @@ func main() {
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "world2", nil
 			},
+		},
+
+		"syncMeta": &graphql.Field{
+			Type: graphql.String,
+			Args: graphql.FieldConfigArgument{
+				"meta": &graphql.ArgumentConfig{
+					Type: graphql.ID,
+				},
+			},
+			Resolve: migration.SyncMetaResolve,
 		},
 	}
 

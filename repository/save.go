@@ -70,7 +70,7 @@ func updateString(object map[string]interface{}, entity *meta.Entity) string {
 	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = '%s'", entity.GetTableName(), updateSetFields(object), object["id"])
 }
 
-func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
 	fmt.Println(object)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
@@ -81,13 +81,7 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 
 	tx, err := db.Begin()
 
-	var saveStr string
-	if object["id"] == nil {
-		saveStr = insertString(object, entity)
-	} else {
-		saveStr = updateString(object, entity)
-	}
-
+	saveStr := insertString(object, entity)
 	fmt.Println(saveStr)
 
 	if err != nil {
@@ -99,16 +93,7 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 		fmt.Println("save data failed:", err.Error())
 		return nil, err
 	}
-	var id interface{}
-	if object["id"] == nil {
-		id, err = result.LastInsertId()
-		if err != nil {
-			fmt.Println("LastInsertId failed:", err.Error())
-			return nil, err
-		}
-	} else {
-		id = object["id"]
-	}
+	id, err := result.LastInsertId()
 
 	tx.Commit()
 	fmt.Println("insert new record", id)
@@ -124,6 +109,57 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 	}
 
 	return savedObject, nil
+}
+
+func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+	fmt.Println(object)
+	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+	defer db.Close()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	tx, err := db.Begin()
+
+	saveStr := updateString(object, entity)
+
+	fmt.Println(saveStr)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = tx.Exec(saveStr, values(object, entity)...)
+	if err != nil {
+		fmt.Println("save data failed:", err.Error())
+		return nil, err
+	}
+
+	id := object["id"]
+
+	tx.Commit()
+	fmt.Println("insert new record", id)
+	savedObject, err := QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	//affectedRows, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("Update failed:", err.Error())
+		return nil, err
+	}
+
+	return savedObject, nil
+}
+
+func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+	if object["id"] == nil {
+		return InsertOne(object, entity)
+	} else {
+		return UpdateOne(object, entity)
+	}
 	// return map[string]interface{}{
 	// 	consts.RESPONSE_AFFECTEDROWS: affectedRows,
 	// 	consts.RESPONSE_RETURNING:    insertedObject,
