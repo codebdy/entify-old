@@ -10,6 +10,7 @@ import (
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/schema"
 )
@@ -110,10 +111,12 @@ func main() {
 		},
 
 		"syncMeta": &graphql.Field{
-			Type: graphql.String,
+			Type: schema.OutputType(&schema.MetaEntity),
 			Args: graphql.FieldConfigArgument{
-				"meta": &graphql.ArgumentConfig{
-					Type: graphql.ID,
+				consts.ARG_OBJECT: &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{
+						OfType: *schema.PostInput(&schema.MetaEntity),
+					},
 				},
 			},
 			Resolve: migration.SyncMetaResolve,
