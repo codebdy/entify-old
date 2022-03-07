@@ -16,12 +16,17 @@ var MetaEntity = meta.Entity{
 		{
 			Uuid: "META_COLUMN_VERSION_UUID",
 			Type: meta.COLUMN_STRING,
-			Name: "version",
+			Name: "status",
 		},
 		{
 			Uuid: "META_COLUMN_CONTENT_UUID",
 			Type: meta.COLUMN_SIMPLE_JSON,
 			Name: "content",
+		},
+		{
+			Uuid: "META_COLUMN_VERSION_UUID",
+			Type: meta.COLUMN_STRING,
+			Name: "status",
 		},
 		// {
 		// 	Uuid: "META_COLUMN_INT_TEST_UUID",
