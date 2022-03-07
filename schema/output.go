@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"encoding/json"
-
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/meta"
 )
@@ -44,8 +42,8 @@ func OutputType(entity *meta.Entity) graphql.Output {
 	var returnValue graphql.Output
 
 	if entity.EntityType == meta.Entity_ENUM {
-		enumValues := make(map[string]interface{})
-		json.Unmarshal(entity.EnumValues, &enumValues)
+		enumValues := entity.EnumValues //make(map[string]interface{})
+		//json.Unmarshal(entity.EnumValues, &enumValues)
 		enumValueConfigMap := graphql.EnumValueConfigMap{}
 		for enumName, enumValue := range enumValues {
 			var value, ok = enumValue.(string)
