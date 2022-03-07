@@ -108,8 +108,15 @@ func main() {
 				return "world2", nil
 			},
 		},
-
-		"syncMeta": &graphql.Field{
+		"_publish": &graphql.Field{
+			Type:    schema.OutputType(&schema.MetaEntity),
+			Resolve: migration.PublishMetaResolve,
+		},
+		"_rollbackPublish": &graphql.Field{
+			Type:    schema.OutputType(&schema.MetaEntity),
+			Resolve: migration.SyncMetaResolve,
+		},
+		"_syncMeta": &graphql.Field{
 			Type:    schema.OutputType(&schema.MetaEntity),
 			Resolve: migration.SyncMetaResolve,
 		},
