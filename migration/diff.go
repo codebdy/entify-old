@@ -1,28 +1,35 @@
 package migration
 
-import "rxdrag.com/entity-engine/meta"
+import (
+	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/repository"
+)
 
-type ColumnDiff struct {
-	OldColumn meta.Column
-	NewColumn meta.Column
+func ExcuteDiff(d *meta.Diff) {
+	for _, relation := range d.DeleteRelations {
+		repository.DeleteRelation(&relation)
+	}
+	for _, entity := range d.DeleteEntities {
+		repository.DeleteEntity(entity.Name)
+	}
+
+	for _, entity := range d.AddEntities {
+		repository.AddEntity(&entity)
+	}
+
+	for _, relation := range d.AddRlations {
+		repository.AddRelation(&relation)
+	}
+
+	for _, entityDiff := range d.ModifyEntities {
+		repository.ModifyEntity(&entityDiff)
+	}
+
+	for _, relationDiff := range d.ModifyRelations {
+		repository.ModifyRelation(&relationDiff)
+	}
 }
 
-type EntityDiff struct {
-	DeleteColumns []meta.Column
-	AddColumns    []meta.Column
-	ModifyColumns []ColumnDiff
-}
+func UndoDiff(d *meta.Diff) {
 
-type RelationDiff struct {
-	OldeRelation meta.Relation
-	NewRelation  meta.Relation
-}
-
-type Diff struct {
-	DeleteEntities  []meta.Entity
-	DeleteRelations []meta.Relation
-	AddEntities     []meta.Entity
-	AddRlations     []meta.Relation
-	ModifyEntities  []EntityDiff
-	ModifyRelations []RelationDiff
 }
