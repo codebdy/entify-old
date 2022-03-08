@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/scalars"
 	"rxdrag.com/entity-engine/schema/comparison"
 )
@@ -28,7 +29,11 @@ func ColumnType(column *meta.Column) graphql.Output {
 	case meta.COLUMN_JSON_ARRAY:
 		return scalars.JSONType
 	case meta.COLUMN_ENUM:
-		return graphql.EnumValueType
+		enumEntity := repository.GetEntityByUuid(column.TypeEnityUuid)
+		if enumEntity == nil {
+			panic("Can not finde enum entity")
+		}
+		return EnumType(enumEntity)
 	}
 
 	panic("No column type:" + column.Type)
@@ -55,7 +60,8 @@ func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 	case meta.COLUMN_ID:
 		return nil
 	case meta.COLUMN_ENUM:
-		return &comparison.EnumComparisonExp
+		return nil
+		//return &comparison.EnumComparisonExp
 	}
 
 	panic("No column type: " + column.Type)

@@ -10,78 +10,18 @@ import (
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
+	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/migration"
+	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/schema"
 )
 
 func main() {
-	// metaFields := graphql.Fields{
-	// 	"id": &graphql.Field{
-	// 		Type: graphql.String,
-	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-	// 			fmt.Println(p.Context.Value("data"))
-	// 			return "world", nil
-	// 		},
-	// 	},
-	// 	"metasContent": &graphql.Field{
-	// 		Type: graphql.String,
-	// 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-	// 			return "world2", nil
-	// 		},
-	// 	},
-	// }
+	queryFields := graphql.Fields{}
 
-	// metaType := graphql.NewObject(graphql.ObjectConfig{Name: "Meta", Fields: metaFields})
-	// metaDistinctType := graphql.NewEnum(graphql.EnumConfig{
-	// 	Name: "MetaDistinctExp",
-	// 	Values: graphql.EnumValueConfigMap{
-	// 		"name": &graphql.EnumValueConfig{
-	// 			Value: "name",
-	// 		},
-	// 	},
-	// })
-
-	// Schema
-	queryFields := graphql.Fields{
-		// "hello": &graphql.Field{
-		// 	Type: graphql.String,
-		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		// 		fmt.Println(p.Context.Value("data"))
-		// 		return "world", nil
-		// 	},
-		// },
-		// "hello2": &graphql.Field{
-		// 	Type: graphql.String,
-		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		// 		return "world2", nil
-		// 	},
-		// },
-		// "_meta": &graphql.Field{
-		// 	Type: graphql.NewList(metaType),
-		// 	Args: graphql.FieldConfigArgument{
-		// 		"distinctOn": &graphql.ArgumentConfig{
-		// 			Type: metaDistinctType,
-		// 		},
-		// 		"limit": &graphql.ArgumentConfig{
-		// 			Type: graphql.Int,
-		// 		},
-		// 		"offset": &graphql.ArgumentConfig{
-		// 			Type: graphql.Int,
-		// 		},
-		// 		"orderBy": &graphql.ArgumentConfig{
-		// 			Type: graphql.String,
-		// 		},
-		// 		"where": &graphql.ArgumentConfig{
-		// 			Type: metaBoolExp,
-		// 		},
-		// 	},
-		// 	Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-		// 		return "world2", nil
-		// 	},
-		// },
+	for _, entity := range *repository.Entities {
+		schema.AppendToQueryFields(entity, &queryFields)
 	}
-
-	schema.AppendToQueryFields(&schema.MetaEntity, &queryFields)
 
 	mutationFields := graphql.Fields{
 		"login": &graphql.Field{
@@ -109,20 +49,22 @@ func main() {
 			},
 		},
 		"_publish": &graphql.Field{
-			Type:    schema.OutputType(&schema.MetaEntity),
+			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.PublishMetaResolve,
 		},
 		"_rollbackPublish": &graphql.Field{
-			Type:    schema.OutputType(&schema.MetaEntity),
+			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.SyncMetaResolve,
 		},
 		"_syncMeta": &graphql.Field{
-			Type:    schema.OutputType(&schema.MetaEntity),
+			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.SyncMetaResolve,
 		},
 	}
 
-	schema.AppendToMutationFields(&schema.MetaEntity, &mutationFields)
+	for _, entity := range *repository.Entities {
+		schema.AppendToMutationFields(entity, &mutationFields)
+	}
 
 	rootQuery := graphql.ObjectConfig{Name: schema.DefaultRootQueryName, Fields: queryFields}
 	rootMutation := graphql.ObjectConfig{Name: schema.DefaultRootMutationName, Fields: mutationFields}
@@ -140,20 +82,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
 	}
-
-	// Query
-	// query := `
-	// 	{
-	// 		hello
-	// 	}
-	// `
-	// params := graphql.Params{Schema: schema, RequestString: query}
-	// r := graphql.Do(params)
-	// if len(r.Errors) > 0 {
-	// 	log.Fatalf("failed to execute graphql operation, errors: %+v", r.Errors)
-	// }
-	// rJSON, _ := json.Marshal(r)
-	// fmt.Printf("%s \n", rJSON) // {"data":{"hello":"world"}}
 
 	h := handler.New(&handler.Config{
 		Schema:   &schema,

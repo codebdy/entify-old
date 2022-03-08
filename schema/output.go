@@ -11,16 +11,6 @@ const (
 	DISTINCTEXP string = "DistinctExp"
 )
 
-//where表达式缓存，query跟mutation都用
-var whereExpMap = make(map[string]*graphql.InputObject)
-
-//类型缓存， query用
-var outputTypeMap = make(map[string]*graphql.Output)
-
-var distinctOnEnumMap = make(map[string]*graphql.Enum)
-
-var orderByMap = make(map[string]*graphql.InputObject)
-
 func OutputFields(entity *meta.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
@@ -42,24 +32,7 @@ func OutputType(entity *meta.Entity) graphql.Output {
 	var returnValue graphql.Output
 
 	if entity.EntityType == meta.Entity_ENUM {
-		enumValues := entity.EnumValues //make(map[string]interface{})
-		//json.Unmarshal(entity.EnumValues, &enumValues)
-		enumValueConfigMap := graphql.EnumValueConfigMap{}
-		for enumName, enumValue := range enumValues {
-			var value, ok = enumValue.(string)
-			if !ok {
-				value = enumValue.(map[string]string)["value"]
-			}
-			enumValueConfigMap[enumName] = &graphql.EnumValueConfig{
-				Value: value,
-			}
-		}
-		returnValue = graphql.NewEnum(
-			graphql.EnumConfig{
-				Name:   entity.Name,
-				Values: enumValueConfigMap,
-			},
-		)
+		return EnumType(entity)
 	} else {
 		returnValue = graphql.NewObject(
 			graphql.ObjectConfig{

@@ -3,8 +3,8 @@ package meta
 const (
 	META_STATUS_PUBLISHED       string = "published"
 	META_STATUS_CANCELLED       string = "cancelled"
-	META_STATUS_MIGRATION_ERROR string = "migration-error"
-	META_STATUS_ROLLBACK_ERROR  string = "rollback-error"
+	META_STATUS_MIGRATION_ERROR string = "migrationError"
+	META_STATUS_ROLLBACK_ERROR  string = "rollbackError"
 
 	META_STATUS_ENUM_UUID string = "META_STATUS_ENUM_UUID"
 )
@@ -14,16 +14,16 @@ var MetaStatusEnum = Entity{
 	Name:       "MetaStatus",
 	EntityType: Entity_ENUM,
 	EnumValues: map[string]interface{}{
-		META_STATUS_PUBLISHED: map[string]interface{}{
+		META_STATUS_PUBLISHED: map[string]string{
 			"value": META_STATUS_PUBLISHED,
 		},
-		META_STATUS_CANCELLED: map[string]interface{}{
+		META_STATUS_CANCELLED: map[string]string{
 			"value": META_STATUS_CANCELLED,
 		},
-		META_STATUS_MIGRATION_ERROR: map[string]interface{}{
+		META_STATUS_MIGRATION_ERROR: map[string]string{
 			"value": META_STATUS_MIGRATION_ERROR,
 		},
-		META_STATUS_ROLLBACK_ERROR: map[string]interface{}{
+		META_STATUS_ROLLBACK_ERROR: map[string]string{
 			"value": META_STATUS_ROLLBACK_ERROR,
 		},
 	},

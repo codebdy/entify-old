@@ -6,10 +6,6 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-//类型缓存， query mutaion通用
-var UpdateInputMap = make(map[string]*graphql.Input)
-var PostInputMap = make(map[string]*graphql.Input)
-
 //mutition类型缓存， mutaion用
 var mutationResponseMap = make(map[string]*graphql.Output)
 
