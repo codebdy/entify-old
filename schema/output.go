@@ -26,8 +26,8 @@ func OutputFields(entity *meta.Entity) graphql.Fields {
 }
 
 func OutputType(entity *meta.Entity) graphql.Output {
-	if outputTypeMap[entity.Name] != nil {
-		return *outputTypeMap[entity.Name]
+	if OutputTypeMap[entity.Name] != nil {
+		return *OutputTypeMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
@@ -41,14 +41,14 @@ func OutputType(entity *meta.Entity) graphql.Output {
 			},
 		)
 	}
-	outputTypeMap[entity.Name] = &returnValue
+	OutputTypeMap[entity.Name] = &returnValue
 	return returnValue
 }
 
 func WhereExp(entity *meta.Entity) *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
-	if whereExpMap[expName] != nil {
-		return whereExpMap[expName]
+	if WhereExpMap[expName] != nil {
+		return WhereExpMap[expName]
 	}
 
 	andExp := graphql.InputObjectFieldConfig{}
@@ -86,13 +86,13 @@ func WhereExp(entity *meta.Entity) *graphql.InputObject {
 			fields[column.Name] = columnExp
 		}
 	}
-	whereExpMap[expName] = boolExp
+	WhereExpMap[expName] = boolExp
 	return boolExp
 }
 
 func OrderBy(entity *meta.Entity) *graphql.InputObject {
-	if orderByMap[entity.Name] != nil {
-		return orderByMap[entity.Name]
+	if OrderByMap[entity.Name] != nil {
+		return OrderByMap[entity.Name]
 	}
 	fields := graphql.InputObjectConfigFieldMap{}
 
@@ -111,13 +111,13 @@ func OrderBy(entity *meta.Entity) *graphql.InputObject {
 		}
 	}
 
-	orderByMap[entity.Name] = orderByExp
+	OrderByMap[entity.Name] = orderByExp
 	return orderByExp
 }
 
 func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
-	if distinctOnEnumMap[entity.Name] != nil {
-		return distinctOnEnumMap[entity.Name]
+	if DistinctOnEnumMap[entity.Name] != nil {
+		return DistinctOnEnumMap[entity.Name]
 	}
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	for _, column := range entity.Columns {
@@ -132,6 +132,6 @@ func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 			Values: enumValueConfigMap,
 		},
 	)
-	distinctOnEnumMap[entity.Name] = entEnum
+	DistinctOnEnumMap[entity.Name] = entEnum
 	return entEnum
 }

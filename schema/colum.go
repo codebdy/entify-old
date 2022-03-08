@@ -5,7 +5,6 @@ import (
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/scalars"
-	"rxdrag.com/entity-engine/schema/comparison"
 )
 
 func ColumnType(column *meta.Column) graphql.Output {
@@ -31,7 +30,7 @@ func ColumnType(column *meta.Column) graphql.Output {
 	case meta.COLUMN_ENUM:
 		enumEntity := repository.GetEntityByUuid(column.TypeEnityUuid)
 		if enumEntity == nil {
-			panic("Can not finde enum entity")
+			panic("Can not find enum entity")
 		}
 		return EnumType(enumEntity)
 	}
@@ -42,15 +41,15 @@ func ColumnType(column *meta.Column) graphql.Output {
 func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case meta.COLUMN_INT:
-		return &comparison.IntComparisonExp
+		return &IntComparisonExp
 	case meta.COLUMN_FLOAT:
-		return &comparison.FloatComparisonExp
+		return &FloatComparisonExp
 	case meta.COLUMN_BOOLEAN:
-		return &comparison.BooleanComparisonExp
+		return &BooleanComparisonExp
 	case meta.COLUMN_STRING:
-		return &comparison.StringComparisonExp
+		return &StringComparisonExp
 	case meta.COLUMN_DATE:
-		return &comparison.DateTimeComparisonExp
+		return &DateTimeComparisonExp
 	case meta.COLUMN_SIMPLE_JSON:
 		return nil
 	case meta.COLUMN_SIMPLE_ARRAY:
@@ -60,8 +59,7 @@ func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 	case meta.COLUMN_ID:
 		return nil
 	case meta.COLUMN_ENUM:
-		return nil
-		//return &comparison.EnumComparisonExp
+		return EnumComparisonExp(column)
 	}
 
 	panic("No column type: " + column.Type)
