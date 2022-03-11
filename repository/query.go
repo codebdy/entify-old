@@ -157,19 +157,18 @@ func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 
 func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
+		fmt.Println("呵呵", p.Args)
 		db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 		defer db.Close()
 		if err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
-		names := entity.ColumnNames()
 
-		queryStr := "select %s from %s order by id desc"
-		queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
+		queryStr, params := BuildQuerySQL(entity, p.Args)
 
 		values := makeValues(entity)
-		err = db.QueryRow(queryStr).Scan(values...)
+		err = db.QueryRow(queryStr, params...).Scan(values...)
 		if err != nil {
 			fmt.Println(err)
 			return nil, err

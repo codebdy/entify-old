@@ -56,21 +56,6 @@ var MetaEntity = Entity{
 			Name:          "status",
 			TypeEnityUuid: META_STATUS_ENUM_UUID,
 		},
-		// {
-		// 	Uuid: "META_COLUMN_INT_TEST_UUID",
-		// 	Type: COLUMN_INT,
-		// 	Name: "int_test",
-		// },
-		// {
-		// 	Uuid: "META_COLUMN_FLOAT_TEST_UUID",
-		// 	Type: COLUMN_FLOAT,
-		// 	Name: "float_test",
-		// },
-		// {
-		// 	Uuid: "_META_COLUMN_PUBLISHED_UUID",
-		// 	Type: COLUMN_BOOLEAN,
-		// 	Name: "published",
-		// },
 		{
 			Uuid: "META_COLUMN_PUBLISHED_AT_UUID",
 			Type: COLUMN_DATE,
