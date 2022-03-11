@@ -5,6 +5,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entity-engine/utils"
 )
 
 func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
@@ -32,7 +33,12 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	if nextMeta == nil {
 		panic("Can not find unpublished meta")
 	}
-	diff := CreateDiff(publishedMeta, nextMeta)
+	var publishedContent map[string]interface{}
+	var nextContent map[string]interface{}
+	if publishedMeta != nil {
+		publishedContent = publishedMeta.(utils.Object)[consts.META_CONTENT].(utils.Object)
+	}
+	diff := CreateDiff(publishedContent, nextContent)
 	ExcuteDiff(diff)
 	return nil, nil
 }
