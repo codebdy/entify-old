@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 )
@@ -12,66 +13,66 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		return
 	}
 
-	(*feilds)[CONST_QUERY+entity.Name] = &graphql.Field{
+	(*feilds)[consts.CONST_QUERY+entity.Name] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
 				OfType: OutputType(entity),
 			},
 		},
 		Args: graphql.FieldConfigArgument{
-			ARG_DISTINCTON: &graphql.ArgumentConfig{
+			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			ARG_LIMIT: &graphql.ArgumentConfig{
+			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			ARG_OFFSET: &graphql.ArgumentConfig{
+			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			ARG_ORDERBY: &graphql.ArgumentConfig{
+			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			ARG_WHERE: &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryResolveFn(entity),
 	}
-	(*feilds)[CONST_ONE+entity.Name] = &graphql.Field{
+	(*feilds)[consts.CONST_ONE+entity.Name] = &graphql.Field{
 		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
-			ARG_DISTINCTON: &graphql.ArgumentConfig{
+			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			ARG_OFFSET: &graphql.ArgumentConfig{
+			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			ARG_ORDERBY: &graphql.ArgumentConfig{
+			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			ARG_WHERE: &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},
 		Resolve: repository.QueryOneResolveFn(entity),
 	}
 
-	(*feilds)[CONST_AGGREGATE+entity.Name] = &graphql.Field{
+	(*feilds)[consts.CONST_AGGREGATE+entity.Name] = &graphql.Field{
 		Type: AggregateType(entity),
 		Args: graphql.FieldConfigArgument{
-			ARG_DISTINCTON: &graphql.ArgumentConfig{
+			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
 			},
-			ARG_LIMIT: &graphql.ArgumentConfig{
+			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			ARG_OFFSET: &graphql.ArgumentConfig{
+			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
-			ARG_ORDERBY: &graphql.ArgumentConfig{
+			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
 				Type: OrderBy(entity),
 			},
-			ARG_WHERE: &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity),
 			},
 		},

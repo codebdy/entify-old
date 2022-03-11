@@ -10,6 +10,7 @@ import (
 	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/repository"
@@ -66,8 +67,8 @@ func main() {
 		schema.AppendToMutationFields(entity, &mutationFields)
 	}
 
-	rootQuery := graphql.ObjectConfig{Name: schema.DefaultRootQueryName, Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: schema.DefaultRootMutationName, Fields: mutationFields}
+	rootQuery := graphql.ObjectConfig{Name: consts.DefaultRootQueryName, Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: consts.DefaultRootMutationName, Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{
 		Query:    graphql.NewObject(rootQuery),
 		Mutation: graphql.NewObject(rootMutation),

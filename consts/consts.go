@@ -1,4 +1,4 @@
-package schema
+package consts
 
 const (
 	DefaultRootQueryName        = "Query"
@@ -44,4 +44,11 @@ const (
 	ARG_NOTSIMILAR string = "_notSimilar"
 	ARG_REGEX      string = "_regex"
 	ARG_SIMILAR    string = "_similar"
+)
+
+const (
+	ARG_OBJECT            string = "object"
+	ARG_OBJECTS           string = "objects"
+	RESPONSE_RETURNING    string = "returning"
+	RESPONSE_AFFECTEDROWS string = "affectedRows"
 )

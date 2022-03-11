@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 )
 
@@ -56,9 +57,9 @@ func WhereExp(entity *meta.Entity) *graphql.InputObject {
 	orExp := graphql.InputObjectFieldConfig{}
 
 	fields := graphql.InputObjectConfigFieldMap{
-		ARG_AND: &andExp,
-		ARG_NOT: &notExp,
-		ARG_OR:  &orExp,
+		consts.ARG_AND: &andExp,
+		consts.ARG_NOT: &notExp,
+		consts.ARG_OR:  &orExp,
 	}
 
 	boolExp := graphql.NewInputObject(
