@@ -15,7 +15,7 @@ import (
 
 func dataFields(object map[string]interface{}) []string {
 	return utils.StringFilter(utils.MapStringKeys(object, ""), func(value string) bool {
-		return value != "id"
+		return value != consts.META_ID
 	})
 }
 
@@ -34,7 +34,7 @@ func insertValueSymbols(fields []string) string {
 func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	objValues := make([]interface{}, 0, len(object))
 	for key := range object {
-		if key == "id" {
+		if key == consts.META_ID {
 			continue
 		}
 		value := object[key]

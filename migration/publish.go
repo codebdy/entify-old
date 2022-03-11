@@ -10,7 +10,7 @@ import (
 func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	publishedMeta, err := repository.QueryOne(&meta.MetaEntity, repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
-			"status": repository.QueryArg{
+			consts.META_STATUS: repository.QueryArg{
 				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
@@ -20,7 +20,7 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	}
 	nextMeta, err := repository.QueryOne(&meta.MetaEntity, repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
-			"status": repository.QueryArg{
+			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_ISNULL: true,
 			},
 		},

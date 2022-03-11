@@ -22,7 +22,6 @@ const (
 	ARG_OFFSET     string = "_offset"
 	ARG_ORDERBY    string = "_orderBy"
 	ARG_WHERE      string = "_where"
-	ARG_ID         string = "id"
 
 	ARG_AND string = "_and"
 	ARG_NOT string = "_not"
@@ -59,4 +58,17 @@ const (
 	ARG_OBJECTS           string = "objects"
 	RESPONSE_RETURNING    string = "returning"
 	RESPONSE_AFFECTEDROWS string = "affectedRows"
+)
+
+/**
+* Meta实体用到的常量
+**/
+const (
+	META_ENTITY_NAME string = "Meta"
+	META_ID          string = "id"
+	META_STATUS      string = "status"
+	META_CONTENT     string = "content"
+	META_PUBLISHEDAT string = "publishedAt"
+	META_CREATEDAT   string = "createdAt"
+	META_UPDATEDAT   string = "updatedAt"
 )

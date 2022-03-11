@@ -1,5 +1,7 @@
 package meta
 
+import "rxdrag.com/entity-engine/consts"
+
 const (
 	META_STATUS_PUBLISHED       string = "published"
 	META_STATUS_CANCELLED       string = "cancelled"
@@ -31,45 +33,40 @@ var MetaStatusEnum = Entity{
 
 var MetaEntity = Entity{
 	Uuid:       "META_ENTITY_UUID",
-	Name:       "Meta",
+	Name:       consts.META_ENTITY_NAME,
 	TableName:  "meta",
 	EntityType: Entity_NORMAL,
 	Columns: []Column{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
 			Type: COLUMN_ID,
-			Name: "id",
-		},
-		{
-			Uuid: "META_COLUMN_VERSION_UUID",
-			Type: COLUMN_STRING,
-			Name: "status",
+			Name: consts.META_ID,
 		},
 		{
 			Uuid: "META_COLUMN_CONTENT_UUID",
 			Type: COLUMN_SIMPLE_JSON,
-			Name: "content",
+			Name: consts.META_CONTENT,
 		},
 		{
-			Uuid:          "META_COLUMN_VERSION_UUID",
+			Uuid:          "META_COLUMN_STATUS_UUID",
 			Type:          COLUMN_ENUM,
-			Name:          "status",
+			Name:          consts.META_STATUS,
 			TypeEnityUuid: META_STATUS_ENUM_UUID,
 		},
 		{
 			Uuid: "META_COLUMN_PUBLISHED_AT_UUID",
 			Type: COLUMN_DATE,
-			Name: "publishedAt",
+			Name: consts.META_PUBLISHEDAT,
 		},
 		{
 			Uuid: "META_COLUMN_CREATED_AT_UUID",
 			Type: COLUMN_DATE,
-			Name: "createdAt",
+			Name: consts.META_CREATEDAT,
 		},
 		{
 			Uuid: "META_COLUMN_UPDATED_AT_UUID",
 			Type: COLUMN_DATE,
-			Name: "updatedAt",
+			Name: consts.META_UPDATEDAT,
 		},
 	},
 }
