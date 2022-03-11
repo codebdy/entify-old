@@ -71,4 +71,7 @@ const (
 	META_PUBLISHEDAT string = "publishedAt"
 	META_CREATEDAT   string = "createdAt"
 	META_UPDATEDAT   string = "updatedAt"
+
+	META_ENTITIES  string = "entities"
+	META_RELATIONS string = "relations"
 )
