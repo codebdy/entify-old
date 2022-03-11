@@ -13,14 +13,15 @@ func BuildQuerySQL(entity *meta.Entity, args map[string]interface{}) (string, []
 	var params []interface{}
 	names := entity.ColumnNames()
 	sqlBuilder := dialect.GetSQLBuilder()
-	queryStr := "select %s from %s order by id desc "
+	queryStr := "select %s from %s WHERE true "
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
 	if args[consts.ARG_WHERE] != nil {
 		whereStr, whereParams := sqlBuilder.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))
 		queryStr = queryStr + " " + whereStr
 		params = append(params, whereParams...)
 	}
 
-	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
-
+	queryStr = queryStr + " order by id desc"
+	fmt.Println("呵呵呵", queryStr)
 	return queryStr, params
 }
