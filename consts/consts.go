@@ -1,13 +1,21 @@
 package consts
 
 const (
-	DefaultRootQueryName        = "Query"
-	DefaultRootMutationName     = "Mutation"
-	DefaultRootSubscriptionName = "Subscription"
+	ROOT_QUERY_NAME        = "Query"
+	ROOT_MUTATION_NAME     = "Mutation"
+	ROOT_SUBSCRIPTION_NAME = "Subscription"
 
-	CONST_ONE       = "one"
-	CONST_QUERY     = "query"
-	CONST_AGGREGATE = "aggregate"
+	LOGIN      = "login"
+	LOGIN_NAME = "loginName"
+	PASSWORD   = "password"
+	LOGOUT     = "logout"
+	PUBLISH    = "_publish"
+	ROLLBACK   = "_rollback"
+	SYNC_META  = "_syncMeta"
+
+	ONE       = "one"
+	QUERY     = "query"
+	AGGREGATE = "aggregate"
 
 	ARG_DISTINCTON string = "_distinctOn"
 	ARG_LIMIT      string = "_limit"

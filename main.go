@@ -25,39 +25,39 @@ func main() {
 	}
 
 	mutationFields := graphql.Fields{
-		"login": &graphql.Field{
+		consts.LOGIN: &graphql.Field{
 			Type: graphql.String,
 			Args: graphql.FieldConfigArgument{
-				"loginName": &graphql.ArgumentConfig{
+				consts.LOGIN_NAME: &graphql.ArgumentConfig{
 					Type: &graphql.NonNull{OfType: graphql.String},
 				},
-				"password": &graphql.ArgumentConfig{
+				consts.PASSWORD: &graphql.ArgumentConfig{
 					Type: &graphql.NonNull{OfType: graphql.String},
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				loginName, err := authentication.Login(p.Args["loginName"].(string), p.Args["password"].(string))
+				loginName, err := authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
 				if err != nil {
 					return "", err
 				}
 				return jwt.GenerateToken(loginName)
 			},
 		},
-		"logout": &graphql.Field{
+		consts.LOGOUT: &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return "world2", nil
 			},
 		},
-		"_publish": &graphql.Field{
+		consts.PUBLISH: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.PublishMetaResolve,
 		},
-		"_rollbackPublish": &graphql.Field{
+		consts.ROLLBACK: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.SyncMetaResolve,
 		},
-		"_syncMeta": &graphql.Field{
+		consts.SYNC_META: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
 			Resolve: migration.SyncMetaResolve,
 		},
@@ -67,8 +67,8 @@ func main() {
 		schema.AppendToMutationFields(entity, &mutationFields)
 	}
 
-	rootQuery := graphql.ObjectConfig{Name: consts.DefaultRootQueryName, Fields: queryFields}
-	rootMutation := graphql.ObjectConfig{Name: consts.DefaultRootMutationName, Fields: mutationFields}
+	rootQuery := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields}
+	rootMutation := graphql.ObjectConfig{Name: consts.ROOT_MUTATION_NAME, Fields: mutationFields}
 	schemaConfig := graphql.SchemaConfig{
 		Query:    graphql.NewObject(rootQuery),
 		Mutation: graphql.NewObject(rootMutation),

@@ -13,7 +13,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		return
 	}
 
-	(*feilds)[consts.CONST_QUERY+entity.Name] = &graphql.Field{
+	(*feilds)[consts.QUERY+entity.Name] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
 				OfType: OutputType(entity),
@@ -38,7 +38,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		},
 		Resolve: repository.QueryResolveFn(entity),
 	}
-	(*feilds)[consts.CONST_ONE+entity.Name] = &graphql.Field{
+	(*feilds)[consts.ONE+entity.Name] = &graphql.Field{
 		Type: OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
@@ -57,7 +57,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Resolve: repository.QueryOneResolveFn(entity),
 	}
 
-	(*feilds)[consts.CONST_AGGREGATE+entity.Name] = &graphql.Field{
+	(*feilds)[consts.AGGREGATE+entity.Name] = &graphql.Field{
 		Type: AggregateType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
