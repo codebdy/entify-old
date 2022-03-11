@@ -8,9 +8,12 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/utils"
 )
+
+type QueryArg = map[string]interface{}
 
 func makeValues(entity *meta.Entity) []interface{} {
 	names := entity.ColumnNames()
@@ -131,22 +134,23 @@ func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
 	return instances, nil
 }
 
-func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
+func QueryOne(entity *meta.Entity, args map[string]interface{}) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
-	names := entity.ColumnNames()
 
-	queryStr := "select %s from %s where id = ?"
-	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
+	queryStr, params := BuildQuerySQL(entity, args)
 
 	values := makeValues(entity)
-	fmt.Print("哈哈", queryStr, id)
-	err = db.QueryRow(queryStr, id).Scan(values...)
-	if err != nil {
+	err = db.QueryRow(queryStr, params...).Scan(values...)
+
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, nil
+	case err != nil:
 		fmt.Println(err)
 		return nil, err
 	}
@@ -155,30 +159,19 @@ func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 	return convertValuesToObject(values, entity), nil
 }
 
+func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
+	return QueryOne(entity, QueryArg{
+		consts.ARG_WHERE: QueryArg{
+			"id": QueryArg{
+				consts.AEG_EQ: id,
+			},
+		},
+	})
+}
+
 func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
-		defer db.Close()
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-
-		queryStr, params := BuildQuerySQL(entity, p.Args)
-
-		values := makeValues(entity)
-		err = db.QueryRow(queryStr, params...).Scan(values...)
-
-		switch {
-		case err == sql.ErrNoRows:
-			return nil, nil
-		case err != nil:
-			fmt.Println(err)
-			return nil, err
-		}
-
-		fmt.Println("Query one entity:" + entity.Name)
-		return convertValuesToObject(values, entity), nil
+		return QueryOne(entity, p.Args)
 	}
 }
 
