@@ -7,6 +7,10 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+type SQLBuilder interface {
+	BoolExp(where map[string]interface{}) (string, []interface{})
+}
+
 func BuildQuerySQL(entity *meta.Entity, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	names := entity.ColumnNames()

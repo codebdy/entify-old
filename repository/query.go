@@ -157,7 +157,6 @@ func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 
 func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		fmt.Println("呵呵", p.Args)
 		db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 		defer db.Close()
 		if err != nil {
