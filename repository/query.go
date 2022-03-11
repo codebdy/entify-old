@@ -168,7 +168,11 @@ func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 
 		values := makeValues(entity)
 		err = db.QueryRow(queryStr, params...).Scan(values...)
-		if err != nil {
+
+		switch {
+		case err == sql.ErrNoRows:
+			return nil, nil
+		case err != nil:
 			fmt.Println(err)
 			return nil, err
 		}

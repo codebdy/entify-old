@@ -22,6 +22,6 @@ func BuildQuerySQL(entity *meta.Entity, args map[string]interface{}) (string, []
 	}
 
 	queryStr = queryStr + " order by id desc"
-	fmt.Println("呵呵呵", queryStr)
+	fmt.Println("查询SQL:", queryStr)
 	return queryStr, params
 }
