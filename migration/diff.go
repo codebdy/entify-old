@@ -26,11 +26,31 @@ func findEntity(uuid string, entities []meta.Entity) *meta.Entity {
 	return nil
 }
 
+func relations(object utils.Object) []meta.Relation {
+	var relations []meta.Relation
+	if object[consts.META_RELATIONS] != nil {
+		relations = object[consts.META_RELATIONS].([]meta.Relation)
+	} else {
+		relations = make([]meta.Relation, 0)
+	}
+	return relations
+}
+
+func entities(object utils.Object) []meta.Entity {
+	var entities []meta.Entity
+	if object[consts.META_ENTITIES] != nil {
+		entities = object[consts.META_ENTITIES].([]meta.Entity)
+	} else {
+		entities = make([]meta.Entity, 0)
+	}
+	return entities
+}
+
 func CreateDiff(published, next utils.Object) *meta.Diff {
 	var diff meta.Diff
+	publishedRelations := relations(published)
+	nextRelations := relations(next)
 
-	publishedRelations := published[consts.META_RELATIONS].([]meta.Relation)
-	nextRelations := next[consts.META_RELATIONS].([]meta.Relation)
 	for _, relation := range publishedRelations {
 		foundRelation := findRelation(relation.Uuid, nextRelations)
 		//删除的Relation
@@ -48,8 +68,8 @@ func CreateDiff(published, next utils.Object) *meta.Diff {
 		}
 	}
 
-	publishedEntities := published[consts.META_ENTITIES].([]meta.Entity)
-	nextEntities := next[consts.META_ENTITIES].([]meta.Entity)
+	publishedEntities := entities(published)
+	nextEntities := entities(next)
 
 	for _, entity := range publishedEntities {
 		foundEntity := findEntity(entity.Uuid, nextEntities)

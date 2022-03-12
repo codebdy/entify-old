@@ -14,6 +14,11 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 			queryStr = queryStr + " AND " + fieldName + "=?"
 			params = append(params, value)
 			break
+		case consts.ARG_ISNULL:
+			if value == true {
+				queryStr = queryStr + " AND ISNULL(" + fieldName + ")"
+			}
+			break
 		default:
 			panic("Can not find token:" + key)
 		}
