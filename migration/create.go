@@ -36,8 +36,8 @@ func findColumn(uuid string, columns []meta.Column) *meta.Column {
 
 func relationDifferent(oldRelation, newRelation *meta.Relation) *meta.RelationDiff {
 	diff := meta.RelationDiff{
-		OldeRelation: oldRelation,
-		NewRelation:  newRelation,
+		OldeRelation: *oldRelation,
+		NewRelation:  *newRelation,
 	}
 	if oldRelation.RelationType != newRelation.RelationType {
 		return &diff
@@ -59,8 +59,8 @@ func relationDifferent(oldRelation, newRelation *meta.Relation) *meta.RelationDi
 
 func columnDifferent(oldColumn, newColumn *meta.Column) *meta.ColumnDiff {
 	diff := meta.ColumnDiff{
-		OldColumn: oldColumn,
-		NewColumn: newColumn,
+		OldColumn: *oldColumn,
+		NewColumn: *newColumn,
 	}
 	if oldColumn.Name != newColumn.Name {
 		return &diff
@@ -103,7 +103,7 @@ func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 	for _, column := range oldEntity.Columns {
 		foundCoumn := findColumn(column.Uuid, newEntity.Columns)
 		if foundCoumn == nil {
-			diff.DeleteColumns = append(diff.DeleteColumns, &column)
+			diff.DeleteColumns = append(diff.DeleteColumns, column)
 			modified = true
 		}
 	}
@@ -111,12 +111,12 @@ func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 	for _, column := range newEntity.Columns {
 		foundColumn := findColumn(column.Uuid, oldEntity.Columns)
 		if foundColumn == nil {
-			diff.AddColumns = append(diff.AddColumns, &column)
+			diff.AddColumns = append(diff.AddColumns, column)
 			modified = true
 		} else {
 			columnDiff := columnDifferent(&column, foundColumn)
 			if columnDiff != nil {
-				diff.ModifyColumns = append(diff.ModifyColumns, columnDiff)
+				diff.ModifyColumns = append(diff.ModifyColumns, *columnDiff)
 				modified = true
 			}
 		}

@@ -1,8 +1,8 @@
 package meta
 
 type ColumnDiff struct {
-	OldColumn *Column
-	NewColumn *Column
+	OldColumn Column
+	NewColumn Column
 }
 
 type EntityDiff struct {
@@ -12,14 +12,14 @@ type EntityDiff struct {
 	NewEntityType string
 	OldTableName  string
 	NewTableName  string
-	DeleteColumns []*Column
-	AddColumns    []*Column
-	ModifyColumns []*ColumnDiff
+	DeleteColumns []Column
+	AddColumns    []Column
+	ModifyColumns []ColumnDiff
 }
 
 type RelationDiff struct {
-	OldeRelation *Relation
-	NewRelation  *Relation
+	OldeRelation Relation
+	NewRelation  Relation
 }
 
 type Diff struct {
