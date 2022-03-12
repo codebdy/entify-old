@@ -23,10 +23,10 @@ type RelationDiff struct {
 }
 
 type Diff struct {
-	DeleteRelations []*Relation
-	DeleteEntities  []*Entity
-	AddEntities     []*Entity
-	AddRlations     []*Relation
-	ModifyEntities  []*EntityDiff
-	ModifyRelations []*RelationDiff
+	DeleteRelations []Relation
+	DeleteEntities  []Entity
+	AddEntities     []Entity
+	AddRlations     []Relation
+	ModifyEntities  []EntityDiff
+	ModifyRelations []RelationDiff
 }

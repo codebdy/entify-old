@@ -15,11 +15,11 @@ func DeleteEntity(entityName string) {
 }
 
 func AddEntity(entity *meta.Entity) {
-	fmt.Println("Not implement AddEntity")
+	fmt.Println("Not implement AddEntity", entity.Name)
 }
 
 func AddRelation(relation *meta.Relation) {
-	fmt.Println("Not implement AddRelation")
+	fmt.Println("Not implement AddRelation", relation.RoleOnSource, relation.RoleOnTarget)
 }
 func ModifyEntity(entityDiff *meta.EntityDiff) {
 	fmt.Println("Not implement ModifyEntity")

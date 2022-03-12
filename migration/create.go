@@ -1,8 +1,6 @@
 package migration
 
 import (
-	"fmt"
-
 	"rxdrag.com/entity-engine/meta"
 )
 
@@ -134,28 +132,26 @@ func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 }
 
 func CreateDiff(published, next *meta.MetaContent) *meta.Diff {
-	fmt.Println("CreateDiff:", published)
 	var diff meta.Diff
 	publishedRelations := published.Relations
 	nextRelations := next.Relations
-	fmt.Println("CreateDiff2")
 
 	for _, relation := range publishedRelations {
 		foundRelation := findRelation(relation.Uuid, nextRelations)
 		//删除的Relation
 		if foundRelation == nil {
-			diff.DeleteRelations = append(diff.DeleteRelations, &relation)
+			diff.DeleteRelations = append(diff.DeleteRelations, relation)
 		}
 	}
 	for _, relation := range nextRelations {
 		foundRelation := findRelation(relation.Uuid, publishedRelations)
 		//添加的Relation
 		if foundRelation == nil {
-			diff.AddRlations = append(diff.AddRlations, &relation)
+			diff.AddRlations = append(diff.AddRlations, relation)
 		} else {
 			relationDiff := relationDifferent(&relation, foundRelation)
 			if relationDiff != nil {
-				diff.ModifyRelations = append(diff.ModifyRelations, relationDiff)
+				diff.ModifyRelations = append(diff.ModifyRelations, *relationDiff)
 			}
 		}
 	}
@@ -167,18 +163,18 @@ func CreateDiff(published, next *meta.MetaContent) *meta.Diff {
 		foundEntity := findEntity(entity.Uuid, nextEntities)
 		//删除的Entity
 		if foundEntity == nil {
-			diff.DeleteEntities = append(diff.DeleteEntities, &entity)
+			diff.DeleteEntities = append(diff.DeleteEntities, entity)
 		}
 	}
 	for _, entity := range nextEntities {
 		foundEntity := findEntity(entity.Uuid, publishedEntities)
 		//添加的Entity
 		if foundEntity == nil {
-			diff.AddEntities = append(diff.AddEntities, &entity)
+			diff.AddEntities = append(diff.AddEntities, entity)
 		} else {
 			entityDiff := entityDifferent(&entity, foundEntity)
 			if entityDiff != nil {
-				diff.ModifyEntities = append(diff.ModifyEntities, entityDiff)
+				diff.ModifyEntities = append(diff.ModifyEntities, *entityDiff)
 			}
 		}
 	}
