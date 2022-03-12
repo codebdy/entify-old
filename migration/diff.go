@@ -26,6 +26,16 @@ func findEntity(uuid string, entities []meta.Entity) *meta.Entity {
 	return nil
 }
 
+func findColumn(uuid string, columns []meta.Column) *meta.Column {
+	for _, column := range columns {
+		if column.Uuid == uuid {
+			return &column
+		}
+	}
+
+	return nil
+}
+
 func relations(object utils.Object) []meta.Relation {
 	var relations []meta.Relation
 	if object[consts.META_RELATIONS] != nil {
@@ -69,9 +79,78 @@ func relationDifferent(oldRelation, newRelation *meta.Relation) *meta.RelationDi
 	return nil
 }
 
-func entityDifferent(oldRelation, newRelation *meta.Entity) *meta.EntityDiff {
+func columnDifferent(oldColumn, newColumn *meta.Column) *meta.ColumnDiff {
+	diff := meta.ColumnDiff{
+		OldColumn: oldColumn,
+		NewColumn: newColumn,
+	}
+	if oldColumn.Name != newColumn.Name {
+		return &diff
+	}
+	if oldColumn.Generated != newColumn.Generated {
+		return &diff
+	}
+	if oldColumn.Index != newColumn.Index {
+		return &diff
+	}
+	if oldColumn.Nullable != newColumn.Nullable {
+		return &diff
+	}
+	if oldColumn.Length != newColumn.Length {
+		return &diff
+	}
+	if oldColumn.Primary != newColumn.Primary {
+		return &diff
+	}
+
+	if oldColumn.Unique != newColumn.Unique {
+		return &diff
+	}
+
+	if oldColumn.Type != newColumn.Type {
+		return &diff
+	}
+	return nil
+}
+func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 	var diff meta.EntityDiff
-	return &diff
+	modified := false
+	diff.OldName = oldEntity.Name
+	diff.NewName = newEntity.Name
+	diff.OldEntityType = oldEntity.EntityType
+	diff.NewEntityType = newEntity.EntityType
+	diff.OldTableName = oldEntity.TableName
+	diff.NewTableName = newEntity.TableName
+
+	for _, column := range oldEntity.Columns {
+		foundCoumn := findColumn(column.Uuid, newEntity.Columns)
+		if foundCoumn == nil {
+			diff.DeleteColumns = append(diff.DeleteColumns, &column)
+			modified = true
+		}
+	}
+
+	for _, column := range newEntity.Columns {
+		foundColumn := findColumn(column.Uuid, oldEntity.Columns)
+		if foundColumn == nil {
+			diff.AddColumns = append(diff.AddColumns, &column)
+			modified = true
+		} else {
+			columnDiff := columnDifferent(&column, foundColumn)
+			if columnDiff != nil {
+				diff.ModifyColumns = append(diff.ModifyColumns, columnDiff)
+				modified = true
+			}
+		}
+	}
+
+	if diff.OldName != diff.NewName ||
+		diff.OldEntityType != diff.NewEntityType ||
+		diff.OldTableName != diff.NewTableName ||
+		modified {
+		return &diff
+	}
+	return nil
 }
 
 func CreateDiff(published, next utils.Object) *meta.Diff {
