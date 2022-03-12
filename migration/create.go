@@ -1,9 +1,9 @@
 package migration
 
 import (
-	"rxdrag.com/entity-engine/consts"
+	"fmt"
+
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/utils"
 )
 
 func findRelation(uuid string, relations []meta.Relation) *meta.Relation {
@@ -34,26 +34,6 @@ func findColumn(uuid string, columns []meta.Column) *meta.Column {
 	}
 
 	return nil
-}
-
-func relations(object utils.Object) []meta.Relation {
-	var relations []meta.Relation
-	if object[consts.META_RELATIONS] != nil {
-		relations = object[consts.META_RELATIONS].([]meta.Relation)
-	} else {
-		relations = make([]meta.Relation, 0)
-	}
-	return relations
-}
-
-func entities(object utils.Object) []meta.Entity {
-	var entities []meta.Entity
-	if object[consts.META_ENTITIES] != nil {
-		entities = object[consts.META_ENTITIES].([]meta.Entity)
-	} else {
-		entities = make([]meta.Entity, 0)
-	}
-	return entities
 }
 
 func relationDifferent(oldRelation, newRelation *meta.Relation) *meta.RelationDiff {
@@ -153,10 +133,12 @@ func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 	return nil
 }
 
-func CreateDiff(published, next utils.Object) *meta.Diff {
+func CreateDiff(published, next *meta.MetaContent) *meta.Diff {
+	fmt.Println("CreateDiff:", published)
 	var diff meta.Diff
-	publishedRelations := relations(published)
-	nextRelations := relations(next)
+	publishedRelations := published.Relations
+	nextRelations := next.Relations
+	fmt.Println("CreateDiff2")
 
 	for _, relation := range publishedRelations {
 		foundRelation := findRelation(relation.Uuid, nextRelations)
@@ -178,8 +160,8 @@ func CreateDiff(published, next utils.Object) *meta.Diff {
 		}
 	}
 
-	publishedEntities := entities(published)
-	nextEntities := entities(next)
+	publishedEntities := published.Entities
+	nextEntities := next.Entities
 
 	for _, entity := range publishedEntities {
 		foundEntity := findEntity(entity.Uuid, nextEntities)

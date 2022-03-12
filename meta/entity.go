@@ -11,14 +11,14 @@ const (
 )
 
 type Entity struct {
-	Uuid        string           `json:"uuid"`
-	Name        string           `json:"name"`
-	TableName   string           `json:"tableName"`
-	EntityType  string           `json:"entityType"`
-	Columns     []Column         `json:"columns"`
-	Eventable   bool             `json:"eventable"`
-	Description string           `json:"description"`
-	EnumValues  utils.SimpleJSON `json:"enumValues"`
+	Uuid        string     `json:"uuid"`
+	Name        string     `json:"name"`
+	TableName   string     `json:"tableName"`
+	EntityType  string     `json:"entityType"`
+	Columns     []Column   `json:"columns"`
+	Eventable   bool       `json:"eventable"`
+	Description string     `json:"description"`
+	EnumValues  utils.JSON `json:"enumValues"`
 }
 
 func (entity *Entity) ColumnNames() []string {

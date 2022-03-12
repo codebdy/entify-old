@@ -35,7 +35,7 @@ func makeValues(entity *meta.Entity) []interface{} {
 			values[i] = &value
 			break
 		case meta.COLUMN_SIMPLE_JSON:
-			var value utils.SimpleJSON
+			var value utils.JSON
 			values[i] = &value
 			break
 			// COLUMN_SIMPLE_ARRAY string = "simpleArray" ##待添加代码
