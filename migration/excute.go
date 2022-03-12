@@ -1,11 +1,14 @@
 package migration
 
 import (
+	"fmt"
+
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 )
 
 func ExcuteDiff(d *meta.Diff) {
+	fmt.Println("ExcuteDiff:", d)
 	for _, relation := range d.DeleteRelations {
 		repository.DeleteRelation(relation)
 	}
