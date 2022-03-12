@@ -3,10 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"strings"
 
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/language/ast"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
@@ -167,29 +164,4 @@ func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 			},
 		},
 	})
-}
-
-func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
-	return func(p graphql.ResolveParams) (interface{}, error) {
-		return QueryOne(entity, p.Args)
-	}
-}
-
-func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
-	return func(p graphql.ResolveParams) (interface{}, error) {
-		names := entity.ColumnNames()
-		queryStr := "select %s from %s "
-		for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
-			switch selection := iSelection.(type) {
-			case *ast.Field:
-				fmt.Println(selection.Directives[len(selection.Directives)-1].Name.Value)
-			case *ast.InlineFragment:
-			case *ast.FragmentSpread:
-			}
-		}
-
-		queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
-		//err = db.Select(&instances, queryStr)
-		return Query(entity, queryStr)
-	}
 }

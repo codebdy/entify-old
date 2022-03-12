@@ -1,9 +1,10 @@
-package migration
+package resolve
 
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -38,8 +39,8 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	if publishedMeta != nil {
 		publishedContent = publishedMeta.(utils.Object)[consts.META_CONTENT].(utils.Object)
 	}
-	diff := CreateDiff(publishedContent, nextContent)
-	ExcuteDiff(diff)
+	diff := migration.CreateDiff(publishedContent, nextContent)
+	migration.ExcuteDiff(diff)
 	return nil, nil
 }
 

@@ -12,8 +12,8 @@ import (
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/schema"
 )
 
@@ -51,15 +51,15 @@ func main() {
 		},
 		consts.PUBLISH: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
-			Resolve: migration.PublishMetaResolve,
+			Resolve: resolve.PublishMetaResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
-			Resolve: migration.SyncMetaResolve,
+			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
 			Type:    schema.OutputType(&meta.MetaEntity),
-			Resolve: migration.SyncMetaResolve,
+			Resolve: resolve.SyncMetaResolve,
 		},
 	}
 

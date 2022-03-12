@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entity-engine/resolve"
 )
 
 func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
@@ -36,7 +36,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryResolveFn(entity),
+		Resolve: resolve.QueryResolveFn(entity),
 	}
 	(*feilds)[consts.ONE+entity.Name] = &graphql.Field{
 		Type: OutputType(entity),
@@ -54,7 +54,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryOneResolveFn(entity),
+		Resolve: resolve.QueryOneResolveFn(entity),
 	}
 
 	(*feilds)[consts.AGGREGATE+entity.Name] = &graphql.Field{
@@ -76,6 +76,6 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: WhereExp(entity),
 			},
 		},
-		Resolve: repository.QueryResolveFn(entity),
+		Resolve: resolve.QueryResolveFn(entity),
 	}
 }
