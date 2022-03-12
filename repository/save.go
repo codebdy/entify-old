@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
@@ -169,11 +168,4 @@ func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, e
 	// 	consts.RESPONSE_AFFECTEDROWS: affectedRows,
 	// 	consts.RESPONSE_RETURNING:    insertedObject,
 	// }, nil
-}
-
-func PostOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
-	return func(p graphql.ResolveParams) (interface{}, error) {
-		object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
-		return SaveOne(object, entity)
-	}
 }
