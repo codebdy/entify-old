@@ -46,6 +46,34 @@ func entities(object utils.Object) []meta.Entity {
 	return entities
 }
 
+func relationDifferent(oldRelation, newRelation *meta.Relation) *meta.RelationDiff {
+	diff := meta.RelationDiff{
+		OldeRelation: oldRelation,
+		NewRelation:  newRelation,
+	}
+	if oldRelation.RelationType != newRelation.RelationType {
+		return &diff
+	}
+	if oldRelation.RoleOnSource != newRelation.RoleOnSource {
+		return &diff
+	}
+	if oldRelation.RoleOnTarget != newRelation.RoleOnTarget {
+		return &diff
+	}
+	if oldRelation.SourceId != newRelation.SourceId {
+		return &diff
+	}
+	if oldRelation.TargetId != newRelation.TargetId {
+		return &diff
+	}
+	return nil
+}
+
+func entityDifferent(oldRelation, newRelation *meta.Entity) *meta.EntityDiff {
+	var diff meta.EntityDiff
+	return &diff
+}
+
 func CreateDiff(published, next utils.Object) *meta.Diff {
 	var diff meta.Diff
 	publishedRelations := relations(published)
@@ -55,16 +83,19 @@ func CreateDiff(published, next utils.Object) *meta.Diff {
 		foundRelation := findRelation(relation.Uuid, nextRelations)
 		//删除的Relation
 		if foundRelation == nil {
-			diff.DeleteRelations = append(diff.DeleteRelations, relation)
+			diff.DeleteRelations = append(diff.DeleteRelations, &relation)
 		}
 	}
 	for _, relation := range nextRelations {
 		foundRelation := findRelation(relation.Uuid, publishedRelations)
 		//添加的Relation
 		if foundRelation == nil {
-			diff.AddRlations = append(diff.AddRlations, relation)
+			diff.AddRlations = append(diff.AddRlations, &relation)
 		} else {
-			//此处处理变更的Relation
+			relationDiff := relationDifferent(&relation, foundRelation)
+			if relationDiff != nil {
+				diff.ModifyRelations = append(diff.ModifyRelations, relationDiff)
+			}
 		}
 	}
 
@@ -75,16 +106,19 @@ func CreateDiff(published, next utils.Object) *meta.Diff {
 		foundEntity := findEntity(entity.Uuid, nextEntities)
 		//删除的Entity
 		if foundEntity == nil {
-			diff.DeleteEntities = append(diff.DeleteEntities, entity)
+			diff.DeleteEntities = append(diff.DeleteEntities, &entity)
 		}
 	}
 	for _, entity := range nextEntities {
 		foundEntity := findEntity(entity.Uuid, publishedEntities)
 		//添加的Entity
 		if foundEntity == nil {
-			diff.AddEntities = append(diff.AddEntities, entity)
+			diff.AddEntities = append(diff.AddEntities, &entity)
 		} else {
-			//此处处理变更的Entity
+			entityDiff := entityDifferent(&entity, foundEntity)
+			if entityDiff != nil {
+				diff.ModifyEntities = append(diff.ModifyEntities, entityDiff)
+			}
 		}
 	}
 
