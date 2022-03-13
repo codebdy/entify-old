@@ -62,17 +62,13 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		typeStr = "int"
 		if column.Length == 1 {
 			typeStr = "tinyint"
-		}
-		if column.Length == 2 {
+		} else if column.Length == 2 {
 			typeStr = "smallint"
-		}
-		if column.Length == 3 {
+		} else if column.Length == 3 {
 			typeStr = "mediumint"
-		}
-		if column.Length == 4 {
+		} else if column.Length == 4 {
 			typeStr = "int"
-		}
-		if column.Length > 4 {
+		} else if column.Length > 4 {
 			typeStr = "bigint"
 		}
 		if column.Unsigned {
@@ -80,9 +76,10 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		}
 		break
 	case meta.COLUMN_FLOAT:
-		typeStr = "float"
 		if column.Length > 4 {
 			typeStr = "double"
+		} else {
+			typeStr = "float"
 		}
 		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
 			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
