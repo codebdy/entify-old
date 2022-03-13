@@ -54,7 +54,6 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 
 func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 	typeStr := "TEXT"
-	fmt.Println("哈哈：", column.Type)
 	switch column.Type {
 	case meta.COLUMN_ID:
 		typeStr = "INT UNSIGNED"
