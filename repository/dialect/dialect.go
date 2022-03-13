@@ -1,5 +1,7 @@
 package dialect
 
+import "rxdrag.com/entity-engine/meta"
+
 const (
 	MySQL = "mysql"
 )
@@ -7,6 +9,10 @@ const (
 type SQLBuilder interface {
 	BuildBoolExp(where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
+
+	BuildCreateEntitySQL(entity *meta.Entity) string
+	BuildColumnSQL(column *meta.Column) string
+	ColumnTypeSQL(column *meta.Column) string
 }
 
 func GetSQLBuilder() SQLBuilder {
