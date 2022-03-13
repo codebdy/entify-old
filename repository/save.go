@@ -146,15 +146,10 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	fmt.Println("insert new record", id)
 	savedObject, err := QueryOneById(entity, id)
 	if err != nil {
+		tx.Rollback()
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
 	}
-	//affectedRows, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println("Update failed:", err.Error())
-		return nil, err
-	}
-
 	return savedObject, nil
 }
 
