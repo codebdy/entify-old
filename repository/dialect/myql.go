@@ -53,36 +53,36 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 }
 
 func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
-	typeStr := "TEXT"
+	typeStr := "text"
 	switch column.Type {
 	case meta.COLUMN_ID:
-		typeStr = "INT UNSIGNED"
+		typeStr = "int UNSIGNED"
 		break
 	case meta.COLUMN_INT:
 		typeStr = "int"
 		if column.Length == 1 {
-			typeStr = "TINYINT"
+			typeStr = "tinyint"
 		}
 		if column.Length == 2 {
-			typeStr = "SMALLINT"
+			typeStr = "smallint"
 		}
 		if column.Length == 3 {
-			typeStr = "MEDIUMINT"
+			typeStr = "mediumint"
 		}
 		if column.Length == 4 {
-			typeStr = "INT"
+			typeStr = "int"
 		}
 		if column.Length > 4 {
-			typeStr = "BIGINT"
+			typeStr = "bigint"
 		}
 		if column.Unsigned {
 			typeStr = typeStr + " UNSIGNED"
 		}
 		break
 	case meta.COLUMN_FLOAT:
-		typeStr = "FLOAT"
+		typeStr = "float"
 		if column.Length > 4 {
-			typeStr = "DOUBLE"
+			typeStr = "double"
 		}
 		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
 			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
@@ -92,43 +92,43 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		}
 		break
 	case meta.COLUMN_BOOLEAN:
-		typeStr = "TINYINT(1)"
+		typeStr = "tinyint(1)"
 		break
 	case meta.COLUMN_STRING:
-		typeStr = "TEXT"
+		typeStr = "text"
 		if column.Length > 0 {
 			if column.Length <= 255 {
-				typeStr = fmt.Sprintf("VARCHAR(%d)", column.Length)
+				typeStr = fmt.Sprintf("varchar(%d)", column.Length)
 			} else if column.Length <= 65535 {
-				typeStr = "TEXT"
+				typeStr = "text"
 			} else if column.Length <= 16777215 {
-				typeStr = "MEDIUMTEXT"
+				typeStr = "mediumtext"
 			} else {
-				typeStr = "LONGTEXT"
+				typeStr = "longtext"
 			}
 		}
 		break
 	case meta.COLUMN_DATE:
-		typeStr = "DATETIME"
+		typeStr = "datetime"
 		break
 	case meta.COLUMN_SIMPLE_JSON:
-		typeStr = "JSON"
+		typeStr = "json"
 		break
 	case meta.COLUMN_SIMPLE_ARRAY:
-		typeStr = "JSON"
+		typeStr = "json"
 		break
 	case meta.COLUMN_JSON_ARRAY:
-		typeStr = "JSON"
+		typeStr = "json"
 		break
 	case meta.COLUMN_ENUM:
-		typeStr = "TINYTEXT"
+		typeStr = "tinytext"
 		break
 	}
 	return typeStr
 }
 
 func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
-	sql := column.Name + " " + b.ColumnTypeSQL(column)
+	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
 	if column.Generated {
 		sql = sql + " AUTO_INCREMENT"
 	}
@@ -136,10 +136,21 @@ func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
 }
 
 func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) string {
-	sql := `CREATE TABLE %s (%s)`
+	sql := "CREATE TABLE `%s` (%s)"
 	fieldSqls := make([]string, len(entity.Columns))
 	for i := range entity.Columns {
-		fieldSqls[i] = b.BuildColumnSQL(&entity.Columns[i])
+		columnSql := b.BuildColumnSQL(&entity.Columns[i])
+		if entity.Columns[i].Nullable {
+			columnSql = columnSql + " NULL"
+		} else {
+			columnSql = columnSql + " NOT NULL"
+		}
+		fieldSqls[i] = columnSql
+	}
+	for _, column := range entity.Columns {
+		if column.Primary {
+			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (`%s`)", column.Name))
+		}
 	}
 	return fmt.Sprintf(sql, entity.GetTableName(), strings.Join(fieldSqls, ","))
 }
