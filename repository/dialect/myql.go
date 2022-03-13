@@ -128,7 +128,11 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 }
 
 func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
-	return column.Name + " " + b.ColumnTypeSQL(column)
+	sql := column.Name + " " + b.ColumnTypeSQL(column)
+	if column.Generated {
+		sql = sql + " AUTO_INCREMENT"
+	}
+	return sql
 }
 
 func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) string {
