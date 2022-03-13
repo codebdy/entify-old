@@ -59,7 +59,14 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 	case meta.COLUMN_INT:
 		return "int"
 	case meta.COLUMN_FLOAT:
-		return "int"
+		typeStr := "float"
+		if column.Length > 4 {
+			typeStr = "double"
+		}
+		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
+			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
+		}
+		return typeStr
 	case meta.COLUMN_BOOLEAN:
 		return "tinyint(1)"
 	case meta.COLUMN_STRING:

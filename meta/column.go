@@ -27,6 +27,9 @@ type Column struct {
 	DeleteDate    bool   `json:"deleteDate"`
 	Select        bool   `json:"select"`
 	Length        int    `json:"length"`
+	FloatM        int    `json:"floatM"` //M digits in total
+	FloatD        int    `json:"floatD"` //D digits may be after the decimal point
+	Unsigned      bool   `json:"unsigned"`
 	TypeEnityUuid string `json:"typeEnityUuid"`
 	Description   string `json:"description"`
 }
