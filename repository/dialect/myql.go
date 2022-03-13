@@ -53,36 +53,78 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 }
 
 func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
+	typeStr := "TEXT"
 	switch column.Type {
 	case meta.COLUMN_ID:
-		return "int"
+		typeStr = "INT UNSIGNED"
+		break
 	case meta.COLUMN_INT:
-		return "int"
+		typeStr = "int"
+		if column.Length == 1 {
+			typeStr = "TINYINT"
+		}
+		if column.Length == 2 {
+			typeStr = "SMALLINT"
+		}
+		if column.Length == 3 {
+			typeStr = "MEDIUMINT"
+		}
+		if column.Length == 4 {
+			typeStr = "INT"
+		}
+		if column.Length == 8 {
+			typeStr = "BIGINT"
+		}
+		if column.Unsigned {
+			typeStr = typeStr + " UNSIGNED"
+		}
+		break
 	case meta.COLUMN_FLOAT:
-		typeStr := "float"
+		typeStr = "FLOAT"
 		if column.Length > 4 {
-			typeStr = "double"
+			typeStr = "DOUBLE"
 		}
 		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
 			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
 		}
-		return typeStr
+		if column.Unsigned {
+			typeStr = typeStr + " UNSIGNED"
+		}
+		break
 	case meta.COLUMN_BOOLEAN:
-		return "tinyint(1)"
+		typeStr = "TINYINT(1)"
+		break
 	case meta.COLUMN_STRING:
-		return "text"
+		typeStr = "TEXT"
+		if column.Length > 0 {
+			if column.Length <= 255 {
+				typeStr = "TINYTEXT"
+			} else if column.Length <= 65535 {
+				typeStr = "TEXT"
+			} else if column.Length <= 16777215 {
+				typeStr = "MEDIUMTEXT"
+			} else {
+				typeStr = "LONGTEXT"
+			}
+		}
+		break
 	case meta.COLUMN_DATE:
-		return "datetime"
+		typeStr = "DATETIME"
+		break
 	case meta.COLUMN_SIMPLE_JSON:
-		return "json"
+		typeStr = "JSON"
+		break
 	case meta.COLUMN_SIMPLE_ARRAY:
-		return "json"
+		typeStr = "JSON"
+		break
 	case meta.COLUMN_JSON_ARRAY:
-		return "json"
+		typeStr = "JSON"
+		break
 	case meta.COLUMN_ENUM:
-		return "varchar(255)"
+		typeStr = "TINYTEXT"
+		break
 	}
-	return "varchar(255)"
+	return typeStr
 }
 
 func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
