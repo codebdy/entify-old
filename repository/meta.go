@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"rxdrag.com/entity-engine/meta"
@@ -15,10 +16,12 @@ func DeleteEntity(entityName string) {
 	fmt.Println("Not implement DeleteEntity")
 }
 
-func AddEntity(entity *meta.Entity) {
+func AddEntity(entity *meta.Entity, undoList *[]string, db *sql.DB) {
 	sqlBuilder := dialect.GetSQLBuilder()
-	sqlStr := sqlBuilder.BuildCreateEntitySQL(entity)
-	fmt.Println("AddEntity SQL:", sqlStr)
+	excuteSQL, undoSQL := sqlBuilder.BuildCreateEntitySQL(entity)
+	*undoList = append(*undoList, undoSQL)
+	db.Exec(excuteSQL)
+	fmt.Println("AddEntity SQL:", excuteSQL)
 }
 
 func AddRelation(relation *meta.Relation) {

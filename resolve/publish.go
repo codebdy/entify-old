@@ -50,6 +50,8 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	nextContent := decodeContent(nextMeta)
 	diff := migration.CreateDiff(publishedContent, nextContent)
 	migration.ExcuteDiff(diff)
+	nextMeta.(utils.Object)[consts.META_STATUS] = consts.PUBLISH
+	repository.SaveOne(nextMeta.(utils.Object), &meta.MetaEntity)
 	return nil, nil
 }
 

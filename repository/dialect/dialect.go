@@ -10,7 +10,7 @@ type SQLBuilder interface {
 	BuildBoolExp(where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 
-	BuildCreateEntitySQL(entity *meta.Entity) string
+	BuildCreateEntitySQL(entity *meta.Entity) (string, string)
 	BuildColumnSQL(column *meta.Column) string
 	ColumnTypeSQL(column *meta.Column) string
 }

@@ -132,7 +132,7 @@ func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
 	return sql
 }
 
-func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) string {
+func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) (string, string) {
 	sql := "CREATE TABLE `%s` (%s)"
 	fieldSqls := make([]string, len(entity.Columns))
 	for i := range entity.Columns {
@@ -149,5 +149,5 @@ func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) string {
 			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (`%s`)", column.Name))
 		}
 	}
-	return fmt.Sprintf(sql, entity.GetTableName(), strings.Join(fieldSqls, ","))
+	return fmt.Sprintf(sql, entity.GetTableName(), strings.Join(fieldSqls, ",")), "DROP TABLE " + entity.GetTableName()
 }
