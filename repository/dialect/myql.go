@@ -72,7 +72,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		if column.Length == 4 {
 			typeStr = "INT"
 		}
-		if column.Length == 8 {
+		if column.Length > 4 {
 			typeStr = "BIGINT"
 		}
 		if column.Unsigned {
