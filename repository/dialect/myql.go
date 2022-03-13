@@ -98,7 +98,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		typeStr = "TEXT"
 		if column.Length > 0 {
 			if column.Length <= 255 {
-				typeStr = "TINYTEXT"
+				typeStr = fmt.Sprintf("VARCHAR(%d)", column.Length)
 			} else if column.Length <= 65535 {
 				typeStr = "TEXT"
 			} else if column.Length <= 16777215 {
