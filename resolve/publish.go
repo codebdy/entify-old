@@ -1,6 +1,8 @@
 package resolve
 
 import (
+	"time"
+
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entity-engine/consts"
@@ -50,8 +52,10 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	nextContent := decodeContent(nextMeta)
 	diff := migration.CreateDiff(publishedContent, nextContent)
 	migration.ExcuteDiff(diff)
-	nextMeta.(utils.Object)[consts.META_STATUS] = consts.PUBLISH
-	repository.SaveOne(nextMeta.(utils.Object), &meta.MetaEntity)
+	metaObj := nextMeta.(utils.Object)
+	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
+	metaObj[consts.META_PUBLISHEDAT] = time.Now()
+	repository.SaveOne(metaObj, &meta.MetaEntity)
 	return nil, nil
 }
 
