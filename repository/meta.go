@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/repository/dialect"
 )
 
 func DeleteRelation(relatin *meta.Relation) {
@@ -15,7 +16,9 @@ func DeleteEntity(entityName string) {
 }
 
 func AddEntity(entity *meta.Entity) {
-	fmt.Println("Not implement AddEntity", entity.Name)
+	sqlBuilder := dialect.GetSQLBuilder()
+	sqlStr := sqlBuilder.BuildCreateEntitySQL(entity)
+	fmt.Println("AddEntity SQL:", sqlStr)
 }
 
 func AddRelation(relation *meta.Relation) {

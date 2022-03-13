@@ -128,7 +128,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 }
 
 func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
-	return column.Name + " " + b.BuildColumnSQL(column)
+	return column.Name + " " + b.ColumnTypeSQL(column)
 }
 
 func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) string {
