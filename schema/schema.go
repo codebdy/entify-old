@@ -10,6 +10,7 @@ import (
 	"rxdrag.com/entity-engine/resolve"
 )
 
+var Cache TypeCache
 var GQLSchema *graphql.Schema
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
@@ -23,7 +24,7 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 }
 
 func MakeSchema() {
-	ClearCache()
+	Cache.ClearCache()
 
 	queryFields := graphql.Fields{}
 

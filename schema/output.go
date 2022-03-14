@@ -27,8 +27,8 @@ func OutputFields(entity *meta.Entity) graphql.Fields {
 }
 
 func OutputType(entity *meta.Entity) *graphql.Output {
-	if OutputTypeMap[entity.Name] != nil {
-		return OutputTypeMap[entity.Name]
+	if Cache.OutputTypeMap[entity.Name] != nil {
+		return Cache.OutputTypeMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
@@ -43,14 +43,14 @@ func OutputType(entity *meta.Entity) *graphql.Output {
 		)
 	}
 
-	OutputTypeMap[entity.Name] = &returnValue
+	Cache.OutputTypeMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
 func WhereExp(entity *meta.Entity) *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
-	if WhereExpMap[expName] != nil {
-		return WhereExpMap[expName]
+	if Cache.WhereExpMap[expName] != nil {
+		return Cache.WhereExpMap[expName]
 	}
 
 	andExp := graphql.InputObjectFieldConfig{}
@@ -88,13 +88,13 @@ func WhereExp(entity *meta.Entity) *graphql.InputObject {
 			fields[column.Name] = columnExp
 		}
 	}
-	WhereExpMap[expName] = boolExp
+	Cache.WhereExpMap[expName] = boolExp
 	return boolExp
 }
 
 func OrderBy(entity *meta.Entity) *graphql.InputObject {
-	if OrderByMap[entity.Name] != nil {
-		return OrderByMap[entity.Name]
+	if Cache.OrderByMap[entity.Name] != nil {
+		return Cache.OrderByMap[entity.Name]
 	}
 	fields := graphql.InputObjectConfigFieldMap{}
 
@@ -113,13 +113,13 @@ func OrderBy(entity *meta.Entity) *graphql.InputObject {
 		}
 	}
 
-	OrderByMap[entity.Name] = orderByExp
+	Cache.OrderByMap[entity.Name] = orderByExp
 	return orderByExp
 }
 
 func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
-	if DistinctOnEnumMap[entity.Name] != nil {
-		return DistinctOnEnumMap[entity.Name]
+	if Cache.DistinctOnEnumMap[entity.Name] != nil {
+		return Cache.DistinctOnEnumMap[entity.Name]
 	}
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	for _, column := range entity.Columns {
@@ -134,6 +134,6 @@ func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 			Values: enumValueConfigMap,
 		},
 	)
-	DistinctOnEnumMap[entity.Name] = entEnum
+	Cache.DistinctOnEnumMap[entity.Name] = entEnum
 	return entEnum
 }

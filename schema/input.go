@@ -22,8 +22,8 @@ func InputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFiel
 }
 
 func UpdateInput(entity *meta.Entity) *graphql.Input {
-	if UpdateInputMap[entity.Name] != nil {
-		return UpdateInputMap[entity.Name]
+	if Cache.UpdateInputMap[entity.Name] != nil {
+		return Cache.UpdateInputMap[entity.Name]
 	}
 	var returnValue graphql.Input
 
@@ -33,13 +33,13 @@ func UpdateInput(entity *meta.Entity) *graphql.Input {
 			Fields: InputFields(entity, false),
 		},
 	)
-	UpdateInputMap[entity.Name] = &returnValue
+	Cache.UpdateInputMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
 func PostInput(entity *meta.Entity) *graphql.Input {
-	if PostInputMap[entity.Name] != nil {
-		return PostInputMap[entity.Name]
+	if Cache.PostInputMap[entity.Name] != nil {
+		return Cache.PostInputMap[entity.Name]
 	}
 	var returnValue graphql.Input
 
@@ -49,13 +49,13 @@ func PostInput(entity *meta.Entity) *graphql.Input {
 			Fields: InputFields(entity, true),
 		},
 	)
-	PostInputMap[entity.Name] = &returnValue
+	Cache.PostInputMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
 func MutationResponseType(entity *meta.Entity) *graphql.Output {
-	if MutationResponseMap[entity.Name] != nil {
-		return MutationResponseMap[entity.Name]
+	if Cache.MutationResponseMap[entity.Name] != nil {
+		return Cache.MutationResponseMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
@@ -77,6 +77,6 @@ func MutationResponseType(entity *meta.Entity) *graphql.Output {
 		},
 	)
 
-	MutationResponseMap[entity.Name] = &returnValue
+	Cache.MutationResponseMap[entity.Name] = &returnValue
 	return &returnValue
 }
