@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"log"
-
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
@@ -26,6 +24,7 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 
 func MakeSchema() {
 	ClearCache()
+
 	queryFields := graphql.Fields{}
 
 	for _, entity := range *repository.Entities {
@@ -58,15 +57,15 @@ func MakeSchema() {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
@@ -88,10 +87,11 @@ func MakeSchema() {
 		},
 	}
 	theSchema, err := graphql.NewSchema(schemaConfig)
-	if err != nil {
-		log.Fatalf("failed to create new schema, error: %v", err)
-	}
 
+	if err != nil {
+		panic(err)
+		//log.Fatalf("failed to create new schema, error: %v", err)
+	}
 	GQLSchema = &theSchema
 }
 

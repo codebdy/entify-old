@@ -332,7 +332,7 @@ func AggregateType(entity *meta.Entity) graphql.Output {
 	fields := graphql.Fields{
 		"nodes": &graphql.Field{
 			Type: &graphql.List{
-				OfType: OutputType(entity),
+				OfType: *OutputType(entity),
 			},
 		},
 	}

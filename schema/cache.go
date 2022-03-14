@@ -10,6 +10,8 @@ var OutputTypeMap map[string]*graphql.Output
 var DistinctOnEnumMap map[string]*graphql.Enum
 var OrderByMap map[string]*graphql.InputObject
 
+var MutationResponseMap map[string]*graphql.Output
+
 //类型缓存， query mutaion通用
 var UpdateInputMap map[string]*graphql.Input
 var PostInputMap map[string]*graphql.Input
@@ -22,6 +24,7 @@ func ClearCache() {
 	OutputTypeMap = make(map[string]*graphql.Output)
 	DistinctOnEnumMap = make(map[string]*graphql.Enum)
 	OrderByMap = make(map[string]*graphql.InputObject)
+	MutationResponseMap = make(map[string]*graphql.Output)
 	UpdateInputMap = make(map[string]*graphql.Input)
 	PostInputMap = make(map[string]*graphql.Input)
 	EnumMap = make(map[string]*graphql.Enum)

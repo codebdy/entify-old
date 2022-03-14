@@ -75,7 +75,6 @@ func updateString(object map[string]interface{}, entity *meta.Entity) string {
 }
 
 func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
-	fmt.Println(object)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -116,7 +115,6 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 }
 
 func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
-	fmt.Println(object)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {

@@ -27,6 +27,7 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
 	repository.SaveOne(metaObj, &meta.MetaEntity)
+	repository.LoadMetas()
 	return nil, nil
 }
 

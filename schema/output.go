@@ -26,14 +26,14 @@ func OutputFields(entity *meta.Entity) graphql.Fields {
 	return fields
 }
 
-func OutputType(entity *meta.Entity) graphql.Output {
+func OutputType(entity *meta.Entity) *graphql.Output {
 	if OutputTypeMap[entity.Name] != nil {
-		return *OutputTypeMap[entity.Name]
+		return OutputTypeMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
 	if entity.EntityType == meta.Entity_ENUM {
-		return EnumType(entity)
+		returnValue = EnumType(entity)
 	} else {
 		returnValue = graphql.NewObject(
 			graphql.ObjectConfig{
@@ -42,8 +42,9 @@ func OutputType(entity *meta.Entity) graphql.Output {
 			},
 		)
 	}
+
 	OutputTypeMap[entity.Name] = &returnValue
-	return returnValue
+	return &returnValue
 }
 
 func WhereExp(entity *meta.Entity) *graphql.InputObject {

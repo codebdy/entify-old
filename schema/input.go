@@ -7,7 +7,6 @@ import (
 )
 
 //mutition类型缓存， mutaion用
-var mutationResponseMap = make(map[string]*graphql.Output)
 
 func InputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
@@ -54,9 +53,9 @@ func PostInput(entity *meta.Entity) *graphql.Input {
 	return &returnValue
 }
 
-func MutationResponseType(entity *meta.Entity) graphql.Output {
-	if mutationResponseMap[entity.Name] != nil {
-		return *mutationResponseMap[entity.Name]
+func MutationResponseType(entity *meta.Entity) *graphql.Output {
+	if MutationResponseMap[entity.Name] != nil {
+		return MutationResponseMap[entity.Name]
 	}
 	var returnValue graphql.Output
 
@@ -70,7 +69,7 @@ func MutationResponseType(entity *meta.Entity) graphql.Output {
 				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: OutputType(entity),
+							OfType: *OutputType(entity),
 						},
 					},
 				},
@@ -78,6 +77,6 @@ func MutationResponseType(entity *meta.Entity) graphql.Output {
 		},
 	)
 
-	mutationResponseMap[entity.Name] = &returnValue
-	return returnValue
+	MutationResponseMap[entity.Name] = &returnValue
+	return &returnValue
 }
