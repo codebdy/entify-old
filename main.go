@@ -12,7 +12,7 @@ import (
 
 func main() {
 	h := handler.New(&handler.Config{
-		Schema: schema.GQLSchema,
+		Schema: schema.ResolveSchema(),
 		Pretty: true,
 	})
 

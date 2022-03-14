@@ -14,7 +14,8 @@ import (
 
 var GQLSchema *graphql.Schema
 
-func InitSchema() {
+func MakeSchema() {
+	ClearCache()
 	queryFields := graphql.Fields{}
 
 	for _, entity := range *repository.Entities {
@@ -84,6 +85,10 @@ func InitSchema() {
 	GQLSchema = &theSchema
 }
 
+func ResolveSchema() *graphql.Schema {
+	return GQLSchema
+}
+
 func init() {
-	InitSchema()
+	MakeSchema()
 }
