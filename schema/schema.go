@@ -14,6 +14,16 @@ import (
 
 var GQLSchema *graphql.Schema
 
+func publishResolve(p graphql.ResolveParams) (interface{}, error) {
+	reslult, err := resolve.PublishMetaResolve(p)
+	if err != nil {
+		return reslult, err
+	}
+
+	MakeSchema()
+	return reslult, nil
+}
+
 func MakeSchema() {
 	ClearCache()
 	queryFields := graphql.Fields{}
@@ -49,7 +59,7 @@ func MakeSchema() {
 		},
 		consts.PUBLISH: &graphql.Field{
 			Type:    OutputType(&meta.MetaEntity),
-			Resolve: resolve.PublishMetaResolve,
+			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
 			Type:    OutputType(&meta.MetaEntity),
