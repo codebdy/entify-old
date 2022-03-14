@@ -7,10 +7,10 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/handler"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/handler"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/resolve"
@@ -85,9 +85,8 @@ func main() {
 	}
 
 	h := handler.New(&handler.Config{
-		Schema:   &schema,
-		Pretty:   true,
-		GraphiQL: true,
+		Schema: &schema,
+		Pretty: true,
 	})
 
 	http.Handle("/graphql", authentication.CorsMiddleware(authentication.AuthMiddleware(h)))
