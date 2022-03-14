@@ -12,8 +12,8 @@ import (
 
 func main() {
 	h := handler.New(&handler.Config{
-		Schema: schema.ResolveSchema(),
-		Pretty: true,
+		SchemaResolveFn: schema.ResolveSchema,
+		Pretty:          true,
 	})
 
 	http.Handle("/graphql", authentication.CorsMiddleware(authentication.AuthMiddleware(h)))

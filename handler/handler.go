@@ -24,7 +24,7 @@ type ResultCallbackFn func(ctx context.Context, params *graphql.Params, result *
 
 // Handler handler
 type Handler struct {
-	Schema           *graphql.Schema
+	SchemaResolveFn  func() *graphql.Schema
 	pretty           bool
 	graphiqlConfig   *GraphiQLConfig
 	playgroundConfig *PlaygroundConfig
@@ -132,7 +132,7 @@ func (h *Handler) ContextHandler(ctx context.Context, w http.ResponseWriter, r *
 
 	// execute graphql query
 	params := graphql.Params{
-		Schema:         *h.Schema,
+		Schema:         *h.SchemaResolveFn(),
 		RequestString:  opts.Query,
 		VariableValues: opts.Variables,
 		OperationName:  opts.OperationName,
@@ -198,9 +198,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RootObjectFn allows a user to generate a RootObject per request
 type RootObjectFn func(ctx context.Context, r *http.Request) map[string]interface{}
 
+func NilSchemaResolveFn() *graphql.Schema {
+	return nil
+}
+
 // Config configuration
 type Config struct {
-	Schema           *graphql.Schema
+	SchemaResolveFn  func() *graphql.Schema
 	Pretty           bool
 	GraphiQLConfig   *GraphiQLConfig
 	PlaygroundConfig *PlaygroundConfig
@@ -212,7 +216,7 @@ type Config struct {
 // NewConfig returns a new default config
 func NewConfig() *Config {
 	return &Config{
-		Schema:           nil,
+		SchemaResolveFn:  NilSchemaResolveFn,
 		Pretty:           true,
 		GraphiQLConfig:   nil,
 		PlaygroundConfig: NewDefaultPlaygroundConfig(),
@@ -225,12 +229,12 @@ func New(p *Config) *Handler {
 		p = NewConfig()
 	}
 
-	if p.Schema == nil {
+	if p.SchemaResolveFn() == nil {
 		panic("undefined GraphQL schema")
 	}
 
 	return &Handler{
-		Schema:           p.Schema,
+		SchemaResolveFn:  p.SchemaResolveFn,
 		pretty:           p.Pretty,
 		graphiqlConfig:   p.GraphiQLConfig,
 		playgroundConfig: p.PlaygroundConfig,
