@@ -6,7 +6,6 @@ import (
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/resolve"
 )
 
@@ -28,8 +27,8 @@ func MakeSchema() {
 
 	queryFields := graphql.Fields{}
 
-	for _, entity := range *repository.Entities {
-		AppendToQueryFields(entity, &queryFields)
+	for _, entity := range meta.MetaData.Entities {
+		AppendToQueryFields(&entity, &queryFields)
 	}
 
 	mutationFields := graphql.Fields{
@@ -71,8 +70,8 @@ func MakeSchema() {
 		},
 	}
 
-	for _, entity := range *repository.Entities {
-		AppendToMutationFields(entity, &mutationFields)
+	for _, entity := range meta.MetaData.Entities {
+		AppendToMutationFields(&entity, &mutationFields)
 	}
 
 	rootQuery := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields}

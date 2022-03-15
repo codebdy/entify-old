@@ -7,8 +7,6 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-var Entities *[]*meta.Entity
-
 func QueryPublishedMeta() interface{} {
 	publishedMeta, err := QueryOne(&meta.MetaEntity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
@@ -40,9 +38,9 @@ func QueryNextMeta() interface{} {
 }
 
 func GetEntityByUuid(uuid string) *meta.Entity {
-	for _, entity := range *Entities {
+	for _, entity := range meta.MetaData.Entities {
 		if entity.Uuid == uuid {
-			return entity
+			return &entity
 		}
 	}
 
@@ -64,14 +62,10 @@ func LoadMetas() {
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
 
-	theEntities := make([]*meta.Entity, len(publishedContent.Entities)+2)
-	theEntities[0] = &meta.MetaStatusEnum
-	theEntities[1] = &meta.MetaEntity
-	for i := range publishedContent.Entities {
-		theEntities[i+2] = &publishedContent.Entities[i]
-	}
+	publishedContent.Entities = append(publishedContent.Entities, meta.MetaStatusEnum)
+	publishedContent.Entities = append(publishedContent.Entities, meta.MetaEntity)
 
-	Entities = &theEntities
+	meta.MetaData = publishedContent
 }
 
 func init() {
