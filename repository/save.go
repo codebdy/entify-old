@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	"rxdrag.com/entity-engine/config"
@@ -74,6 +75,13 @@ func updateString(object map[string]interface{}, entity *meta.Entity) string {
 	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = '%s'", entity.GetTableName(), updateSetFields(object), object["id"])
 }
 
+func clearTransaction(tx *sql.Tx) {
+	err := tx.Rollback()
+	if err != sql.ErrTxDone && err != nil {
+		log.Fatalln(err)
+	}
+}
+
 func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
@@ -83,6 +91,7 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	}
 
 	tx, err := db.Begin()
+	defer clearTransaction(tx)
 
 	saveStr := insertString(object, entity)
 	fmt.Println("INSERT", saveStr)
@@ -123,6 +132,7 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	}
 
 	tx, err := db.Begin()
+	defer clearTransaction(tx)
 
 	saveStr := updateString(object, entity)
 
@@ -144,7 +154,6 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	fmt.Println("insert new record", id)
 	savedObject, err := QueryOneById(entity, id)
 	if err != nil {
-		tx.Rollback()
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
 	}
