@@ -27,7 +27,7 @@ func MakeSchema() {
 
 	queryFields := graphql.Fields{}
 
-	for _, entity := range meta.MetaData.Entities {
+	for _, entity := range meta.Metas.Entities {
 		AppendToQueryFields(&entity, &queryFields)
 	}
 
@@ -70,7 +70,7 @@ func MakeSchema() {
 		},
 	}
 
-	for _, entity := range meta.MetaData.Entities {
+	for _, entity := range meta.Metas.Entities {
 		AppendToMutationFields(&entity, &mutationFields)
 	}
 

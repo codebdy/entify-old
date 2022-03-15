@@ -38,7 +38,7 @@ func QueryNextMeta() interface{} {
 }
 
 func GetEntityByUuid(uuid string) *meta.Entity {
-	for _, entity := range meta.MetaData.Entities {
+	for _, entity := range meta.Metas.Entities {
 		if entity.Uuid == uuid {
 			return &entity
 		}
@@ -65,7 +65,7 @@ func LoadMetas() {
 	publishedContent.Entities = append(publishedContent.Entities, meta.MetaStatusEnum)
 	publishedContent.Entities = append(publishedContent.Entities, meta.MetaEntity)
 
-	meta.MetaData = publishedContent
+	meta.Metas = publishedContent
 }
 
 func init() {

@@ -71,4 +71,4 @@ var MetaEntity = Entity{
 	},
 }
 
-var MetaData *MetaContent
+var Metas *MetaContent
