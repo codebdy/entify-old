@@ -10,6 +10,12 @@ const (
 	Entity_INTERFACE string = "Interface"
 )
 
+type EntityRelation struct {
+	Name     string
+	Relation *Relation
+	OfEntity *Entity
+}
+
 type Entity struct {
 	Uuid        string     `json:"uuid"`
 	Name        string     `json:"name"`
@@ -45,4 +51,16 @@ func (entity *Entity) GetTableName() string {
 		return (*entity).TableName
 	}
 	return utils.SnakeString((*entity).Name)
+}
+
+func (entity *Entity) Parent() *Entity {
+	return nil
+}
+
+func (er *EntityRelation) RoleName() string {
+	return ""
+}
+
+func (er *EntityRelation) ColumnName() string {
+	return ""
 }

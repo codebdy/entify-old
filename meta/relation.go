@@ -26,3 +26,7 @@ type Relation struct {
 
 	CascadeOn string `json:"cascadeOn"`
 }
+
+func (r *Relation) TableName() string {
+	return ""
+}
