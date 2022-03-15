@@ -93,12 +93,8 @@ func columnDifferent(oldColumn, newColumn *meta.Column) *meta.ColumnDiff {
 func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 	var diff meta.EntityDiff
 	modified := false
-	diff.OldName = oldEntity.Name
-	diff.NewName = newEntity.Name
-	diff.OldEntityType = oldEntity.EntityType
-	diff.NewEntityType = newEntity.EntityType
-	diff.OldTableName = oldEntity.TableName
-	diff.NewTableName = newEntity.TableName
+	diff.OldEntity = oldEntity
+	diff.NewEntity = newEntity
 
 	for _, column := range oldEntity.Columns {
 		foundCoumn := findColumn(column.Uuid, newEntity.Columns)
@@ -122,9 +118,8 @@ func entityDifferent(oldEntity, newEntity *meta.Entity) *meta.EntityDiff {
 		}
 	}
 
-	if diff.OldName != diff.NewName ||
-		diff.OldEntityType != diff.NewEntityType ||
-		diff.OldTableName != diff.NewTableName ||
+	if diff.OldEntity.GetTableName() != diff.NewEntity.GetTableName() ||
+		diff.OldEntity.EntityType != diff.NewEntity.EntityType ||
 		modified {
 		return &diff
 	}

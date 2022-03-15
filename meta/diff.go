@@ -6,12 +6,8 @@ type ColumnDiff struct {
 }
 
 type EntityDiff struct {
-	OldName       string
-	NewName       string
-	OldEntityType string
-	NewEntityType string
-	OldTableName  string
-	NewTableName  string
+	OldEntity     *Entity
+	NewEntity     *Entity
 	DeleteColumns []Column
 	AddColumns    []Column
 	ModifyColumns []ColumnDiff
