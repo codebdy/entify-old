@@ -79,4 +79,5 @@ const (
 const (
 	ID_SUFFIX    = "Id"
 	PIVOT_SUFFIX = "__pivot"
+	PARENT_ID    = "ParentPartId"
 )

@@ -99,6 +99,14 @@ func (c *MetaContent) Tables() []*Table {
 
 			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation) + consts.ID_SUFFIX}
 			ownerTable.Columns = append(ownerTable.Columns, column)
+		} else if relation.RelationType == INHERIT {
+			sourceTable := FindTable(relation.SourceId, tables)
+			if sourceTable == nil {
+				panic("Can not find parent table, relation:" + relation.Uuid)
+			}
+
+			column := Column{Type: COLUMN_ID, Name: consts.PARENT_ID}
+			sourceTable.Columns = append(sourceTable.Columns, column)
 		}
 	}
 	return tables
