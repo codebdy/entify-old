@@ -25,6 +25,9 @@ type Relation struct {
 	RoleOnTarget string `json:"roleOnTarget"`
 
 	CascadeOn string `json:"cascadeOn"`
+
+	//多对多关联自定义列
+	columns []Column
 }
 
 func (r *Relation) TableName() string {
