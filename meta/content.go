@@ -8,6 +8,15 @@ type MetaContent struct {
 	X6Edges   []interface{} `json:"x6Edges"`
 }
 
+func FindTable(metaUuid string, tables []*Table) *Table {
+	for i := range tables {
+		if tables[i].MetaUuid == metaUuid {
+			return tables[i]
+		}
+	}
+	return nil
+}
+
 func (c *MetaContent) filterEntity(equal func(entity *Entity) bool) []*Entity {
 	entities := []*Entity{}
 	for i := range c.Entities {
