@@ -1,7 +1,9 @@
 package meta
 
 type Table struct {
-	columns []*Column
+	MetaUuid string
+	Name     string
+	Columns  []*Column
 }
 
 type TableDelete struct {

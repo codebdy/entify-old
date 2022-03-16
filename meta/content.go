@@ -11,3 +11,7 @@ type MetaContent struct {
 func (entity *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
 	return []EntityRelation{}
 }
+
+func (entity *MetaContent) Tables() []*Table {
+	return []*Table{}
+}
