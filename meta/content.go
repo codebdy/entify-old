@@ -57,26 +57,32 @@ func (c *MetaContent) Tables() []*Table {
 	for i := range c.Relations {
 		relation := c.Relations[i]
 		if relation.RelationType == MANY_TO_MANY {
-			table := &Table{
-				MetaUuid: relation.Uuid,
-				Name:     c.RelationTableName(&relation),
-				Columns: []Column{
-					{
-						Name: c.RelationSourceColumnName(&relation),
-						Type: COLUMN_ID,
-					},
-					{
-						Name: c.RelationTargetColumnName(&relation),
-						Type: COLUMN_ID,
-					},
-				},
-			}
-			table.Columns = append(table.Columns, relation.columns...)
-			tables = append(tables, table)
+			relationTable := c.RelationTable(&relation)
+			tables = append(tables, relationTable)
 		}
 
 	}
 	return tables
+}
+
+func (c *MetaContent) RelationTable(relation *Relation) *Table {
+	table := &Table{
+		MetaUuid: relation.Uuid,
+		Name:     c.RelationTableName(relation),
+		Columns: []Column{
+			{
+				Name: c.RelationSourceColumnName(relation),
+				Type: COLUMN_ID,
+			},
+			{
+				Name: c.RelationTargetColumnName(relation),
+				Type: COLUMN_ID,
+			},
+		},
+	}
+	table.Columns = append(table.Columns, relation.columns...)
+
+	return table
 }
 
 func (c *MetaContent) RelationTableName(relation *Relation) string {
