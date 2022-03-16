@@ -1,5 +1,7 @@
 package meta
 
+import "rxdrag.com/entity-engine/consts"
+
 type MetaContent struct {
 	Entities  []Entity      `json:"entities"`
 	Relations []Relation    `json:"relations"`
@@ -38,10 +40,6 @@ func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
 	return nil
 }
 
-func (c *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
-	return []EntityRelation{}
-}
-
 func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
 
@@ -50,13 +48,53 @@ func (c *MetaContent) Tables() []*Table {
 		if relation.RelationType == MANY_TO_MANY {
 			relationTable := c.relationTable(&relation)
 			tables = append(tables, relationTable)
+		} else if relation.RelationType == ONE_TO_ONE {
+			ownerId := relation.OwnerId
+			if ownerId == "" {
+				ownerId = relation.SourceId
+			}
+
+			ownerTable := FindTable(ownerId, tables)
+			if ownerTable == nil {
+				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
+			}
+
+			column := Column{Type: COLUMN_ID}
+			if ownerId == relation.SourceId {
+				column.Name = c.RelationTargetColumnName(&relation)
+			} else {
+				column.Name = c.RelationSourceColumnName(&relation)
+			}
+			column.Name = column.Name + consts.ID_SUFFIX
+
+			ownerTable.Columns = append(ownerTable.Columns, column)
+
+		} else if relation.RelationType == ONE_TO_MANY {
+			ownerId := relation.TargetId
+			ownerTable := FindTable(ownerId, tables)
+			if ownerTable == nil {
+				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
+			}
+
+			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation) + consts.ID_SUFFIX}
+			ownerTable.Columns = append(ownerTable.Columns, column)
+
+		} else if relation.RelationType == MANY_TO_ONE {
+			ownerId := relation.SourceId
+			ownerTable := FindTable(ownerId, tables)
+			if ownerTable == nil {
+				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
+			}
+
+			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation) + consts.ID_SUFFIX}
+			ownerTable.Columns = append(ownerTable.Columns, column)
 		}
 	}
 	return tables
 }
 
 func (c *MetaContent) RelationTableName(relation *Relation) string {
-	return c.RelationSouceTableName(relation) + "_" + c.RelationTargetTableName(relation) + "__pivot"
+	return c.RelationSouceTableName(relation) + "_" + c.RelationTargetTableName(relation) + consts.PIVOT_SUFFIX
 }
 
 func (c *MetaContent) RelationSouceTableName(relation *Relation) string {
@@ -70,11 +108,11 @@ func (c *MetaContent) RelationTargetTableName(relation *Relation) string {
 }
 
 func (c *MetaContent) RelationSourceColumnName(relation *Relation) string {
-	return c.RelationSouceTableName(relation) + "_id"
+	return c.RelationSouceTableName(relation) + consts.ID_SUFFIX
 }
 
 func (c *MetaContent) RelationTargetColumnName(relation *Relation) string {
-	return c.RelationTargetTableName(relation) + "_id"
+	return c.RelationTargetTableName(relation) + consts.ID_SUFFIX
 }
 
 func (c *MetaContent) entityTables() []*Table {
@@ -110,7 +148,7 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 			},
 		},
 	}
-	table.Columns = append(table.Columns, relation.columns...)
+	table.Columns = append(table.Columns, relation.Columns...)
 
 	return table
 }

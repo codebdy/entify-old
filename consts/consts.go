@@ -75,3 +75,8 @@ const (
 	META_ENTITIES  string = "entities"
 	META_RELATIONS string = "relations"
 )
+
+const (
+	ID_SUFFIX    = "Id"
+	PIVOT_SUFFIX = "__pivot"
+)
