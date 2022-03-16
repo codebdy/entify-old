@@ -8,10 +8,44 @@ type MetaContent struct {
 	X6Edges   []interface{} `json:"x6Edges"`
 }
 
-func (entity *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
+func (c *MetaContent) filterEntity(equal func(entity *Entity) bool) []*Entity {
+	entities := []*Entity{}
+	for i := range c.Entities {
+		entity := &c.Entities[i]
+		if equal(entity) {
+			entities = append(entities, entity)
+		}
+	}
+	return entities
+}
+
+func (c *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
 	return []EntityRelation{}
 }
 
-func (entity *MetaContent) Tables() []*Table {
-	return []*Table{}
+func (c *MetaContent) entityTables() []*Table {
+
+	normalEntities := c.filterEntity(func(e *Entity) bool {
+		return e.EntityType == Entity_NORMAL
+	})
+
+	tables := make([]*Table, len(normalEntities))
+
+	for i := range normalEntities {
+		entity := normalEntities[i]
+		table := &Table{Name: entity.GetTableName()}
+		for j := range entity.Columns {
+			table.Columns = append(table.Columns, &entity.Columns[j])
+		}
+
+		tables[i] = table
+	}
+
+	return tables
+}
+
+func (c *MetaContent) Tables() []*Table {
+	tables := c.entityTables()
+
+	return tables
 }
