@@ -149,5 +149,16 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) (string, string) {
 			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (`%s`)", column.Name))
 		}
 	}
-	return fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ",")), "DROP TABLE " + table.Name
+
+	//建索引
+	for _, column := range table.Columns {
+		if column.Index {
+			indexSql := "INDEX %s ( `%s`)"
+			fieldSqls = append(fieldSqls, fmt.Sprintf(indexSql, column.Name+consts.INDEX_SUFFIX, column.Name))
+		}
+	}
+
+	sql = fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ","))
+
+	return sql, "DROP TABLE " + table.Name
 }

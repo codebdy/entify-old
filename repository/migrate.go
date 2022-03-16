@@ -44,7 +44,10 @@ func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL, undoSQL := sqlBuilder.BuildCreateTableSQL(table)
 	*undoList = append(*undoList, undoSQL)
-	db.Exec(excuteSQL)
+	_, err := db.Exec(excuteSQL)
+	if err != nil {
+		panic("Create table error:" + err.Error())
+	}
 	fmt.Println("AddEntity SQL:", excuteSQL)
 }
 

@@ -80,4 +80,5 @@ const (
 	ID_SUFFIX    = "_id"
 	PIVOT_SUFFIX = "__pivot"
 	PARENT_ID    = "parent_part_id"
+	INDEX_SUFFIX = "_idx"
 )
