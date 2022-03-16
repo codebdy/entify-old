@@ -9,7 +9,7 @@ import (
 
 func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 	//如果是枚举
-	if entity.EntityType == meta.Entity_ENUM {
+	if entity.EntityType == meta.ENTITY_ENUM {
 		return
 	}
 

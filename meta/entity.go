@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	Entity_NORMAL    string = "Normal"
-	Entity_ENUM      string = "Enum"
-	Entity_INTERFACE string = "Interface"
+	ENTITY_NORMAL    string = "Normal"
+	ENTITY_ENUM      string = "Enum"
+	ENTITY_INTERFACE string = "Interface"
 )
 
 type EntityRelation struct {
@@ -63,4 +63,8 @@ func (er *EntityRelation) RoleName() string {
 
 func (er *EntityRelation) ColumnName() string {
 	return ""
+}
+
+func (e *Entity) IsNormal() bool {
+	return e.EntityType == ENTITY_NORMAL || e.EntityType == ""
 }

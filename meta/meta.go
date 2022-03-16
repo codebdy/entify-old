@@ -14,7 +14,7 @@ const (
 var MetaStatusEnum = Entity{
 	Uuid:       META_STATUS_ENUM_UUID,
 	Name:       "MetaStatus",
-	EntityType: Entity_ENUM,
+	EntityType: ENTITY_ENUM,
 	EnumValues: map[string]interface{}{
 		META_STATUS_PUBLISHED: map[string]string{
 			"value": META_STATUS_PUBLISHED,
@@ -35,7 +35,7 @@ var MetaEntity = Entity{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       consts.META_ENTITY_NAME,
 	TableName:  "meta",
-	EntityType: Entity_NORMAL,
+	EntityType: ENTITY_NORMAL,
 	Columns: []Column{
 		{
 			Uuid: "META_COLUMN_ID_UUID",

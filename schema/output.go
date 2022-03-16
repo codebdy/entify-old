@@ -32,7 +32,7 @@ func OutputType(entity *meta.Entity) *graphql.Output {
 	}
 	var returnValue graphql.Output
 
-	if entity.EntityType == meta.Entity_ENUM {
+	if entity.EntityType == meta.ENTITY_ENUM {
 		returnValue = EnumType(entity)
 	} else {
 		returnValue = graphql.NewObject(

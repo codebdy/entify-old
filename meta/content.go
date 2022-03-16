@@ -16,7 +16,7 @@ type MetaContent struct {
 
 func (c *MetaContent) Validate() {
 	for _, entity := range c.Entities {
-		if len(entity.Columns) <= 1 && entity.EntityType == Entity_NORMAL {
+		if len(entity.Columns) <= 1 && entity.IsNormal() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
 		}
 	}
@@ -129,7 +129,7 @@ func (c *MetaContent) RelationTargetColumnName(relation *Relation) string {
 func (c *MetaContent) entityTables() []*Table {
 
 	normalEntities := c.filterEntity(func(e *Entity) bool {
-		return e.EntityType == Entity_NORMAL
+		return e.IsNormal()
 	})
 
 	tables := make([]*Table, len(normalEntities))
