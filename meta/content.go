@@ -19,6 +19,16 @@ func (c *MetaContent) filterEntity(equal func(entity *Entity) bool) []*Entity {
 	return entities
 }
 
+func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
+	for i := range c.Entities {
+		entity := &c.Entities[i]
+		if entity.Uuid == uuid {
+			return entity
+		}
+	}
+	return nil
+}
+
 func (c *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
 	return []EntityRelation{}
 }
@@ -33,7 +43,7 @@ func (c *MetaContent) entityTables() []*Table {
 
 	for i := range normalEntities {
 		entity := normalEntities[i]
-		table := &Table{Name: entity.GetTableName()}
+		table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
 		for j := range entity.Columns {
 			table.Columns = append(table.Columns, &entity.Columns[j])
 		}
@@ -47,5 +57,17 @@ func (c *MetaContent) entityTables() []*Table {
 func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
 
+	for i := range c.Relations {
+		relation := c.Relations[i]
+		if relation.RelationType == MANY_TO_MANY {
+			sourceEntity := c.GetEntityByUuid(relation.SourceId)
+			targetEntity := c.GetEntityByUuid(relation.TargetId)
+			tables = append(tables, &Table{
+				MetaUuid: relation.Uuid,
+				Name:     sourceEntity.GetTableName() + "_" + targetEntity.GetTableName() + "__middle",
+			})
+		}
+
+	}
 	return tables
 }
