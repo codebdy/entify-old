@@ -132,22 +132,22 @@ func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
 	return sql
 }
 
-func (b *MySQLBuilder) BuildCreateEntitySQL(entity *meta.Entity) (string, string) {
+func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) (string, string) {
 	sql := "CREATE TABLE `%s` (%s)"
-	fieldSqls := make([]string, len(entity.Columns))
-	for i := range entity.Columns {
-		columnSql := b.BuildColumnSQL(&entity.Columns[i])
-		if entity.Columns[i].Nullable {
+	fieldSqls := make([]string, len(table.Columns))
+	for i := range table.Columns {
+		columnSql := b.BuildColumnSQL(&table.Columns[i])
+		if table.Columns[i].Nullable {
 			columnSql = columnSql + " NULL"
 		} else {
 			columnSql = columnSql + " NOT NULL"
 		}
 		fieldSqls[i] = columnSql
 	}
-	for _, column := range entity.Columns {
+	for _, column := range table.Columns {
 		if column.Primary {
 			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (`%s`)", column.Name))
 		}
 	}
-	return fmt.Sprintf(sql, entity.GetTableName(), strings.Join(fieldSqls, ",")), "DROP TABLE " + entity.GetTableName()
+	return fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ",")), "DROP TABLE " + table.Name
 }

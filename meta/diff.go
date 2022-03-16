@@ -5,49 +5,21 @@ type ColumnDiff struct {
 	NewColumn Column
 }
 
-type EntityDiff struct {
-	OldEntity     *Entity
-	NewEntity     *Entity
+type TableDiff struct {
+	OldTable      *Table
+	NewTable      *Table
 	DeleteColumns []Column
 	AddColumns    []Column
 	ModifyColumns []ColumnDiff
-}
-
-type RelationDiff struct {
-	OldeRelation Relation
-	NewRelation  Relation
 }
 
 type Diff struct {
 	oldContent *MetaContent
 	newContent *MetaContent
 
-	DeletedRelations []Relation
-	DeletedEntities  []Entity
-	AddedEntities    []Entity
-	AddedRlations    []Relation
-	ModifiedEntities []EntityDiff
-	ModifieRelations []RelationDiff
-}
-
-func findRelation(uuid string, relations []Relation) *Relation {
-	for _, relation := range relations {
-		if relation.Uuid == uuid {
-			return &relation
-		}
-	}
-
-	return nil
-}
-
-func findEntity(uuid string, entities []Entity) *Entity {
-	for _, entity := range entities {
-		if entity.Uuid == uuid {
-			return &entity
-		}
-	}
-
-	return nil
+	DeletedTables  []*Table
+	AddedTables    []*Table
+	ModifiedTables []*TableDiff
 }
 
 func findColumn(uuid string, columns []Column) *Column {
@@ -57,29 +29,6 @@ func findColumn(uuid string, columns []Column) *Column {
 		}
 	}
 
-	return nil
-}
-
-func relationDifferent(oldRelation, newRelation *Relation) *RelationDiff {
-	diff := RelationDiff{
-		OldeRelation: *oldRelation,
-		NewRelation:  *newRelation,
-	}
-	if oldRelation.RelationType != newRelation.RelationType {
-		return &diff
-	}
-	if oldRelation.RoleOnSource != newRelation.RoleOnSource {
-		return &diff
-	}
-	if oldRelation.RoleOnTarget != newRelation.RoleOnTarget {
-		return &diff
-	}
-	if oldRelation.SourceId != newRelation.SourceId {
-		return &diff
-	}
-	if oldRelation.TargetId != newRelation.TargetId {
-		return &diff
-	}
 	return nil
 }
 
@@ -116,22 +65,22 @@ func columnDifferent(oldColumn, newColumn *Column) *ColumnDiff {
 	}
 	return nil
 }
-func entityDifferent(oldEntity, newEntity *Entity) *EntityDiff {
-	var diff EntityDiff
+func tableDifferent(oldTable, newTable *Table) *TableDiff {
+	var diff TableDiff
 	modified := false
-	diff.OldEntity = oldEntity
-	diff.NewEntity = newEntity
+	diff.OldTable = oldTable
+	diff.NewTable = newTable
 
-	for _, column := range oldEntity.Columns {
-		foundCoumn := findColumn(column.Uuid, newEntity.Columns)
+	for _, column := range oldTable.Columns {
+		foundCoumn := findColumn(column.Uuid, newTable.Columns)
 		if foundCoumn == nil {
 			diff.DeleteColumns = append(diff.DeleteColumns, column)
 			modified = true
 		}
 	}
 
-	for _, column := range newEntity.Columns {
-		foundColumn := findColumn(column.Uuid, oldEntity.Columns)
+	for _, column := range newTable.Columns {
+		foundColumn := findColumn(column.Uuid, oldTable.Columns)
 		if foundColumn == nil {
 			diff.AddColumns = append(diff.AddColumns, column)
 			modified = true
@@ -144,9 +93,7 @@ func entityDifferent(oldEntity, newEntity *Entity) *EntityDiff {
 		}
 	}
 
-	if diff.OldEntity.GetTableName() != diff.NewEntity.GetTableName() ||
-		diff.OldEntity.EntityType != diff.NewEntity.EntityType ||
-		modified {
+	if diff.OldTable.Name != diff.NewTable.Name || modified {
 		return &diff
 	}
 	return nil
@@ -157,48 +104,26 @@ func CreateDiff(published, next *MetaContent) *Diff {
 		oldContent: published,
 		newContent: next,
 	}
-	publishedRelations := published.Relations
-	nextRelations := next.Relations
 
-	for _, relation := range publishedRelations {
-		foundRelation := findRelation(relation.Uuid, nextRelations)
-		//删除的Relation
-		if foundRelation == nil {
-			diff.DeletedRelations = append(diff.DeletedRelations, relation)
+	publishedTables := published.Tables()
+	nextTables := next.Tables()
+
+	for _, table := range publishedTables {
+		foundTable := FindTable(table.MetaUuid, nextTables)
+		//删除的Table
+		if foundTable == nil {
+			diff.DeletedTables = append(diff.DeletedTables, table)
 		}
 	}
-	for _, relation := range nextRelations {
-		foundRelation := findRelation(relation.Uuid, publishedRelations)
-		//添加的Relation
-		if foundRelation == nil {
-			diff.AddedRlations = append(diff.AddedRlations, relation)
-		} else {
-			relationDiff := relationDifferent(&relation, foundRelation)
-			if relationDiff != nil {
-				diff.ModifieRelations = append(diff.ModifieRelations, *relationDiff)
-			}
-		}
-	}
-
-	publishedEntities := published.Entities
-	nextEntities := next.Entities
-
-	for _, entity := range publishedEntities {
-		foundEntity := findEntity(entity.Uuid, nextEntities)
-		//删除的Entity
-		if foundEntity == nil {
-			diff.DeletedEntities = append(diff.DeletedEntities, entity)
-		}
-	}
-	for _, entity := range nextEntities {
-		foundEntity := findEntity(entity.Uuid, publishedEntities)
+	for _, table := range nextTables {
+		foundTable := FindTable(table.MetaUuid, publishedTables)
 		//添加的Entity
-		if foundEntity == nil {
-			diff.AddedEntities = append(diff.AddedEntities, entity)
+		if foundTable == nil {
+			diff.AddedTables = append(diff.AddedTables, table)
 		} else {
-			entityDiff := entityDifferent(&entity, foundEntity)
-			if entityDiff != nil {
-				diff.ModifiedEntities = append(diff.ModifiedEntities, *entityDiff)
+			tableDiff := tableDifferent(table, foundTable)
+			if tableDiff != nil {
+				diff.ModifiedTables = append(diff.ModifiedTables, tableDiff)
 			}
 		}
 	}

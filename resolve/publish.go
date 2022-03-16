@@ -6,7 +6,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/migration"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -20,9 +19,9 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	}
 	publishedContent := repository.DecodeContent(publishedMeta)
 	nextContent := repository.DecodeContent(nextMeta)
-	migration.ValidateNextMeta(nextContent)
+	nextContent.Validate()
 	diff := meta.CreateDiff(publishedContent, nextContent)
-	migration.ExcuteDiff(diff)
+	repository.ExcuteDiff(diff)
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()

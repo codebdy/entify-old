@@ -1,6 +1,10 @@
 package meta
 
-import "rxdrag.com/entity-engine/consts"
+import (
+	"fmt"
+
+	"rxdrag.com/entity-engine/consts"
+)
 
 type MetaContent struct {
 	Entities  []Entity      `json:"entities"`
@@ -8,6 +12,14 @@ type MetaContent struct {
 	Diagrams  []interface{} `json:"diagrams"`
 	X6Nodes   []interface{} `json:"x6Nodes"`
 	X6Edges   []interface{} `json:"x6Edges"`
+}
+
+func (c *MetaContent) Validate() {
+	for _, entity := range c.Entities {
+		if len(entity.Columns) <= 1 && entity.EntityType == Entity_NORMAL {
+			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
+		}
+	}
 }
 
 func FindTable(metaUuid string, tables []*Table) *Table {

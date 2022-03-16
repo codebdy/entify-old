@@ -10,14 +10,10 @@ type SQLBuilder interface {
 	BuildBoolExp(where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 
-	BuildCreateEntitySQL(entity *meta.Entity) (string, string)
+	BuildCreateTableSQL(entity *meta.Table) (string, string)
 	BuildColumnSQL(column *meta.Column) string
 	ColumnTypeSQL(column *meta.Column) string
 }
-
-// type DDLer interface {
-// 	ExcuteDDL() string
-// }
 
 func GetSQLBuilder() SQLBuilder {
 	var builder MySQLBuilder
