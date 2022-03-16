@@ -33,56 +33,17 @@ func (c *MetaContent) EntityRelations(entityUuid string) []EntityRelation {
 	return []EntityRelation{}
 }
 
-func (c *MetaContent) entityTables() []*Table {
-
-	normalEntities := c.filterEntity(func(e *Entity) bool {
-		return e.EntityType == Entity_NORMAL
-	})
-
-	tables := make([]*Table, len(normalEntities))
-
-	for i := range normalEntities {
-		entity := normalEntities[i]
-		table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
-		table.Columns = append(table.Columns, entity.Columns...)
-		tables[i] = table
-	}
-
-	return tables
-}
-
 func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
 
 	for i := range c.Relations {
 		relation := c.Relations[i]
 		if relation.RelationType == MANY_TO_MANY {
-			relationTable := c.RelationTable(&relation)
+			relationTable := c.relationTable(&relation)
 			tables = append(tables, relationTable)
 		}
-
 	}
 	return tables
-}
-
-func (c *MetaContent) RelationTable(relation *Relation) *Table {
-	table := &Table{
-		MetaUuid: relation.Uuid,
-		Name:     c.RelationTableName(relation),
-		Columns: []Column{
-			{
-				Name: c.RelationSourceColumnName(relation),
-				Type: COLUMN_ID,
-			},
-			{
-				Name: c.RelationTargetColumnName(relation),
-				Type: COLUMN_ID,
-			},
-		},
-	}
-	table.Columns = append(table.Columns, relation.columns...)
-
-	return table
 }
 
 func (c *MetaContent) RelationTableName(relation *Relation) string {
@@ -105,4 +66,42 @@ func (c *MetaContent) RelationSourceColumnName(relation *Relation) string {
 
 func (c *MetaContent) RelationTargetColumnName(relation *Relation) string {
 	return c.RelationTargetTableName(relation) + "_id"
+}
+
+func (c *MetaContent) entityTables() []*Table {
+
+	normalEntities := c.filterEntity(func(e *Entity) bool {
+		return e.EntityType == Entity_NORMAL
+	})
+
+	tables := make([]*Table, len(normalEntities))
+
+	for i := range normalEntities {
+		entity := normalEntities[i]
+		table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
+		table.Columns = append(table.Columns, entity.Columns...)
+		tables[i] = table
+	}
+
+	return tables
+}
+
+func (c *MetaContent) relationTable(relation *Relation) *Table {
+	table := &Table{
+		MetaUuid: relation.Uuid,
+		Name:     c.RelationTableName(relation),
+		Columns: []Column{
+			{
+				Name: c.RelationSourceColumnName(relation),
+				Type: COLUMN_ID,
+			},
+			{
+				Name: c.RelationTargetColumnName(relation),
+				Type: COLUMN_ID,
+			},
+		},
+	}
+	table.Columns = append(table.Columns, relation.columns...)
+
+	return table
 }
