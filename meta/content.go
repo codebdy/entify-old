@@ -76,8 +76,6 @@ func (c *MetaContent) Tables() []*Table {
 			} else {
 				column.Name = c.RelationSourceColumnName(&relation)
 			}
-			column.Name = column.Name + consts.ID_SUFFIX
-
 			ownerTable.Columns = append(ownerTable.Columns, column)
 
 		} else if relation.RelationType == ONE_TO_MANY {
@@ -87,7 +85,7 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
 			}
 
-			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation) + consts.ID_SUFFIX}
+			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation)}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 
 		} else if relation.RelationType == MANY_TO_ONE {
@@ -97,7 +95,7 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
 			}
 
-			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation) + consts.ID_SUFFIX}
+			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation)}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 		} else if relation.RelationType == INHERIT {
 			sourceTable := FindTable(relation.SourceId, tables)
