@@ -21,7 +21,7 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	publishedContent := repository.DecodeContent(publishedMeta)
 	nextContent := repository.DecodeContent(nextMeta)
 	migration.ValidateNextMeta(nextContent)
-	diff := migration.CreateDiff(publishedContent, nextContent)
+	diff := meta.CreateDiff(publishedContent, nextContent)
 	migration.ExcuteDiff(diff)
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED

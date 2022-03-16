@@ -15,6 +15,10 @@ type SQLBuilder interface {
 	ColumnTypeSQL(column *meta.Column) string
 }
 
+// type DDLer interface {
+// 	ExcuteDDL() string
+// }
+
 func GetSQLBuilder() SQLBuilder {
 	var builder MySQLBuilder
 	return &builder

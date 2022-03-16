@@ -18,26 +18,26 @@ func ExcuteDiff(d *meta.Diff) {
 		return
 	}
 
-	for _, relation := range d.DeleteRelations {
+	for _, relation := range d.DeletedRelations {
 		repository.DeleteRelation(&relation)
 	}
-	for _, entity := range d.DeleteEntities {
+	for _, entity := range d.DeletedEntities {
 		repository.DeleteEntity(entity.Name)
 	}
 
-	for _, entity := range d.AddEntities {
+	for _, entity := range d.AddedEntities {
 		repository.AddEntity(&entity, &undoList, db)
 	}
 
-	for _, relation := range d.AddRlations {
+	for _, relation := range d.AddedRlations {
 		repository.AddRelation(&relation)
 	}
 
-	for _, entityDiff := range d.ModifyEntities {
+	for _, entityDiff := range d.ModifiedEntities {
 		repository.ModifyEntity(&entityDiff)
 	}
 
-	for _, relationDiff := range d.ModifyRelations {
+	for _, relationDiff := range d.ModifieRelations {
 		repository.ModifyRelation(&relationDiff)
 	}
 }
