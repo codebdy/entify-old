@@ -1,5 +1,7 @@
 package meta
 
+import "fmt"
+
 type ColumnDiff struct {
 	OldColumn Column
 	NewColumn Column
@@ -105,6 +107,7 @@ func CreateDiff(published, next *MetaContent) *Diff {
 		newContent: next,
 	}
 
+	fmt.Println("进入 CreateDiff")
 	publishedTables := published.Tables()
 	nextTables := next.Tables()
 

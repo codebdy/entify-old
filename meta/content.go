@@ -54,7 +54,6 @@ func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
 
 func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
-
 	for i := range c.Relations {
 		relation := c.Relations[i]
 		if relation.RelationType == MANY_TO_MANY {

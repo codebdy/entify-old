@@ -1,6 +1,7 @@
 package resolve
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/graphql-go/graphql"
@@ -11,8 +12,12 @@ import (
 )
 
 func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
+	fmt.Println("进入 PublishMetaResolve")
 	publishedMeta := repository.QueryPublishedMeta()
 	nextMeta := repository.QueryNextMeta()
+
+	// fmt.Println("Published Meta ID:", publishedMeta.(utils.Object)["id"])
+	// fmt.Println("Next Meta ID:", nextMeta.(utils.Object)["id"])
 
 	if nextMeta == nil {
 		panic("Can not find unpublished meta")
