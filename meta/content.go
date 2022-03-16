@@ -70,7 +70,10 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
 			}
 
-			column := Column{Type: COLUMN_ID}
+			column := Column{
+				Type:  COLUMN_ID,
+				Index: true,
+			}
 			if ownerId == relation.SourceId {
 				column.Name = c.RelationTargetColumnName(&relation)
 			} else {
@@ -85,7 +88,11 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
 			}
 
-			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation)}
+			column := Column{
+				Type:  COLUMN_ID,
+				Name:  c.RelationTargetColumnName(&relation),
+				Index: true,
+			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 
 		} else if relation.RelationType == MANY_TO_ONE {
@@ -95,7 +102,11 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
 			}
 
-			column := Column{Type: COLUMN_ID, Name: c.RelationTargetColumnName(&relation)}
+			column := Column{
+				Type:  COLUMN_ID,
+				Name:  c.RelationTargetColumnName(&relation),
+				Index: true,
+			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 		} else if relation.RelationType == INHERIT {
 			sourceTable := FindTable(relation.SourceId, tables)
@@ -103,7 +114,11 @@ func (c *MetaContent) Tables() []*Table {
 				panic("Can not find parent table, relation:" + relation.Uuid)
 			}
 
-			column := Column{Type: COLUMN_ID, Name: consts.PARENT_ID}
+			column := Column{
+				Type:  COLUMN_ID,
+				Name:  consts.PARENT_ID,
+				Index: true,
+			}
 			sourceTable.Columns = append(sourceTable.Columns, column)
 		}
 	}
@@ -156,12 +171,14 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 		Name:     c.RelationTableName(relation),
 		Columns: []Column{
 			{
-				Name: c.RelationSourceColumnName(relation),
-				Type: COLUMN_ID,
+				Name:  c.RelationSourceColumnName(relation),
+				Type:  COLUMN_ID,
+				Index: true,
 			},
 			{
-				Name: c.RelationTargetColumnName(relation),
-				Type: COLUMN_ID,
+				Name:  c.RelationTargetColumnName(relation),
+				Type:  COLUMN_ID,
+				Index: true,
 			},
 		},
 	}
