@@ -2,10 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
@@ -13,63 +11,6 @@ import (
 	"rxdrag.com/entity-engine/repository/dialect"
 	"rxdrag.com/entity-engine/utils"
 )
-
-func dataFields(object map[string]interface{}) []string {
-	return utils.MapStringKeys(object, "")
-}
-
-func insertFields(fields []string) string {
-	return strings.Join(fields, ",")
-}
-
-func insertValueSymbols(fields []string) string {
-	array := make([]string, len(fields))
-	for i := range array {
-		array[i] = "?"
-	}
-	return strings.Join(array, ",")
-}
-
-func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
-	objValues := make([]interface{}, 0, len(object))
-	for key := range object {
-		value := object[key]
-		column := entity.GetColumn(key)
-
-		if column == nil {
-			panic("Can not find column:" + key)
-		}
-
-		if column.Type == meta.COLUMN_SIMPLE_JSON ||
-			column.Type == meta.COLUMN_SIMPLE_ARRAY ||
-			column.Type == meta.COLUMN_JSON_ARRAY {
-			value, _ = json.Marshal(value)
-		}
-		fmt.Println("Make Field", key)
-		objValues = append(objValues, value)
-	}
-	return objValues
-}
-
-func insertString(object map[string]interface{}, entity *meta.Entity) string {
-	keys := dataFields(object)
-	return fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(keys), insertValueSymbols(keys))
-}
-
-func updateSetFields(object map[string]interface{}) string {
-	keys := dataFields(object)
-	if len(keys) == 0 {
-		panic("No update fields")
-	}
-	for i, key := range keys {
-		keys[i] = key + "=?"
-	}
-	return strings.Join(keys, ",")
-}
-
-func updateString(object map[string]interface{}, entity *meta.Entity) string {
-	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = %s", entity.GetTableName(), updateSetFields(object), object["id"])
-}
 
 func clearTransaction(tx *sql.Tx) {
 	err := tx.Rollback()
@@ -89,14 +30,13 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	tx, err := db.Begin()
 	defer clearTransaction(tx)
 
-	saveStr := insertString(object, entity)
-	fmt.Println("INSERT", saveStr)
-
 	if err != nil {
 		return nil, err
 	}
+	sqlBuilder := dialect.GetSQLBuilder()
+	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
-	_, err = tx.Exec(saveStr, values(object, entity)...)
+	_, err = tx.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Insert data failed:", err.Error())
 		return nil, err

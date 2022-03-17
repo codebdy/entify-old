@@ -189,8 +189,10 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.Modify
 }
 
 func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
-	sql := ""
-	values := []interface{}{}
+	keys := utils.MapStringKeys(object, "")
+	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(keys), insertValueSymbols(keys))
+
+	values := makeValues(keys, object, entity)
 
 	return sql, values
 }
@@ -214,6 +216,18 @@ func updateSetFields(keys []string) string {
 		newKeys[i] = key + "=?"
 	}
 	return strings.Join(newKeys, ",")
+}
+
+func insertFields(fields []string) string {
+	return strings.Join(fields, ",")
+}
+
+func insertValueSymbols(fields []string) string {
+	array := make([]string, len(fields))
+	for i := range array {
+		array[i] = "?"
+	}
+	return strings.Join(array, ",")
 }
 
 func makeValues(keys []string, object map[string]interface{}, entity *meta.Entity) []interface{} {
