@@ -1,7 +1,5 @@
 package meta
 
-import "fmt"
-
 type ModifyAtom struct {
 	ExcuteSQL string
 	UndoSQL   string
@@ -112,7 +110,6 @@ func CreateDiff(published, next *MetaContent) *Diff {
 		newContent: next,
 	}
 
-	fmt.Println("进入 CreateDiff")
 	publishedTables := published.Tables()
 	nextTables := next.Tables()
 
@@ -129,7 +126,7 @@ func CreateDiff(published, next *MetaContent) *Diff {
 		if foundTable == nil {
 			diff.AddedTables = append(diff.AddedTables, table)
 		} else {
-			tableDiff := tableDifferent(table, foundTable)
+			tableDiff := tableDifferent(foundTable, table)
 			if tableDiff != nil {
 				diff.ModifiedTables = append(diff.ModifiedTables, tableDiff)
 			}

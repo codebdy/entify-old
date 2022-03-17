@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"rxdrag.com/entity-engine/config"
@@ -77,6 +78,7 @@ func ModifyTable(tableDiff *meta.TableDiff, undoList *[]string, db *sql.DB) erro
 		*undoList = append(*undoList, atom.UndoSQL)
 		_, err := db.Exec(atom.ExcuteSQL)
 		if err != nil {
+			fmt.Println("出错atom", atom.ExcuteSQL)
 			return err
 		}
 	}

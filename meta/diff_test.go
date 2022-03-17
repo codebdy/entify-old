@@ -77,3 +77,35 @@ func TestModifyEntityName(t *testing.T) {
 		t.Errorf("Old name is %s, not expected user2", diff.newContent.Tables()[0].Name)
 	}
 }
+
+func TestModifiedTableName(t *testing.T) {
+	diff := CreateDiff(
+		&MetaContent{
+			Entities: []Entity{
+				{
+					Name: "OldName",
+				},
+			},
+		},
+		&MetaContent{
+			Entities: []Entity{
+				{
+					Name: "NewName",
+				},
+			},
+		},
+	)
+
+	if len(diff.ModifiedTables) != 1 {
+		t.Error("Cereate entity name modify diff error, diff number error")
+	}
+
+	if diff.ModifiedTables[0].OldTable.Name != "old_name" {
+		t.Error("Cereate entity name modify diff error, old name error")
+	}
+
+	if diff.ModifiedTables[0].NewTable.Name != "new_name" {
+		t.Error("Cereate entity name modify diff error, new name error")
+	}
+
+}
