@@ -80,5 +80,10 @@ func TestTables(t *testing.T) {
 		t.Errorf("Entities number is %d ,not 2", len(m.Entities))
 	}
 
+	tables := m.Tables()
+
+	if len(tables) != 3 {
+		t.Errorf("Tables number is %d ,not 3", len(tables))
+	}
 	//t.FailNow()
 }
