@@ -77,10 +77,12 @@ const (
 )
 
 const (
-	ID_SUFFIX    string = "_id"
-	PIVOT_SUFFIX string = "__pivot"
-	PARENT_ID    string = "parent_part_id"
-	INDEX_SUFFIX string = "_idx"
+	ID_SUFFIX     string = "_id"
+	SUFFIX_PIVOT  string = "__pivot"
+	PARENT_ID     string = "parent_part_id"
+	INDEX_SUFFIX  string = "_idx"
+	SUFFIX_SOURCE string = "_source"
+	SUFFIX_TARGET string = "_target"
 )
 
 const (

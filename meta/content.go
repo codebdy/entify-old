@@ -91,6 +91,7 @@ func (c *MetaContent) Tables() []*Table {
 			column := Column{
 				Type:  COLUMN_ID,
 				Name:  c.RelationTargetColumnName(&relation),
+				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
 				Index: true,
 			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
@@ -104,7 +105,8 @@ func (c *MetaContent) Tables() []*Table {
 
 			column := Column{
 				Type:  COLUMN_ID,
-				Name:  c.RelationTargetColumnName(&relation),
+				Name:  c.RelationSourceColumnName(&relation),
+				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
 				Index: true,
 			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
@@ -118,6 +120,7 @@ func (c *MetaContent) Tables() []*Table {
 				Type:  COLUMN_ID,
 				Name:  consts.PARENT_ID,
 				Index: true,
+				Uuid:  relation.Uuid,
 			}
 			sourceTable.Columns = append(sourceTable.Columns, column)
 		}
@@ -126,7 +129,7 @@ func (c *MetaContent) Tables() []*Table {
 }
 
 func (c *MetaContent) RelationTableName(relation *Relation) string {
-	return c.RelationSouceTableName(relation) + "_" + c.RelationTargetTableName(relation) + consts.PIVOT_SUFFIX
+	return c.RelationSouceTableName(relation) + "_" + c.RelationTargetTableName(relation) + consts.SUFFIX_PIVOT
 }
 
 func (c *MetaContent) RelationSouceTableName(relation *Relation) string {
@@ -140,11 +143,11 @@ func (c *MetaContent) RelationTargetTableName(relation *Relation) string {
 }
 
 func (c *MetaContent) RelationSourceColumnName(relation *Relation) string {
-	return c.RelationSouceTableName(relation) + consts.ID_SUFFIX
+	return relation.RoleOnSource + consts.ID_SUFFIX
 }
 
 func (c *MetaContent) RelationTargetColumnName(relation *Relation) string {
-	return c.RelationTargetTableName(relation) + consts.ID_SUFFIX
+	return relation.RoleOnTarget + consts.ID_SUFFIX
 }
 
 func (c *MetaContent) entityTables() []*Table {
@@ -173,11 +176,13 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 			{
 				Name:  c.RelationSourceColumnName(relation),
 				Type:  COLUMN_ID,
+				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
 				Index: true,
 			},
 			{
 				Name:  c.RelationTargetColumnName(relation),
 				Type:  COLUMN_ID,
+				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
 				Index: true,
 			},
 		},
