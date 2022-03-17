@@ -75,9 +75,9 @@ func (c *MetaContent) Tables() []*Table {
 				Index: true,
 			}
 			if ownerId == relation.SourceId {
-				column.Name = c.RelationTargetColumnName(&relation)
+				column.Name = relation.RelationTargetColumnName()
 			} else {
-				column.Name = c.RelationSourceColumnName(&relation)
+				column.Name = relation.RelationSourceColumnName()
 			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 
@@ -90,7 +90,7 @@ func (c *MetaContent) Tables() []*Table {
 
 			column := Column{
 				Type:  COLUMN_ID,
-				Name:  c.RelationTargetColumnName(&relation),
+				Name:  relation.RelationTargetColumnName(),
 				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
 				Index: true,
 			}
@@ -105,7 +105,7 @@ func (c *MetaContent) Tables() []*Table {
 
 			column := Column{
 				Type:  COLUMN_ID,
-				Name:  c.RelationSourceColumnName(&relation),
+				Name:  relation.RelationSourceColumnName(),
 				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
 				Index: true,
 			}
@@ -142,14 +142,6 @@ func (c *MetaContent) RelationTargetTableName(relation *Relation) string {
 	return targetEntity.GetTableName()
 }
 
-func (c *MetaContent) RelationSourceColumnName(relation *Relation) string {
-	return relation.RoleOnSource + consts.ID_SUFFIX
-}
-
-func (c *MetaContent) RelationTargetColumnName(relation *Relation) string {
-	return relation.RoleOnTarget + consts.ID_SUFFIX
-}
-
 func (c *MetaContent) entityTables() []*Table {
 
 	normalEntities := c.filterEntity(func(e *Entity) bool {
@@ -174,13 +166,13 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 		Name:     c.RelationTableName(relation),
 		Columns: []Column{
 			{
-				Name:  c.RelationSourceColumnName(relation),
+				Name:  relation.RelationSourceColumnName(),
 				Type:  COLUMN_ID,
 				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
 				Index: true,
 			},
 			{
-				Name:  c.RelationTargetColumnName(relation),
+				Name:  relation.RelationTargetColumnName(),
 				Type:  COLUMN_ID,
 				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
 				Index: true,

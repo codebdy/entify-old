@@ -1,5 +1,7 @@
 package meta
 
+import "rxdrag.com/entity-engine/consts"
+
 const (
 	INHERIT      string = "inherit"
 	ONE_TO_ONE   string = "oneToOne"
@@ -22,4 +24,12 @@ type Relation struct {
 	OwnerId      string `json:"ownerId"`
 	//多对多关联自定义列
 	Columns []Column `json:"columns"`
+}
+
+func (r *Relation) RelationSourceColumnName() string {
+	return r.RoleOnSource + consts.ID_SUFFIX
+}
+
+func (r *Relation) RelationTargetColumnName() string {
+	return r.RoleOnTarget + consts.ID_SUFFIX
 }
