@@ -167,6 +167,13 @@ func (b *MySQLBuilder) BuildDeleteTableSQL(table *meta.Table) string {
 	return "DROP TABLE " + table.Name
 }
 
-func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.AtomModify {
-	return []meta.AtomModify{}
+func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.ModifyAtom {
+	var atoms []meta.ModifyAtom
+	if diff.OldTable.Name != diff.NewTable.Name {
+		atoms = append(atoms, meta.ModifyAtom{
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.OldTable.Name, diff.NewTable.Name),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.NewTable.Name, diff.OldTable.Name),
+		})
+	}
+	return atoms
 }

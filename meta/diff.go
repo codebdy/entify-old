@@ -2,7 +2,7 @@ package meta
 
 import "fmt"
 
-type AtomModify struct {
+type ModifyAtom struct {
 	ExcuteSQL string
 	UndoSQL   string
 }
