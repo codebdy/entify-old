@@ -77,8 +77,14 @@ const (
 )
 
 const (
-	ID_SUFFIX    = "_id"
-	PIVOT_SUFFIX = "__pivot"
-	PARENT_ID    = "parent_part_id"
-	INDEX_SUFFIX = "_idx"
+	ID_SUFFIX    string = "_id"
+	PIVOT_SUFFIX string = "__pivot"
+	PARENT_ID    string = "parent_part_id"
+	INDEX_SUFFIX string = "_idx"
+)
+
+const (
+	CREATED_AT string = "createdAt"
+	UPDATED_AT string = "updatedAt"
+	DELETED_AT string = "deletedAt"
 )
