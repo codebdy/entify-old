@@ -170,10 +170,26 @@ func (b *MySQLBuilder) BuildDeleteTableSQL(table *meta.Table) string {
 func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.ModifyAtom {
 	var atoms []meta.ModifyAtom
 	if diff.OldTable.Name != diff.NewTable.Name {
+		//修改表名
 		atoms = append(atoms, meta.ModifyAtom{
 			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.OldTable.Name, diff.NewTable.Name),
 			UndoSQL:   fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.NewTable.Name, diff.OldTable.Name),
 		})
+		for _, column := range diff.DeleteColumns {
+			//删除索引
+			if column.Index {
+				indexName := column.Name + consts.INDEX_SUFFIX
+				atoms = append(atoms, meta.ModifyAtom{
+					ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
+					UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, column.Name),
+				})
+			}
+			//删除列
+			atoms = append(atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
+				UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, diff.OldTable.Name, b.ColumnTypeSQL(&column)),
+			})
+		}
 	}
 	return atoms
 }
