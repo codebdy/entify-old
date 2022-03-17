@@ -84,7 +84,7 @@ func rollback(undoList []string, db *sql.DB) {
 	for _, sql := range undoList {
 		_, err := db.Exec(sql)
 		if err != nil {
-			log.Println("Rollaback failed:", sql)
+			log.Println("Rollback failed:", sql)
 		}
 	}
 }
