@@ -14,9 +14,7 @@ import (
 )
 
 func dataFields(object map[string]interface{}) []string {
-	return utils.StringFilter(utils.MapStringKeys(object, ""), func(value string) bool {
-		return value != consts.META_ID
-	})
+	return utils.MapStringKeys(object, "")
 }
 
 func insertFields(fields []string) string {
@@ -34,9 +32,6 @@ func insertValueSymbols(fields []string) string {
 func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 	objValues := make([]interface{}, 0, len(object))
 	for key := range object {
-		if key == consts.META_ID {
-			continue
-		}
 		value := object[key]
 		column := entity.GetColumn(key)
 
@@ -161,13 +156,10 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 }
 
 func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
-	if object["id"] == nil {
+	if object[consts.META_ID] == nil {
+		object[consts.META_ID] = utils.CreateId()
 		return InsertOne(object, entity)
 	} else {
 		return UpdateOne(object, entity)
 	}
-	// return map[string]interface{}{
-	// 	consts.RESPONSE_AFFECTEDROWS: affectedRows,
-	// 	consts.RESPONSE_RETURNING:    insertedObject,
-	// }, nil
 }

@@ -56,7 +56,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 	typeStr := "text"
 	switch column.Type {
 	case meta.COLUMN_ID:
-		typeStr = "int64"
+		typeStr = "bigint(64)"
 		break
 	case meta.COLUMN_INT:
 		typeStr = "int"
@@ -69,7 +69,11 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 		} else if column.Length == 4 {
 			typeStr = "int"
 		} else if column.Length > 4 {
-			typeStr = "bigint"
+			length := column.Length
+			if length > 64 {
+				length = 64
+			}
+			typeStr = fmt.Sprintf("bigint(%d)", length)
 		}
 		if column.Unsigned {
 			typeStr = typeStr + " UNSIGNED"
