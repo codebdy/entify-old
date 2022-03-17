@@ -95,15 +95,14 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 		return nil, err
 	}
 
-	result, err := tx.Exec(saveStr, values(object, entity)...)
+	_, err = tx.Exec(saveStr, values(object, entity)...)
 	if err != nil {
 		fmt.Println("save data failed:", err.Error())
 		return nil, err
 	}
-	id, err := result.LastInsertId()
-
 	tx.Commit()
-	fmt.Println("insert new record", id)
+
+	id := object[consts.META_ID]
 	savedObject, err := QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
@@ -143,7 +142,7 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 		return nil, err
 	}
 
-	id := object["id"]
+	id := object[consts.META_ID]
 
 	tx.Commit()
 	fmt.Println("insert new record", id)
