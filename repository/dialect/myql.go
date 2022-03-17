@@ -175,21 +175,44 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.Modify
 			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.OldTable.Name, diff.NewTable.Name),
 			UndoSQL:   fmt.Sprintf("ALTER TABLE %s RENAME TO %s ", diff.NewTable.Name, diff.OldTable.Name),
 		})
-		for _, column := range diff.DeleteColumns {
-			//删除索引
-			if column.Index {
-				indexName := column.Name + consts.INDEX_SUFFIX
-				atoms = append(atoms, meta.ModifyAtom{
-					ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
-					UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, column.Name),
-				})
-			}
-			//删除列
-			atoms = append(atoms, meta.ModifyAtom{
-				ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
-				UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, diff.OldTable.Name, b.ColumnTypeSQL(&column)),
+	}
+	b.appendDeleteColumnAtoms(diff, &atoms)
+	b.appendAddColumnAtoms(diff, &atoms)
+	return atoms
+}
+
+func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {
+	for _, column := range diff.DeleteColumns {
+		//删除索引
+		if column.Index {
+			indexName := column.Name + consts.INDEX_SUFFIX
+			*atoms = append(*atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
+				UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, column.Name),
+			})
+		}
+		//删除列
+		*atoms = append(*atoms, meta.ModifyAtom{
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(&column)),
+		})
+	}
+}
+
+func (b *MySQLBuilder) appendAddColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {
+	for _, column := range diff.AddColumns {
+		//添加列
+		*atoms = append(*atoms, meta.ModifyAtom{
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(&column)),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
+		})
+		//添加索引
+		if column.Index {
+			indexName := column.Name + consts.INDEX_SUFFIX
+			*atoms = append(*atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, column.Name),
+				UndoSQL:   fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
 			})
 		}
 	}
-	return atoms
 }
