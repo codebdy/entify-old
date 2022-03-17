@@ -1,11 +1,13 @@
 package dialect
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type MySQLBuilder struct {
@@ -193,10 +195,45 @@ func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *met
 	return sql, values
 }
 func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
-	sql := ""
-	values := []interface{}{}
+	keys := utils.MapStringKeys(object, "")
+	sql := fmt.Sprintf(
+		"UPDATE `%s` SET %s WHERE ID = %s",
+		entity.GetTableName(),
+		updateSetFields(keys),
+		object[consts.CONST_ID],
+	)
+	return sql, makeValues(keys, object, entity)
+}
 
-	return sql, values
+func updateSetFields(keys []string) string {
+	if len(keys) == 0 {
+		panic("No update fields")
+	}
+	newKeys := make([]string, len(keys))
+	for i, key := range keys {
+		newKeys[i] = key + "=?"
+	}
+	return strings.Join(newKeys, ",")
+}
+
+func makeValues(keys []string, object map[string]interface{}, entity *meta.Entity) []interface{} {
+	objValues := make([]interface{}, 0, len(keys))
+	for _, key := range keys {
+		value := object[key]
+		column := entity.GetColumn(key)
+		if column == nil {
+			panic("Can not find column:" + key)
+		}
+
+		if column.Type == meta.COLUMN_SIMPLE_JSON ||
+			column.Type == meta.COLUMN_SIMPLE_ARRAY ||
+			column.Type == meta.COLUMN_JSON_ARRAY {
+			value, _ = json.Marshal(value)
+		}
+		fmt.Println("Make Field", key)
+		objValues = append(objValues, value)
+	}
+	return objValues
 }
 
 func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {

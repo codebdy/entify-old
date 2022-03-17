@@ -10,6 +10,7 @@ import (
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/repository/dialect"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -124,16 +125,16 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 		fmt.Println(err)
 		return nil, err
 	}
+	sqlBuilder := dialect.GetSQLBuilder()
 
 	tx, err := db.Begin()
 	defer clearTransaction(tx)
 
-	saveStr := updateString(object, entity)
+	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
 	if err != nil {
 		return nil, err
 	}
-	values := values(object, entity)
-	fmt.Println(saveStr, values)
+	fmt.Println(saveStr)
 	_, err = tx.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Update data failed:", err.Error())
