@@ -67,7 +67,7 @@ func TestTables(t *testing.T) {
 				"ownerId": "2fac8cfc-fc71-446a-a9cf-36056a63ba78",
 				"sourceId": "2fac8cfc-fc71-446a-a9cf-36056a63ba78",
 				"targetId": "3e9ae743-de18-4b0c-a77e-3726be4049a8",
-				"relationType": "oneToOne",
+				"relationType": "manyToMany",
 				"roleOnSource": "newentity41",
 				"roleOnTarget": "newentity32"
 			}
