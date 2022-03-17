@@ -132,7 +132,7 @@ func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
 	return sql
 }
 
-func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) (string, string) {
+func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) string {
 	sql := "CREATE TABLE `%s` (%s)"
 	fieldSqls := make([]string, len(table.Columns))
 	for i := range table.Columns {
@@ -160,5 +160,9 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) (string, string) {
 
 	sql = fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ","))
 
-	return sql, "DROP TABLE " + table.Name
+	return sql
+}
+
+func (b *MySQLBuilder) BuildDeleteTableSQL(table *meta.Table) string {
+	return "DROP TABLE " + table.Name
 }

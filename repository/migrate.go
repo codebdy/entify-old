@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/meta"
@@ -14,20 +15,31 @@ func ExcuteDiff(d *meta.Diff) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic("Open db error:" + err.Error())
 	}
 
 	for _, table := range d.DeletedTables {
-		DeleteTable(table.Name)
+		err = DeleteTable(table, &undoList, db)
+		if err != nil {
+			rollback(undoList, db)
+			panic("Delete table error:" + err.Error())
+		}
 	}
 
 	for _, table := range d.AddedTables {
-		CreateTable(table, &undoList, db)
+		err = CreateTable(table, &undoList, db)
+		if err != nil {
+			rollback(undoList, db)
+			panic("Create table error:" + err.Error())
+		}
 	}
 
 	for _, tableDiff := range d.ModifiedTables {
-		ModifyTable(tableDiff)
+		err = ModifyTable(tableDiff, &undoList, db)
+		if err != nil {
+			rollback(undoList, db)
+			panic("Modify table error:" + err.Error())
+		}
 	}
 
 }
@@ -36,21 +48,43 @@ func UndoDiff(d *meta.Diff) {
 
 }
 
-func DeleteTable(entityName string) {
-	fmt.Println("Not implement DeleteEntity")
-}
-
-func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) {
+func DeleteTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
 	sqlBuilder := dialect.GetSQLBuilder()
-	excuteSQL, undoSQL := sqlBuilder.BuildCreateTableSQL(table)
+	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
+	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
 	*undoList = append(*undoList, undoSQL)
 	_, err := db.Exec(excuteSQL)
 	if err != nil {
-		panic("Create table error:" + err.Error())
+		return err
 	}
-	fmt.Println("AddEntity SQL:", excuteSQL)
+	log.Println("Delete Table SQL:", excuteSQL)
+	return nil
 }
 
-func ModifyTable(entityDiff *meta.TableDiff) {
+func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
+	sqlBuilder := dialect.GetSQLBuilder()
+	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
+	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
+	*undoList = append(*undoList, undoSQL)
+	_, err := db.Exec(excuteSQL)
+	if err != nil {
+		return err
+	}
+	log.Println("Add Table SQL:", excuteSQL)
+
+	return nil
+}
+
+func ModifyTable(entityDiff *meta.TableDiff, undoList *[]string, db *sql.DB) error {
 	fmt.Println("Not implement ModifyEntity")
+	return nil
+}
+
+func rollback(undoList []string, db *sql.DB) {
+	for _, sql := range undoList {
+		_, err := db.Exec(sql)
+		if err != nil {
+			log.Println("Rollaback failed:", sql)
+		}
+	}
 }
