@@ -85,6 +85,4 @@ const (
 
 const (
 	CREATED_AT string = "createdAt"
-	UPDATED_AT string = "updatedAt"
-	DELETED_AT string = "deletedAt"
 )

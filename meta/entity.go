@@ -25,6 +25,7 @@ type Entity struct {
 	Eventable   bool       `json:"eventable"`
 	Description string     `json:"description"`
 	EnumValues  utils.JSON `json:"enumValues"`
+	SoftDelete  bool       `json:"softDelete"`
 }
 
 func (entity *Entity) ColumnNames() []string {
