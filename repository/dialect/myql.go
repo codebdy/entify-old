@@ -56,7 +56,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 	typeStr := "text"
 	switch column.Type {
 	case meta.COLUMN_ID:
-		typeStr = "int UNSIGNED"
+		typeStr = "int64"
 		break
 	case meta.COLUMN_INT:
 		typeStr = "int"
@@ -178,6 +178,7 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.Modify
 	}
 	b.appendDeleteColumnAtoms(diff, &atoms)
 	b.appendAddColumnAtoms(diff, &atoms)
+	b.appendModifyColumnAtoms(diff, &atoms)
 	return atoms
 }
 
@@ -213,6 +214,28 @@ func (b *MySQLBuilder) appendAddColumnAtoms(diff *meta.TableDiff, atoms *[]meta.
 				ExcuteSQL: fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, column.Name),
 				UndoSQL:   fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
 			})
+		}
+	}
+}
+
+func (b *MySQLBuilder) appendModifyColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {
+	for _, columnDiff := range diff.ModifyColumns {
+		//删除索引
+		if columnDiff.OldColumn.Index {
+
+		}
+		//更改列
+		if columnDiff.OldColumn.Name != columnDiff.OldColumn.Name ||
+			columnDiff.OldColumn.Type != columnDiff.OldColumn.Type ||
+			columnDiff.OldColumn.Length != columnDiff.OldColumn.Length ||
+			columnDiff.OldColumn.FloatD != columnDiff.OldColumn.FloatD ||
+			columnDiff.OldColumn.FloatM != columnDiff.OldColumn.FloatM ||
+			columnDiff.OldColumn.Unsigned != columnDiff.OldColumn.Unsigned {
+
+		}
+		//添加索引
+		if columnDiff.NewColumn.Index {
+
 		}
 	}
 }
