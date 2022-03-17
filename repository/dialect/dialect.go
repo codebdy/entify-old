@@ -15,6 +15,9 @@ type SQLBuilder interface {
 	BuildColumnSQL(column *meta.Column) string
 	BuildModifyTableAtoms(diff *meta.TableDiff) []meta.ModifyAtom
 	ColumnTypeSQL(column *meta.Column) string
+
+	BuildInsertSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{})
+	BuildUpdateSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{})
 }
 
 func GetSQLBuilder() SQLBuilder {

@@ -44,7 +44,7 @@ func values(object map[string]interface{}, entity *meta.Entity) []interface{} {
 			column.Type == meta.COLUMN_JSON_ARRAY {
 			value, _ = json.Marshal(value)
 		}
-		fmt.Println("Insert Field", key)
+		fmt.Println("Make Field", key)
 		objValues = append(objValues, value)
 	}
 	return objValues
@@ -67,7 +67,7 @@ func updateSetFields(object map[string]interface{}) string {
 }
 
 func updateString(object map[string]interface{}, entity *meta.Entity) string {
-	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = '%s'", entity.GetTableName(), updateSetFields(object), object["id"])
+	return fmt.Sprintf("UPDATE `%s` SET %s WHERE ID = %s", entity.GetTableName(), updateSetFields(object), object["id"])
 }
 
 func clearTransaction(tx *sql.Tx) {
@@ -97,7 +97,7 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 
 	_, err = tx.Exec(saveStr, values(object, entity)...)
 	if err != nil {
-		fmt.Println("save data failed:", err.Error())
+		fmt.Println("Insert data failed:", err.Error())
 		return nil, err
 	}
 	tx.Commit()
@@ -129,23 +129,20 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	defer clearTransaction(tx)
 
 	saveStr := updateString(object, entity)
-
-	fmt.Println(saveStr)
-
 	if err != nil {
 		return nil, err
 	}
-
-	_, err = tx.Exec(saveStr, values(object, entity)...)
+	values := values(object, entity)
+	fmt.Println(saveStr, values)
+	_, err = tx.Exec(saveStr, values...)
 	if err != nil {
-		fmt.Println("save data failed:", err.Error())
+		fmt.Println("Update data failed:", err.Error())
 		return nil, err
 	}
+	tx.Commit()
 
 	id := object[consts.META_ID]
 
-	tx.Commit()
-	fmt.Println("insert new record", id)
 	savedObject, err := QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())

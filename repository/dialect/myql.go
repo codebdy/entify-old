@@ -186,6 +186,19 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.Modify
 	return atoms
 }
 
+func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
+	sql := ""
+	values := []interface{}{}
+
+	return sql, values
+}
+func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
+	sql := ""
+	values := []interface{}{}
+
+	return sql, values
+}
+
 func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {
 	for _, column := range diff.DeleteColumns {
 		//删除索引
@@ -224,9 +237,14 @@ func (b *MySQLBuilder) appendAddColumnAtoms(diff *meta.TableDiff, atoms *[]meta.
 
 func (b *MySQLBuilder) appendModifyColumnAtoms(diff *meta.TableDiff, atoms *[]meta.ModifyAtom) {
 	for _, columnDiff := range diff.ModifyColumns {
+
 		//删除索引
 		if columnDiff.OldColumn.Index {
-
+			indexName := columnDiff.OldColumn.Name + consts.INDEX_SUFFIX
+			*atoms = append(*atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.OldTable.Name),
+				UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.OldTable.Name, columnDiff.OldColumn.Name),
+			})
 		}
 		//更改列
 		if columnDiff.OldColumn.Name != columnDiff.OldColumn.Name ||
@@ -239,7 +257,11 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *meta.TableDiff, atoms *[]me
 		}
 		//添加索引
 		if columnDiff.NewColumn.Index {
-
+			indexName := columnDiff.NewColumn.Name + consts.INDEX_SUFFIX
+			*atoms = append(*atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, columnDiff.OldColumn.Name),
+				UndoSQL:   fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
+			})
 		}
 	}
 }
