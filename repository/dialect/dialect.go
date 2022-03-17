@@ -13,6 +13,7 @@ type SQLBuilder interface {
 	BuildCreateTableSQL(table *meta.Table) string
 	BuildDeleteTableSQL(table *meta.Table) string
 	BuildColumnSQL(column *meta.Column) string
+	BuildModifyTableAtoms(diff *meta.TableDiff) []meta.AtomModify
 	ColumnTypeSQL(column *meta.Column) string
 }
 

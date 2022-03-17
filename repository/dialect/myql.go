@@ -166,3 +166,7 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *meta.Table) string {
 func (b *MySQLBuilder) BuildDeleteTableSQL(table *meta.Table) string {
 	return "DROP TABLE " + table.Name
 }
+
+func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.AtomModify {
+	return []meta.AtomModify{}
+}

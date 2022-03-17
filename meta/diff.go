@@ -2,6 +2,11 @@ package meta
 
 import "fmt"
 
+type AtomModify struct {
+	ExcuteSQL string
+	UndoSQL   string
+}
+
 type ColumnDiff struct {
 	OldColumn Column
 	NewColumn Column
@@ -12,7 +17,7 @@ type TableDiff struct {
 	NewTable      *Table
 	DeleteColumns []Column
 	AddColumns    []Column
-	ModifyColumns []ColumnDiff
+	ModifyColumns []ColumnDiff //删除列索引，并重建
 }
 
 type Diff struct {

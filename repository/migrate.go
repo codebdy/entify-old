@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"rxdrag.com/entity-engine/config"
@@ -44,10 +43,6 @@ func ExcuteDiff(d *meta.Diff) {
 
 }
 
-func UndoDiff(d *meta.Diff) {
-
-}
-
 func DeleteTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
@@ -75,8 +70,16 @@ func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
 	return nil
 }
 
-func ModifyTable(entityDiff *meta.TableDiff, undoList *[]string, db *sql.DB) error {
-	fmt.Println("Not implement ModifyEntity")
+func ModifyTable(tableDiff *meta.TableDiff, undoList *[]string, db *sql.DB) error {
+	sqlBuilder := dialect.GetSQLBuilder()
+	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
+	for _, atom := range atoms {
+		*undoList = append(*undoList, atom.UndoSQL)
+		_, err := db.Exec(atom.ExcuteSQL)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
