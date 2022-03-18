@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 const (
@@ -41,6 +42,27 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 					// 	fmt.Println(p.Context.Value("data"))
 					// 	return "world", nil
 					// },
+				}
+				fields[relation.Name+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+					Type: *AggregateType(relation.TypeEntity, newParents),
+					Args: graphql.FieldConfigArgument{
+						consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
+							Type: DistinctOnEnum(relation.TypeEntity),
+						},
+						consts.ARG_LIMIT: &graphql.ArgumentConfig{
+							Type: graphql.Int,
+						},
+						consts.ARG_OFFSET: &graphql.ArgumentConfig{
+							Type: graphql.Int,
+						},
+						//consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+						//	Type: OrderBy(relation.TypeEntity),
+						//},
+						//consts.ARG_WHERE: &graphql.ArgumentConfig{
+						//	Type: WhereExp(entity),
+						//},
+					},
+					//Resolve: resolve.QueryResolveFn(entity),
 				}
 			} else {
 				fields[relation.Name] = &graphql.Field{

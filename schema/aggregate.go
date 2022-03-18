@@ -2,7 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 func AvgFields(entity *meta.Entity) graphql.Fields {
@@ -326,13 +328,18 @@ func AggregateFields(entity *meta.Entity) graphql.Fields {
 	return fields
 }
 
-func AggregateType(entity *meta.Entity) graphql.Output {
+func AggregateType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
+	name := entity.Name + utils.FirstUpper(consts.AGGREGATE)
+	if Cache.AggregateMap[name] != nil {
+		return Cache.AggregateMap[name]
+	}
+
 	var returnValue graphql.Output
 
 	fields := graphql.Fields{
-		"nodes": &graphql.Field{
+		consts.NODES: &graphql.Field{
 			Type: &graphql.List{
-				OfType: *OutputType(entity, []*meta.Entity{}),
+				OfType: *OutputType(entity, parents),
 			},
 		},
 	}
@@ -340,10 +347,10 @@ func AggregateType(entity *meta.Entity) graphql.Output {
 	aggregateFields := AggregateFields(entity)
 
 	if len(aggregateFields) > 0 {
-		fields["aggregate"] = &graphql.Field{
+		fields[consts.AGGREGATE] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   entity.Name + "AggregateFields",
+					Name:   entity.Name + utils.FirstUpper(consts.AGGREGATE) + consts.FIELDS,
 					Fields: aggregateFields,
 				},
 			),
@@ -352,10 +359,11 @@ func AggregateType(entity *meta.Entity) graphql.Output {
 
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
-			Name:   entity.Name + "Aggregate",
+			Name:   name,
 			Fields: fields,
 		},
 	)
 
-	return returnValue
+	Cache.AggregateMap[name] = &returnValue
+	return &returnValue
 }

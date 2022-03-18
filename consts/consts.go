@@ -16,6 +16,8 @@ const (
 	ONE       = "one"
 	QUERY     = "query"
 	AGGREGATE = "aggregate"
+	FIELDS    = "Fields"
+	NODES     = "nodes"
 
 	ARG_DISTINCTON string = "_distinctOn"
 	ARG_LIMIT      string = "_limit"

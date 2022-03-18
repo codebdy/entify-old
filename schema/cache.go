@@ -18,6 +18,8 @@ type TypeCache struct {
 
 	EnumMap              map[string]*graphql.Enum
 	EnumComparisonExpMap map[string]*graphql.InputObjectFieldConfig
+
+	AggregateMap map[string]*graphql.Output
 }
 
 //where表达式缓存，query跟mutation都用
@@ -32,4 +34,5 @@ func (c *TypeCache) ClearCache() {
 	c.PostInputMap = make(map[string]*graphql.Input)
 	c.EnumMap = make(map[string]*graphql.Enum)
 	c.EnumComparisonExpMap = make(map[string]*graphql.InputObjectFieldConfig)
+	c.AggregateMap = make(map[string]*graphql.Output)
 }

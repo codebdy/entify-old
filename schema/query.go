@@ -5,15 +5,16 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/resolve"
+	"rxdrag.com/entity-engine/utils"
 )
 
-func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
+func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
 	}
 
-	(*feilds)[consts.QUERY+entity.Name] = &graphql.Field{
+	(*fields)[consts.QUERY+entity.Name] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
 				OfType: *OutputType(entity, []*meta.Entity{}),
@@ -38,7 +39,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		},
 		Resolve: resolve.QueryResolveFn(entity),
 	}
-	(*feilds)[consts.ONE+entity.Name] = &graphql.Field{
+	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
 		Type: *OutputType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
@@ -57,8 +58,8 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Resolve: resolve.QueryOneResolveFn(entity),
 	}
 
-	(*feilds)[consts.AGGREGATE+entity.Name] = &graphql.Field{
-		Type: AggregateType(entity),
+	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+		Type: *AggregateType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
