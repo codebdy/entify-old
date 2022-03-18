@@ -29,13 +29,29 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 	for i := range relations {
 		relation := relations[i]
 		if !findParent(relation.TypeEntity.Uuid, newParents) {
-			fields[relation.Name] = &graphql.Field{
-				Type: *OutputType(relation.TypeEntity, newParents),
-				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				// 	fmt.Println(p.Context.Value("data"))
-				// 	return "world", nil
-				// },
+			relationType := OutputType(relation.TypeEntity, newParents)
+			if relation.IsArray() {
+				fields[relation.Name] = &graphql.Field{
+					Type: &graphql.NonNull{
+						OfType: &graphql.List{
+							OfType: *relationType,
+						},
+					},
+					// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					// 	fmt.Println(p.Context.Value("data"))
+					// 	return "world", nil
+					// },
+				}
+			} else {
+				fields[relation.Name] = &graphql.Field{
+					Type: *relationType,
+					// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					// 	fmt.Println(p.Context.Value("data"))
+					// 	return "world", nil
+					// },
+				}
 			}
+
 		}
 	}
 	return fields
@@ -156,7 +172,7 @@ func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 
 func parentsSuffix(parents []*meta.Entity) string {
 	suffix := ""
-	for i := len(parents) - 1; i >= 0; i-- {
+	for i := range parents {
 		parent := parents[i]
 		suffix = consts.CONST_OF + parent.Name + suffix
 	}

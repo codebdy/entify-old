@@ -62,3 +62,18 @@ func (entity *Entity) Parent() *Entity {
 func (e *Entity) IsNormal() bool {
 	return e.EntityType == ENTITY_NORMAL || e.EntityType == ""
 }
+
+func (r *EntityRelation) IsArray() bool {
+	if r.Relation.RelationType == ONE_TO_MANY {
+		if r.OfEntity.Uuid == r.Relation.SourceId {
+			return true
+		}
+	} else if r.Relation.RelationType == MANY_TO_ONE {
+		if r.OfEntity.Uuid == r.Relation.TargetId {
+			return true
+		}
+	} else if r.Relation.RelationType == MANY_TO_MANY {
+		return true
+	}
+	return false
+}
