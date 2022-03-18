@@ -59,7 +59,7 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 							Type: OrderBy(relation.TypeEntity),
 						},
 						consts.ARG_WHERE: &graphql.ArgumentConfig{
-							Type: WhereExp(entity, newParents),
+							Type: WhereExp(relation.TypeEntity, newParents),
 						},
 					},
 					//Resolve: resolve.QueryResolveFn(entity),
@@ -140,6 +140,16 @@ func WhereExp(entity *meta.Entity, parents []*meta.Entity) *graphql.InputObject 
 
 		if columnExp != nil {
 			fields[column.Name] = columnExp
+		}
+	}
+	relations := meta.Metas.EntityRelations(entity)
+	newParents := append(parents, entity)
+	for i := range relations {
+		relation := relations[i]
+		if !findParent(relation.TypeEntity.Uuid, newParents) {
+			fields[relation.Name] = &graphql.InputObjectFieldConfig{
+				Type: WhereExp(relation.TypeEntity, newParents),
+			}
 		}
 	}
 	Cache.WhereExpMap[expName] = boolExp
