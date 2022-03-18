@@ -102,7 +102,7 @@ func OutputType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
 }
 
 func WhereExp(entity *meta.Entity, parents []*meta.Entity) *graphql.InputObject {
-	expName := entity.Name + BOOLEXP
+	expName := entity.Name + parentsSuffix(parents) + BOOLEXP
 	if Cache.WhereExpMap[expName] != nil {
 		return Cache.WhereExpMap[expName]
 	}
