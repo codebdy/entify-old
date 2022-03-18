@@ -87,3 +87,7 @@ func TestTables(t *testing.T) {
 	}
 	//t.FailNow()
 }
+
+func TestEntityRelations(t *testing.T) {
+
+}

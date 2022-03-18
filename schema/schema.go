@@ -57,15 +57,15 @@ func MakeSchema() {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity),
+			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}

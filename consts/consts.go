@@ -88,4 +88,5 @@ const (
 const (
 	CREATED_AT string = "createdAt"
 	CONST_ID   string = "id"
+	CONST_OF   string = "Of"
 )

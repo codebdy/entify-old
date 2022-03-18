@@ -12,7 +12,7 @@ const (
 	DISTINCTEXP string = "DistinctExp"
 )
 
-func OutputFields(entity *meta.Entity) graphql.Fields {
+func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		fields[column.Name] = &graphql.Field{
@@ -23,12 +23,28 @@ func OutputFields(entity *meta.Entity) graphql.Fields {
 			// },
 		}
 	}
+
+	relations := meta.Metas.EntityRelations(entity)
+	newParents := append(parents, entity)
+	for i := range relations {
+		relation := relations[i]
+		if !findParent(relation.TypeEntity.Uuid, newParents) {
+			fields[relation.Name] = &graphql.Field{
+				Type: *OutputType(relation.TypeEntity, newParents),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+	}
 	return fields
 }
 
-func OutputType(entity *meta.Entity) *graphql.Output {
-	if Cache.OutputTypeMap[entity.Name] != nil {
-		return Cache.OutputTypeMap[entity.Name]
+func OutputType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
+	name := entity.Name + parentsSuffix(parents)
+	if Cache.OutputTypeMap[name] != nil {
+		return Cache.OutputTypeMap[name]
 	}
 	var returnValue graphql.Output
 
@@ -37,13 +53,13 @@ func OutputType(entity *meta.Entity) *graphql.Output {
 	} else {
 		returnValue = graphql.NewObject(
 			graphql.ObjectConfig{
-				Name:   entity.Name,
-				Fields: OutputFields(entity),
+				Name:   name,
+				Fields: OutputFields(entity, parents),
 			},
 		)
 	}
 
-	Cache.OutputTypeMap[entity.Name] = &returnValue
+	Cache.OutputTypeMap[name] = &returnValue
 	return &returnValue
 }
 
@@ -136,4 +152,26 @@ func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 	)
 	Cache.DistinctOnEnumMap[entity.Name] = entEnum
 	return entEnum
+}
+
+func parentsSuffix(parents []*meta.Entity) string {
+	suffix := ""
+	for i := len(parents) - 1; i >= 0; i-- {
+		parent := parents[i]
+		if suffix != "" {
+			suffix = consts.CONST_OF + parent.Name + consts.CONST_OF + suffix
+		} else {
+			suffix = consts.CONST_OF + parent.Name
+		}
+	}
+	return suffix
+}
+
+func findParent(uuid string, parents []*meta.Entity) bool {
+	for _, entity := range parents {
+		if entity.Uuid == uuid {
+			return true
+		}
+	}
+	return false
 }

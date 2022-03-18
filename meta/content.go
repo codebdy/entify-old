@@ -183,3 +183,29 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 
 	return table
 }
+
+func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
+	relations := []EntityRelation{}
+	for i := range c.Relations {
+		relation := &c.Relations[i]
+		if relation.RelationType == INHERIT {
+			continue
+		}
+		if relation.SourceId == entity.Uuid {
+			relations = append(relations, EntityRelation{
+				Name:       relation.RoleOnSource,
+				Relation:   relation,
+				OfEntity:   entity,
+				TypeEntity: c.GetEntityByUuid(relation.TargetId),
+			})
+		} else if relation.TargetId == entity.Uuid {
+			relations = append(relations, EntityRelation{
+				Name:       relation.RoleOnTarget,
+				Relation:   relation,
+				OfEntity:   entity,
+				TypeEntity: c.GetEntityByUuid(relation.SourceId),
+			})
+		}
+	}
+	return relations
+}

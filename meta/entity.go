@@ -11,9 +11,10 @@ const (
 )
 
 type EntityRelation struct {
-	Name     string
-	Relation *Relation
-	OfEntity *Entity
+	Name       string
+	Relation   *Relation
+	OfEntity   *Entity
+	TypeEntity *Entity
 }
 
 type Entity struct {
@@ -56,14 +57,6 @@ func (entity *Entity) GetTableName() string {
 
 func (entity *Entity) Parent() *Entity {
 	return nil
-}
-
-func (er *EntityRelation) RoleName() string {
-	return ""
-}
-
-func (er *EntityRelation) ColumnName() string {
-	return ""
 }
 
 func (e *Entity) IsNormal() bool {

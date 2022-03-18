@@ -16,7 +16,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 	(*feilds)[consts.QUERY+entity.Name] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
-				OfType: *OutputType(entity),
+				OfType: *OutputType(entity, []*meta.Entity{}),
 			},
 		},
 		Args: graphql.FieldConfigArgument{
@@ -39,7 +39,7 @@ func AppendToQueryFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Resolve: resolve.QueryResolveFn(entity),
 	}
 	(*feilds)[consts.ONE+entity.Name] = &graphql.Field{
-		Type: *OutputType(entity),
+		Type: *OutputType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 				Type: DistinctOnEnum(entity),
