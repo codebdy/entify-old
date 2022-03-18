@@ -6,9 +6,7 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-//mutition类型缓存， mutaion用
-
-func InputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
+func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
 		if column.Name != "id" || isPost {
@@ -17,11 +15,29 @@ func InputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFiel
 			}
 		}
 	}
-
+	relations := meta.Metas.EntityRelations(entity)
+	newParents := append(parents, entity)
+	for i := range relations {
+		relation := relations[i]
+		if !findParent(relation.TypeEntity.Uuid, newParents) {
+			typeInput := PostInput(relation.TypeEntity, newParents)
+			if relation.IsArray() {
+				fields[relation.Name] = &graphql.InputObjectFieldConfig{
+					Type: &graphql.List{
+						OfType: *typeInput,
+					},
+				}
+			} else {
+				fields[relation.Name] = &graphql.InputObjectFieldConfig{
+					Type: *typeInput,
+				}
+			}
+		}
+	}
 	return fields
 }
 
-func UpdateInput(entity *meta.Entity) *graphql.Input {
+func UpdateInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
 	if Cache.UpdateInputMap[entity.Name] != nil {
 		return Cache.UpdateInputMap[entity.Name]
 	}
@@ -30,14 +46,14 @@ func UpdateInput(entity *meta.Entity) *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "UpdateInput",
-			Fields: InputFields(entity, false),
+			Fields: InputFields(entity, parents, false),
 		},
 	)
 	Cache.UpdateInputMap[entity.Name] = &returnValue
 	return &returnValue
 }
 
-func PostInput(entity *meta.Entity) *graphql.Input {
+func PostInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
 	if Cache.PostInputMap[entity.Name] != nil {
 		return Cache.PostInputMap[entity.Name]
 	}
@@ -46,7 +62,7 @@ func PostInput(entity *meta.Entity) *graphql.Input {
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + "PostInput",
-			Fields: InputFields(entity, true),
+			Fields: InputFields(entity, parents, true),
 		},
 	)
 	Cache.PostInputMap[entity.Name] = &returnValue
