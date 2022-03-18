@@ -20,6 +20,8 @@ const (
 	NODES        = "nodes"
 	INPUT        = "Input"
 	UPDATE_INPUT = "UpdateInput"
+	SAVE         = "save"
+	SAVE_ONE     = "saveOne"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"

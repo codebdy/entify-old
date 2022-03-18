@@ -34,7 +34,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)["post"+name] = &graphql.Field{
+	(*feilds)[consts.SAVE+name] = &graphql.Field{
 		Type: *OutputType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
@@ -49,7 +49,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		},
 	}
 	//Resolve: entity.QueryResolve(),
-	(*feilds)["postOne"+name] = &graphql.Field{
+	(*feilds)[consts.SAVE_ONE+name] = &graphql.Field{
 		Type: *OutputType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
