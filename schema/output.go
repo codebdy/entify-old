@@ -55,12 +55,12 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 						consts.ARG_OFFSET: &graphql.ArgumentConfig{
 							Type: graphql.Int,
 						},
-						//consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-						//	Type: OrderBy(relation.TypeEntity),
-						//},
-						//consts.ARG_WHERE: &graphql.ArgumentConfig{
-						//	Type: WhereExp(entity),
-						//},
+						consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+							Type: OrderBy(relation.TypeEntity),
+						},
+						consts.ARG_WHERE: &graphql.ArgumentConfig{
+							Type: WhereExp(entity, newParents),
+						},
 					},
 					//Resolve: resolve.QueryResolveFn(entity),
 				}
@@ -101,7 +101,7 @@ func OutputType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
 	return &returnValue
 }
 
-func WhereExp(entity *meta.Entity) *graphql.InputObject {
+func WhereExp(entity *meta.Entity, parents []*meta.Entity) *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
 	if Cache.WhereExpMap[expName] != nil {
 		return Cache.WhereExpMap[expName]

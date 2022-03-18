@@ -20,7 +20,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Type: *MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
 			"where": &graphql.ArgumentConfig{
-				Type: WhereExp(entity),
+				Type: WhereExp(entity, []*meta.Entity{}),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
@@ -74,7 +74,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 				},
 			},
 			"where": &graphql.ArgumentConfig{
-				Type: WhereExp(entity),
+				Type: WhereExp(entity, []*meta.Entity{}),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
