@@ -17,6 +17,7 @@ func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graph
 	}
 	relations := meta.Metas.EntityRelations(entity)
 	newParents := append(parents, entity)
+
 	for i := range relations {
 		relation := relations[i]
 		if !findParent(relation.TypeEntity.Uuid, newParents) {
@@ -45,7 +46,7 @@ func UpdateInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
 
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + "UpdateInput",
+			Name:   entity.Name + consts.UPDATE_INPUT,
 			Fields: InputFields(entity, parents, false),
 		},
 	)
@@ -54,18 +55,19 @@ func UpdateInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
 }
 
 func PostInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
-	if Cache.PostInputMap[entity.Name] != nil {
-		return Cache.PostInputMap[entity.Name]
+	name := entity.Name + parentsSuffix(parents) + consts.INPUT
+	if Cache.PostInputMap[name] != nil {
+		return Cache.PostInputMap[name]
 	}
 	var returnValue graphql.Input
 
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + "PostInput",
+			Name:   name,
 			Fields: InputFields(entity, parents, true),
 		},
 	)
-	Cache.PostInputMap[entity.Name] = &returnValue
+	Cache.PostInputMap[name] = &returnValue
 	return &returnValue
 }
 

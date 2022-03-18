@@ -13,11 +13,13 @@ const (
 	ROLLBACK   = "rollback"
 	SYNC_META  = "syncMeta"
 
-	ONE       = "one"
-	QUERY     = "query"
-	AGGREGATE = "aggregate"
-	FIELDS    = "Fields"
-	NODES     = "nodes"
+	ONE          = "one"
+	QUERY        = "query"
+	AGGREGATE    = "aggregate"
+	FIELDS       = "Fields"
+	NODES        = "nodes"
+	INPUT        = "Input"
+	UPDATE_INPUT = "UpdateInput"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"
