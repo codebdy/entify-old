@@ -158,11 +158,7 @@ func parentsSuffix(parents []*meta.Entity) string {
 	suffix := ""
 	for i := len(parents) - 1; i >= 0; i-- {
 		parent := parents[i]
-		if suffix != "" {
-			suffix = consts.CONST_OF + parent.Name + consts.CONST_OF + suffix
-		} else {
-			suffix = consts.CONST_OF + parent.Name
-		}
+		suffix = consts.CONST_OF + parent.Name + suffix
 	}
 	return suffix
 }
