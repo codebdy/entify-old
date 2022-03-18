@@ -2,7 +2,6 @@ package resolve
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
@@ -18,8 +17,8 @@ func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 
 func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		names := entity.ColumnNames()
-		queryStr := "select %s from %s "
+		// names := entity.ColumnNames()
+		// queryStr := "select %s from %s "
 		for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
 			switch selection := iSelection.(type) {
 			case *ast.Field:
@@ -29,8 +28,7 @@ func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 			}
 		}
 
-		queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
 		//err = db.Select(&instances, queryStr)
-		return repository.Query(entity, queryStr)
+		return repository.Query(entity, p.Args)
 	}
 }

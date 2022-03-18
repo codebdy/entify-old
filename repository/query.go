@@ -100,14 +100,15 @@ func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string
 	return object
 }
 
-func Query(entity *meta.Entity, queryStr string) ([]interface{}, error) {
+func Query(entity *meta.Entity, args map[string]interface{}) ([]interface{}, error) {
+	queryStr, params := BuildQuerySQL(entity, args)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
-	rows, err := db.Query(queryStr)
+	rows, err := db.Query(queryStr, params...)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -159,7 +160,7 @@ func QueryOne(entity *meta.Entity, args map[string]interface{}) (interface{}, er
 func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 	return QueryOne(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
-			"id": QueryArg{
+			consts.CONST_ID: QueryArg{
 				consts.AEG_EQ: id,
 			},
 		},
