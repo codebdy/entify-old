@@ -55,10 +55,6 @@ func (entity *Entity) GetTableName() string {
 	return utils.SnakeString((*entity).Name)
 }
 
-func (entity *Entity) Parent() *Entity {
-	return nil
-}
-
 func (e *Entity) IsNormal() bool {
 	return e.EntityType == ENTITY_NORMAL || e.EntityType == ""
 }

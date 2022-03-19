@@ -33,3 +33,13 @@ type Column struct {
 	TypeEnityUuid string `json:"typeEnityUuid"`
 	Description   string `json:"description"`
 }
+
+func FindColumnByName(name string, columns []Column) *Column {
+	for i := range columns {
+		if columns[i].Name == name {
+			return &columns[i]
+		}
+	}
+
+	return nil
+}

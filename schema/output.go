@@ -16,7 +16,7 @@ const (
 
 func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Columns {
+	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		fields[column.Name] = &graphql.Field{
 			Type: ColumnType(&column),
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {

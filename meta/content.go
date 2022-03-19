@@ -209,3 +209,36 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	}
 	return relations
 }
+
+func (c *MetaContent) Parent(entity *Entity) *Entity {
+	for i := range c.Relations {
+		relation := &c.Relations[i]
+		if relation.RelationType == INHERIT {
+			if relation.SourceId == entity.Uuid {
+				return c.GetEntityByUuid(relation.TargetId)
+			}
+		}
+	}
+	return nil
+}
+
+func (c *MetaContent) EntityInheritedColumns(entity *Entity) []Column {
+	parent := c.Parent(entity)
+	if parent == nil {
+		return []Column{}
+	}
+
+	return c.EntityAllColumns(parent)
+}
+
+func (c *MetaContent) EntityAllColumns(entity *Entity) []Column {
+	var inheritedColumns []Column
+	var allInheritedColumns = c.EntityInheritedColumns(entity)
+	for i := range allInheritedColumns {
+		column := allInheritedColumns[i]
+		if FindColumnByName(column.Name, entity.Columns) == nil {
+			inheritedColumns = append(inheritedColumns, column)
+		}
+	}
+	return append(entity.Columns, inheritedColumns...)
+}
