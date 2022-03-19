@@ -127,6 +127,14 @@ func TestColumnDifferent(t *testing.T) {
 		t.Errorf("columnDifferent return value is nil")
 		return
 	}
+
+	if diff.OldColumn.Name != "newColumn1" {
+		t.Errorf("expect old column newColumn1, but actual is %s", diff.OldColumn.Name)
+	}
+
+	if diff.NewColumn.Name != "nickname" {
+		t.Errorf("expect new column nickname, but actual is %s", diff.NewColumn.Name)
+	}
 }
 
 func TestChangeTableColumnName(t *testing.T) {
@@ -162,5 +170,9 @@ func TestChangeTableColumnName(t *testing.T) {
 
 	if len(diff.ModifyColumns) != 1 {
 		t.Errorf("Column diff number is %d ,not 1", len(diff.ModifyColumns))
+	}
+
+	if diff.ModifyColumns[0].OldColumn.Name != "newColumn1" {
+		t.Errorf("Column diff old column error: %s", diff.ModifyColumns[0].OldColumn.Name)
 	}
 }

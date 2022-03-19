@@ -90,7 +90,7 @@ func tableDifferent(oldTable, newTable *Table) *TableDiff {
 			diff.AddColumns = append(diff.AddColumns, column)
 			modified = true
 		} else {
-			columnDiff := columnDifferent(&column, foundColumn)
+			columnDiff := columnDifferent(foundColumn, &column)
 			if columnDiff != nil {
 				diff.ModifyColumns = append(diff.ModifyColumns, *columnDiff)
 				modified = true

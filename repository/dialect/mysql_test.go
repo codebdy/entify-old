@@ -66,4 +66,13 @@ func TestModifyColumnName(t *testing.T) {
 		t.Errorf("Modify atoms number error, number:%d", len(atoms))
 	}
 
+	if atoms[0].ExcuteSQL != "ALTER TABLE User CHANGE COLUMN newColumn1 nickname text" {
+		t.Errorf("ExcuteSQL error:" + atoms[0].ExcuteSQL)
+	}
+
+	if atoms[0].UndoSQL != "ALTER TABLE User CHANGE COLUMN nickname newColumn1 text" {
+		t.Errorf("UndoSQL error:" + atoms[0].UndoSQL)
+	}
+	t.Log("#" + atoms[0].ExcuteSQL + "#")
+	t.Log(atoms[0].UndoSQL)
 }
