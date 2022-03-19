@@ -78,7 +78,7 @@ func ModifyTable(tableDiff *meta.TableDiff, undoList *[]string, db *sql.DB) erro
 		*undoList = append(*undoList, atom.UndoSQL)
 		_, err := db.Exec(atom.ExcuteSQL)
 		if err != nil {
-			fmt.Println("出错atom", atom.ExcuteSQL)
+			fmt.Println("出错atom", atom.ExcuteSQL, err.Error())
 			return err
 		}
 	}

@@ -32,3 +32,38 @@ func TestModifyTableName(t *testing.T) {
 		t.Error("Modify atom UndoSQL error:#" + atoms[0].UndoSQL + "#")
 	}
 }
+
+func TestModifyColumnName(t *testing.T) {
+	var mysqlBuilder MySQLBuilder
+	atoms := mysqlBuilder.BuildModifyTableAtoms(
+		&meta.TableDiff{
+			OldTable: &meta.Table{
+				MetaUuid: "uuid1",
+				Name:     "User",
+			},
+			NewTable: &meta.Table{
+				MetaUuid: "uuid1",
+				Name:     "User",
+			},
+			ModifyColumns: []meta.ColumnDiff{
+				{
+					OldColumn: meta.Column{
+						Name: "newColumn1",
+						Uuid: "column1",
+						Type: meta.COLUMN_STRING,
+					},
+					NewColumn: meta.Column{
+						Name: "nickname",
+						Uuid: "column1",
+						Type: meta.COLUMN_STRING,
+					},
+				},
+			},
+		},
+	)
+
+	if len(atoms) != 1 {
+		t.Errorf("Modify atoms number error, number:%d", len(atoms))
+	}
+
+}

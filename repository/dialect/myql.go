@@ -298,19 +298,32 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *meta.TableDiff, atoms *[]me
 			})
 		}
 		//更改列
-		if columnDiff.OldColumn.Name != columnDiff.OldColumn.Name ||
-			columnDiff.OldColumn.Type != columnDiff.OldColumn.Type ||
-			columnDiff.OldColumn.Length != columnDiff.OldColumn.Length ||
-			columnDiff.OldColumn.FloatD != columnDiff.OldColumn.FloatD ||
-			columnDiff.OldColumn.FloatM != columnDiff.OldColumn.FloatM ||
-			columnDiff.OldColumn.Unsigned != columnDiff.OldColumn.Unsigned {
-
+		if columnDiff.OldColumn.Name != columnDiff.NewColumn.Name ||
+			columnDiff.OldColumn.Type != columnDiff.NewColumn.Type ||
+			columnDiff.OldColumn.Length != columnDiff.NewColumn.Length ||
+			columnDiff.OldColumn.FloatD != columnDiff.NewColumn.FloatD ||
+			columnDiff.OldColumn.FloatM != columnDiff.NewColumn.FloatM ||
+			columnDiff.OldColumn.Unsigned != columnDiff.NewColumn.Unsigned {
+			*atoms = append(*atoms, meta.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf(
+					"ALTER TABLE %s	CHANGE COLUMN %s %s %s",
+					diff.NewTable.Name,
+					columnDiff.OldColumn.Name,
+					columnDiff.NewColumn.Name, b.ColumnTypeSQL(&columnDiff.NewColumn),
+				),
+				UndoSQL: fmt.Sprintf(
+					"ALTER TABLE %s	CHANGE COLUMN %s %s %s",
+					diff.NewTable.Name,
+					columnDiff.NewColumn.Name,
+					columnDiff.OldColumn.Name, b.ColumnTypeSQL(&columnDiff.OldColumn),
+				),
+			})
 		}
 		//添加索引
 		if columnDiff.NewColumn.Index {
 			indexName := columnDiff.NewColumn.Name + consts.INDEX_SUFFIX
 			*atoms = append(*atoms, meta.ModifyAtom{
-				ExcuteSQL: fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, columnDiff.OldColumn.Name),
+				ExcuteSQL: fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, columnDiff.NewColumn.Name),
 				UndoSQL:   fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name),
 			})
 		}
