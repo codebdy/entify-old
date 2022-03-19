@@ -184,6 +184,18 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 	return table
 }
 
+func (c *MetaContent) Parent(entity *Entity) *Entity {
+	for i := range c.Relations {
+		relation := &c.Relations[i]
+		if relation.RelationType == INHERIT {
+			if relation.SourceId == entity.Uuid {
+				return c.GetEntityByUuid(relation.TargetId)
+			}
+		}
+	}
+	return nil
+}
+
 func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	relations := []EntityRelation{}
 	for i := range c.Relations {
@@ -210,16 +222,26 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	return relations
 }
 
-func (c *MetaContent) Parent(entity *Entity) *Entity {
-	for i := range c.Relations {
-		relation := &c.Relations[i]
-		if relation.RelationType == INHERIT {
-			if relation.SourceId == entity.Uuid {
-				return c.GetEntityByUuid(relation.TargetId)
-			}
+func (c *MetaContent) EntityInheritedRelations(entity *Entity) []EntityRelation {
+	parent := c.Parent(entity)
+	if parent == nil {
+		return []EntityRelation{}
+	}
+
+	return c.EntityAllRelations(parent)
+}
+
+func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
+	var inheritedRelations []EntityRelation
+	var allInheritedRelations = c.EntityInheritedRelations(entity)
+	entityRelations := c.EntityRelations(entity)
+	for i := range allInheritedRelations {
+		relation := allInheritedRelations[i]
+		if FindRelationByName(relation.Name, entityRelations) == nil {
+			inheritedRelations = append(inheritedRelations, relation)
 		}
 	}
-	return nil
+	return append(entityRelations, inheritedRelations...)
 }
 
 func (c *MetaContent) EntityInheritedColumns(entity *Entity) []Column {

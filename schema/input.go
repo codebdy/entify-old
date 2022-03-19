@@ -8,14 +8,14 @@ import (
 
 func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.Columns {
+	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		if column.Name != "id" || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type: ColumnType(&column),
 			}
 		}
 	}
-	relations := meta.Metas.EntityRelations(entity)
+	relations := meta.Metas.EntityAllRelations(entity)
 	newParents := append(parents, entity)
 
 	for i := range relations {

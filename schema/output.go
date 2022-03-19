@@ -26,7 +26,7 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 		}
 	}
 
-	relations := meta.Metas.EntityRelations(entity)
+	relations := meta.Metas.EntityAllRelations(entity)
 	newParents := append(parents, entity)
 	for i := range relations {
 		relation := relations[i]
