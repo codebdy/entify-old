@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/handler"
+	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/schema"
 )
 
@@ -16,7 +17,13 @@ func main() {
 		Pretty:          true,
 	})
 
-	http.Handle("/graphql", authentication.CorsMiddleware(authentication.AuthMiddleware(h)))
+	http.Handle("/graphql",
+		authentication.CorsMiddleware(
+			authentication.AuthMiddleware(
+				resolve.LoadersMiddleware(h),
+			),
+		),
+	)
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {
