@@ -109,3 +109,58 @@ func TestModifiedTableName(t *testing.T) {
 	}
 
 }
+
+func TestColumnDifferent(t *testing.T) {
+	diff := columnDifferent(
+		&Column{
+			Name: "newColumn1",
+			Uuid: "column1",
+			Type: COLUMN_STRING,
+		},
+		&Column{
+			Name: "nickname",
+			Uuid: "column1",
+			Type: COLUMN_STRING},
+	)
+
+	if diff == nil {
+		t.Errorf("columnDifferent return value is nil")
+		return
+	}
+}
+
+func TestChangeTableColumnName(t *testing.T) {
+	diff := tableDifferent(
+		&Table{
+			Name:     "User",
+			MetaUuid: "User-uuid",
+			Columns: []Column{
+				{
+					Name: "newColumn1",
+					Uuid: "column1",
+					Type: COLUMN_STRING,
+				},
+			},
+		},
+		&Table{
+			Name:     "User",
+			MetaUuid: "User-uuid",
+			Columns: []Column{
+				{
+					Name: "nickname",
+					Uuid: "column1",
+					Type: COLUMN_STRING,
+				},
+			},
+		},
+	)
+
+	if diff == nil {
+		t.Errorf("tableDifferent return value is nil")
+		return
+	}
+
+	if len(diff.ModifyColumns) != 1 {
+		t.Errorf("Column diff number is %d ,not 1", len(diff.ModifyColumns))
+	}
+}

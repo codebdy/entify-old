@@ -122,10 +122,10 @@ func CreateDiff(published, next *MetaContent) *Diff {
 	}
 	for _, table := range nextTables {
 		foundTable := FindTable(table.MetaUuid, publishedTables)
-		//添加的Entity
+		//添加的Table
 		if foundTable == nil {
 			diff.AddedTables = append(diff.AddedTables, table)
-		} else {
+		} else { //修改的Table
 			tableDiff := tableDifferent(foundTable, table)
 			if tableDiff != nil {
 				diff.ModifiedTables = append(diff.ModifiedTables, tableDiff)
