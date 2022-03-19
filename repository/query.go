@@ -160,7 +160,7 @@ func QueryOne(entity *meta.Entity, args map[string]interface{}) (interface{}, er
 func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
 	return QueryOne(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
-			consts.CONST_ID: QueryArg{
+			consts.ID: QueryArg{
 				consts.AEG_EQ: id,
 			},
 		},

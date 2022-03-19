@@ -16,19 +16,19 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 
 	name := utils.FirstUpper(entity.Name)
 
-	(*feilds)["delete"+name] = &graphql.Field{
+	(*feilds)[consts.DELETE+name] = &graphql.Field{
 		Type: *MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
-			"where": &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity, []*meta.Entity{}),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)["delete"+name+"ById"] = &graphql.Field{
+	(*feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
 		Type: *OutputType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
-			"id": &graphql.ArgumentConfig{
+			consts.ID: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
 		},
@@ -61,7 +61,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Resolve: resolve.PostOneResolveFn(entity),
 	}
 
-	(*feilds)["update"+name] = &graphql.Field{
+	(*feilds)[consts.UPDATE+name] = &graphql.Field{
 		Type: *MutationResponseType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
@@ -73,7 +73,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 					},
 				},
 			},
-			"where": &graphql.ArgumentConfig{
+			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: WhereExp(entity, []*meta.Entity{}),
 			},
 		},

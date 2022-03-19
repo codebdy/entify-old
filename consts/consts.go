@@ -22,6 +22,9 @@ const (
 	UPDATE_INPUT = "UpdateInput"
 	SAVE         = "save"
 	SAVE_ONE     = "saveOne"
+	DELETE       = "delete"
+	BY_ID        = "ById"
+	UPDATE       = "update"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"
@@ -93,6 +96,6 @@ const (
 
 const (
 	CREATED_AT string = "createdAt"
-	CONST_ID   string = "id"
-	CONST_OF   string = "Of"
+	ID         string = "id"
+	OF         string = "Of"
 )

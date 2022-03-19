@@ -206,7 +206,7 @@ func parentsSuffix(parents []*meta.Entity) string {
 	suffix := ""
 	for i := range parents {
 		parent := parents[i]
-		suffix = consts.CONST_OF + parent.Name + suffix
+		suffix = consts.OF + parent.Name + suffix
 	}
 	return suffix
 }

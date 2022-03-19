@@ -202,7 +202,7 @@ func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *met
 		"UPDATE `%s` SET %s WHERE ID = %s",
 		entity.GetTableName(),
 		updateSetFields(keys),
-		object[consts.CONST_ID],
+		object[consts.ID],
 	)
 	return sql, makeValues(keys, object, entity)
 }
