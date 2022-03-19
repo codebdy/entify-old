@@ -32,3 +32,9 @@ func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
 		return repository.Query(entity, p.Args)
 	}
 }
+
+func RelationResolveFn(relation *meta.EntityRelation) graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		return nil, nil
+	}
+}

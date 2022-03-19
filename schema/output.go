@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -66,11 +67,8 @@ func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
 				}
 			} else {
 				fields[relation.Name] = &graphql.Field{
-					Type: *relationType,
-					// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					// 	fmt.Println(p.Context.Value("data"))
-					// 	return "world", nil
-					// },
+					Type:    *relationType,
+					Resolve: resolve.RelationResolveFn(&relation),
 				}
 			}
 
