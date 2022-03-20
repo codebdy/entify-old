@@ -99,3 +99,10 @@ const (
 	ID         string = "id"
 	OF         string = "Of"
 )
+
+const (
+	BOOLEXP           string = "BoolExp"
+	ORDERBY           string = "OrderBy"
+	DISTINCTEXP       string = "DistinctExp"
+	MUTATION_RESPONSE string = "MutationResponse"
+)

@@ -5,11 +5,12 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func (c *TypeCache) makeObjects(normals []*meta.Entity) {
+func (c *TypeCache) makeOutputObjects(normals []*meta.Entity) {
 	for i := range normals {
 		entity := normals[i]
 		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
 	}
+	c.makeRelations()
 }
 
 func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {

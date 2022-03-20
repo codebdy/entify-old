@@ -5,7 +5,7 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func (c *TypeCache) makeInterfaces(interfaces []*meta.Entity) {
+func (c *TypeCache) makeOutputInterfaces(interfaces []*meta.Entity) {
 	for i := range interfaces {
 		entity := interfaces[i]
 		c.InterfaceTypeMap[entity.Name] = c.InterfaceType(entity)

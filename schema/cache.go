@@ -13,7 +13,7 @@ type TypeCache struct {
 	EnumTypeMap          map[string]*graphql.Enum
 	InterfaceTypeMap     map[string]*graphql.Interface
 	UpdateInputMap       map[string]*graphql.Input
-	PostInputMap         map[string]*graphql.Input
+	SaveInputMap         map[string]*graphql.Input
 	WhereExpMap          map[string]*graphql.InputObject
 	DistinctOnEnumMap    map[string]*graphql.Enum
 	OrderByMap           map[string]*graphql.InputObject
@@ -28,10 +28,10 @@ func (c *TypeCache) MakeCache() {
 	c.clearCache()
 	enums, interfaces, normals := meta.Metas.SplitEntities()
 	c.makeEnums(enums)
-	c.makeInterfaces(interfaces)
-	c.makeObjects(normals)
-	c.makeRelations()
+	c.makeOutputInterfaces(interfaces)
+	c.makeOutputObjects(normals)
 	c.makeArgs()
+	c.makeInputs()
 }
 
 func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
@@ -56,6 +56,18 @@ func (c *TypeCache) DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 	return c.DistinctOnEnumMap[entity.Name]
 }
 
+func (c *TypeCache) SaveInput(entity *meta.Entity) *graphql.Input {
+	return c.SaveInputMap[entity.Name]
+}
+
+func (c *TypeCache) UpdateInput(entity *meta.Entity) *graphql.Input {
+	return c.UpdateInputMap[entity.Name]
+}
+
+func (c *TypeCache) MutationResponse(entity *meta.Entity) *graphql.Output {
+	return c.MutationResponseMap[entity.Name]
+}
+
 func (c *TypeCache) mapInterfaces(entities []*meta.Entity) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
@@ -71,7 +83,7 @@ func (c *TypeCache) clearCache() {
 	c.EnumTypeMap = make(map[string]*graphql.Enum)
 	c.InterfaceTypeMap = make(map[string]*graphql.Interface)
 	c.UpdateInputMap = make(map[string]*graphql.Input)
-	c.PostInputMap = make(map[string]*graphql.Input)
+	c.SaveInputMap = make(map[string]*graphql.Input)
 	c.WhereExpMap = make(map[string]*graphql.InputObject)
 	c.DistinctOnEnumMap = make(map[string]*graphql.Enum)
 	c.OrderByMap = make(map[string]*graphql.InputObject)

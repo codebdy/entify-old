@@ -6,7 +6,7 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
+func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		if column.Name != "id" || isPost {
@@ -15,69 +15,68 @@ func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graph
 			}
 		}
 	}
-	relations := meta.Metas.EntityAllRelations(entity)
-	newParents := append(parents, entity)
+	// relations := meta.Metas.EntityAllRelations(entity)
+	// newParents := append(parents, entity)
 
-	for i := range relations {
-		relation := relations[i]
-		typeInput := PostInput(relation.TypeEntity, newParents)
-		if relation.IsArray() {
-			fields[relation.Name] = &graphql.InputObjectFieldConfig{
-				Type: &graphql.List{
-					OfType: *typeInput,
-				},
-			}
-		} else {
-			fields[relation.Name] = &graphql.InputObjectFieldConfig{
-				Type: *typeInput,
-			}
-		}
-	}
+	// for i := range relations {
+	// 	relation := relations[i]
+	// 	typeInput := PostInput(relation.TypeEntity, newParents)
+	// 	if relation.IsArray() {
+	// 		fields[relation.Name] = &graphql.InputObjectFieldConfig{
+	// 			Type: &graphql.List{
+	// 				OfType: *typeInput,
+	// 			},
+	// 		}
+	// 	} else {
+	// 		fields[relation.Name] = &graphql.InputObjectFieldConfig{
+	// 			Type: *typeInput,
+	// 		}
+	// 	}
+	// }
 	return fields
 }
-
-func UpdateInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
-	if Cache.UpdateInputMap[entity.Name] != nil {
-		return Cache.UpdateInputMap[entity.Name]
+func (c *TypeCache) makeInputs() {
+	for i := range meta.Metas.Entities {
+		entity := meta.Metas.Entities[i]
+		if entity.EntityType != meta.ENTITY_ENUM {
+			c.UpdateInputMap[entity.Name] = makeUpdateInput(&entity)
+			c.SaveInputMap[entity.Name] = makeSaveInput(&entity)
+			c.MutationResponseMap[entity.Name] = makeMutationResponseType(&entity)
+		}
 	}
-	var returnValue graphql.Input
-
-	returnValue = graphql.NewInputObject(
-		graphql.InputObjectConfig{
-			Name:   entity.Name + consts.UPDATE_INPUT,
-			Fields: InputFields(entity, parents, false),
-		},
-	)
-	Cache.UpdateInputMap[entity.Name] = &returnValue
-	return &returnValue
 }
 
-func PostInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
+func makeSaveInput(entity *meta.Entity) *graphql.Input {
 	name := entity.Name + consts.INPUT
-	if Cache.PostInputMap[name] != nil {
-		return Cache.PostInputMap[name]
-	}
 	var returnValue graphql.Input
 
 	returnValue = graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   name,
-			Fields: InputFields(entity, parents, true),
+			Fields: inputFields(entity, true),
 		},
 	)
-	Cache.PostInputMap[name] = &returnValue
 	return &returnValue
 }
 
-func MutationResponseType(entity *meta.Entity) *graphql.Output {
-	if Cache.MutationResponseMap[entity.Name] != nil {
-		return Cache.MutationResponseMap[entity.Name]
-	}
+func makeUpdateInput(entity *meta.Entity) *graphql.Input {
+	var returnValue graphql.Input
+
+	returnValue = graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   entity.Name + consts.UPDATE_INPUT,
+			Fields: inputFields(entity, false),
+		},
+	)
+	return &returnValue
+}
+
+func makeMutationResponseType(entity *meta.Entity) *graphql.Output {
 	var returnValue graphql.Output
 
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
-			Name: entity.Name + "MutationResponse",
+			Name: entity.Name + consts.MUTATION_RESPONSE,
 			Fields: graphql.Fields{
 				consts.RESPONSE_AFFECTEDROWS: &graphql.Field{
 					Type: graphql.Int,
@@ -93,6 +92,5 @@ func MutationResponseType(entity *meta.Entity) *graphql.Output {
 		},
 	)
 
-	Cache.MutationResponseMap[entity.Name] = &returnValue
 	return &returnValue
 }

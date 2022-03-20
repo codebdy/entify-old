@@ -6,12 +6,6 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-const (
-	BOOLEXP     string = "BoolExp"
-	ORDERBY     string = "OrderBy"
-	DISTINCTEXP string = "DistinctExp"
-)
-
 func (c *TypeCache) makeArgs() {
 	for i := range meta.Metas.Entities {
 		entity := &meta.Metas.Entities[i]
@@ -45,7 +39,7 @@ func (c *TypeCache) makeRelaionWhereExp() {
 }
 
 func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
-	expName := entity.Name + BOOLEXP
+	expName := entity.Name + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -92,7 +86,7 @@ func makeOrderBy(entity *meta.Entity) *graphql.InputObject {
 
 	orderByExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + ORDERBY,
+			Name:   entity.Name + consts.ORDERBY,
 			Fields: fields,
 		},
 	)
@@ -120,7 +114,7 @@ func makeDistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 
 	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
-			Name:   entity.Name + DISTINCTEXP,
+			Name:   entity.Name + consts.DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)

@@ -17,7 +17,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	name := utils.FirstUpper(entity.Name)
 
 	(*feilds)[consts.DELETE+name] = &graphql.Field{
-		Type: *MutationResponseType(entity),
+		Type: *Cache.MutationResponse(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: Cache.WhereExp(entity),
@@ -41,7 +41,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *PostInput(entity, []*meta.Entity{}),
+							OfType: *Cache.SaveInput(entity),
 						},
 					},
 				},
@@ -54,7 +54,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: *PostInput(entity, []*meta.Entity{}),
+					OfType: *Cache.SaveInput(entity),
 				},
 			},
 		},
@@ -62,13 +62,13 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	}
 
 	(*feilds)[consts.UPDATE+name] = &graphql.Field{
-		Type: *MutationResponseType(entity),
+		Type: *Cache.MutationResponse(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *UpdateInput(entity, []*meta.Entity{}),
+							OfType: *Cache.UpdateInput(entity),
 						},
 					},
 				},
