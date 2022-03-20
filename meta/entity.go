@@ -5,9 +5,8 @@ import (
 )
 
 const (
-	ENTITY_NORMAL    string = "Normal"
-	ENTITY_ENUM      string = "Enum"
-	ENTITY_INTERFACE string = "Interface"
+	ENTITY_NORMAL string = "Normal"
+	ENTITY_ENUM   string = "Enum"
 )
 
 type EntityRelation struct {
