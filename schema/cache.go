@@ -38,6 +38,30 @@ func (c *TypeCache) MakeCache() {
 			}
 		}
 	}
+
+	for i := range meta.Metas.Relations {
+		relation := meta.Metas.Relations[i]
+		sourceEntity := meta.Metas.GetEntityByUuid(relation.SourceId)
+		targetEntity := meta.Metas.GetEntityByUuid(relation.TargetId)
+		if sourceEntity == nil {
+			panic("Can find entity:" + relation.SourceId)
+		}
+
+		soureInterfaceType := c.InterfaceTypeMap[sourceEntity.Name]
+		sourceField := &graphql.Field{
+			Name: relation.RoleOnSource,
+			Type: c.OutputType(targetEntity),
+		}
+		if soureInterfaceType != nil {
+			soureInterfaceType.AddFieldConfig(relation.RoleOnSource, sourceField)
+		} else {
+			soureObjectType := c.ObjectTypeMap[sourceEntity.Name]
+			if soureObjectType == nil {
+				panic("Can find entity Type in map:" + sourceEntity.Name)
+			}
+			soureObjectType.AddFieldConfig(relation.RoleOnSource, sourceField)
+		}
+	}
 }
 
 func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
