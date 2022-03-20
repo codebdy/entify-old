@@ -34,7 +34,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 				Type: OrderBy(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: WhereExp(entity, []*meta.Entity{}),
+				Type: Cache.WhereExp(entity),
 			},
 		},
 		Resolve: resolve.QueryResolveFn(entity),
@@ -52,7 +52,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 				Type: OrderBy(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: WhereExp(entity, []*meta.Entity{}),
+				Type: Cache.WhereExp(entity),
 			},
 		},
 		Resolve: resolve.QueryOneResolveFn(entity),
@@ -74,7 +74,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 				Type: OrderBy(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: WhereExp(entity, []*meta.Entity{}),
+				Type: Cache.WhereExp(entity),
 			},
 		},
 		Resolve: resolve.QueryResolveFn(entity),

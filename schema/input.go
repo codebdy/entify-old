@@ -55,7 +55,7 @@ func UpdateInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
 }
 
 func PostInput(entity *meta.Entity, parents []*meta.Entity) *graphql.Input {
-	name := entity.Name + parentsSuffix(parents) + consts.INPUT
+	name := entity.Name + consts.INPUT
 	if Cache.PostInputMap[name] != nil {
 		return Cache.PostInputMap[name]
 	}
