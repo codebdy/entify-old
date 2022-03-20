@@ -3,7 +3,7 @@ package meta
 import "rxdrag.com/entity-engine/consts"
 
 const (
-	INHERIT      string = "inherit"
+	IMPLEMENTS   string = "implements"
 	ONE_TO_ONE   string = "oneToOne"
 	ONE_TO_MANY  string = "oneToMany"
 	MANY_TO_ONE  string = "manyToOne"

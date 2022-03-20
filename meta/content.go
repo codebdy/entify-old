@@ -15,11 +15,14 @@ type MetaContent struct {
 }
 
 func (c *MetaContent) Validate() {
+	//检查空实体（除ID外没有属性跟关联）
 	for _, entity := range c.Entities {
-		if len(entity.Columns) <= 1 && entity.IsNormal() {
+		if len(entity.Columns) < 1 && len(c.EntityRelations(&entity)) < 1 && entity.IsNormal() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
 		}
 	}
+
+	//检查继承闭环
 }
 
 func FindTable(metaUuid string, tables []*Table) *Table {
@@ -110,7 +113,7 @@ func (c *MetaContent) Tables() []*Table {
 				Index: true,
 			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
-		} else if relation.RelationType == INHERIT {
+		} else if relation.RelationType == IMPLEMENTS {
 			sourceTable := FindTable(relation.SourceId, tables)
 			if sourceTable == nil {
 				panic("Can not find parent table, relation:" + relation.Uuid)
@@ -187,7 +190,7 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 func (c *MetaContent) Parent(entity *Entity) *Entity {
 	for i := range c.Relations {
 		relation := &c.Relations[i]
-		if relation.RelationType == INHERIT {
+		if relation.RelationType == IMPLEMENTS {
 			if relation.SourceId == entity.Uuid {
 				return c.GetEntityByUuid(relation.TargetId)
 			}
@@ -200,7 +203,7 @@ func (c *MetaContent) Children(entity *Entity) []*Entity {
 	children := []*Entity{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
-		if relation.RelationType == INHERIT {
+		if relation.RelationType == IMPLEMENTS {
 			if relation.TargetId == entity.Uuid {
 				child := c.GetEntityByUuid(relation.SourceId)
 				if child == nil {
@@ -222,7 +225,7 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	relations := []EntityRelation{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
-		if relation.RelationType == INHERIT {
+		if relation.RelationType == IMPLEMENTS {
 			continue
 		}
 		if relation.SourceId == entity.Uuid {
@@ -285,4 +288,24 @@ func (c *MetaContent) EntityAllColumns(entity *Entity) []Column {
 		}
 	}
 	return append(entity.Columns, inheritedColumns...)
+}
+
+/**
+* 把实体类分类
+ */
+func (c *MetaContent) SplitEntities() ([]*Entity, []*Entity, []*Entity) {
+	var enumEntities []*Entity
+	var interfaceEntities []*Entity
+	var normalEntities []*Entity
+	for i := range c.Entities {
+		entity := &c.Entities[i]
+		if entity.EntityType == ENTITY_ENUM {
+			enumEntities = append(enumEntities, entity)
+		} else if entity.EntityType == ENTITY_INTERFACE {
+			interfaceEntities = append(interfaceEntities, entity)
+		} else {
+			normalEntities = append(normalEntities, entity)
+		}
+	}
+	return enumEntities, interfaceEntities, normalEntities
 }

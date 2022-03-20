@@ -26,55 +26,26 @@ type TypeCache struct {
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
-	for i := range meta.Metas.Entities {
-		entity := &meta.Metas.Entities[i]
-		if entity.EntityType == meta.ENTITY_ENUM {
-			c.EnumTypeMap[entity.Name] = EnumType(entity)
-		} else {
-			if meta.Metas.HasChildren(entity) {
-				c.InterfaceTypeMap[entity.Name] = InterfaceType(entity)
-			} else {
-				c.ObjectTypeMap[entity.Name] = ObjectType(entity)
-			}
-		}
+	enums, interfaces, normals := meta.Metas.SplitEntities()
+	for i := range enums {
+		entity := enums[i]
+		c.EnumTypeMap[entity.Name] = EnumType(entity)
+	}
+
+	for i := range interfaces {
+		entity := interfaces[i]
+		c.InterfaceTypeMap[entity.Name] = c.InterfaceType(entity)
+	}
+
+	for i := range normals {
+		entity := normals[i]
+		c.ObjectTypeMap[entity.Name] = ObjectType(entity)
 	}
 
 	for i := range meta.Metas.Relations {
-		relation := meta.Metas.Relations[i]
-		sourceEntity := meta.Metas.GetEntityByUuid(relation.SourceId)
-		targetEntity := meta.Metas.GetEntityByUuid(relation.TargetId)
-		if sourceEntity == nil {
-			panic("Can find entity:" + relation.SourceId)
-		}
-
-		soureInterfaceType := c.InterfaceTypeMap[sourceEntity.Name]
-		sourceField := &graphql.Field{
-			Name: relation.RoleOnSource,
-			Type: c.OutputType(targetEntity),
-		}
-		if soureInterfaceType != nil {
-			soureInterfaceType.AddFieldConfig(relation.RoleOnSource, sourceField)
-		} else {
-			soureObjectType := c.ObjectTypeMap[sourceEntity.Name]
-			if soureObjectType == nil {
-				panic("Can find entity Type in map:" + sourceEntity.Name)
-			}
-			soureObjectType.AddFieldConfig(relation.RoleOnSource, sourceField)
-		}
-
-		targetInterfaceType := c.InterfaceTypeMap[targetEntity.Name]
-		targetField := &graphql.Field{
-			Name: relation.RoleOnSource,
-			Type: c.OutputType(sourceEntity),
-		}
-		if targetInterfaceType != nil {
-			targetInterfaceType.AddFieldConfig(relation.RoleOnTarget, targetField)
-		} else {
-			targetObjectType := c.ObjectTypeMap[targetEntity.Name]
-			if targetObjectType == nil {
-				panic("Can find entity Type in map:" + targetEntity.Name)
-			}
-			targetObjectType.AddFieldConfig(relation.RoleOnTarget, targetField)
+		relation := &meta.Metas.Relations[i]
+		if relation.RelationType != meta.IMPLEMENTS {
+			c.makeRelationShip(relation)
 		}
 	}
 }
@@ -82,15 +53,50 @@ func (c *TypeCache) MakeCache() {
 func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return c.EnumTypeMap[entity.Name]
+	} else if entity.EntityType == meta.ENTITY_INTERFACE {
+		return c.InterfaceTypeMap[entity.Name]
 	} else {
-		if meta.Metas.HasChildren(entity) {
-			return c.InterfaceTypeMap[entity.Name]
-		} else {
-			return c.ObjectTypeMap[entity.Name]
-		}
+		return c.ObjectTypeMap[entity.Name]
 	}
 }
 
+func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
+	sourceEntity := meta.Metas.GetEntityByUuid(relation.SourceId)
+	targetEntity := meta.Metas.GetEntityByUuid(relation.TargetId)
+	if sourceEntity == nil {
+		panic("Can find entity:" + relation.SourceId)
+	}
+
+	soureInterfaceType := c.InterfaceTypeMap[sourceEntity.Name]
+	sourceField := &graphql.Field{
+		Name: relation.RoleOnSource,
+		Type: c.OutputType(targetEntity),
+	}
+	if soureInterfaceType != nil {
+		soureInterfaceType.AddFieldConfig(relation.RoleOnSource, sourceField)
+	} else {
+		soureObjectType := c.ObjectTypeMap[sourceEntity.Name]
+		if soureObjectType == nil {
+			panic("Can find entity Type in map:" + sourceEntity.Name)
+		}
+		soureObjectType.AddFieldConfig(relation.RoleOnSource, sourceField)
+	}
+
+	targetInterfaceType := c.InterfaceTypeMap[targetEntity.Name]
+	targetField := &graphql.Field{
+		Name: relation.RoleOnSource,
+		Type: c.OutputType(sourceEntity),
+	}
+	if targetInterfaceType != nil {
+		targetInterfaceType.AddFieldConfig(relation.RoleOnTarget, targetField)
+	} else {
+		targetObjectType := c.ObjectTypeMap[targetEntity.Name]
+		if targetObjectType == nil {
+			panic("Can find entity Type in map:" + targetEntity.Name)
+		}
+		targetObjectType.AddFieldConfig(relation.RoleOnTarget, targetField)
+	}
+}
 func (c *TypeCache) clearCache() {
 	c.ObjectTypeMap_old = make(map[string]*graphql.Output)
 	c.ObjectTypeMap = make(map[string]*graphql.Object)

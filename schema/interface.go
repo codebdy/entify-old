@@ -5,13 +5,24 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func InterfaceType(entity *meta.Entity) *graphql.Interface {
+func (c *TypeCache) InterfaceType(entity *meta.Entity) *graphql.Interface {
 	name := entity.Name
 
-	return graphql.NewInterface(
-		graphql.InterfaceConfig{
-			Name:   name,
-			Fields: outputFields(entity),
-		},
-	)
+	parent := meta.Metas.Parent(entity)
+	if parent != nil {
+		return graphql.NewInterface(
+			graphql.InterfaceConfig{
+				Name:   name,
+				Fields: outputFields(entity),
+			},
+		)
+	} else {
+		return graphql.NewInterface(
+			graphql.InterfaceConfig{
+				Name:   name,
+				Fields: outputFields(entity),
+			},
+		)
+	}
+
 }
