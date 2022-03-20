@@ -39,7 +39,7 @@ func (c *TypeCache) MakeCache() {
 
 	for i := range normals {
 		entity := normals[i]
-		c.ObjectTypeMap[entity.Name] = ObjectType(entity)
+		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
 	}
 
 	for i := range meta.Metas.Relations {
@@ -74,6 +74,11 @@ func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 	}
 	if soureInterfaceType != nil {
 		soureInterfaceType.AddFieldConfig(relation.RoleOnSource, sourceField)
+		children := meta.Metas.Children(sourceEntity)
+		for i := range children {
+			childType := c.ObjectTypeMap[children[i].Name]
+			childType.AddFieldConfig(relation.RoleOnSource, sourceField)
+		}
 	} else {
 		soureObjectType := c.ObjectTypeMap[sourceEntity.Name]
 		if soureObjectType == nil {
@@ -89,6 +94,11 @@ func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 	}
 	if targetInterfaceType != nil {
 		targetInterfaceType.AddFieldConfig(relation.RoleOnTarget, targetField)
+		children := meta.Metas.Children(targetEntity)
+		for i := range children {
+			childType := c.ObjectTypeMap[children[i].Name]
+			childType.AddFieldConfig(relation.RoleOnTarget, targetField)
+		}
 	} else {
 		targetObjectType := c.ObjectTypeMap[targetEntity.Name]
 		if targetObjectType == nil {
@@ -97,6 +107,16 @@ func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 		targetObjectType.AddFieldConfig(relation.RoleOnTarget, targetField)
 	}
 }
+
+func (c *TypeCache) mapInterfaces(entities []*meta.Entity) []*graphql.Interface {
+	interfaces := []*graphql.Interface{}
+	for i := range entities {
+		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])
+	}
+
+	return interfaces
+}
+
 func (c *TypeCache) clearCache() {
 	c.ObjectTypeMap_old = make(map[string]*graphql.Output)
 	c.ObjectTypeMap = make(map[string]*graphql.Object)

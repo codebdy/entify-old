@@ -5,19 +5,16 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func ObjectType(entity *meta.Entity) *graphql.Object {
+func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
 	name := entity.Name
-	parent := meta.Metas.Parent(entity)
-	if parent != nil {
-		interfaceType := Cache.InterfaceTypeMap[parent.Name]
-		if interfaceType == nil {
-			panic("Fatal error, can not find interface:" + parent.Name)
-		}
+	parents := meta.Metas.Interfaces(entity)
+	interfaces := c.mapInterfaces(parents)
+	if len(interfaces) > 0 {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:       name,
 				Fields:     outputFields(entity),
-				Interfaces: []*graphql.Interface{interfaceType},
+				Interfaces: interfaces,
 			},
 		)
 	} else {

@@ -187,16 +187,21 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 	return table
 }
 
-func (c *MetaContent) Parent(entity *Entity) *Entity {
+func (c *MetaContent) Interfaces(entity *Entity) []*Entity {
+	interfaces := []*Entity{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
 		if relation.RelationType == IMPLEMENTS {
 			if relation.SourceId == entity.Uuid {
-				return c.GetEntityByUuid(relation.TargetId)
+				oneInterface := c.GetEntityByUuid(relation.TargetId)
+				if oneInterface == nil {
+					panic("Can not find interface:" + relation.TargetId)
+				}
+				interfaces = append(interfaces, oneInterface)
 			}
 		}
 	}
-	return nil
+	return interfaces
 }
 
 func (c *MetaContent) Children(entity *Entity) []*Entity {
@@ -248,12 +253,12 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 }
 
 func (c *MetaContent) EntityInheritedRelations(entity *Entity) []EntityRelation {
-	parent := c.Parent(entity)
-	if parent == nil {
-		return []EntityRelation{}
+	relations := []EntityRelation{}
+	parents := c.Interfaces(entity)
+	for _, parent := range parents {
+		relations = append(relations, c.EntityRelations(parent)...)
 	}
-
-	return c.EntityAllRelations(parent)
+	return relations
 }
 
 func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
@@ -270,12 +275,13 @@ func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
 }
 
 func (c *MetaContent) EntityInheritedColumns(entity *Entity) []Column {
-	parent := c.Parent(entity)
-	if parent == nil {
-		return []Column{}
+	columns := []Column{}
+	parents := c.Interfaces(entity)
+	for _, parent := range parents {
+		columns = append(columns, parent.Columns...)
 	}
 
-	return c.EntityAllColumns(parent)
+	return columns
 }
 
 func (c *MetaContent) EntityAllColumns(entity *Entity) []Column {

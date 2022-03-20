@@ -8,7 +8,7 @@ import (
 func (c *TypeCache) InterfaceType(entity *meta.Entity) *graphql.Interface {
 	name := entity.Name
 
-	parent := meta.Metas.Parent(entity)
+	parent := meta.Metas.Interfaces(entity)
 	if parent != nil {
 		return graphql.NewInterface(
 			graphql.InterfaceConfig{
