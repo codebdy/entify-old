@@ -16,6 +16,10 @@ func (c *TypeCache) makeInputs() {
 		}
 	}
 
+	c.makeInputRelations()
+}
+
+func (c *TypeCache) makeInputRelations() {
 	for i := range meta.Metas.Entities {
 		entity := &meta.Metas.Entities[i]
 		if entity.EntityType != meta.ENTITY_ENUM {
