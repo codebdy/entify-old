@@ -6,6 +6,51 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+func (c *TypeCache) makeInputs() {
+	for i := range meta.Metas.Entities {
+		entity := &meta.Metas.Entities[i]
+		if entity.EntityType != meta.ENTITY_ENUM {
+			c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
+			c.SaveInputMap[entity.Name] = makeSaveInput(entity)
+			c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
+		}
+	}
+
+	for i := range meta.Metas.Entities {
+		entity := &meta.Metas.Entities[i]
+		if entity.EntityType != meta.ENTITY_ENUM {
+			input := c.UpdateInputMap[entity.Name]
+			update := c.SaveInputMap[entity.Name]
+
+			relations := meta.Metas.EntityAllRelations(entity)
+
+			for i := range relations {
+				relation := relations[i]
+				typeInput := c.SaveInput(relation.TypeEntity)
+				if relation.IsArray() {
+					input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+						Type: &graphql.List{
+							OfType: typeInput,
+						},
+					})
+					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+						Type: &graphql.List{
+							OfType: typeInput,
+						},
+					})
+				} else {
+					input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+						Type: typeInput,
+					})
+					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+						Type: typeInput,
+					})
+				}
+			}
+		}
+	}
+}
+
 func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
@@ -15,60 +60,27 @@ func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFiel
 			}
 		}
 	}
-	// relations := meta.Metas.EntityAllRelations(entity)
-	// newParents := append(parents, entity)
-
-	// for i := range relations {
-	// 	relation := relations[i]
-	// 	typeInput := PostInput(relation.TypeEntity, newParents)
-	// 	if relation.IsArray() {
-	// 		fields[relation.Name] = &graphql.InputObjectFieldConfig{
-	// 			Type: &graphql.List{
-	// 				OfType: *typeInput,
-	// 			},
-	// 		}
-	// 	} else {
-	// 		fields[relation.Name] = &graphql.InputObjectFieldConfig{
-	// 			Type: *typeInput,
-	// 		}
-	// 	}
-	// }
 	return fields
 }
-func (c *TypeCache) makeInputs() {
-	for i := range meta.Metas.Entities {
-		entity := meta.Metas.Entities[i]
-		if entity.EntityType != meta.ENTITY_ENUM {
-			c.UpdateInputMap[entity.Name] = makeUpdateInput(&entity)
-			c.SaveInputMap[entity.Name] = makeSaveInput(&entity)
-			c.MutationResponseMap[entity.Name] = makeMutationResponseType(&entity)
-		}
-	}
-}
 
-func makeSaveInput(entity *meta.Entity) *graphql.Input {
+func makeSaveInput(entity *meta.Entity) *graphql.InputObject {
 	name := entity.Name + consts.INPUT
-	var returnValue graphql.Input
 
-	returnValue = graphql.NewInputObject(
+	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   name,
 			Fields: inputFields(entity, true),
 		},
 	)
-	return &returnValue
 }
 
-func makeUpdateInput(entity *meta.Entity) *graphql.Input {
-	var returnValue graphql.Input
-
-	returnValue = graphql.NewInputObject(
+func makeUpdateInput(entity *meta.Entity) *graphql.InputObject {
+	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + consts.UPDATE_INPUT,
 			Fields: inputFields(entity, false),
 		},
 	)
-	return &returnValue
 }
 
 func makeMutationResponseType(entity *meta.Entity) *graphql.Output {

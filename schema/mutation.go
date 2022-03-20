@@ -41,7 +41,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *Cache.SaveInput(entity),
+							OfType: Cache.SaveInput(entity),
 						},
 					},
 				},
@@ -54,7 +54,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: *Cache.SaveInput(entity),
+					OfType: Cache.SaveInput(entity),
 				},
 			},
 		},
@@ -68,7 +68,7 @@ func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: *Cache.UpdateInput(entity),
+							OfType: Cache.UpdateInput(entity),
 						},
 					},
 				},

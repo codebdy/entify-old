@@ -8,12 +8,11 @@ import (
 var Cache TypeCache
 
 type TypeCache struct {
-	ObjectTypeMap_old    map[string]*graphql.Output
 	ObjectTypeMap        map[string]*graphql.Object
 	EnumTypeMap          map[string]*graphql.Enum
 	InterfaceTypeMap     map[string]*graphql.Interface
-	UpdateInputMap       map[string]*graphql.Input
-	SaveInputMap         map[string]*graphql.Input
+	UpdateInputMap       map[string]*graphql.InputObject
+	SaveInputMap         map[string]*graphql.InputObject
 	WhereExpMap          map[string]*graphql.InputObject
 	DistinctOnEnumMap    map[string]*graphql.Enum
 	OrderByMap           map[string]*graphql.InputObject
@@ -56,11 +55,11 @@ func (c *TypeCache) DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 	return c.DistinctOnEnumMap[entity.Name]
 }
 
-func (c *TypeCache) SaveInput(entity *meta.Entity) *graphql.Input {
+func (c *TypeCache) SaveInput(entity *meta.Entity) *graphql.InputObject {
 	return c.SaveInputMap[entity.Name]
 }
 
-func (c *TypeCache) UpdateInput(entity *meta.Entity) *graphql.Input {
+func (c *TypeCache) UpdateInput(entity *meta.Entity) *graphql.InputObject {
 	return c.UpdateInputMap[entity.Name]
 }
 
@@ -78,12 +77,11 @@ func (c *TypeCache) mapInterfaces(entities []*meta.Entity) []*graphql.Interface 
 }
 
 func (c *TypeCache) clearCache() {
-	c.ObjectTypeMap_old = make(map[string]*graphql.Output)
 	c.ObjectTypeMap = make(map[string]*graphql.Object)
 	c.EnumTypeMap = make(map[string]*graphql.Enum)
 	c.InterfaceTypeMap = make(map[string]*graphql.Interface)
-	c.UpdateInputMap = make(map[string]*graphql.Input)
-	c.SaveInputMap = make(map[string]*graphql.Input)
+	c.UpdateInputMap = make(map[string]*graphql.InputObject)
+	c.SaveInputMap = make(map[string]*graphql.InputObject)
 	c.WhereExpMap = make(map[string]*graphql.InputObject)
 	c.DistinctOnEnumMap = make(map[string]*graphql.Enum)
 	c.OrderByMap = make(map[string]*graphql.InputObject)
