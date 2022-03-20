@@ -125,13 +125,14 @@ func (c *MetaContent) Tables() []*Table {
 			ownerTable.Columns = append(ownerTable.Columns, column)
 		} else if relation.RelationType == IMPLEMENTS {
 			sourceTable := FindTable(relation.SourceId, tables)
+			targetTable := FindTable(relation.TargetId, tables)
 			if sourceTable == nil {
 				panic("Can not find parent table, relation:" + relation.Uuid)
 			}
 
 			column := Column{
 				Type:  COLUMN_ID,
-				Name:  consts.PARENT_ID,
+				Name:  targetTable.Name + "_" + consts.ID,
 				Index: true,
 				Uuid:  relation.Uuid,
 			}
