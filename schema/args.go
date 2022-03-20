@@ -6,8 +6,14 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+const (
+	BOOLEXP     string = "BoolExp"
+	ORDERBY     string = "OrderBy"
+	DISTINCTEXP string = "DistinctExp"
+)
+
 func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
-	expName := entity.WhereExpName()
+	expName := entity.Name + BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -36,8 +42,11 @@ func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
 		},
 	}
 
-	for _, column := range meta.Metas.EntityAllColumns(entity) {
-		columnExp := ColumnExp(&column)
+	columns := meta.Metas.EntityAllColumns(entity)
+
+	for i := range columns {
+		column := &columns[i]
+		columnExp := ColumnExp(column)
 
 		if columnExp != nil {
 			fields[column.Name] = columnExp
@@ -46,37 +55,32 @@ func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
 	return boolExp
 }
 
-func OrderBy(entity *meta.Entity) *graphql.InputObject {
-	if Cache.OrderByMap[entity.Name] != nil {
-		return Cache.OrderByMap[entity.Name]
-	}
+func makeOrderBy(entity *meta.Entity) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.OrderByName(),
+			Name:   entity.Name + ORDERBY,
 			Fields: fields,
 		},
 	)
 
-	for _, column := range entity.Columns {
-		columnOrderBy := ColumnOrderBy(&column)
-
+	columns := meta.Metas.EntityAllColumns(entity)
+	for i := range columns {
+		column := &columns[i]
+		columnOrderBy := ColumnOrderBy(column)
 		if columnOrderBy != nil {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{Type: columnOrderBy}
 		}
 	}
-
-	Cache.OrderByMap[entity.Name] = orderByExp
 	return orderByExp
 }
 
-func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
-	if Cache.DistinctOnEnumMap[entity.Name] != nil {
-		return Cache.DistinctOnEnumMap[entity.Name]
-	}
+func makeDistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	for _, column := range entity.Columns {
+	columns := meta.Metas.EntityAllColumns(entity)
+	for i := range columns {
+		column := &columns[i]
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
 			Value: column.Name,
 		}
@@ -84,19 +88,9 @@ func DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
 
 	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
-			Name:   entity.DistinctExpname(),
+			Name:   entity.Name + DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)
-	Cache.DistinctOnEnumMap[entity.Name] = entEnum
 	return entEnum
-}
-
-func findParent(uuid string, parents []*meta.Entity) bool {
-	for _, entity := range parents {
-		if entity.Uuid == uuid {
-			return true
-		}
-	}
-	return false
 }

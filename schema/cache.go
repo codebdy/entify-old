@@ -50,18 +50,22 @@ func (c *TypeCache) MakeCache() {
 	}
 
 	for i := range meta.Metas.Entities {
-		entity := meta.Metas.Entities[i]
+		entity := &meta.Metas.Entities[i]
 		if entity.EntityType != meta.ENTITY_ENUM {
-			whereExp := makeWhereExp(&entity)
-			c.WhereExpMap[whereExp.Name()] = whereExp
+			whereExp := makeWhereExp(entity)
+			c.WhereExpMap[entity.Name] = whereExp
+			orderByExp := makeOrderBy(entity)
+			c.OrderByMap[entity.Name] = orderByExp
+			distinctOnEnum := makeDistinctOnEnum(entity)
+			c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
 		}
 	}
 
-	for expName := range c.WhereExpMap {
-		exp := c.WhereExpMap[expName]
-		entity := meta.Metas.GetEntityByWhereExpName(expName)
+	for entityName := range c.WhereExpMap {
+		exp := c.WhereExpMap[entityName]
+		entity := meta.Metas.GetEntityByName(entityName)
 		if entity == nil {
-			panic("Fatal error, can not find entity by where exp name:" + expName)
+			panic("Fatal error, can not find entity by name:" + entityName)
 		}
 		relations := meta.Metas.EntityAllRelations(entity)
 		for i := range relations {
@@ -84,7 +88,15 @@ func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
 }
 
 func (c *TypeCache) WhereExp(entity *meta.Entity) *graphql.InputObject {
-	return c.WhereExpMap[entity.WhereExpName()]
+	return c.WhereExpMap[entity.Name]
+}
+
+func (c *TypeCache) OrderByExp(entity *meta.Entity) *graphql.InputObject {
+	return c.OrderByMap[entity.Name]
+}
+
+func (c *TypeCache) DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
+	return c.DistinctOnEnumMap[entity.Name]
 }
 
 func (c *TypeCache) mapInterfaces(entities []*meta.Entity) []*graphql.Interface {

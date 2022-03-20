@@ -22,7 +22,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 		},
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: DistinctOnEnum(entity),
+				Type: Cache.DistinctOnEnum(entity),
 			},
 			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -31,7 +31,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: OrderBy(entity),
+				Type: Cache.OrderByExp(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: Cache.WhereExp(entity),
@@ -43,13 +43,13 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 		Type: Cache.OutputType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: DistinctOnEnum(entity),
+				Type: Cache.DistinctOnEnum(entity),
 			},
 			consts.ARG_OFFSET: &graphql.ArgumentConfig{
 				Type: graphql.Int,
 			},
 			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: OrderBy(entity),
+				Type: Cache.OrderByExp(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: Cache.WhereExp(entity),
@@ -62,7 +62,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 		Type: *AggregateType(entity, []*meta.Entity{}),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: DistinctOnEnum(entity),
+				Type: Cache.DistinctOnEnum(entity),
 			},
 			consts.ARG_LIMIT: &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -71,7 +71,7 @@ func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 				Type: graphql.Int,
 			},
 			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: OrderBy(entity),
+				Type: Cache.OrderByExp(entity),
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: Cache.WhereExp(entity),

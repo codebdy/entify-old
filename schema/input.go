@@ -20,18 +20,16 @@ func InputFields(entity *meta.Entity, parents []*meta.Entity, isPost bool) graph
 
 	for i := range relations {
 		relation := relations[i]
-		if !findParent(relation.TypeEntity.Uuid, newParents) {
-			typeInput := PostInput(relation.TypeEntity, newParents)
-			if relation.IsArray() {
-				fields[relation.Name] = &graphql.InputObjectFieldConfig{
-					Type: &graphql.List{
-						OfType: *typeInput,
-					},
-				}
-			} else {
-				fields[relation.Name] = &graphql.InputObjectFieldConfig{
-					Type: *typeInput,
-				}
+		typeInput := PostInput(relation.TypeEntity, newParents)
+		if relation.IsArray() {
+			fields[relation.Name] = &graphql.InputObjectFieldConfig{
+				Type: &graphql.List{
+					OfType: *typeInput,
+				},
+			}
+		} else {
+			fields[relation.Name] = &graphql.InputObjectFieldConfig{
+				Type: *typeInput,
 			}
 		}
 	}

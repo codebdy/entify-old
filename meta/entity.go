@@ -31,24 +31,6 @@ type Entity struct {
 	SoftDelete  bool       `json:"softDelete"`
 }
 
-const (
-	BOOLEXP     string = "BoolExp"
-	ORDERBY     string = "OrderBy"
-	DISTINCTEXP string = "DistinctExp"
-)
-
-func (entity *Entity) WhereExpName() string {
-	return entity.Name + BOOLEXP
-}
-
-func (entity *Entity) OrderByName() string {
-	return entity.Name + ORDERBY
-}
-
-func (entity *Entity) DistinctExpname() string {
-	return entity.Name + DISTINCTEXP
-}
-
 func (entity *Entity) ColumnNames() []string {
 	names := make([]string, len(entity.Columns))
 
