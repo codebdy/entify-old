@@ -6,11 +6,7 @@ import (
 )
 
 func EnumType(entity *meta.Entity) *graphql.Enum {
-	if Cache.EnumMap[entity.Name] != nil {
-		return Cache.EnumMap[entity.Name]
-	}
-	enumValues := entity.EnumValues //make(map[string]interface{})
-	//json.Unmarshal(entity.EnumValues, &enumValues)
+	enumValues := entity.EnumValues
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	for enumName, enumValue := range enumValues {
 		var value, ok = enumValue.(string)
@@ -27,6 +23,5 @@ func EnumType(entity *meta.Entity) *graphql.Enum {
 			Values: enumValueConfigMap,
 		},
 	)
-	Cache.EnumMap[entity.Name] = enum
 	return enum
 }

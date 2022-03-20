@@ -87,7 +87,7 @@ func MutationResponseType(entity *meta.Entity) *graphql.Output {
 				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: *OutputType(entity, []*meta.Entity{}),
+							OfType: Cache.OutputType(entity),
 						},
 					},
 				},

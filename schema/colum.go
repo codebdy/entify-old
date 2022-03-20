@@ -32,7 +32,7 @@ func ColumnType(column *meta.Column) graphql.Output {
 		if enumEntity == nil {
 			panic("Can not find enum entity")
 		}
-		return EnumType(enumEntity)
+		return Cache.OutputType(enumEntity)
 	}
 
 	panic("No column type:" + column.Type)

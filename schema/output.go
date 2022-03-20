@@ -4,8 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/resolve"
-	"rxdrag.com/entity-engine/utils"
 )
 
 const (
@@ -14,90 +12,89 @@ const (
 	DISTINCTEXP string = "DistinctExp"
 )
 
-func OutputFields(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
-	fields := graphql.Fields{}
-	for _, column := range meta.Metas.EntityAllColumns(entity) {
-		fields[column.Name] = &graphql.Field{
-			Type: ColumnType(&column),
-			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			// 	fmt.Println(p.Context.Value("data"))
-			// 	return "world", nil
-			// },
-		}
-	}
+// func OutputFieldsOld(entity *meta.Entity, parents []*meta.Entity) graphql.Fields {
+// 	fields := graphql.Fields{}
+// 	for _, column := range meta.Metas.EntityAllColumns(entity) {
+// 		fields[column.Name] = &graphql.Field{
+// 			Type: ColumnType(&column),
+// 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+// 			// 	fmt.Println(p.Context.Value("data"))
+// 			// 	return "world", nil
+// 			// },
+// 		}
+// 	}
 
-	relations := meta.Metas.EntityAllRelations(entity)
-	newParents := append(parents, entity)
-	for i := range relations {
-		relation := relations[i]
-		if !findParent(relation.TypeEntity.Uuid, newParents) {
-			relationType := OutputType(relation.TypeEntity, newParents)
-			if relation.IsArray() {
-				fields[relation.Name] = &graphql.Field{
-					Type: &graphql.NonNull{
-						OfType: &graphql.List{
-							OfType: *relationType,
-						},
-					},
-					// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					// 	fmt.Println(p.Context.Value("data"))
-					// 	return "world", nil
-					// },
-				}
-				fields[relation.Name+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-					Type: *AggregateType(relation.TypeEntity, newParents),
-					Args: graphql.FieldConfigArgument{
-						consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-							Type: DistinctOnEnum(relation.TypeEntity),
-						},
-						consts.ARG_LIMIT: &graphql.ArgumentConfig{
-							Type: graphql.Int,
-						},
-						consts.ARG_OFFSET: &graphql.ArgumentConfig{
-							Type: graphql.Int,
-						},
-						consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-							Type: OrderBy(relation.TypeEntity),
-						},
-						consts.ARG_WHERE: &graphql.ArgumentConfig{
-							Type: WhereExp(relation.TypeEntity, newParents),
-						},
-					},
-					//Resolve: resolve.QueryResolveFn(entity),
-				}
-			} else {
-				fields[relation.Name] = &graphql.Field{
-					Type:    *relationType,
-					Resolve: resolve.RelationResolveFn(&relation),
-				}
-			}
+// 	relations := meta.Metas.EntityAllRelations(entity)
+// 	newParents := append(parents, entity)
+// 	for i := range relations {
+// 		relation := relations[i]
+// 		if !findParent(relation.TypeEntity.Uuid, newParents) {
+// 			relationType := OutputType(relation.TypeEntity, newParents)
+// 			if relation.IsArray() {
+// 				fields[relation.Name] = &graphql.Field{
+// 					Type: &graphql.NonNull{
+// 						OfType: &graphql.List{
+// 							OfType: *relationType,
+// 						},
+// 					},
+// 					// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+// 					// 	fmt.Println(p.Context.Value("data"))
+// 					// 	return "world", nil
+// 					// },
+// 				}
+// 				fields[relation.Name+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+// 					Type: *AggregateType(relation.TypeEntity, newParents),
+// 					Args: graphql.FieldConfigArgument{
+// 						consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
+// 							Type: DistinctOnEnum(relation.TypeEntity),
+// 						},
+// 						consts.ARG_LIMIT: &graphql.ArgumentConfig{
+// 							Type: graphql.Int,
+// 						},
+// 						consts.ARG_OFFSET: &graphql.ArgumentConfig{
+// 							Type: graphql.Int,
+// 						},
+// 						consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+// 							Type: OrderBy(relation.TypeEntity),
+// 						},
+// 						consts.ARG_WHERE: &graphql.ArgumentConfig{
+// 							Type: WhereExp(relation.TypeEntity, newParents),
+// 						},
+// 					},
+// 					//Resolve: resolve.QueryResolveFn(entity),
+// 				}
+// 			} else {
+// 				fields[relation.Name] = &graphql.Field{
+// 					Type:    *relationType,
+// 					Resolve: resolve.RelationResolveFn(&relation),
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return fields
+// }
 
-		}
-	}
-	return fields
-}
+// func OutputType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
+// 	name := entity.Name + parentsSuffix(parents)
+// 	if Cache.ObjectTypeMap_old[name] != nil {
+// 		return Cache.ObjectTypeMap_old[name]
+// 	}
+// 	var returnValue graphql.Output
 
-func OutputType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output {
-	name := entity.Name + parentsSuffix(parents)
-	if Cache.OutputTypeMap[name] != nil {
-		return Cache.OutputTypeMap[name]
-	}
-	var returnValue graphql.Output
+// 	if entity.EntityType == meta.ENTITY_ENUM {
+// 		returnValue = Cache.OutputType(entity)
+// 	} else {
+// 		returnValue = graphql.NewObject(
+// 			graphql.ObjectConfig{
+// 				Name:   name,
+// 				Fields: OutputFieldsOld(entity, parents),
+// 			},
+// 		)
+// 	}
 
-	if entity.EntityType == meta.ENTITY_ENUM {
-		returnValue = EnumType(entity)
-	} else {
-		returnValue = graphql.NewObject(
-			graphql.ObjectConfig{
-				Name:   name,
-				Fields: OutputFields(entity, parents),
-			},
-		)
-	}
-
-	Cache.OutputTypeMap[name] = &returnValue
-	return &returnValue
-}
+// 	Cache.ObjectTypeMap_old[name] = &returnValue
+// 	return &returnValue
+// }
 
 func WhereExp(entity *meta.Entity, parents []*meta.Entity) *graphql.InputObject {
 	expName := entity.Name + parentsSuffix(parents) + BOOLEXP

@@ -196,6 +196,28 @@ func (c *MetaContent) Parent(entity *Entity) *Entity {
 	return nil
 }
 
+func (c *MetaContent) Children(entity *Entity) []*Entity {
+	children := []*Entity{}
+	for i := range c.Relations {
+		relation := &c.Relations[i]
+		if relation.RelationType == INHERIT {
+			if relation.TargetId == entity.Uuid {
+				child := c.GetEntityByUuid(relation.SourceId)
+				if child == nil {
+					panic("Cant find child:" + relation.SourceId)
+				}
+				children = append(children, child)
+			}
+		}
+	}
+	return children
+}
+
+func (c *MetaContent) HasChildren(entity *Entity) bool {
+	children := c.Children(entity)
+	return len(children) > 0
+}
+
 func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	relations := []EntityRelation{}
 	for i := range c.Relations {

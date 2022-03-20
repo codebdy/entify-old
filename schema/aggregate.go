@@ -339,7 +339,7 @@ func AggregateType(entity *meta.Entity, parents []*meta.Entity) *graphql.Output 
 	fields := graphql.Fields{
 		consts.NODES: &graphql.Field{
 			Type: &graphql.List{
-				OfType: *OutputType(entity, parents),
+				OfType: Cache.OutputType(entity),
 			},
 		},
 	}

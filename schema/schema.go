@@ -9,7 +9,6 @@ import (
 	"rxdrag.com/entity-engine/resolve"
 )
 
-var Cache TypeCache
 var GQLSchema *graphql.Schema
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
@@ -23,7 +22,7 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 }
 
 func MakeSchema() {
-	Cache.ClearCache()
+	Cache.MakeCache()
 
 	queryFields := graphql.Fields{}
 
@@ -57,15 +56,15 @@ func MakeSchema() {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
+			Type:    Cache.OutputType(&meta.MetaEntity),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
+			Type:    Cache.OutputType(&meta.MetaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    *OutputType(&meta.MetaEntity, []*meta.Entity{}),
+			Type:    Cache.OutputType(&meta.MetaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
