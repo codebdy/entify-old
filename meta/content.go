@@ -17,7 +17,7 @@ type MetaContent struct {
 func (c *MetaContent) Validate() {
 	//检查空实体（除ID外没有属性跟关联）
 	for _, entity := range c.Entities {
-		if len(entity.Columns) < 1 && len(c.EntityRelations(&entity)) < 1 && entity.IsNormal() {
+		if len(entity.Columns) < 1 && len(c.EntityRelations(&entity)) < 1 && entity.HasTable() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
 		}
 	}
@@ -78,9 +78,9 @@ func (c *MetaContent) Tables() []*Table {
 				Index: true,
 			}
 			if ownerId == relation.SourceId {
-				column.Name = relation.RelationTargetColumnName()
-			} else {
 				column.Name = relation.RelationSourceColumnName()
+			} else {
+				column.Name = relation.RelationTargetColumnName()
 			}
 			ownerTable.Columns = append(ownerTable.Columns, column)
 
@@ -148,7 +148,7 @@ func (c *MetaContent) RelationTargetTableName(relation *Relation) string {
 func (c *MetaContent) entityTables() []*Table {
 
 	normalEntities := c.filterEntity(func(e *Entity) bool {
-		return e.IsNormal()
+		return e.HasTable()
 	})
 
 	tables := make([]*Table, len(normalEntities))

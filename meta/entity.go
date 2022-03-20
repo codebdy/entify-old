@@ -57,8 +57,8 @@ func (entity *Entity) GetTableName() string {
 	return utils.SnakeString((*entity).Name)
 }
 
-func (e *Entity) IsNormal() bool {
-	return e.EntityType == ENTITY_NORMAL || e.EntityType == ""
+func (e *Entity) HasTable() bool {
+	return e.EntityType == ENTITY_NORMAL || e.EntityType == "" || e.EntityType == ENTITY_INTERFACE
 }
 
 func (r *EntityRelation) IsArray() bool {
