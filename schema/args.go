@@ -43,13 +43,6 @@ func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
 			fields[column.Name] = columnExp
 		}
 	}
-	// relations := meta.Metas.EntityAllRelations(entity)
-	// for i := range relations {
-	// 	relation := relations[i]
-	// 	fields[relation.Name] = &graphql.InputObjectFieldConfig{
-	// 		Type: EntityWhereExp(relation.TypeEntity),
-	// 	}
-	// }
 	return boolExp
 }
 

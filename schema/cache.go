@@ -56,6 +56,21 @@ func (c *TypeCache) MakeCache() {
 			c.WhereExpMap[whereExp.Name()] = whereExp
 		}
 	}
+
+	for expName := range c.WhereExpMap {
+		exp := c.WhereExpMap[expName]
+		entity := meta.Metas.GetEntityByWhereExpName(expName)
+		if entity == nil {
+			panic("Fatal error, can not find entity by where exp name:" + expName)
+		}
+		relations := meta.Metas.EntityAllRelations(entity)
+		for i := range relations {
+			relation := relations[i]
+			exp.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+				Type: c.WhereExp(relation.TypeEntity),
+			})
+		}
+	}
 }
 
 func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {

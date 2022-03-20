@@ -55,6 +55,16 @@ func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
 	return nil
 }
 
+func (c *MetaContent) GetEntityByWhereExpName(expName string) *Entity {
+	for i := range c.Entities {
+		entity := &c.Entities[i]
+		if entity.WhereExpName() == expName {
+			return entity
+		}
+	}
+	return nil
+}
+
 func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
 	for i := range c.Relations {
