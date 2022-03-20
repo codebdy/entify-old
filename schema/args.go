@@ -12,6 +12,38 @@ const (
 	DISTINCTEXP string = "DistinctExp"
 )
 
+func (c *TypeCache) makeArgs() {
+	for i := range meta.Metas.Entities {
+		entity := &meta.Metas.Entities[i]
+		if entity.EntityType != meta.ENTITY_ENUM {
+			whereExp := makeWhereExp(entity)
+			c.WhereExpMap[entity.Name] = whereExp
+			orderByExp := makeOrderBy(entity)
+			c.OrderByMap[entity.Name] = orderByExp
+			distinctOnEnum := makeDistinctOnEnum(entity)
+			c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
+		}
+	}
+	c.makeRelaionWhereExp()
+}
+
+func (c *TypeCache) makeRelaionWhereExp() {
+	for entityName := range c.WhereExpMap {
+		exp := c.WhereExpMap[entityName]
+		entity := meta.Metas.GetEntityByName(entityName)
+		if entity == nil {
+			panic("Fatal error, can not find entity by name:" + entityName)
+		}
+		relations := meta.Metas.EntityAllRelations(entity)
+		for i := range relations {
+			relation := relations[i]
+			exp.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+				Type: c.WhereExp(relation.TypeEntity),
+			})
+		}
+	}
+}
+
 func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
 	expName := entity.Name + BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}

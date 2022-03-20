@@ -5,6 +5,15 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+func (c *TypeCache) makeRelations() {
+	for i := range meta.Metas.Relations {
+		relation := &meta.Metas.Relations[i]
+		if relation.RelationType != meta.IMPLEMENTS {
+			c.makeRelationShip(relation)
+		}
+	}
+}
+
 func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 	sourceEntity := meta.Metas.GetEntityByUuid(relation.SourceId)
 	targetEntity := meta.Metas.GetEntityByUuid(relation.TargetId)

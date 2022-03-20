@@ -5,6 +5,13 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+func (c *TypeCache) makeObjects(normals []*meta.Entity) {
+	for i := range normals {
+		entity := normals[i]
+		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
+	}
+}
+
 func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
 	name := entity.Name
 	parents := meta.Metas.Interfaces(entity)

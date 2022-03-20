@@ -5,6 +5,13 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+func (c *TypeCache) makeInterfaces(interfaces []*meta.Entity) {
+	for i := range interfaces {
+		entity := interfaces[i]
+		c.InterfaceTypeMap[entity.Name] = c.InterfaceType(entity)
+	}
+}
+
 func (c *TypeCache) InterfaceType(entity *meta.Entity) *graphql.Interface {
 	name := entity.Name
 

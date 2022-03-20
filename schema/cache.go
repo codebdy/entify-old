@@ -27,54 +27,11 @@ type TypeCache struct {
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
 	enums, interfaces, normals := meta.Metas.SplitEntities()
-	for i := range enums {
-		entity := enums[i]
-		c.EnumTypeMap[entity.Name] = EnumType(entity)
-	}
-
-	for i := range interfaces {
-		entity := interfaces[i]
-		c.InterfaceTypeMap[entity.Name] = c.InterfaceType(entity)
-	}
-
-	for i := range normals {
-		entity := normals[i]
-		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
-	}
-
-	for i := range meta.Metas.Relations {
-		relation := &meta.Metas.Relations[i]
-		if relation.RelationType != meta.IMPLEMENTS {
-			c.makeRelationShip(relation)
-		}
-	}
-
-	for i := range meta.Metas.Entities {
-		entity := &meta.Metas.Entities[i]
-		if entity.EntityType != meta.ENTITY_ENUM {
-			whereExp := makeWhereExp(entity)
-			c.WhereExpMap[entity.Name] = whereExp
-			orderByExp := makeOrderBy(entity)
-			c.OrderByMap[entity.Name] = orderByExp
-			distinctOnEnum := makeDistinctOnEnum(entity)
-			c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
-		}
-	}
-
-	for entityName := range c.WhereExpMap {
-		exp := c.WhereExpMap[entityName]
-		entity := meta.Metas.GetEntityByName(entityName)
-		if entity == nil {
-			panic("Fatal error, can not find entity by name:" + entityName)
-		}
-		relations := meta.Metas.EntityAllRelations(entity)
-		for i := range relations {
-			relation := relations[i]
-			exp.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-				Type: c.WhereExp(relation.TypeEntity),
-			})
-		}
-	}
+	c.makeEnums(enums)
+	c.makeInterfaces(interfaces)
+	c.makeObjects(normals)
+	c.makeRelations()
+	c.makeArgs()
 }
 
 func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {

@@ -5,6 +5,13 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+func (c *TypeCache) makeEnums(enums []*meta.Entity) {
+	for i := range enums {
+		entity := enums[i]
+		c.EnumTypeMap[entity.Name] = EnumType(entity)
+	}
+}
+
 func EnumType(entity *meta.Entity) *graphql.Enum {
 	enumValues := entity.EnumValues
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
