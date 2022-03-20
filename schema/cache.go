@@ -61,6 +61,21 @@ func (c *TypeCache) MakeCache() {
 			}
 			soureObjectType.AddFieldConfig(relation.RoleOnSource, sourceField)
 		}
+
+		targetInterfaceType := c.InterfaceTypeMap[targetEntity.Name]
+		targetField := &graphql.Field{
+			Name: relation.RoleOnSource,
+			Type: c.OutputType(sourceEntity),
+		}
+		if targetInterfaceType != nil {
+			targetInterfaceType.AddFieldConfig(relation.RoleOnTarget, targetField)
+		} else {
+			targetObjectType := c.ObjectTypeMap[targetEntity.Name]
+			if targetObjectType == nil {
+				panic("Can find entity Type in map:" + targetEntity.Name)
+			}
+			targetObjectType.AddFieldConfig(relation.RoleOnTarget, targetField)
+		}
 	}
 }
 
