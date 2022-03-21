@@ -8,7 +8,19 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func AppendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
+func rootQuery() *graphql.Object {
+	queryFields := graphql.Fields{}
+
+	for _, entity := range meta.Metas.Entities {
+		appendToQueryFields(&entity, &queryFields)
+	}
+
+	rootQueryConfig := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields}
+
+	return graphql.NewObject(rootQueryConfig)
+}
+
+func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return

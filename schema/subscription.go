@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/handler"
 
 	"github.com/graphql-go/graphql"
@@ -29,48 +30,51 @@ var FeedType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var RootSubscription = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootSubscription",
-	Fields: graphql.Fields{
-		"feed": &graphql.Field{
-			Type: FeedType,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return p.Source, nil
-			},
-			Subscribe: func(p graphql.ResolveParams) (interface{}, error) {
-				c := make(chan interface{})
+func rootSubscription() *graphql.Object {
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name: consts.ROOT_SUBSCRIPTION_NAME,
+		Fields: graphql.Fields{
+			"feed": &graphql.Field{
+				Type: FeedType,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return p.Source, nil
+				},
+				Subscribe: func(p graphql.ResolveParams) (interface{}, error) {
+					c := make(chan interface{})
 
-				go func() {
-					var i int
+					go func() {
+						var i int
 
-					for {
-						i++
+						for {
+							i++
 
-						feed := Feed{ID: fmt.Sprintf("%d", i)}
+							feed := Feed{ID: fmt.Sprintf("%d", i)}
 
-						select {
-						case <-p.Context.Done():
-							log.Println("[RootSubscription] [Subscribe] subscription canceled")
-							close(c)
-							return
-						default:
-							c <- feed
+							select {
+							case <-p.Context.Done():
+								log.Println("[RootSubscription] [Subscribe] subscription canceled")
+								close(c)
+								return
+							default:
+								c <- feed
+							}
+
+							time.Sleep(250 * time.Millisecond)
+
+							if i == 21 {
+								close(c)
+								return
+							}
 						}
+					}()
 
-						time.Sleep(250 * time.Millisecond)
-
-						if i == 21 {
-							close(c)
-							return
-						}
-					}
-				}()
-
-				return c, nil
+					return c, nil
+				},
 			},
 		},
-	},
-})
+	})
+
+}
 
 var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "RootQuery",
@@ -89,7 +93,7 @@ var schema graphql.Schema
 func test() {
 	schemaConfig := graphql.SchemaConfig{
 		Query:        RootQuery,
-		Subscription: RootSubscription,
+		Subscription: rootSubscription(),
 	}
 
 	s, err := graphql.NewSchema(schemaConfig)

@@ -2,13 +2,64 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/authentication"
+	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
 
-func AppendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
+func rootMutation() *graphql.Object {
+	mutationFields := graphql.Fields{
+		consts.LOGIN: &graphql.Field{
+			Type: graphql.String,
+			Args: graphql.FieldConfigArgument{
+				consts.LOGIN_NAME: &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{OfType: graphql.String},
+				},
+				consts.PASSWORD: &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{OfType: graphql.String},
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				loginName, err := authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
+				if err != nil {
+					return "", err
+				}
+				return jwt.GenerateToken(loginName)
+			},
+		},
+		consts.LOGOUT: &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world2", nil
+			},
+		},
+		consts.PUBLISH: &graphql.Field{
+			Type:    Cache.OutputType(&meta.MetaEntity),
+			Resolve: publishResolve,
+		},
+		consts.ROLLBACK: &graphql.Field{
+			Type:    Cache.OutputType(&meta.MetaEntity),
+			Resolve: resolve.SyncMetaResolve,
+		},
+		consts.SYNC_META: &graphql.Field{
+			Type:    Cache.OutputType(&meta.MetaEntity),
+			Resolve: resolve.SyncMetaResolve,
+		},
+	}
+
+	for _, entity := range meta.Metas.Entities {
+		appendToMutationFields(&entity, &mutationFields)
+	}
+
+	rootMutation := graphql.ObjectConfig{Name: consts.ROOT_MUTATION_NAME, Fields: mutationFields}
+
+	return graphql.NewObject(rootMutation)
+}
+
+func appendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
