@@ -10,7 +10,7 @@ import (
 func ColumnType(column *meta.Column) graphql.Output {
 	switch column.Type {
 	case meta.COLUMN_ID:
-		return graphql.String
+		return graphql.ID
 	case meta.COLUMN_INT:
 		return graphql.Int
 	case meta.COLUMN_FLOAT:
@@ -21,11 +21,7 @@ func ColumnType(column *meta.Column) graphql.Output {
 		return graphql.String
 	case meta.COLUMN_DATE:
 		return graphql.DateTime
-	case meta.COLUMN_SIMPLE_JSON:
-		return scalars.JSONType
-	case meta.COLUMN_SIMPLE_ARRAY:
-		return scalars.JSONType
-	case meta.COLUMN_JSON_ARRAY:
+	case meta.COLUMN_SIMPLE_JSON, meta.COLUMN_SIMPLE_ARRAY, meta.COLUMN_JSON_ARRAY:
 		return scalars.JSONType
 	case meta.COLUMN_ENUM:
 		enumEntity := repository.GetEntityByUuid(column.EnumUuid)
@@ -50,14 +46,10 @@ func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 		return &StringComparisonExp
 	case meta.COLUMN_DATE:
 		return &DateTimeComparisonExp
-	case meta.COLUMN_SIMPLE_JSON:
-		return nil
-	case meta.COLUMN_SIMPLE_ARRAY:
-		return nil
-	case meta.COLUMN_JSON_ARRAY:
+	case meta.COLUMN_SIMPLE_JSON, meta.COLUMN_SIMPLE_ARRAY, meta.COLUMN_JSON_ARRAY:
 		return nil
 	case meta.COLUMN_ID:
-		return nil
+		return &IdComparisonExp
 	case meta.COLUMN_ENUM:
 		return EnumComparisonExp(column)
 	}

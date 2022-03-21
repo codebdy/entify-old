@@ -155,6 +155,40 @@ var IntComparisonExp = graphql.InputObjectFieldConfig{
 	),
 }
 
+var IdComparisonExp = graphql.InputObjectFieldConfig{
+	Type: graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name: "IdComparisonExp",
+			Fields: graphql.InputObjectConfigFieldMap{
+				consts.ARG_EQ: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_GT: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_GTE: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_IN: &graphql.InputObjectFieldConfig{
+					Type: graphql.NewList(graphql.ID),
+				},
+				consts.ARG_LT: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_LTE: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_NOTEQ: &graphql.InputObjectFieldConfig{
+					Type: graphql.ID,
+				},
+				consts.ARG_NOTIN: &graphql.InputObjectFieldConfig{
+					Type: graphql.NewList(graphql.ID),
+				},
+			},
+		},
+	),
+}
+
 var StringComparisonExp = graphql.InputObjectFieldConfig{
 	Type: graphql.NewInputObject(
 		graphql.InputObjectConfig{
