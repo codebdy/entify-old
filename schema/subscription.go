@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/handler"
 
 	"github.com/graphql-go/graphql"
 )
@@ -30,7 +29,7 @@ var FeedType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-func rootSubscription() *graphql.Object {
+func RootSubscription() *graphql.Object {
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name: consts.ROOT_SUBSCRIPTION_NAME,
 		Fields: graphql.Fields{
@@ -87,35 +86,6 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 })
-
-var schema graphql.Schema
-
-func test() {
-	schemaConfig := graphql.SchemaConfig{
-		Query:        RootQuery,
-		Subscription: rootSubscription(),
-	}
-
-	s, err := graphql.NewSchema(schemaConfig)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	schema = s
-
-	h := handler.New(&handler.Config{
-		SchemaResolveFn: func() *graphql.Schema { return &s },
-		Pretty:          true,
-	})
-
-	http.Handle("/graphql", h)
-	http.HandleFunc("/subscriptions", SubscriptionsHandler)
-
-	log.Println("GraphQL Server running on [POST]: localhost:8081/graphql")
-	log.Println("GraphQL Playground running on [GET]: localhost:8081/graphql")
-
-	log.Fatal(http.ListenAndServe(":8081", nil))
-}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -253,7 +223,7 @@ func subscribe(ctx context.Context, subscriptionCancelFn context.CancelFunc, con
 		subscribeParams := graphql.Params{
 			Context:       ctx,
 			RequestString: msg.Payload.Query,
-			Schema:        schema,
+			Schema:        *ResolveSchema(),
 		}
 
 		subscribeChannel := graphql.Subscribe(subscribeParams)

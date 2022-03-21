@@ -23,7 +23,7 @@ func MakeSchema() {
 	schemaConfig := graphql.SchemaConfig{
 		Query:        rootQuery(),
 		Mutation:     rootMutation(),
-		Subscription: rootSubscription(),
+		Subscription: RootSubscription(),
 		Directives: []*graphql.Directive{
 			graphql.NewDirective(graphql.DirectiveConfig{
 				Name:      "testDirective",
