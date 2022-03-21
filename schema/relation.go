@@ -23,8 +23,9 @@ func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 
 	soureInterfaceType := c.InterfaceTypeMap[sourceEntity.Name]
 	sourceField := &graphql.Field{
-		Name: relation.RoleOnSource,
-		Type: c.OutputType(targetEntity),
+		Name:        relation.RoleOnSource,
+		Type:        c.OutputType(targetEntity),
+		Description: relation.DescriptionOnSource,
 	}
 	if soureInterfaceType != nil {
 		soureInterfaceType.AddFieldConfig(relation.RoleOnSource, sourceField)
@@ -43,8 +44,9 @@ func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
 
 	targetInterfaceType := c.InterfaceTypeMap[targetEntity.Name]
 	targetField := &graphql.Field{
-		Name: relation.RoleOnSource,
-		Type: c.OutputType(sourceEntity),
+		Name:        relation.RoleOnSource,
+		Type:        c.OutputType(sourceEntity),
+		Description: relation.DescriptionOnTarget,
 	}
 	if targetInterfaceType != nil {
 		targetInterfaceType.AddFieldConfig(relation.RoleOnTarget, targetField)

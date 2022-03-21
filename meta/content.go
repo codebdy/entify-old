@@ -246,17 +246,19 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 		}
 		if relation.SourceId == entity.Uuid {
 			relations = append(relations, EntityRelation{
-				Name:       relation.RoleOnSource,
-				Relation:   relation,
-				OfEntity:   entity,
-				TypeEntity: c.GetEntityByUuid(relation.TargetId),
+				Name:        relation.RoleOnSource,
+				Relation:    relation,
+				OfEntity:    entity,
+				TypeEntity:  c.GetEntityByUuid(relation.TargetId),
+				Description: relation.DescriptionOnSource,
 			})
 		} else if relation.TargetId == entity.Uuid {
 			relations = append(relations, EntityRelation{
-				Name:       relation.RoleOnTarget,
-				Relation:   relation,
-				OfEntity:   entity,
-				TypeEntity: c.GetEntityByUuid(relation.SourceId),
+				Name:        relation.RoleOnTarget,
+				Relation:    relation,
+				OfEntity:    entity,
+				TypeEntity:  c.GetEntityByUuid(relation.SourceId),
+				Description: relation.DescriptionOnTarget,
 			})
 		}
 	}

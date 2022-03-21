@@ -15,21 +15,12 @@ func (c *TypeCache) makeOutputInterfaces(interfaces []*meta.Entity) {
 func (c *TypeCache) InterfaceType(entity *meta.Entity) *graphql.Interface {
 	name := entity.Name
 
-	parent := meta.Metas.Interfaces(entity)
-	if parent != nil {
-		return graphql.NewInterface(
-			graphql.InterfaceConfig{
-				Name:   name,
-				Fields: outputFields(entity),
-			},
-		)
-	} else {
-		return graphql.NewInterface(
-			graphql.InterfaceConfig{
-				Name:   name,
-				Fields: outputFields(entity),
-			},
-		)
-	}
+	return graphql.NewInterface(
+		graphql.InterfaceConfig{
+			Name:        name,
+			Fields:      outputFields(entity),
+			Description: entity.Description,
+		},
+	)
 
 }

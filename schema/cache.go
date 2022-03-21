@@ -29,6 +29,7 @@ func (c *TypeCache) MakeCache() {
 	c.makeEnums(enums)
 	c.makeOutputInterfaces(interfaces)
 	c.makeOutputObjects(normals)
+	c.makeRelations()
 	c.makeArgs()
 	c.makeInputs()
 }

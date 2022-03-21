@@ -36,18 +36,22 @@ func (c *TypeCache) makeInputRelations() {
 						Type: &graphql.List{
 							OfType: typeInput,
 						},
+						Description: relation.Description,
 					})
 					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
 						Type: &graphql.List{
 							OfType: typeInput,
 						},
+						Description: relation.Description,
 					})
 				} else {
 					input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type: typeInput,
+						Type:        typeInput,
+						Description: relation.Description,
 					})
 					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type: typeInput,
+						Type:        typeInput,
+						Description: relation.Description,
 					})
 				}
 			}
@@ -60,7 +64,8 @@ func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFiel
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		if column.Name != "id" || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type: ColumnType(&column),
+				Type:        ColumnType(&column),
+				Description: column.Description,
 			}
 		}
 	}

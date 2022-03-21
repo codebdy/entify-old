@@ -13,10 +13,11 @@ const (
 )
 
 type EntityRelation struct {
-	Name       string
-	Relation   *Relation
-	OfEntity   *Entity
-	TypeEntity *Entity
+	Name        string
+	Relation    *Relation
+	OfEntity    *Entity
+	TypeEntity  *Entity
+	Description string
 }
 
 type Entity struct {

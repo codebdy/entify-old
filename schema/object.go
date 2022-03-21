@@ -10,7 +10,6 @@ func (c *TypeCache) makeOutputObjects(normals []*meta.Entity) {
 		entity := normals[i]
 		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
 	}
-	c.makeRelations()
 }
 
 func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
@@ -20,16 +19,18 @@ func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
 	if len(interfaces) > 0 {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
-				Name:       name,
-				Fields:     outputFields(entity),
-				Interfaces: interfaces,
+				Name:        name,
+				Fields:      outputFields(entity),
+				Description: entity.Description,
+				Interfaces:  interfaces,
 			},
 		)
 	} else {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
-				Name:   name,
-				Fields: outputFields(entity),
+				Name:        name,
+				Fields:      outputFields(entity),
+				Description: entity.Description,
 			},
 		)
 	}
@@ -40,7 +41,8 @@ func outputFields(entity *meta.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		fields[column.Name] = &graphql.Field{
-			Type: ColumnType(&column),
+			Type:        ColumnType(&column),
+			Description: column.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
 			// 	return "world", nil
