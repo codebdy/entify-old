@@ -75,18 +75,6 @@ func RootSubscription() *graphql.Object {
 
 }
 
-var RootQuery = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootQuery",
-	Fields: graphql.Fields{
-		"ping": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "ok", nil
-			},
-		},
-	},
-})
-
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -126,7 +114,6 @@ func SubscriptionsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 	go handleSubscription(conn)
 }
 
