@@ -28,7 +28,7 @@ func ColumnType(column *meta.Column) graphql.Output {
 	case meta.COLUMN_JSON_ARRAY:
 		return scalars.JSONType
 	case meta.COLUMN_ENUM:
-		enumEntity := repository.GetEntityByUuid(column.TypeEnityUuid)
+		enumEntity := repository.GetEntityByUuid(column.EnumUuid)
 		if enumEntity == nil {
 			panic("Can not find enum entity")
 		}

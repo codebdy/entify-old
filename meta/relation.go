@@ -14,14 +14,16 @@ const (
 )
 
 type Relation struct {
-	Uuid         string `json:"uuid"`
-	RelationType string `json:"relationType"`
-	SourceId     string `json:"sourceId"`
-	TargetId     string `json:"targetId"`
-	RoleOnSource string `json:"roleOnSource"`
-	RoleOnTarget string `json:"roleOnTarget"`
-	CascadeOn    string `json:"cascadeOn"`
-	OwnerId      string `json:"ownerId"`
+	Uuid                string `json:"uuid"`
+	RelationType        string `json:"relationType"`
+	SourceId            string `json:"sourceId"`
+	TargetId            string `json:"targetId"`
+	RoleOnSource        string `json:"roleOnSource"`
+	RoleOnTarget        string `json:"roleOnTarget"`
+	DescriptionOnSource string `json:"descriptionOnSource"`
+	DescriptionOnTarget string `json:"descriptionOnTarget"`
+	CascadeType         string `json:"cascadeType"`
+	OwnerId             string `json:"ownerId"`
 	//多对多关联自定义列
 	Columns []Column `json:"columns"`
 }

@@ -48,10 +48,10 @@ var MetaEntity = Entity{
 			Name: consts.META_CONTENT,
 		},
 		{
-			Uuid:          "META_COLUMN_STATUS_UUID",
-			Type:          COLUMN_ENUM,
-			Name:          consts.META_STATUS,
-			TypeEnityUuid: META_STATUS_ENUM_UUID,
+			Uuid:     "META_COLUMN_STATUS_UUID",
+			Type:     COLUMN_ENUM,
+			Name:     consts.META_STATUS,
+			EnumUuid: META_STATUS_ENUM_UUID,
 		},
 		{
 			Uuid: "META_COLUMN_PUBLISHED_AT_UUID",

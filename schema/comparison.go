@@ -223,7 +223,7 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 }
 
 func EnumComparisonExp(column *meta.Column) *graphql.InputObjectFieldConfig {
-	enumEntity := repository.GetEntityByUuid(column.TypeEnityUuid)
+	enumEntity := repository.GetEntityByUuid(column.EnumUuid)
 	if enumEntity == nil {
 		panic("Can not find enum entity")
 	}
