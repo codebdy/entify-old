@@ -9,14 +9,7 @@ import (
 )
 
 func rootQuery() *graphql.Object {
-	queryFields := graphql.Fields{
-		"ping": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "ok", nil
-			},
-		},
-	}
+	queryFields := graphql.Fields{}
 
 	for _, entity := range meta.Metas.Entities {
 		appendToQueryFields(&entity, &queryFields)
