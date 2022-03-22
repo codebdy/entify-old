@@ -280,7 +280,7 @@ func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
 	entityRelations := c.EntityRelations(entity)
 	for i := range allInheritedRelations {
 		relation := allInheritedRelations[i]
-		if FindRelationByName(relation.Name, entityRelations) == nil {
+		if findRelationByName(relation.Name, entityRelations) == nil {
 			inheritedRelations = append(inheritedRelations, relation)
 		}
 	}
@@ -327,4 +327,13 @@ func (c *MetaContent) SplitEntities() ([]*Entity, []*Entity, []*Entity) {
 		}
 	}
 	return enumEntities, interfaceEntities, normalEntities
+}
+
+func findRelationByName(name string, relations []EntityRelation) *EntityRelation {
+	for i := range relations {
+		if relations[i].Name == name {
+			return &relations[i]
+		}
+	}
+	return nil
 }

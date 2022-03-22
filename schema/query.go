@@ -20,6 +20,34 @@ func rootQuery() *graphql.Object {
 	return graphql.NewObject(rootQueryConfig)
 }
 
+func queryResponseType(entity *meta.Entity) graphql.Output {
+	return &graphql.NonNull{
+		OfType: &graphql.List{
+			OfType: Cache.OutputType(entity),
+		},
+	}
+}
+
+func quryeArgs(entity *meta.Entity) graphql.FieldConfigArgument {
+	return graphql.FieldConfigArgument{
+		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
+			Type: Cache.DistinctOnEnum(entity),
+		},
+		consts.ARG_LIMIT: &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+		consts.ARG_OFFSET: &graphql.ArgumentConfig{
+			Type: graphql.Int,
+		},
+		consts.ARG_ORDERBY: &graphql.ArgumentConfig{
+			Type: Cache.OrderByExp(entity),
+		},
+		consts.ARG_WHERE: &graphql.ArgumentConfig{
+			Type: Cache.WhereExp(entity),
+		},
+	}
+}
+
 func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
@@ -27,68 +55,19 @@ func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
-		Type: &graphql.NonNull{
-			OfType: &graphql.List{
-				OfType: Cache.OutputType(entity),
-			},
-		},
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: Cache.DistinctOnEnum(entity),
-			},
-			consts.ARG_LIMIT: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			consts.ARG_OFFSET: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: Cache.OrderByExp(entity),
-			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity),
-			},
-		},
+		Type:    queryResponseType(entity),
+		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}
 	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type: Cache.OutputType(entity),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: Cache.DistinctOnEnum(entity),
-			},
-			consts.ARG_OFFSET: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: Cache.OrderByExp(entity),
-			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity),
-			},
-		},
+		Type:    Cache.OutputType(entity),
+		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryOneResolveFn(entity),
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type: *AggregateType(entity, []*meta.Entity{}),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-				Type: Cache.DistinctOnEnum(entity),
-			},
-			consts.ARG_LIMIT: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			consts.ARG_OFFSET: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-			consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-				Type: Cache.OrderByExp(entity),
-			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity),
-			},
-		},
+		Type:    *AggregateType(entity, []*meta.Entity{}),
+		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}
 }

@@ -76,13 +76,3 @@ func (r *EntityRelation) IsArray() bool {
 	}
 	return false
 }
-
-func FindRelationByName(name string, relations []EntityRelation) *EntityRelation {
-	for i := range relations {
-		if relations[i].Name == name {
-			return &relations[i]
-		}
-	}
-
-	return nil
-}
