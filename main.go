@@ -26,6 +26,7 @@ func main() {
 	)
 	http.HandleFunc("/subscriptions", handler.NewFunc(schema.ResolveSchema))
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
+	fmt.Println("Subscriptions endpoint is http://localhost:8080/subscriptions")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {
 		fmt.Printf("启动失败:%s", err2)
