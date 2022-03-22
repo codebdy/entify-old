@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -33,7 +32,6 @@ type ConnectionACKMessage struct {
 func NewFunc(schemaResolveFn SchemaResolveFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
-		fmt.Println("SubscriptionsHandler")
 		if err != nil {
 			log.Printf("failed to do websocket upgrade: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -59,7 +57,6 @@ func NewFunc(schemaResolveFn SchemaResolveFunc) func(w http.ResponseWriter, r *h
 }
 
 func handleSubscription(conn *websocket.Conn, schemaResolveFn SchemaResolveFunc) {
-	fmt.Println("handleSubscription")
 	var subscriber *Subscriber
 	subscriptionCtx, subscriptionCancelFn := context.WithCancel(context.Background())
 
