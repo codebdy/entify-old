@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"rxdrag.com/entity-engine/authentication"
@@ -14,16 +13,16 @@ import (
 
 func main() {
 
-	go func() {
-		var i int
+	// go func() {
+	// 	var i int
 
-		for {
-			i++
-			time.Sleep(250 * time.Millisecond)
-			schema.SubcriptionCache <- i
-		}
+	// 	for {
+	// 		i++
+	// 		time.Sleep(250 * time.Millisecond)
+	// 		schema.SubcriptionCache <- i
+	// 	}
 
-	}()
+	// }()
 
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,

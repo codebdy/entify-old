@@ -26,7 +26,7 @@ func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 		return
 	}
 
-	(*fields)[consts.QUERY+entity.Name] = &graphql.Field{
+	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type: &graphql.NonNull{
 			OfType: &graphql.List{
 				OfType: Cache.OutputType(entity),
