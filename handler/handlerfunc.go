@@ -30,7 +30,7 @@ type ConnectionACKMessage struct {
 	} `json:"payload,omitempty"`
 }
 
-func NewSubscriptionsHandlerFunc(schemaResolveFn SchemaResolveFunc) func(w http.ResponseWriter, r *http.Request) {
+func NewFunc(schemaResolveFn SchemaResolveFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		fmt.Println("SubscriptionsHandler")
