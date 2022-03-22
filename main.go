@@ -24,7 +24,7 @@ func main() {
 			),
 		),
 	)
-	http.HandleFunc("/subscriptions", handler.CreateSubscriptionsHandler(schema.ResolveSchema))
+	http.HandleFunc("/subscriptions", handler.NewSubscriptionsHandlerFunc(schema.ResolveSchema))
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {

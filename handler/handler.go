@@ -21,11 +21,11 @@ const (
 
 // ResultCallbackFn result callback
 type ResultCallbackFn func(ctx context.Context, params *graphql.Params, result *graphql.Result, responseBody []byte)
-type SchemaResolveFn = func() *graphql.Schema
+type SchemaResolveFunc = func() *graphql.Schema
 
 // Handler handler
 type Handler struct {
-	SchemaResolveFn  SchemaResolveFn
+	SchemaResolveFn  SchemaResolveFunc
 	pretty           bool
 	graphiqlConfig   *GraphiQLConfig
 	playgroundConfig *PlaygroundConfig
@@ -205,7 +205,7 @@ func NilSchemaResolveFn() *graphql.Schema {
 
 // Config configuration
 type Config struct {
-	SchemaResolveFn  SchemaResolveFn
+	SchemaResolveFn  SchemaResolveFunc
 	Pretty           bool
 	GraphiQLConfig   *GraphiQLConfig
 	PlaygroundConfig *PlaygroundConfig

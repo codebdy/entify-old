@@ -30,7 +30,7 @@ type ConnectionACKMessage struct {
 	} `json:"payload,omitempty"`
 }
 
-func CreateSubscriptionsHandler(schemaResolveFn SchemaResolveFn) func(w http.ResponseWriter, r *http.Request) {
+func NewSubscriptionsHandlerFunc(schemaResolveFn SchemaResolveFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		fmt.Println("SubscriptionsHandler")
@@ -58,7 +58,7 @@ func CreateSubscriptionsHandler(schemaResolveFn SchemaResolveFn) func(w http.Res
 	}
 }
 
-func handleSubscription(conn *websocket.Conn, schemaResolveFn SchemaResolveFn) {
+func handleSubscription(conn *websocket.Conn, schemaResolveFn SchemaResolveFunc) {
 	fmt.Println("handleSubscription")
 	var subscriber *Subscriber
 	subscriptionCtx, subscriptionCancelFn := context.WithCancel(context.Background())
@@ -123,7 +123,7 @@ func unsubscribe(subscriptionCancelFn context.CancelFunc, subscriber *Subscriber
 func subscribe(ctx context.Context,
 	subscriptionCancelFn context.CancelFunc,
 	conn *websocket.Conn, msg ConnectionACKMessage,
-	schemaResolveFn SchemaResolveFn,
+	schemaResolveFn SchemaResolveFunc,
 ) *Subscriber {
 	subscriber := &Subscriber{
 		UUID:          uuid.New().String(),
