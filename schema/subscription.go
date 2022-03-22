@@ -10,6 +10,8 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+var SubcriptionCache = make(chan interface{})
+
 type Feed struct {
 	ID string `graphql:"id"`
 }
@@ -38,10 +40,9 @@ func RootSubscription() *graphql.Object {
 					c := make(chan interface{})
 
 					go func() {
-						var i int
 
 						for {
-							i++
+							i := <-SubcriptionCache
 
 							feed := Feed{ID: fmt.Sprintf("%d", i)}
 
