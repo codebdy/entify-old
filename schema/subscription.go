@@ -83,17 +83,23 @@ func appendToSubscriptionFields(entity *meta.Entity, fields *graphql.Fields) {
 	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type: queryResponseType(entity),
 		Args: quryeArgs(entity),
-		//Resolve: resolve.QueryResolveFn(entity),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			return p.Source, nil
+		},
 	}
 	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
 		Type: Cache.OutputType(entity),
 		Args: quryeArgs(entity),
-		//Resolve: resolve.QueryOneResolveFn(entity),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			return p.Source, nil
+		},
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
 		Type: *AggregateType(entity, []*meta.Entity{}),
 		Args: quryeArgs(entity),
-		//Resolve: resolve.QueryResolveFn(entity),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			return p.Source, nil
+		},
 	}
 }
