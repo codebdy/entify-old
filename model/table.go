@@ -1,4 +1,4 @@
-package meta
+package model
 
 type Table struct {
 	MetaUuid string

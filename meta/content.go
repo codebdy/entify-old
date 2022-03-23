@@ -24,16 +24,7 @@ func (c *MetaContent) Validate() {
 	}
 }
 
-func FindTable(metaUuid string, tables []*Table) *Table {
-	for i := range tables {
-		if tables[i].MetaUuid == metaUuid {
-			return tables[i]
-		}
-	}
-	return nil
-}
-
-func (c *MetaContent) filterEntity(equal func(entity *EntityMeta) bool) []*EntityMeta {
+func (c *MetaContent) FilterEntity(equal func(entity *EntityMeta) bool) []*EntityMeta {
 	entities := []*EntityMeta{}
 	for i := range c.Entities {
 		entity := &c.Entities[i]
@@ -64,18 +55,6 @@ func (c *MetaContent) GetEntityByName(expName string) *EntityMeta {
 	return nil
 }
 
-func (c *MetaContent) Tables() []*Table {
-	tables := c.entityTables()
-	for i := range c.Relations {
-		relation := c.Relations[i]
-		if relation.RelationType != IMPLEMENTS {
-			relationTable := c.relationTable(&relation)
-			tables = append(tables, relationTable)
-		}
-	}
-	return tables
-}
-
 func (c *MetaContent) RelationTableName(relation *RelationMeta) string {
 	return c.RelationSouceTableName(relation) +
 		"_" + utils.SnakeString(relation.RoleOnSource) +
@@ -92,48 +71,6 @@ func (c *MetaContent) RelationSouceTableName(relation *RelationMeta) string {
 func (c *MetaContent) RelationTargetTableName(relation *RelationMeta) string {
 	targetEntity := c.GetEntityByUuid(relation.TargetId)
 	return targetEntity.GetTableName()
-}
-
-func (c *MetaContent) entityTables() []*Table {
-
-	normalEntities := c.filterEntity(func(e *EntityMeta) bool {
-		return e.HasTable()
-	})
-
-	tables := make([]*Table, len(normalEntities))
-
-	for i := range normalEntities {
-		entity := normalEntities[i]
-		table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
-		table.Columns = append(table.Columns, entity.Columns...)
-		tables[i] = table
-	}
-
-	return tables
-}
-
-func (c *MetaContent) relationTable(relation *RelationMeta) *Table {
-	table := &Table{
-		MetaUuid: relation.Uuid,
-		Name:     c.RelationTableName(relation),
-		Columns: []ColumnMeta{
-			{
-				Name:  relation.RelationSourceColumnName(),
-				Type:  COLUMN_ID,
-				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
-				Index: true,
-			},
-			{
-				Name:  relation.RelationTargetColumnName(),
-				Type:  COLUMN_ID,
-				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
-				Index: true,
-			},
-		},
-	}
-	table.Columns = append(table.Columns, relation.Columns...)
-
-	return table
 }
 
 func (c *MetaContent) Interfaces(entity *EntityMeta) []*EntityMeta {

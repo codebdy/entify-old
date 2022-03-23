@@ -1,4 +1,6 @@
-package meta
+package model
+
+import "rxdrag.com/entity-engine/meta"
 
 type ModifyAtom struct {
 	ExcuteSQL string
@@ -6,28 +8,28 @@ type ModifyAtom struct {
 }
 
 type ColumnDiff struct {
-	OldColumn ColumnMeta
-	NewColumn ColumnMeta
+	OldColumn meta.ColumnMeta
+	NewColumn meta.ColumnMeta
 }
 
 type TableDiff struct {
 	OldTable      *Table
 	NewTable      *Table
-	DeleteColumns []ColumnMeta
-	AddColumns    []ColumnMeta
+	DeleteColumns []meta.ColumnMeta
+	AddColumns    []meta.ColumnMeta
 	ModifyColumns []ColumnDiff //删除列索引，并重建
 }
 
 type Diff struct {
-	oldContent *MetaContent
-	newContent *MetaContent
+	oldContent *meta.MetaContent
+	newContent *meta.MetaContent
 
 	DeletedTables  []*Table
 	AddedTables    []*Table
 	ModifiedTables []*TableDiff
 }
 
-func findColumn(uuid string, columns []ColumnMeta) *ColumnMeta {
+func findColumn(uuid string, columns []meta.ColumnMeta) *meta.ColumnMeta {
 	for _, column := range columns {
 		if column.Uuid == uuid {
 			return &column
@@ -37,7 +39,7 @@ func findColumn(uuid string, columns []ColumnMeta) *ColumnMeta {
 	return nil
 }
 
-func columnDifferent(oldColumn, newColumn *ColumnMeta) *ColumnDiff {
+func columnDifferent(oldColumn, newColumn *meta.ColumnMeta) *ColumnDiff {
 	diff := ColumnDiff{
 		OldColumn: *oldColumn,
 		NewColumn: *newColumn,
@@ -104,7 +106,7 @@ func tableDifferent(oldTable, newTable *Table) *TableDiff {
 	return nil
 }
 
-func CreateDiff(published, next *MetaContent) *Diff {
+func CreateDiff(published, next *meta.MetaContent) *Diff {
 	diff := Diff{
 		oldContent: published,
 		newContent: next,
