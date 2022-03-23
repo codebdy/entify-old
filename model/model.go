@@ -14,11 +14,22 @@ type Association struct {
 	Description string
 }
 
+type Enum struct {
+	meta.EntityMeta
+	model *Model
+}
+
+type Interface struct {
+	meta.EntityMeta
+	Associations []*Association
+	Children     []*Entity
+	model        *Model
+}
+
 type Entity struct {
 	meta.EntityMeta
-	Parent       *Entity
-	Children     []*Entity
 	Associations []*Association
+	Interfaces   []*Interface
 	model        *Model
 }
 
@@ -28,16 +39,20 @@ type Relation struct {
 }
 
 type Model struct {
-	Entities  []*Entity
-	Relations []*Relation
-	Tables    []*Table
+	Enums      []*Enum
+	Interfaces []*Interface
+	Entities   []*Entity
+	Relations  []*Relation
+	Tables     []*Table
 }
 
 func NewModel(c *meta.MetaContent) *Model {
 	model := Model{
-		Entities:  make([]*Entity, len(c.Entities)),
-		Relations: []*Relation{},
-		Tables:    entityTables(c),
+		Enums:      make([]*Enum, len(c.Entities)),
+		Interfaces: make([]*Interface, len(c.Entities)),
+		Entities:   make([]*Entity, len(c.Entities)),
+		Relations:  []*Relation{},
+		Tables:     entityTables(c),
 	}
 
 	model.buildEntities(c)
