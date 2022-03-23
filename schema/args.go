@@ -3,20 +3,18 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 )
 
 func (c *TypeCache) makeArgs() {
-	for i := range meta.Metas.Entities {
-		entity := &meta.Metas.Entities[i]
-		if entity.EntityType != meta.ENTITY_ENUM {
-			whereExp := makeWhereExp(entity)
-			c.WhereExpMap[entity.Name] = whereExp
-			orderByExp := makeOrderBy(entity)
-			c.OrderByMap[entity.Name] = orderByExp
-			distinctOnEnum := makeDistinctOnEnum(entity)
-			c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
-		}
+	for i := range model.TheModel.Entities {
+		entity := model.TheModel.Entities[i]
+		whereExp := makeWhereExp(entity)
+		c.WhereExpMap[entity.Name] = whereExp
+		orderByExp := makeOrderBy(entity)
+		c.OrderByMap[entity.Name] = orderByExp
+		distinctOnEnum := makeDistinctOnEnum(entity)
+		c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
 	}
 	c.makeRelaionWhereExp()
 }
@@ -24,21 +22,21 @@ func (c *TypeCache) makeArgs() {
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		entity := meta.Metas.GetEntityByName(entityName)
+		entity := model.TheModel.GetEntityByName(entityName)
 		if entity == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}
-		relations := meta.Metas.EntityAllRelations(entity)
-		for i := range relations {
-			relation := relations[i]
-			exp.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-				Type: c.WhereExp(relation.TypeEntity),
+		associations := entity.Associations
+		for i := range associations {
+			assoc := associations[i]
+			exp.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
+				Type: c.WhereExp(assoc.TypeEntity),
 			})
 		}
 	}
 }
 
-func makeWhereExp(entity *meta.EntityMeta) *graphql.InputObject {
+func makeWhereExp(entity *model.Entity) *graphql.InputObject {
 	expName := entity.Name + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
@@ -68,7 +66,7 @@ func makeWhereExp(entity *meta.EntityMeta) *graphql.InputObject {
 		},
 	}
 
-	columns := meta.Metas.EntityAllColumns(entity)
+	columns := entity.AllColumns
 
 	for i := range columns {
 		column := &columns[i]
@@ -81,7 +79,7 @@ func makeWhereExp(entity *meta.EntityMeta) *graphql.InputObject {
 	return boolExp
 }
 
-func makeOrderBy(entity *meta.EntityMeta) *graphql.InputObject {
+func makeOrderBy(entity *model.Entity) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
@@ -91,7 +89,7 @@ func makeOrderBy(entity *meta.EntityMeta) *graphql.InputObject {
 		},
 	)
 
-	columns := meta.Metas.EntityAllColumns(entity)
+	columns := entity.AllColumns
 	for i := range columns {
 		column := &columns[i]
 		columnOrderBy := ColumnOrderBy(column)
@@ -102,9 +100,9 @@ func makeOrderBy(entity *meta.EntityMeta) *graphql.InputObject {
 	return orderByExp
 }
 
-func makeDistinctOnEnum(entity *meta.EntityMeta) *graphql.Enum {
+func makeDistinctOnEnum(entity *model.Entity) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	columns := meta.Metas.EntityAllColumns(entity)
+	columns := entity.AllColumns
 	for i := range columns {
 		column := &columns[i]
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{

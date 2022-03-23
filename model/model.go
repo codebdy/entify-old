@@ -218,4 +218,14 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	return nil
 }
 
-var Metas *Model
+func (m *Model) GetEntityByName(name string) *Entity {
+	for i := range m.Entities {
+		entity := m.Entities[i]
+		if entity.Name == name {
+			return entity
+		}
+	}
+	return nil
+}
+
+var TheModel *Model

@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 )
 
 var Cache TypeCache
@@ -34,7 +35,7 @@ func (c *TypeCache) MakeCache() {
 	c.makeInputs()
 }
 
-func (c *TypeCache) OutputType(entity *meta.EntityMeta) graphql.Type {
+func (c *TypeCache) OutputType(entity *model.Entity) graphql.Type {
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return c.EnumTypeMap[entity.Name]
 	} else if entity.EntityType == meta.ENTITY_INTERFACE {
@@ -44,31 +45,31 @@ func (c *TypeCache) OutputType(entity *meta.EntityMeta) graphql.Type {
 	}
 }
 
-func (c *TypeCache) WhereExp(entity *meta.EntityMeta) *graphql.InputObject {
+func (c *TypeCache) WhereExp(entity *model.Entity) *graphql.InputObject {
 	return c.WhereExpMap[entity.Name]
 }
 
-func (c *TypeCache) OrderByExp(entity *meta.EntityMeta) *graphql.InputObject {
+func (c *TypeCache) OrderByExp(entity *model.Entity) *graphql.InputObject {
 	return c.OrderByMap[entity.Name]
 }
 
-func (c *TypeCache) DistinctOnEnum(entity *meta.EntityMeta) *graphql.Enum {
+func (c *TypeCache) DistinctOnEnum(entity *model.Entity) *graphql.Enum {
 	return c.DistinctOnEnumMap[entity.Name]
 }
 
-func (c *TypeCache) SaveInput(entity *meta.EntityMeta) *graphql.InputObject {
+func (c *TypeCache) SaveInput(entity *model.Entity) *graphql.InputObject {
 	return c.SaveInputMap[entity.Name]
 }
 
-func (c *TypeCache) UpdateInput(entity *meta.EntityMeta) *graphql.InputObject {
+func (c *TypeCache) UpdateInput(entity *model.Entity) *graphql.InputObject {
 	return c.UpdateInputMap[entity.Name]
 }
 
-func (c *TypeCache) MutationResponse(entity *meta.EntityMeta) *graphql.Output {
+func (c *TypeCache) MutationResponse(entity *model.Entity) *graphql.Output {
 	return c.MutationResponseMap[entity.Name]
 }
 
-func (c *TypeCache) mapInterfaces(entities []*meta.EntityMeta) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*model.Entity) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])
