@@ -5,11 +5,20 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+type Association struct {
+	Name        string
+	Relation    *Relation
+	OfEntity    *Entity
+	TypeEntity  *Entity
+	Description string
+}
+
 type Entity struct {
 	meta.EntityMeta
-	Parent   *Entity
-	Children []*Entity
-	model    *Model
+	Parent       *Entity
+	Children     []*Entity
+	Associations []*Association
+	model        *Model
 }
 
 type Relation struct {
@@ -32,10 +41,27 @@ func NewModel(c *meta.MetaContent) *Model {
 
 	for i := range c.Entities {
 		model.Entities[i] = &Entity{
-			EntityMeta: c.Entities[i],
-			Parent:     nil,
-			Children:   []*Entity{},
-			model:      &model,
+			EntityMeta:   c.Entities[i],
+			Parent:       nil,
+			Children:     []*Entity{},
+			Associations: []*Association{},
+			model:        &model,
+		}
+	}
+
+	for i := range c.Relations {
+		relation := c.Relations[i]
+		if relation.RelationType != meta.IMPLEMENTS {
+			model.Relations = append(model.Relations, &Relation{
+				RelationMeta: relation,
+				model:        &model,
+			})
+		}
+	}
+
+	for i := range c.Relations {
+		relation := c.Relations[i]
+		if relation.RelationType == meta.IMPLEMENTS {
 		}
 	}
 
@@ -47,6 +73,16 @@ func NewModel(c *meta.MetaContent) *Model {
 		}
 	}
 	return &model
+}
+
+func (m *Model) FindEntityByUuid(uuid string) *Entity {
+	for i := range m.Entities {
+		entity := m.Entities[i]
+		if entity.Uuid == uuid {
+			return entity
+		}
+	}
+	return nil
 }
 
 func FindTable(metaUuid string, tables []*Table) *Table {
