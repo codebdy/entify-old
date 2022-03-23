@@ -3,6 +3,7 @@ package model
 import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type Association struct {
@@ -39,43 +40,72 @@ func NewModel(c *meta.MetaContent) *Model {
 		Tables:    entityTables(c),
 	}
 
+	model.buildEntities(c)
+	model.buildRelations(c)
+	model.buildInheritEntities()
+	model.buildInheritRelations()
+	model.buildTables()
+	return &model
+}
+
+func (model *Model) buildTables() {
+	for i := range model.Relations {
+		relation := model.Relations[i]
+		if relation.RelationType != meta.IMPLEMENTS {
+			relationTable := relation.Table()
+			model.Tables = append(model.Tables, relationTable)
+		}
+	}
+}
+
+//展开继承的关系
+func (model *Model) buildInheritRelations() {
+}
+
+func (model *Model) buildInheritEntities() {
+	for i := range model.Relations {
+		relation := model.Relations[i]
+		if relation.RelationType == meta.IMPLEMENTS {
+			sourceEntity := model.GetEntityByUuid(relation.SourceId)
+			if sourceEntity == nil {
+				panic("Can not find entity by relation:" + relation.SourceId)
+			}
+			targetEntity := model.GetEntityByUuid(relation.TargetId)
+			if targetEntity == nil {
+				panic("Can not find entity by relation:" + relation.TargetId)
+			}
+
+			sourceEntity.Parent = targetEntity
+			targetEntity.Children = append(targetEntity.Children, sourceEntity)
+		}
+	}
+}
+
+func (model *Model) buildRelations(c *meta.MetaContent) {
+	for i := range c.Relations {
+		relation := c.Relations[i]
+		if relation.RelationType != meta.IMPLEMENTS {
+			model.Relations = append(model.Relations, &Relation{
+				RelationMeta: relation,
+				model:        model,
+			})
+		}
+	}
+}
+
+func (model *Model) buildEntities(c *meta.MetaContent) {
 	for i := range c.Entities {
 		model.Entities[i] = &Entity{
 			EntityMeta:   c.Entities[i],
 			Parent:       nil,
 			Children:     []*Entity{},
 			Associations: []*Association{},
-			model:        &model,
+			model:        model,
 		}
 	}
-
-	for i := range c.Relations {
-		relation := c.Relations[i]
-		if relation.RelationType != meta.IMPLEMENTS {
-			model.Relations = append(model.Relations, &Relation{
-				RelationMeta: relation,
-				model:        &model,
-			})
-		}
-	}
-
-	for i := range c.Relations {
-		relation := c.Relations[i]
-		if relation.RelationType == meta.IMPLEMENTS {
-		}
-	}
-
-	for i := range c.Relations {
-		relation := c.Relations[i]
-		if relation.RelationType != meta.IMPLEMENTS {
-			relationTable := relationTable(c, &relation)
-			model.Tables = append(model.Tables, relationTable)
-		}
-	}
-	return &model
 }
 
-func (m *Model) FindEntityByUuid(uuid string) *Entity {
+func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	for i := range m.Entities {
 		entity := m.Entities[i]
 		if entity.Uuid == uuid {
@@ -112,10 +142,10 @@ func entityTables(c *meta.MetaContent) []*Table {
 	return tables
 }
 
-func relationTable(c *meta.MetaContent, relation *meta.RelationMeta) *Table {
+func (relation *Relation) Table() *Table {
 	table := &Table{
 		MetaUuid: relation.Uuid,
-		Name:     c.RelationTableName(relation),
+		Name:     relation.TableName(),
 		Columns: []meta.ColumnMeta{
 			{
 				Name:  relation.RelationSourceColumnName(),
@@ -134,4 +164,22 @@ func relationTable(c *meta.MetaContent, relation *meta.RelationMeta) *Table {
 	table.Columns = append(table.Columns, relation.Columns...)
 
 	return table
+}
+
+func (relation *Relation) TableName() string {
+	return relation.SouceTableName() +
+		"_" + utils.SnakeString(relation.RoleOnSource) +
+		"_" + relation.TargetTableName() +
+		"_" + utils.SnakeString(relation.RoleOnTarget) +
+		consts.SUFFIX_PIVOT
+}
+
+func (relation *Relation) SouceTableName() string {
+	sourceEntity := relation.model.GetEntityByUuid(relation.SourceId)
+	return sourceEntity.GetTableName()
+}
+
+func (relation *Relation) TargetTableName() string {
+	targetEntity := relation.model.GetEntityByUuid(relation.TargetId)
+	return targetEntity.GetTableName()
 }

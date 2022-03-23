@@ -2,9 +2,6 @@ package meta
 
 import (
 	"fmt"
-
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/utils"
 )
 
 type MetaContent struct {
@@ -53,24 +50,6 @@ func (c *MetaContent) GetEntityByName(expName string) *EntityMeta {
 		}
 	}
 	return nil
-}
-
-func (c *MetaContent) RelationTableName(relation *RelationMeta) string {
-	return c.RelationSouceTableName(relation) +
-		"_" + utils.SnakeString(relation.RoleOnSource) +
-		"_" + c.RelationTargetTableName(relation) +
-		"_" + utils.SnakeString(relation.RoleOnTarget) +
-		consts.SUFFIX_PIVOT
-}
-
-func (c *MetaContent) RelationSouceTableName(relation *RelationMeta) string {
-	sourceEntity := c.GetEntityByUuid(relation.SourceId)
-	return sourceEntity.GetTableName()
-}
-
-func (c *MetaContent) RelationTargetTableName(relation *RelationMeta) string {
-	targetEntity := c.GetEntityByUuid(relation.TargetId)
-	return targetEntity.GetTableName()
 }
 
 func (c *MetaContent) Interfaces(entity *EntityMeta) []*EntityMeta {
