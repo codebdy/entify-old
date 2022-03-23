@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -11,8 +12,8 @@ import (
 func rootQuery() *graphql.Object {
 	queryFields := graphql.Fields{}
 
-	for _, entity := range meta.Metas.Entities {
-		appendToQueryFields(&entity, &queryFields)
+	for _, entity := range model.TheModel.Entities {
+		appendToQueryFields(entity, &queryFields)
 	}
 
 	rootQueryConfig := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields}
@@ -20,7 +21,7 @@ func rootQuery() *graphql.Object {
 	return graphql.NewObject(rootQueryConfig)
 }
 
-func queryResponseType(entity *meta.EntityMeta) graphql.Output {
+func queryResponseType(entity *model.Entity) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
 			OfType: Cache.OutputType(entity),
@@ -28,7 +29,7 @@ func queryResponseType(entity *meta.EntityMeta) graphql.Output {
 	}
 }
 
-func quryeArgs(entity *meta.EntityMeta) graphql.FieldConfigArgument {
+func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 	return graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(entity),
@@ -48,7 +49,7 @@ func quryeArgs(entity *meta.EntityMeta) graphql.FieldConfigArgument {
 	}
 }
 
-func appendToQueryFields(entity *meta.EntityMeta, fields *graphql.Fields) {
+func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
@@ -66,7 +67,7 @@ func appendToQueryFields(entity *meta.EntityMeta, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(entity, []*meta.EntityMeta{}),
+		Type:    *AggregateType(entity, []*model.Entity{}),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}

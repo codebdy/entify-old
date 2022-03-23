@@ -7,6 +7,7 @@ import (
 
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/utils"
 
 	"github.com/graphql-go/graphql"
@@ -63,8 +64,8 @@ func RootSubscription() *graphql.Object {
 		},
 	}}
 
-	for _, entity := range meta.Metas.Entities {
-		appendToSubscriptionFields(&entity, &subscriptionFields)
+	for _, entity := range model.TheModel.Entities {
+		appendToSubscriptionFields(entity, &subscriptionFields)
 	}
 
 	return graphql.NewObject(graphql.ObjectConfig{
@@ -74,7 +75,7 @@ func RootSubscription() *graphql.Object {
 
 }
 
-func appendToSubscriptionFields(entity *meta.EntityMeta, fields *graphql.Fields) {
+func appendToSubscriptionFields(entity *model.Entity, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
@@ -96,7 +97,7 @@ func appendToSubscriptionFields(entity *meta.EntityMeta, fields *graphql.Fields)
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type: *AggregateType(entity, []*meta.EntityMeta{}),
+		Type: *AggregateType(entity, []*model.Entity{}),
 		Args: quryeArgs(entity),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil
