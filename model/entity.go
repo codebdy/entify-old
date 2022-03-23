@@ -2,9 +2,22 @@ package model
 
 import "rxdrag.com/entity-engine/meta"
 
+type Association struct {
+	Name        string
+	Relation    *Relation
+	OfEntity    *Entity
+	TypeEntity  *Entity
+	Description string
+}
+
+type Enum struct {
+	meta.EntityMeta
+	model *Model
+}
+
 type Entity struct {
 	meta.EntityMeta
-	Associations []*Association
+	Associations map[string]*Association
 	Interfaces   []*Interface
 	model        *Model
 }
