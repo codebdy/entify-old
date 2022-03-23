@@ -47,10 +47,12 @@ type Model struct {
 }
 
 func NewModel(c *meta.MetaContent) *Model {
+	enums, interfaces, entities := c.SplitEntities()
+
 	model := Model{
-		Enums:      make([]*Enum, len(c.Entities)),
-		Interfaces: make([]*Interface, len(c.Entities)),
-		Entities:   make([]*Entity, len(c.Entities)),
+		Enums:      make([]*Enum, len(enums)),
+		Interfaces: make([]*Interface, len(interfaces)),
+		Entities:   make([]*Entity, len(entities)),
 		Relations:  []*Relation{},
 		Tables:     entityTables(c),
 	}
@@ -61,6 +63,17 @@ func NewModel(c *meta.MetaContent) *Model {
 	model.buildInheritRelations()
 	model.buildTables()
 	return &model
+}
+
+func (model *Model) buildEntities(metas []*meta.EntityMeta) {
+	for i := range metas {
+		model.Entities[i] = &Entity{
+			EntityMeta:   *metas[i],
+			Interfaces:   []*Interface{},
+			Associations: []*Association{},
+			model:        model,
+		}
+	}
 }
 
 func (model *Model) buildTables() {
@@ -104,18 +117,6 @@ func (model *Model) buildRelations(c *meta.MetaContent) {
 				RelationMeta: relation,
 				model:        model,
 			})
-		}
-	}
-}
-
-func (model *Model) buildEntities(c *meta.MetaContent) {
-	for i := range c.Entities {
-		model.Entities[i] = &Entity{
-			EntityMeta:   c.Entities[i],
-			Parent:       nil,
-			Children:     []*Entity{},
-			Associations: []*Association{},
-			model:        model,
 		}
 	}
 }
