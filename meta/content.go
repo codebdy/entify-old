@@ -183,6 +183,25 @@ func (c *MetaContent) SplitEntities() ([]*EntityMeta, []*EntityMeta, []*EntityMe
 	return enumEntities, interfaceEntities, normalEntities
 }
 
+/**
+* 把关系分类
+ */
+func (c *MetaContent) SplitRelations() ([]*RelationMeta, []*RelationMeta) {
+	var inherits []*RelationMeta
+	var relations []*RelationMeta
+
+	for i := range c.Relations {
+		relation := &c.Relations[i]
+		if relation.RelationType == IMPLEMENTS {
+			inherits = append(inherits, relation)
+		} else {
+			relations = append(relations, relation)
+		}
+	}
+
+	return inherits, relations
+}
+
 func findRelationByName(name string, relations []EntityRelation) *EntityRelation {
 	for i := range relations {
 		if relations[i].Name == name {

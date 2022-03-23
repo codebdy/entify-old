@@ -9,15 +9,6 @@ type Entity struct {
 	model        *Model
 }
 
-func FindTable(metaUuid string, tables []*Table) *Table {
-	for i := range tables {
-		if tables[i].MetaUuid == metaUuid {
-			return tables[i]
-		}
-	}
-	return nil
-}
-
 func entityTables(c *meta.MetaContent) []*Table {
 
 	normalEntities := c.FilterEntity(func(e *meta.EntityMeta) bool {

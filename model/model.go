@@ -27,6 +27,7 @@ type Model struct {
 
 func NewModel(c *meta.MetaContent) *Model {
 	enums, interfaces, entities := c.SplitEntities()
+	inherits, relations := c.SplitRelations()
 
 	model := Model{
 		Enums:      make([]*Enum, len(enums)),
@@ -38,9 +39,8 @@ func NewModel(c *meta.MetaContent) *Model {
 	model.buildEnums(enums)
 	model.buildInterfaces(interfaces)
 	model.buildEntities(entities)
-	model.buildRelations(c)
-	model.buildInherits()
-	model.buildInheritRelations(c)
+	model.buildInherits(inherits)
+	model.buildRelations(relations)
 	model.buildTables()
 	return &model
 }
@@ -76,39 +76,31 @@ func (model *Model) buildEntities(metas []*meta.EntityMeta) {
 	}
 }
 
-func (model *Model) buildRelations(c *meta.MetaContent) {
-	for i := range c.Relations {
-		relation := c.Relations[i]
-		if relation.RelationType != meta.IMPLEMENTS {
-			model.Relations = append(model.Relations, &Relation{
-				RelationMeta: relation,
-				model:        model,
-			})
+func (model *Model) buildInherits(relations []*meta.RelationMeta) {
+	for i := range relations {
+		relation := relations[i]
+
+		sourceEntity := model.GetEntityByUuid(relation.SourceId)
+		if sourceEntity == nil {
+			panic("Can not find entity by relation:" + relation.SourceId)
 		}
+		interfaceEntity := model.GetInterfaceByUuid(relation.TargetId)
+		if interfaceEntity == nil {
+			panic("Can not find interface by relation:" + relation.TargetId)
+		}
+
+		sourceEntity.Interfaces = append(sourceEntity.Interfaces, interfaceEntity)
+		interfaceEntity.Children = append(interfaceEntity.Children, sourceEntity)
 	}
 }
-
-func (model *Model) buildInherits() {
-	for i := range model.Relations {
-		relation := model.Relations[i]
-		if relation.RelationType == meta.IMPLEMENTS {
-			sourceEntity := model.GetEntityByUuid(relation.SourceId)
-			if sourceEntity == nil {
-				panic("Can not find entity by relation:" + relation.SourceId)
-			}
-			interfaceEntity := model.GetInterfaceByUuid(relation.TargetId)
-			if interfaceEntity == nil {
-				panic("Can not find interface by relation:" + relation.TargetId)
-			}
-
-			sourceEntity.Interfaces = append(sourceEntity.Interfaces, interfaceEntity)
-			interfaceEntity.Children = append(interfaceEntity.Children, sourceEntity)
-		}
-	}
-}
-
-//展开继承的关系
-func (model *Model) buildInheritRelations(c *meta.MetaContent) {
+func (model *Model) buildRelations(relations []*meta.RelationMeta) {
+	// for i := range relations {
+	// 	relation := relations[i]
+	// 	model.Relations = append(model.Relations, &Relation{
+	// 		RelationMeta: *relation,
+	// 		model:        model,
+	// 	})
+	// }
 }
 
 func (model *Model) buildTables() {
