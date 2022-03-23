@@ -5,17 +5,38 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
+type Entity struct {
+	meta.EntityMeta
+	Parent   *Entity
+	Children []*Entity
+	model    *Model
+}
+
+type Relation struct {
+	meta.RelationMeta
+	model *Model
+}
+
 type Model struct {
-	Entities  []*meta.EntityMeta
-	Relations []*meta.RelationMeta
+	Entities  []*Entity
+	Relations []*Relation
 	Tables    []*Table
 }
 
 func NewModel(c *meta.MetaContent) *Model {
 	model := Model{
-		Entities:  make([]*meta.EntityMeta, len(c.Entities)),
-		Relations: make([]*meta.RelationMeta, len(c.Relations)),
+		Entities:  make([]*Entity, len(c.Entities)),
+		Relations: []*Relation{},
 		Tables:    entityTables(c),
+	}
+
+	for i := range c.Entities {
+		model.Entities[i] = &Entity{
+			EntityMeta: c.Entities[i],
+			Parent:     nil,
+			Children:   []*Entity{},
+			model:      &model,
+		}
 	}
 
 	for i := range c.Relations {
