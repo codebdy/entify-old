@@ -9,7 +9,7 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := QueryOne(&meta.MetaEntity, QueryArg{
+	publishedMeta, err := QueryOne(model.MetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
@@ -24,7 +24,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := QueryOne(&meta.MetaEntity, QueryArg{
+	nextMeta, err := QueryOne(model.MetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,

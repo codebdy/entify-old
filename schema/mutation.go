@@ -6,11 +6,14 @@ import (
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
 
 func rootMutation() *graphql.Object {
+	metaEntity :=
+		MetaEntity()
 	mutationFields := graphql.Fields{
 		consts.LOGIN: &graphql.Field{
 			Type: graphql.String,
@@ -37,21 +40,21 @@ func rootMutation() *graphql.Object {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    Cache.OutputType(&meta.MetaEntity),
+			Type:    Cache.OutputType(metaEntity),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    Cache.OutputType(&meta.MetaEntity),
+			Type:    Cache.OutputType(metaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    Cache.OutputType(&meta.MetaEntity),
+			Type:    Cache.OutputType(metaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
 
-	for _, entity := range meta.Metas.Entities {
-		appendToMutationFields(&entity, &mutationFields)
+	for _, entity := range model.TheModel.Entities {
+		appendToMutationFields(entity, &mutationFields)
 	}
 
 	rootMutation := graphql.ObjectConfig{Name: consts.ROOT_MUTATION_NAME, Fields: mutationFields}
@@ -59,7 +62,7 @@ func rootMutation() *graphql.Object {
 	return graphql.NewObject(rootMutation)
 }
 
-func appendToMutationFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
+func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return

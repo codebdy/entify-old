@@ -229,3 +229,7 @@ func (m *Model) GetEntityByName(name string) *Entity {
 }
 
 var TheModel *Model
+
+func MetaEntity() *Entity {
+	return TheModel.GetEntityByUuid(meta.MetaEntity.Uuid)
+}

@@ -52,3 +52,18 @@ func findColumnByName(name string, columns []meta.ColumnMeta) bool {
 	}
 	return false
 }
+
+func (a *Association) IsArray() bool {
+	if a.Relation.RelationType == meta.ONE_TO_MANY {
+		if a.OfEntity.Uuid == a.Relation.SourceId {
+			return true
+		}
+	} else if a.Relation.RelationType == meta.MANY_TO_ONE {
+		if a.OfEntity.Uuid == a.Relation.TargetId {
+			return true
+		}
+	} else if a.Relation.RelationType == meta.MANY_TO_MANY {
+		return true
+	}
+	return false
+}

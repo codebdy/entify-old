@@ -4,10 +4,11 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/utils"
 )
 
-func AvgFields(entity *meta.EntityMeta) graphql.Fields {
+func AvgFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -24,7 +25,7 @@ func AvgFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func MaxFields(entity *meta.EntityMeta) graphql.Fields {
+func MaxFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -41,7 +42,7 @@ func MaxFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func MinFields(entity *meta.EntityMeta) graphql.Fields {
+func MinFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -58,7 +59,7 @@ func MinFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func SelectFields(entity *meta.EntityMeta) graphql.InputObjectConfigFieldMap {
+func SelectFields(entity *model.Entity) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.Columns {
 		fields[column.Name] = &graphql.InputObjectFieldConfig{
@@ -69,7 +70,7 @@ func SelectFields(entity *meta.EntityMeta) graphql.InputObjectConfigFieldMap {
 	return fields
 }
 
-func StddevFields(entity *meta.EntityMeta) graphql.Fields {
+func StddevFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -86,7 +87,7 @@ func StddevFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func StddevPopFields(entity *meta.EntityMeta) graphql.Fields {
+func StddevPopFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -102,24 +103,7 @@ func StddevPopFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func StddevSampFields(entity *meta.EntityMeta) graphql.Fields {
-	fields := graphql.Fields{}
-	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(&column),
-				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				// 	fmt.Println(p.Context.Value("data"))
-				// 	return "world", nil
-				// },
-			}
-		}
-
-	}
-	return fields
-}
-
-func SumFields(entity *meta.EntityMeta) graphql.Fields {
+func StddevSampFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -136,7 +120,7 @@ func SumFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func VarPopFields(entity *meta.EntityMeta) graphql.Fields {
+func SumFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -153,7 +137,7 @@ func VarPopFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func VarSampFields(entity *meta.EntityMeta) graphql.Fields {
+func VarPopFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -170,7 +154,7 @@ func VarSampFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func VarianceFields(entity *meta.EntityMeta) graphql.Fields {
+func VarSampFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
@@ -187,7 +171,24 @@ func VarianceFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func AggregateFields(entity *meta.EntityMeta) graphql.Fields {
+func VarianceFields(entity *model.Entity) graphql.Fields {
+	fields := graphql.Fields{}
+	for _, column := range entity.Columns {
+		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+			fields[column.Name] = &graphql.Field{
+				Type: ColumnType(&column),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func AggregateFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	avgFields := AvgFields(entity)
 	if len(avgFields) > 0 {
@@ -328,7 +329,7 @@ func AggregateFields(entity *meta.EntityMeta) graphql.Fields {
 	return fields
 }
 
-func AggregateType(entity *meta.EntityMeta, parents []*meta.EntityMeta) *graphql.Output {
+func AggregateType(entity *model.Entity, parents []*model.Entity) *graphql.Output {
 	name := entity.Name + utils.FirstUpper(consts.AGGREGATE)
 	if Cache.AggregateMap[name] != nil {
 		return Cache.AggregateMap[name]

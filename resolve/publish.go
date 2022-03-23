@@ -29,12 +29,12 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
-	repository.SaveOne(metaObj, &meta.MetaEntity)
+	repository.SaveOne(metaObj, model.MetaEntity())
 	repository.LoadModel()
 	return nil, nil
 }
 
 func SyncMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
-	return repository.InsertOne(object, &meta.MetaEntity)
+	return repository.InsertOne(object, model.MetaEntity())
 }

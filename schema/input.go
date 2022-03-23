@@ -3,66 +3,65 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 )
 
 func (c *TypeCache) makeInputs() {
-	for i := range meta.Metas.Entities {
-		entity := &meta.Metas.Entities[i]
-		if entity.EntityType != meta.ENTITY_ENUM {
-			c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
-			c.SaveInputMap[entity.Name] = makeSaveInput(entity)
-			c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
-		}
+	for i := range model.TheModel.Entities {
+		entity := model.TheModel.Entities[i]
+		c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
+		c.SaveInputMap[entity.Name] = makeSaveInput(entity)
+		c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
+
 	}
 
 	c.makeInputRelations()
 }
 
 func (c *TypeCache) makeInputRelations() {
-	for i := range meta.Metas.Entities {
-		entity := &meta.Metas.Entities[i]
-		if entity.EntityType != meta.ENTITY_ENUM {
-			input := c.UpdateInputMap[entity.Name]
-			update := c.SaveInputMap[entity.Name]
+	for i := range model.TheModel.Entities {
+		entity := model.TheModel.Entities[i]
 
-			relations := meta.Metas.EntityAllRelations(entity)
+		input := c.UpdateInputMap[entity.Name]
+		update := c.SaveInputMap[entity.Name]
 
-			for i := range relations {
-				relation := relations[i]
-				typeInput := c.SaveInput(relation.TypeEntity)
-				if relation.IsArray() {
-					input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type: &graphql.List{
-							OfType: typeInput,
-						},
-						Description: relation.Description,
-					})
-					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type: &graphql.List{
-							OfType: typeInput,
-						},
-						Description: relation.Description,
-					})
-				} else {
-					input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type:        typeInput,
-						Description: relation.Description,
-					})
-					update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-						Type:        typeInput,
-						Description: relation.Description,
-					})
-				}
+		assocs := entity.Associations
+
+		for i := range assocs {
+			relation := assocs[i]
+			typeInput := c.SaveInput(relation.TypeEntity)
+			if relation.IsArray() {
+				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+					Type: &graphql.List{
+						OfType: typeInput,
+					},
+					Description: relation.Description,
+				})
+				update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+					Type: &graphql.List{
+						OfType: typeInput,
+					},
+					Description: relation.Description,
+				})
+			} else {
+				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+					Type:        typeInput,
+					Description: relation.Description,
+				})
+				update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
+					Type:        typeInput,
+					Description: relation.Description,
+				})
 			}
 		}
+
 	}
 }
 
-func inputFields(entity *meta.EntityMeta, isPost bool) graphql.InputObjectConfigFieldMap {
+func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range meta.Metas.EntityAllColumns(entity) {
-		if column.Name != "id" || isPost {
+	for _, column := range entity.AllColumns {
+		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type:        ColumnType(&column),
 				Description: column.Description,
@@ -72,7 +71,7 @@ func inputFields(entity *meta.EntityMeta, isPost bool) graphql.InputObjectConfig
 	return fields
 }
 
-func makeSaveInput(entity *meta.EntityMeta) *graphql.InputObject {
+func makeSaveInput(entity *model.Entity) *graphql.InputObject {
 	name := entity.Name + consts.INPUT
 
 	return graphql.NewInputObject(
@@ -83,7 +82,7 @@ func makeSaveInput(entity *meta.EntityMeta) *graphql.InputObject {
 	)
 }
 
-func makeUpdateInput(entity *meta.EntityMeta) *graphql.InputObject {
+func makeUpdateInput(entity *model.Entity) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + consts.UPDATE_INPUT,
@@ -92,7 +91,7 @@ func makeUpdateInput(entity *meta.EntityMeta) *graphql.InputObject {
 	)
 }
 
-func makeMutationResponseType(entity *meta.EntityMeta) *graphql.Output {
+func makeMutationResponseType(entity *model.Entity) *graphql.Output {
 	var returnValue graphql.Output
 
 	returnValue = graphql.NewObject(

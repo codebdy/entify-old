@@ -189,7 +189,7 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
-func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{}) {
+func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(keys), insertValueSymbols(keys))
 
@@ -197,7 +197,7 @@ func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *met
 
 	return sql, values
 }
-func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{}) {
+func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf(
 		"UPDATE `%s` SET %s WHERE ID = %s",
@@ -231,7 +231,7 @@ func insertValueSymbols(fields []string) string {
 	return strings.Join(array, ",")
 }
 
-func makeValues(keys []string, object map[string]interface{}, entity *meta.EntityMeta) []interface{} {
+func makeValues(keys []string, object map[string]interface{}, entity *model.Entity) []interface{} {
 	objValues := make([]interface{}, 0, len(keys))
 	for _, key := range keys {
 		value := object[key]

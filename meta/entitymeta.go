@@ -12,14 +12,6 @@ const (
 	//ENTITY_UNION string = "Union"
 )
 
-type EntityRelation struct {
-	Name        string
-	Relation    *RelationMeta
-	OfEntity    *EntityMeta
-	TypeEntity  *EntityMeta
-	Description string
-}
-
 type EntityMeta struct {
 	Uuid        string       `json:"uuid"`
 	Name        string       `json:"name"`
@@ -56,23 +48,4 @@ func (entity *EntityMeta) GetTableName() string {
 		return (*entity).TableName
 	}
 	return utils.SnakeString((*entity).Name)
-}
-
-func (e *EntityMeta) HasTable() bool {
-	return e.EntityType == ENTITY_NORMAL || e.EntityType == "" || e.EntityType == ENTITY_INTERFACE
-}
-
-func (r *EntityRelation) IsArray() bool {
-	if r.Relation.RelationType == ONE_TO_MANY {
-		if r.OfEntity.Uuid == r.Relation.SourceId {
-			return true
-		}
-	} else if r.Relation.RelationType == MANY_TO_ONE {
-		if r.OfEntity.Uuid == r.Relation.TargetId {
-			return true
-		}
-	} else if r.Relation.RelationType == MANY_TO_MANY {
-		return true
-	}
-	return false
 }

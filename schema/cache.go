@@ -26,10 +26,9 @@ type TypeCache struct {
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
-	enums, interfaces, normals := meta.Metas.SplitEntities()
-	c.makeEnums(enums)
-	c.makeOutputInterfaces(interfaces)
-	c.makeOutputObjects(normals)
+	c.makeEnums(model.TheModel.Enums)
+	c.makeOutputInterfaces(model.TheModel.Interfaces)
+	c.makeOutputObjects(model.TheModel.Entities)
 	c.makeRelations()
 	c.makeArgs()
 	c.makeInputs()
@@ -69,7 +68,7 @@ func (c *TypeCache) MutationResponse(entity *model.Entity) *graphql.Output {
 	return c.MutationResponseMap[entity.Name]
 }
 
-func (c *TypeCache) mapInterfaces(entities []*model.Entity) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*model.Interface) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])

@@ -19,8 +19,8 @@ type SQLBuilder interface {
 	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
 	ColumnTypeSQL(column *meta.ColumnMeta) string
 
-	BuildInsertSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{})
-	BuildUpdateSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{})
+	BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
+	BuildUpdateSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
 }
 
 func GetSQLBuilder() SQLBuilder {
