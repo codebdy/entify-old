@@ -21,16 +21,16 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	if nextMeta == nil {
 		panic("Can not find unpublished meta")
 	}
-	publishedContent := repository.DecodeContent(publishedMeta)
-	nextContent := repository.DecodeContent(nextMeta)
-	nextContent.Validate()
-	diff := model.CreateDiff(model.NewModel(publishedContent), model.NewModel(nextContent))
+	publishedModel := model.NewModel(repository.DecodeContent(publishedMeta))
+	nextModel := model.NewModel(repository.DecodeContent(nextMeta))
+	nextModel.Validate()
+	diff := model.CreateDiff(publishedModel, nextModel)
 	repository.ExcuteDiff(diff)
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
 	repository.SaveOne(metaObj, &meta.MetaEntity)
-	repository.LoadMetas()
+	repository.LoadModel()
 	return nil, nil
 }
 

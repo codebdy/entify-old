@@ -4,6 +4,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -37,10 +38,10 @@ func QueryNextMeta() interface{} {
 	return nextMeta
 }
 
-func GetEntityByUuid(uuid string) *meta.EntityMeta {
-	for _, entity := range meta.Metas.Entities {
+func GetEntityByUuid(uuid string) *model.Entity {
+	for _, entity := range model.TheModel.Entities {
 		if entity.Uuid == uuid {
-			return &entity
+			return entity
 		}
 	}
 
@@ -58,16 +59,16 @@ func DecodeContent(obj interface{}) *meta.MetaContent {
 	return &content
 }
 
-func LoadMetas() {
+func LoadModel() {
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
 
 	publishedContent.Entities = append(publishedContent.Entities, meta.MetaStatusEnum)
 	publishedContent.Entities = append(publishedContent.Entities, meta.MetaEntity)
 
-	meta.Metas = publishedContent
+	model.TheModel = model.NewModel(publishedContent)
 }
 
 func init() {
-	LoadMetas()
+	LoadModel()
 }

@@ -14,6 +14,15 @@ type Model struct {
 	Tables     []*Table
 }
 
+func (m *Model) Validate() {
+	//检查空实体（除ID外没有属性跟关联）
+	for _, entity := range m.Entities {
+		if len(entity.AllColumns) < 1 && len(entity.Associations) < 1 {
+			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
+		}
+	}
+}
+
 func NewModel(c *meta.MetaContent) *Model {
 	enums, interfaces, entities := c.SplitEntities()
 	inherits, relations := c.SplitRelations()
@@ -208,3 +217,5 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	}
 	return nil
 }
+
+var Metas *Model
