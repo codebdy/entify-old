@@ -19,7 +19,7 @@ func clearTransaction(tx *sql.Tx) {
 	}
 }
 
-func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+func InsertOne(object map[string]interface{}, entity *meta.EntityMeta) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -58,7 +58,7 @@ func InsertOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	return savedObject, nil
 }
 
-func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+func UpdateOne(object map[string]interface{}, entity *meta.EntityMeta) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -92,7 +92,7 @@ func UpdateOne(object map[string]interface{}, entity *meta.Entity) (interface{},
 	return savedObject, nil
 }
 
-func SaveOne(object map[string]interface{}, entity *meta.Entity) (interface{}, error) {
+func SaveOne(object map[string]interface{}, entity *meta.EntityMeta) (interface{}, error) {
 	if object[consts.META_ID] == nil {
 		object[consts.META_ID] = utils.CreateId()
 		return InsertOne(object, entity)

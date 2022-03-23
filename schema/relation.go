@@ -14,7 +14,7 @@ func (c *TypeCache) makeRelations() {
 	}
 }
 
-func (c *TypeCache) makeRelationShip(relation *meta.Relation) {
+func (c *TypeCache) makeRelationShip(relation *meta.RelationMeta) {
 	sourceEntity := meta.Metas.GetEntityByUuid(relation.SourceId)
 	targetEntity := meta.Metas.GetEntityByUuid(relation.TargetId)
 	if sourceEntity == nil {

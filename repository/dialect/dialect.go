@@ -12,12 +12,12 @@ type SQLBuilder interface {
 
 	BuildCreateTableSQL(table *meta.Table) string
 	BuildDeleteTableSQL(table *meta.Table) string
-	BuildColumnSQL(column *meta.Column) string
+	BuildColumnSQL(column *meta.ColumnMeta) string
 	BuildModifyTableAtoms(diff *meta.TableDiff) []meta.ModifyAtom
-	ColumnTypeSQL(column *meta.Column) string
+	ColumnTypeSQL(column *meta.ColumnMeta) string
 
-	BuildInsertSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{})
-	BuildUpdateSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{})
+	BuildInsertSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{})
+	BuildUpdateSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{})
 }
 
 func GetSQLBuilder() SQLBuilder {

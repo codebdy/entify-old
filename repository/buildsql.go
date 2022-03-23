@@ -9,7 +9,7 @@ import (
 	"rxdrag.com/entity-engine/repository/dialect"
 )
 
-func BuildQuerySQL(entity *meta.Entity, args map[string]interface{}) (string, []interface{}) {
+func BuildQuerySQL(entity *meta.EntityMeta, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	names := entity.ColumnNames()
 	sqlBuilder := dialect.GetSQLBuilder()

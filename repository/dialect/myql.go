@@ -54,7 +54,7 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
+func (b *MySQLBuilder) ColumnTypeSQL(column *meta.ColumnMeta) string {
 	typeStr := "text"
 	switch column.Type {
 	case meta.COLUMN_ID:
@@ -130,7 +130,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.Column) string {
 	return typeStr
 }
 
-func (b *MySQLBuilder) BuildColumnSQL(column *meta.Column) string {
+func (b *MySQLBuilder) BuildColumnSQL(column *meta.ColumnMeta) string {
 	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
 	if column.Generated {
 		sql = sql + " AUTO_INCREMENT"
@@ -188,7 +188,7 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *meta.TableDiff) []meta.Modify
 	return atoms
 }
 
-func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
+func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(keys), insertValueSymbols(keys))
 
@@ -196,7 +196,7 @@ func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *met
 
 	return sql, values
 }
-func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *meta.Entity) (string, []interface{}) {
+func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *meta.EntityMeta) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf(
 		"UPDATE `%s` SET %s WHERE ID = %s",
@@ -230,7 +230,7 @@ func insertValueSymbols(fields []string) string {
 	return strings.Join(array, ",")
 }
 
-func makeValues(keys []string, object map[string]interface{}, entity *meta.Entity) []interface{} {
+func makeValues(keys []string, object map[string]interface{}, entity *meta.EntityMeta) []interface{} {
 	objValues := make([]interface{}, 0, len(keys))
 	for _, key := range keys {
 		value := object[key]

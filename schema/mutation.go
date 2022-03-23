@@ -59,7 +59,7 @@ func rootMutation() *graphql.Object {
 	return graphql.NewObject(rootMutation)
 }
 
-func appendToMutationFields(entity *meta.Entity, feilds *graphql.Fields) {
+func appendToMutationFields(entity *meta.EntityMeta, feilds *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return

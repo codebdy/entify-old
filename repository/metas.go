@@ -37,7 +37,7 @@ func QueryNextMeta() interface{} {
 	return nextMeta
 }
 
-func GetEntityByUuid(uuid string) *meta.Entity {
+func GetEntityByUuid(uuid string) *meta.EntityMeta {
 	for _, entity := range meta.Metas.Entities {
 		if entity.Uuid == uuid {
 			return &entity

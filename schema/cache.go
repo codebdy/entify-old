@@ -34,7 +34,7 @@ func (c *TypeCache) MakeCache() {
 	c.makeInputs()
 }
 
-func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
+func (c *TypeCache) OutputType(entity *meta.EntityMeta) graphql.Type {
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return c.EnumTypeMap[entity.Name]
 	} else if entity.EntityType == meta.ENTITY_INTERFACE {
@@ -44,31 +44,31 @@ func (c *TypeCache) OutputType(entity *meta.Entity) graphql.Type {
 	}
 }
 
-func (c *TypeCache) WhereExp(entity *meta.Entity) *graphql.InputObject {
+func (c *TypeCache) WhereExp(entity *meta.EntityMeta) *graphql.InputObject {
 	return c.WhereExpMap[entity.Name]
 }
 
-func (c *TypeCache) OrderByExp(entity *meta.Entity) *graphql.InputObject {
+func (c *TypeCache) OrderByExp(entity *meta.EntityMeta) *graphql.InputObject {
 	return c.OrderByMap[entity.Name]
 }
 
-func (c *TypeCache) DistinctOnEnum(entity *meta.Entity) *graphql.Enum {
+func (c *TypeCache) DistinctOnEnum(entity *meta.EntityMeta) *graphql.Enum {
 	return c.DistinctOnEnumMap[entity.Name]
 }
 
-func (c *TypeCache) SaveInput(entity *meta.Entity) *graphql.InputObject {
+func (c *TypeCache) SaveInput(entity *meta.EntityMeta) *graphql.InputObject {
 	return c.SaveInputMap[entity.Name]
 }
 
-func (c *TypeCache) UpdateInput(entity *meta.Entity) *graphql.InputObject {
+func (c *TypeCache) UpdateInput(entity *meta.EntityMeta) *graphql.InputObject {
 	return c.UpdateInputMap[entity.Name]
 }
 
-func (c *TypeCache) MutationResponse(entity *meta.Entity) *graphql.Output {
+func (c *TypeCache) MutationResponse(entity *meta.EntityMeta) *graphql.Output {
 	return c.MutationResponseMap[entity.Name]
 }
 
-func (c *TypeCache) mapInterfaces(entities []*meta.Entity) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*meta.EntityMeta) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])

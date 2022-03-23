@@ -38,7 +38,7 @@ func (c *TypeCache) makeRelaionWhereExp() {
 	}
 }
 
-func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
+func makeWhereExp(entity *meta.EntityMeta) *graphql.InputObject {
 	expName := entity.Name + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
@@ -81,7 +81,7 @@ func makeWhereExp(entity *meta.Entity) *graphql.InputObject {
 	return boolExp
 }
 
-func makeOrderBy(entity *meta.Entity) *graphql.InputObject {
+func makeOrderBy(entity *meta.EntityMeta) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
@@ -102,7 +102,7 @@ func makeOrderBy(entity *meta.Entity) *graphql.InputObject {
 	return orderByExp
 }
 
-func makeDistinctOnEnum(entity *meta.Entity) *graphql.Enum {
+func makeDistinctOnEnum(entity *meta.EntityMeta) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	columns := meta.Metas.EntityAllColumns(entity)
 	for i := range columns {

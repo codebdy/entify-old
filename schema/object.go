@@ -5,14 +5,14 @@ import (
 	"rxdrag.com/entity-engine/meta"
 )
 
-func (c *TypeCache) makeOutputObjects(normals []*meta.Entity) {
+func (c *TypeCache) makeOutputObjects(normals []*meta.EntityMeta) {
 	for i := range normals {
 		entity := normals[i]
 		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
 	}
 }
 
-func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
+func (c *TypeCache) ObjectType(entity *meta.EntityMeta) *graphql.Object {
 	name := entity.Name
 	parents := meta.Metas.Interfaces(entity)
 	interfaces := c.mapInterfaces(parents)
@@ -37,7 +37,7 @@ func (c *TypeCache) ObjectType(entity *meta.Entity) *graphql.Object {
 
 }
 
-func outputFields(entity *meta.Entity) graphql.Fields {
+func outputFields(entity *meta.EntityMeta) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		fields[column.Name] = &graphql.Field{

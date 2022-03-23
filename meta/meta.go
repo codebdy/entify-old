@@ -11,7 +11,7 @@ const (
 	META_STATUS_ENUM_UUID string = "META_STATUS_ENUM_UUID"
 )
 
-var MetaStatusEnum = Entity{
+var MetaStatusEnum = EntityMeta{
 	Uuid:       META_STATUS_ENUM_UUID,
 	Name:       "MetaStatus",
 	EntityType: ENTITY_ENUM,
@@ -31,12 +31,12 @@ var MetaStatusEnum = Entity{
 	},
 }
 
-var MetaEntity = Entity{
+var MetaEntity = EntityMeta{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       consts.META_ENTITY_NAME,
 	TableName:  "meta",
 	EntityType: ENTITY_NORMAL,
-	Columns: []Column{
+	Columns: []ColumnMeta{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
 			Type: COLUMN_ID,

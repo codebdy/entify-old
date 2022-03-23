@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/repository"
 )
 
-func PostOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
+func PostOneResolveFn(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
 		return repository.SaveOne(object, entity)

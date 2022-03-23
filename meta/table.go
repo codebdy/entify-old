@@ -3,7 +3,7 @@ package meta
 type Table struct {
 	MetaUuid string
 	Name     string
-	Columns  []Column
+	Columns  []ColumnMeta
 }
 
 type TableDelete struct {

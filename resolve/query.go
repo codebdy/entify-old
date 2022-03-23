@@ -9,13 +9,13 @@ import (
 	"rxdrag.com/entity-engine/repository"
 )
 
-func QueryOneResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
+func QueryOneResolveFn(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		return repository.QueryOne(entity, p.Args)
 	}
 }
 
-func QueryResolveFn(entity *meta.Entity) graphql.FieldResolveFn {
+func QueryResolveFn(entity *meta.EntityMeta) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		// names := entity.ColumnNames()
 		// queryStr := "select %s from %s "

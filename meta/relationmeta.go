@@ -13,7 +13,7 @@ const (
 	ON_TARGET string = "onTarget"
 )
 
-type Relation struct {
+type RelationMeta struct {
 	Uuid                string `json:"uuid"`
 	RelationType        string `json:"relationType"`
 	SourceId            string `json:"sourceId"`
@@ -25,13 +25,13 @@ type Relation struct {
 	CascadeType         string `json:"cascadeType"`
 	OwnerId             string `json:"ownerId"`
 	//多对多关联自定义列
-	Columns []Column `json:"columns"`
+	Columns []ColumnMeta `json:"columns"`
 }
 
-func (r *Relation) RelationSourceColumnName() string {
+func (r *RelationMeta) RelationSourceColumnName() string {
 	return r.RoleOnSource + consts.ID_SUFFIX
 }
 
-func (r *Relation) RelationTargetColumnName() string {
+func (r *RelationMeta) RelationTargetColumnName() string {
 	return r.RoleOnTarget + consts.ID_SUFFIX
 }

@@ -6,15 +6,15 @@ type ModifyAtom struct {
 }
 
 type ColumnDiff struct {
-	OldColumn Column
-	NewColumn Column
+	OldColumn ColumnMeta
+	NewColumn ColumnMeta
 }
 
 type TableDiff struct {
 	OldTable      *Table
 	NewTable      *Table
-	DeleteColumns []Column
-	AddColumns    []Column
+	DeleteColumns []ColumnMeta
+	AddColumns    []ColumnMeta
 	ModifyColumns []ColumnDiff //删除列索引，并重建
 }
 
@@ -27,7 +27,7 @@ type Diff struct {
 	ModifiedTables []*TableDiff
 }
 
-func findColumn(uuid string, columns []Column) *Column {
+func findColumn(uuid string, columns []ColumnMeta) *ColumnMeta {
 	for _, column := range columns {
 		if column.Uuid == uuid {
 			return &column
@@ -37,7 +37,7 @@ func findColumn(uuid string, columns []Column) *Column {
 	return nil
 }
 
-func columnDifferent(oldColumn, newColumn *Column) *ColumnDiff {
+func columnDifferent(oldColumn, newColumn *ColumnMeta) *ColumnDiff {
 	diff := ColumnDiff{
 		OldColumn: *oldColumn,
 		NewColumn: *newColumn,

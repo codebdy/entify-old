@@ -74,7 +74,7 @@ func RootSubscription() *graphql.Object {
 
 }
 
-func appendToSubscriptionFields(entity *meta.Entity, fields *graphql.Fields) {
+func appendToSubscriptionFields(entity *meta.EntityMeta, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
@@ -96,7 +96,7 @@ func appendToSubscriptionFields(entity *meta.Entity, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type: *AggregateType(entity, []*meta.Entity{}),
+		Type: *AggregateType(entity, []*meta.EntityMeta{}),
 		Args: quryeArgs(entity),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil

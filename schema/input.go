@@ -59,7 +59,7 @@ func (c *TypeCache) makeInputRelations() {
 	}
 }
 
-func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
+func inputFields(entity *meta.EntityMeta, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range meta.Metas.EntityAllColumns(entity) {
 		if column.Name != "id" || isPost {
@@ -72,7 +72,7 @@ func inputFields(entity *meta.Entity, isPost bool) graphql.InputObjectConfigFiel
 	return fields
 }
 
-func makeSaveInput(entity *meta.Entity) *graphql.InputObject {
+func makeSaveInput(entity *meta.EntityMeta) *graphql.InputObject {
 	name := entity.Name + consts.INPUT
 
 	return graphql.NewInputObject(
@@ -83,7 +83,7 @@ func makeSaveInput(entity *meta.Entity) *graphql.InputObject {
 	)
 }
 
-func makeUpdateInput(entity *meta.Entity) *graphql.InputObject {
+func makeUpdateInput(entity *meta.EntityMeta) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name + consts.UPDATE_INPUT,
@@ -92,7 +92,7 @@ func makeUpdateInput(entity *meta.Entity) *graphql.InputObject {
 	)
 }
 
-func makeMutationResponseType(entity *meta.Entity) *graphql.Output {
+func makeMutationResponseType(entity *meta.EntityMeta) *graphql.Output {
 	var returnValue graphql.Output
 
 	returnValue = graphql.NewObject(

@@ -20,7 +20,7 @@ func rootQuery() *graphql.Object {
 	return graphql.NewObject(rootQueryConfig)
 }
 
-func queryResponseType(entity *meta.Entity) graphql.Output {
+func queryResponseType(entity *meta.EntityMeta) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
 			OfType: Cache.OutputType(entity),
@@ -28,7 +28,7 @@ func queryResponseType(entity *meta.Entity) graphql.Output {
 	}
 }
 
-func quryeArgs(entity *meta.Entity) graphql.FieldConfigArgument {
+func quryeArgs(entity *meta.EntityMeta) graphql.FieldConfigArgument {
 	return graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(entity),
@@ -48,7 +48,7 @@ func quryeArgs(entity *meta.Entity) graphql.FieldConfigArgument {
 	}
 }
 
-func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
+func appendToQueryFields(entity *meta.EntityMeta, fields *graphql.Fields) {
 	//如果是枚举
 	if entity.EntityType == meta.ENTITY_ENUM {
 		return
@@ -66,7 +66,7 @@ func appendToQueryFields(entity *meta.Entity, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(entity, []*meta.Entity{}),
+		Type:    *AggregateType(entity, []*meta.EntityMeta{}),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}

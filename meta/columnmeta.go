@@ -13,7 +13,7 @@ const (
 	COLUMN_ENUM         string = "Enum"
 )
 
-type Column struct {
+type ColumnMeta struct {
 	Uuid        string `json:"uuid"`
 	Type        string `json:"type"`
 	Name        string `json:"name"`
@@ -34,7 +34,7 @@ type Column struct {
 	Description string `json:"description"`
 }
 
-func FindColumnByName(name string, columns []Column) *Column {
+func FindColumnByName(name string, columns []ColumnMeta) *ColumnMeta {
 	for i := range columns {
 		if columns[i].Name == name {
 			return &columns[i]

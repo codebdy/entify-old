@@ -4,14 +4,15 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type MetaContent struct {
-	Entities  []Entity      `json:"entities"`
-	Relations []Relation    `json:"relations"`
-	Diagrams  []interface{} `json:"diagrams"`
-	X6Nodes   []interface{} `json:"x6Nodes"`
-	X6Edges   []interface{} `json:"x6Edges"`
+	Entities  []EntityMeta   `json:"entities"`
+	Relations []RelationMeta `json:"relations"`
+	Diagrams  []interface{}  `json:"diagrams"`
+	X6Nodes   []interface{}  `json:"x6Nodes"`
+	X6Edges   []interface{}  `json:"x6Edges"`
 }
 
 func (c *MetaContent) Validate() {
@@ -21,8 +22,6 @@ func (c *MetaContent) Validate() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name))
 		}
 	}
-
-	//检查继承闭环
 }
 
 func FindTable(metaUuid string, tables []*Table) *Table {
@@ -34,8 +33,8 @@ func FindTable(metaUuid string, tables []*Table) *Table {
 	return nil
 }
 
-func (c *MetaContent) filterEntity(equal func(entity *Entity) bool) []*Entity {
-	entities := []*Entity{}
+func (c *MetaContent) filterEntity(equal func(entity *EntityMeta) bool) []*EntityMeta {
+	entities := []*EntityMeta{}
 	for i := range c.Entities {
 		entity := &c.Entities[i]
 		if equal(entity) {
@@ -45,7 +44,7 @@ func (c *MetaContent) filterEntity(equal func(entity *Entity) bool) []*Entity {
 	return entities
 }
 
-func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
+func (c *MetaContent) GetEntityByUuid(uuid string) *EntityMeta {
 	for i := range c.Entities {
 		entity := &c.Entities[i]
 		if entity.Uuid == uuid {
@@ -55,7 +54,7 @@ func (c *MetaContent) GetEntityByUuid(uuid string) *Entity {
 	return nil
 }
 
-func (c *MetaContent) GetEntityByName(expName string) *Entity {
+func (c *MetaContent) GetEntityByName(expName string) *EntityMeta {
 	for i := range c.Entities {
 		entity := &c.Entities[i]
 		if entity.Name == expName {
@@ -69,96 +68,35 @@ func (c *MetaContent) Tables() []*Table {
 	tables := c.entityTables()
 	for i := range c.Relations {
 		relation := c.Relations[i]
-		if relation.RelationType == MANY_TO_MANY {
+		if relation.RelationType != IMPLEMENTS {
 			relationTable := c.relationTable(&relation)
 			tables = append(tables, relationTable)
-		} else if relation.RelationType == ONE_TO_ONE {
-			ownerId := relation.OwnerId
-			if ownerId == "" {
-				ownerId = relation.SourceId
-			}
-
-			ownerTable := FindTable(ownerId, tables)
-			if ownerTable == nil {
-				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
-			}
-
-			column := Column{
-				Type:  COLUMN_ID,
-				Index: true,
-			}
-			if ownerId == relation.SourceId {
-				column.Name = relation.RelationSourceColumnName()
-			} else {
-				column.Name = relation.RelationTargetColumnName()
-			}
-			ownerTable.Columns = append(ownerTable.Columns, column)
-
-		} else if relation.RelationType == ONE_TO_MANY {
-			ownerId := relation.TargetId
-			ownerTable := FindTable(ownerId, tables)
-			if ownerTable == nil {
-				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
-			}
-
-			column := Column{
-				Type:  COLUMN_ID,
-				Name:  relation.RelationTargetColumnName(),
-				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
-				Index: true,
-			}
-			ownerTable.Columns = append(ownerTable.Columns, column)
-
-		} else if relation.RelationType == MANY_TO_ONE {
-			ownerId := relation.SourceId
-			ownerTable := FindTable(ownerId, tables)
-			if ownerTable == nil {
-				panic("Can not find relation owner table, relation:" + relation.RoleOnSource + "-" + relation.RoleOnTarget)
-			}
-
-			column := Column{
-				Type:  COLUMN_ID,
-				Name:  relation.RelationSourceColumnName(),
-				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
-				Index: true,
-			}
-			ownerTable.Columns = append(ownerTable.Columns, column)
-		} else if relation.RelationType == IMPLEMENTS {
-			sourceTable := FindTable(relation.SourceId, tables)
-			targetTable := FindTable(relation.TargetId, tables)
-			if sourceTable == nil {
-				panic("Can not find parent table, relation:" + relation.Uuid)
-			}
-
-			column := Column{
-				Type:  COLUMN_ID,
-				Name:  targetTable.Name + "_" + consts.ID,
-				Index: true,
-				Uuid:  relation.Uuid,
-			}
-			sourceTable.Columns = append(sourceTable.Columns, column)
 		}
 	}
 	return tables
 }
 
-func (c *MetaContent) RelationTableName(relation *Relation) string {
-	return c.RelationSouceTableName(relation) + "_" + c.RelationTargetTableName(relation) + consts.SUFFIX_PIVOT
+func (c *MetaContent) RelationTableName(relation *RelationMeta) string {
+	return c.RelationSouceTableName(relation) +
+		"_" + utils.SnakeString(relation.RoleOnSource) +
+		"_" + c.RelationTargetTableName(relation) +
+		"_" + utils.SnakeString(relation.RoleOnTarget) +
+		consts.SUFFIX_PIVOT
 }
 
-func (c *MetaContent) RelationSouceTableName(relation *Relation) string {
+func (c *MetaContent) RelationSouceTableName(relation *RelationMeta) string {
 	sourceEntity := c.GetEntityByUuid(relation.SourceId)
 	return sourceEntity.GetTableName()
 }
 
-func (c *MetaContent) RelationTargetTableName(relation *Relation) string {
+func (c *MetaContent) RelationTargetTableName(relation *RelationMeta) string {
 	targetEntity := c.GetEntityByUuid(relation.TargetId)
 	return targetEntity.GetTableName()
 }
 
 func (c *MetaContent) entityTables() []*Table {
 
-	normalEntities := c.filterEntity(func(e *Entity) bool {
+	normalEntities := c.filterEntity(func(e *EntityMeta) bool {
 		return e.HasTable()
 	})
 
@@ -174,11 +112,11 @@ func (c *MetaContent) entityTables() []*Table {
 	return tables
 }
 
-func (c *MetaContent) relationTable(relation *Relation) *Table {
+func (c *MetaContent) relationTable(relation *RelationMeta) *Table {
 	table := &Table{
 		MetaUuid: relation.Uuid,
 		Name:     c.RelationTableName(relation),
-		Columns: []Column{
+		Columns: []ColumnMeta{
 			{
 				Name:  relation.RelationSourceColumnName(),
 				Type:  COLUMN_ID,
@@ -198,8 +136,8 @@ func (c *MetaContent) relationTable(relation *Relation) *Table {
 	return table
 }
 
-func (c *MetaContent) Interfaces(entity *Entity) []*Entity {
-	interfaces := []*Entity{}
+func (c *MetaContent) Interfaces(entity *EntityMeta) []*EntityMeta {
+	interfaces := []*EntityMeta{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
 		if relation.RelationType == IMPLEMENTS {
@@ -215,15 +153,15 @@ func (c *MetaContent) Interfaces(entity *Entity) []*Entity {
 	return interfaces
 }
 
-func (c *MetaContent) Children(entity *Entity) []*Entity {
-	children := []*Entity{}
+func (c *MetaContent) Children(entity *EntityMeta) []*EntityMeta {
+	children := []*EntityMeta{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
 		if relation.RelationType == IMPLEMENTS {
 			if relation.TargetId == entity.Uuid {
 				child := c.GetEntityByUuid(relation.SourceId)
 				if child == nil {
-					panic("Cant find child:" + relation.SourceId)
+					panic("Can't find child:" + relation.SourceId)
 				}
 				children = append(children, child)
 			}
@@ -232,12 +170,12 @@ func (c *MetaContent) Children(entity *Entity) []*Entity {
 	return children
 }
 
-func (c *MetaContent) HasChildren(entity *Entity) bool {
+func (c *MetaContent) HasChildren(entity *EntityMeta) bool {
 	children := c.Children(entity)
 	return len(children) > 0
 }
 
-func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
+func (c *MetaContent) EntityRelations(entity *EntityMeta) []EntityRelation {
 	relations := []EntityRelation{}
 	for i := range c.Relations {
 		relation := &c.Relations[i]
@@ -265,7 +203,7 @@ func (c *MetaContent) EntityRelations(entity *Entity) []EntityRelation {
 	return relations
 }
 
-func (c *MetaContent) EntityInheritedRelations(entity *Entity) []EntityRelation {
+func (c *MetaContent) EntityInheritedRelations(entity *EntityMeta) []EntityRelation {
 	relations := []EntityRelation{}
 	parents := c.Interfaces(entity)
 	for _, parent := range parents {
@@ -274,7 +212,7 @@ func (c *MetaContent) EntityInheritedRelations(entity *Entity) []EntityRelation 
 	return relations
 }
 
-func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
+func (c *MetaContent) EntityAllRelations(entity *EntityMeta) []EntityRelation {
 	var inheritedRelations []EntityRelation
 	var allInheritedRelations = c.EntityInheritedRelations(entity)
 	entityRelations := c.EntityRelations(entity)
@@ -287,8 +225,8 @@ func (c *MetaContent) EntityAllRelations(entity *Entity) []EntityRelation {
 	return append(entityRelations, inheritedRelations...)
 }
 
-func (c *MetaContent) EntityInheritedColumns(entity *Entity) []Column {
-	columns := []Column{}
+func (c *MetaContent) EntityInheritedColumns(entity *EntityMeta) []ColumnMeta {
+	columns := []ColumnMeta{}
 	parents := c.Interfaces(entity)
 	for _, parent := range parents {
 		columns = append(columns, parent.Columns...)
@@ -297,8 +235,8 @@ func (c *MetaContent) EntityInheritedColumns(entity *Entity) []Column {
 	return columns
 }
 
-func (c *MetaContent) EntityAllColumns(entity *Entity) []Column {
-	var inheritedColumns []Column
+func (c *MetaContent) EntityAllColumns(entity *EntityMeta) []ColumnMeta {
+	var inheritedColumns []ColumnMeta
 	var allInheritedColumns = c.EntityInheritedColumns(entity)
 	for i := range allInheritedColumns {
 		column := allInheritedColumns[i]
@@ -312,10 +250,10 @@ func (c *MetaContent) EntityAllColumns(entity *Entity) []Column {
 /**
 * 把实体类分类
  */
-func (c *MetaContent) SplitEntities() ([]*Entity, []*Entity, []*Entity) {
-	var enumEntities []*Entity
-	var interfaceEntities []*Entity
-	var normalEntities []*Entity
+func (c *MetaContent) SplitEntities() ([]*EntityMeta, []*EntityMeta, []*EntityMeta) {
+	var enumEntities []*EntityMeta
+	var interfaceEntities []*EntityMeta
+	var normalEntities []*EntityMeta
 	for i := range c.Entities {
 		entity := &c.Entities[i]
 		if entity.EntityType == ENTITY_ENUM {

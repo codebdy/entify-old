@@ -12,7 +12,7 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func makeValues(entity *meta.Entity) []interface{} {
+func makeValues(entity *meta.EntityMeta) []interface{} {
 	names := entity.ColumnNames()
 	values := make([]interface{}, len(names))
 	for i, columnName := range names {
@@ -49,7 +49,7 @@ func makeValues(entity *meta.Entity) []interface{} {
 	return values
 }
 
-func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string]interface{} {
+func convertValuesToObject(values []interface{}, entity *meta.EntityMeta) map[string]interface{} {
 	object := make(map[string]interface{})
 	names := entity.ColumnNames()
 	for i, value := range values {
@@ -100,7 +100,7 @@ func convertValuesToObject(values []interface{}, entity *meta.Entity) map[string
 	return object
 }
 
-func Query(entity *meta.Entity, args map[string]interface{}) ([]interface{}, error) {
+func Query(entity *meta.EntityMeta, args map[string]interface{}) ([]interface{}, error) {
 	queryStr, params := BuildQuerySQL(entity, args)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
@@ -132,7 +132,7 @@ func Query(entity *meta.Entity, args map[string]interface{}) ([]interface{}, err
 	return instances, nil
 }
 
-func QueryOne(entity *meta.Entity, args map[string]interface{}) (interface{}, error) {
+func QueryOne(entity *meta.EntityMeta, args map[string]interface{}) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -157,7 +157,7 @@ func QueryOne(entity *meta.Entity, args map[string]interface{}) (interface{}, er
 	return convertValuesToObject(values, entity), nil
 }
 
-func QueryOneById(entity *meta.Entity, id interface{}) (interface{}, error) {
+func QueryOneById(entity *meta.EntityMeta, id interface{}) (interface{}, error) {
 	return QueryOne(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{

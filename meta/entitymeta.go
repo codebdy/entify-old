@@ -14,25 +14,25 @@ const (
 
 type EntityRelation struct {
 	Name        string
-	Relation    *Relation
-	OfEntity    *Entity
-	TypeEntity  *Entity
+	Relation    *RelationMeta
+	OfEntity    *EntityMeta
+	TypeEntity  *EntityMeta
 	Description string
 }
 
-type Entity struct {
-	Uuid        string     `json:"uuid"`
-	Name        string     `json:"name"`
-	TableName   string     `json:"tableName"`
-	EntityType  string     `json:"entityType"`
-	Columns     []Column   `json:"columns"`
-	Eventable   bool       `json:"eventable"`
-	Description string     `json:"description"`
-	EnumValues  utils.JSON `json:"enumValues"`
-	SoftDelete  bool       `json:"softDelete"`
+type EntityMeta struct {
+	Uuid        string       `json:"uuid"`
+	Name        string       `json:"name"`
+	TableName   string       `json:"tableName"`
+	EntityType  string       `json:"entityType"`
+	Columns     []ColumnMeta `json:"columns"`
+	Eventable   bool         `json:"eventable"`
+	Description string       `json:"description"`
+	EnumValues  utils.JSON   `json:"enumValues"`
+	SoftDelete  bool         `json:"softDelete"`
 }
 
-func (entity *Entity) ColumnNames() []string {
+func (entity *EntityMeta) ColumnNames() []string {
 	names := make([]string, len(entity.Columns))
 
 	for i, column := range entity.Columns {
@@ -41,7 +41,7 @@ func (entity *Entity) ColumnNames() []string {
 	return names
 }
 
-func (entity *Entity) GetColumn(name string) *Column {
+func (entity *EntityMeta) GetColumn(name string) *ColumnMeta {
 	for _, column := range entity.Columns {
 		if column.Name == name {
 			return &column
@@ -51,14 +51,14 @@ func (entity *Entity) GetColumn(name string) *Column {
 	return nil
 }
 
-func (entity *Entity) GetTableName() string {
+func (entity *EntityMeta) GetTableName() string {
 	if (*entity).TableName != "" {
 		return (*entity).TableName
 	}
 	return utils.SnakeString((*entity).Name)
 }
 
-func (e *Entity) HasTable() bool {
+func (e *EntityMeta) HasTable() bool {
 	return e.EntityType == ENTITY_NORMAL || e.EntityType == "" || e.EntityType == ENTITY_INTERFACE
 }
 

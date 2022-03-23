@@ -81,14 +81,14 @@ func TestModifyEntityName(t *testing.T) {
 func TestModifiedTableName(t *testing.T) {
 	diff := CreateDiff(
 		&MetaContent{
-			Entities: []Entity{
+			Entities: []EntityMeta{
 				{
 					Name: "OldName",
 				},
 			},
 		},
 		&MetaContent{
-			Entities: []Entity{
+			Entities: []EntityMeta{
 				{
 					Name: "NewName",
 				},
@@ -112,12 +112,12 @@ func TestModifiedTableName(t *testing.T) {
 
 func TestColumnDifferent(t *testing.T) {
 	diff := columnDifferent(
-		&Column{
+		&ColumnMeta{
 			Name: "newColumn1",
 			Uuid: "column1",
 			Type: COLUMN_STRING,
 		},
-		&Column{
+		&ColumnMeta{
 			Name: "nickname",
 			Uuid: "column1",
 			Type: COLUMN_STRING},
@@ -142,7 +142,7 @@ func TestChangeTableColumnName(t *testing.T) {
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []Column{
+			Columns: []ColumnMeta{
 				{
 					Name: "newColumn1",
 					Uuid: "column1",
@@ -153,7 +153,7 @@ func TestChangeTableColumnName(t *testing.T) {
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []Column{
+			Columns: []ColumnMeta{
 				{
 					Name: "nickname",
 					Uuid: "column1",

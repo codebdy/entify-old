@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/scalars"
 )
 
-func ColumnType(column *meta.Column) graphql.Output {
+func ColumnType(column *meta.ColumnMeta) graphql.Output {
 	switch column.Type {
 	case meta.COLUMN_ID:
 		return graphql.ID
@@ -34,7 +34,7 @@ func ColumnType(column *meta.Column) graphql.Output {
 	panic("No column type:" + column.Type)
 }
 
-func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
+func ColumnExp(column *meta.ColumnMeta) *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case meta.COLUMN_INT:
 		return &IntComparisonExp
@@ -57,7 +57,7 @@ func ColumnExp(column *meta.Column) *graphql.InputObjectFieldConfig {
 	panic("No column type: " + column.Type)
 }
 
-func ColumnOrderBy(column *meta.Column) *graphql.Enum {
+func ColumnOrderBy(column *meta.ColumnMeta) *graphql.Enum {
 	switch column.Type {
 	case meta.COLUMN_SIMPLE_JSON:
 		return nil
