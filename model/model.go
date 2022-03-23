@@ -23,13 +23,14 @@ func NewModel(c *meta.MetaContent) *Model {
 		Interfaces: make([]*Interface, len(interfaces)),
 		Entities:   make([]*Entity, len(entities)),
 		Relations:  []*Relation{},
-		Tables:     entityTables(c),
+		Tables:     []*Table{},
 	}
 	model.buildEnums(enums)
 	model.buildInterfaces(interfaces)
 	model.buildEntities(entities)
 	model.buildInherits(inherits)
 	model.buildRelations(relations)
+	model.buildColumns()
 	model.buildTables()
 	return &model
 }
@@ -158,6 +159,12 @@ func (model *Model) decomposeRelation(src *Entity, tar *Entity, relation *meta.R
 	}
 }
 
+func (model *Model) buildColumns() {
+	for i := range model.Entities {
+		model.Entities[i].makeColumns()
+	}
+}
+
 func (model *Model) buildTables() {
 	for i := range model.Relations {
 		relation := model.Relations[i]
@@ -165,6 +172,10 @@ func (model *Model) buildTables() {
 			relationTable := relation.Table()
 			model.Tables = append(model.Tables, relationTable)
 		}
+	}
+
+	for i := range model.Entities {
+		model.Tables = append(model.Tables, model.Entities[i].Table())
 	}
 }
 

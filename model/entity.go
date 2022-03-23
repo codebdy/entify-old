@@ -1,6 +1,8 @@
 package model
 
-import "rxdrag.com/entity-engine/meta"
+import (
+	"rxdrag.com/entity-engine/meta"
+)
 
 type Association struct {
 	Name        string
@@ -18,24 +20,35 @@ type Enum struct {
 type Entity struct {
 	meta.EntityMeta
 	Associations map[string]*Association
+	AllColumns   []meta.ColumnMeta
 	Interfaces   []*Interface
 	model        *Model
 }
 
-func entityTables(c *meta.MetaContent) []*Table {
+func (entity *Entity) Table() *Table {
+	table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
+	table.Columns = append(table.Columns, entity.AllColumns...)
+	return table
+}
 
-	normalEntities := c.FilterEntity(func(e *meta.EntityMeta) bool {
-		return e.HasTable()
-	})
-
-	tables := make([]*Table, len(normalEntities))
-
-	for i := range normalEntities {
-		entity := normalEntities[i]
-		table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
-		table.Columns = append(table.Columns, entity.Columns...)
-		tables[i] = table
+func (entity *Entity) makeColumns() []meta.ColumnMeta {
+	columns := entity.Columns
+	for i := range entity.Interfaces {
+		intf := entity.Interfaces[i]
+		for _, column := range intf.Columns {
+			if !findColumnByName(column.Name, columns) {
+				columns = append(columns, column)
+			}
+		}
 	}
+	return columns
+}
 
-	return tables
+func findColumnByName(name string, columns []meta.ColumnMeta) bool {
+	for _, column := range columns {
+		if column.Name == name {
+			return true
+		}
+	}
+	return false
 }
