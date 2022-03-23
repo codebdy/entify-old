@@ -4,17 +4,18 @@ import (
 	"testing"
 
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 )
 
 func TestModifyTableName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&meta.TableDiff{
-			OldTable: &meta.Table{
+		&model.TableDiff{
+			OldTable: &model.Table{
 				Name: "User",
 			},
-			NewTable: &meta.Table{
+			NewTable: &model.Table{
 				Name: "User2",
 			},
 		},
@@ -36,16 +37,16 @@ func TestModifyTableName(t *testing.T) {
 func TestModifyColumnName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&meta.TableDiff{
-			OldTable: &meta.Table{
+		&model.TableDiff{
+			OldTable: &model.Table{
 				MetaUuid: "uuid1",
 				Name:     "User",
 			},
-			NewTable: &meta.Table{
+			NewTable: &model.Table{
 				MetaUuid: "uuid1",
 				Name:     "User",
 			},
-			ModifyColumns: []meta.ColumnDiff{
+			ModifyColumns: []model.ColumnDiff{
 				{
 					OldColumn: meta.ColumnMeta{
 						Name: "newColumn1",

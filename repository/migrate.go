@@ -6,11 +6,11 @@ import (
 	"log"
 
 	"rxdrag.com/entity-engine/config"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/repository/dialect"
 )
 
-func ExcuteDiff(d *meta.Diff) {
+func ExcuteDiff(d *model.Diff) {
 	var undoList []string
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
@@ -44,7 +44,7 @@ func ExcuteDiff(d *meta.Diff) {
 
 }
 
-func DeleteTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
+func DeleteTable(table *model.Table, undoList *[]string, db *sql.DB) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
@@ -57,7 +57,7 @@ func DeleteTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
 	return nil
 }
 
-func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
+func CreateTable(table *model.Table, undoList *[]string, db *sql.DB) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
 	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
@@ -71,7 +71,7 @@ func CreateTable(table *meta.Table, undoList *[]string, db *sql.DB) error {
 	return nil
 }
 
-func ModifyTable(tableDiff *meta.TableDiff, undoList *[]string, db *sql.DB) error {
+func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, db *sql.DB) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
 	for _, atom := range atoms {

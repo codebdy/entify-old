@@ -12,8 +12,12 @@ type Model struct {
 }
 
 func NewModel(c *meta.MetaContent) *Model {
-	var model Model
-	model.Tables = entityTables(c)
+	model := Model{
+		Entities:  make([]*meta.EntityMeta, len(c.Entities)),
+		Relations: make([]*meta.RelationMeta, len(c.Relations)),
+		Tables:    entityTables(c),
+	}
+
 	for i := range c.Relations {
 		relation := c.Relations[i]
 		if relation.RelationType != meta.IMPLEMENTS {

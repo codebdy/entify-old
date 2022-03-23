@@ -21,8 +21,8 @@ type TableDiff struct {
 }
 
 type Diff struct {
-	oldContent *meta.MetaContent
-	newContent *meta.MetaContent
+	oldContent *Model
+	newContent *Model
 
 	DeletedTables  []*Table
 	AddedTables    []*Table
@@ -106,14 +106,14 @@ func tableDifferent(oldTable, newTable *Table) *TableDiff {
 	return nil
 }
 
-func CreateDiff(published, next *meta.MetaContent) *Diff {
+func CreateDiff(published, next *Model) *Diff {
 	diff := Diff{
 		oldContent: published,
 		newContent: next,
 	}
 
-	publishedTables := published.Tables()
-	nextTables := next.Tables()
+	publishedTables := published.Tables
+	nextTables := next.Tables
 
 	for _, table := range publishedTables {
 		foundTable := FindTable(table.MetaUuid, nextTables)

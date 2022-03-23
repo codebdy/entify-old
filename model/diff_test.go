@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"testing"
+
+	"rxdrag.com/entity-engine/meta"
 )
 
 func TestModifyEntityName(t *testing.T) {
@@ -58,42 +60,41 @@ func TestModifyEntityName(t *testing.T) {
 	}
 	`
 
-	oldM := MetaContent{}
+	oldM := NewModel(&meta.MetaContent{})
 	json.Unmarshal([]byte(oldData), &oldM)
-	newM := MetaContent{}
+	newM := NewModel(&meta.MetaContent{})
 	json.Unmarshal([]byte(newData), &newM)
-	newM.Validate()
-	diff := CreateDiff(&oldM, &newM)
+	diff := CreateDiff(oldM, newM)
 
 	if len(diff.ModifiedTables) != 1 {
 		t.Errorf("Diffent table number is %d ,not 1", len(diff.ModifiedTables))
 	}
 
-	if diff.oldContent.Tables()[0].Name != "user" {
-		t.Errorf("Old name is %s, not expected user", diff.oldContent.Tables()[0].Name)
+	if diff.oldContent.Tables[0].Name != "user" {
+		t.Errorf("Old name is %s, not expected user", diff.oldContent.Tables[0].Name)
 	}
 
-	if diff.newContent.Tables()[0].Name != "user2" {
-		t.Errorf("Old name is %s, not expected user2", diff.newContent.Tables()[0].Name)
+	if diff.newContent.Tables[0].Name != "user2" {
+		t.Errorf("Old name is %s, not expected user2", diff.newContent.Tables[0].Name)
 	}
 }
 
 func TestModifiedTableName(t *testing.T) {
 	diff := CreateDiff(
-		&MetaContent{
-			Entities: []EntityMeta{
+		NewModel(&meta.MetaContent{
+			Entities: []meta.EntityMeta{
 				{
 					Name: "OldName",
 				},
 			},
-		},
-		&MetaContent{
-			Entities: []EntityMeta{
+		}),
+		NewModel(&meta.MetaContent{
+			Entities: []meta.EntityMeta{
 				{
 					Name: "NewName",
 				},
 			},
-		},
+		}),
 	)
 
 	if len(diff.ModifiedTables) != 1 {
@@ -112,15 +113,15 @@ func TestModifiedTableName(t *testing.T) {
 
 func TestColumnDifferent(t *testing.T) {
 	diff := columnDifferent(
-		&ColumnMeta{
+		&meta.ColumnMeta{
 			Name: "newColumn1",
 			Uuid: "column1",
-			Type: COLUMN_STRING,
+			Type: meta.COLUMN_STRING,
 		},
-		&ColumnMeta{
+		&meta.ColumnMeta{
 			Name: "nickname",
 			Uuid: "column1",
-			Type: COLUMN_STRING},
+			Type: meta.COLUMN_STRING},
 	)
 
 	if diff == nil {
@@ -142,22 +143,22 @@ func TestChangeTableColumnName(t *testing.T) {
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []ColumnMeta{
+			Columns: []meta.ColumnMeta{
 				{
 					Name: "newColumn1",
 					Uuid: "column1",
-					Type: COLUMN_STRING,
+					Type: meta.COLUMN_STRING,
 				},
 			},
 		},
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []ColumnMeta{
+			Columns: []meta.ColumnMeta{
 				{
 					Name: "nickname",
 					Uuid: "column1",
-					Type: COLUMN_STRING,
+					Type: meta.COLUMN_STRING,
 				},
 			},
 		},
