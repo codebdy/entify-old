@@ -4,15 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 
-	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/repository/dialect"
 	"rxdrag.com/entity-engine/utils"
 )
-
-type QueryArg = map[string]interface{}
 
 func makeValues(entity *model.Entity) []interface{} {
 	names := entity.ColumnNames()
@@ -101,17 +98,10 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 	}
 	return object
 }
-
-func Query(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
+func (con *Connection) doQueryEntity(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(entity, args)
-	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
-	defer db.Close()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	rows, err := db.Query(queryStr, params...)
+	rows, err := con.Query(queryStr, params...)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -135,20 +125,24 @@ func Query(entity *model.Entity, args map[string]interface{}) ([]interface{}, er
 	return instances, nil
 }
 
-func QueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, error) {
-	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
-	defer db.Close()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
+func (con *Connection) QueryOneById(entity *model.Entity, id interface{}) (interface{}, error) {
+	return con.doQueryOne(entity, QueryArg{
+		consts.ARG_WHERE: QueryArg{
+			consts.ID: QueryArg{
+				consts.AEG_EQ: id,
+			},
+		},
+	})
+}
+
+func (con *Connection) doQueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, error) {
 
 	builder := dialect.GetSQLBuilder()
 
 	queryStr, params := builder.BuildQuerySQL(entity, args)
 
 	values := makeValues(entity)
-	err = db.QueryRow(queryStr, params...).Scan(values...)
+	err := con.QueryRow(queryStr, params...).Scan(values...)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -162,12 +156,58 @@ func QueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, e
 	return convertValuesToObject(values, entity), nil
 }
 
-func QueryOneById(entity *model.Entity, id interface{}) (interface{}, error) {
-	return QueryOne(entity, QueryArg{
-		consts.ARG_WHERE: QueryArg{
-			consts.ID: QueryArg{
-				consts.AEG_EQ: id,
-			},
-		},
-	})
+func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
+
+	_, err := con.Exec(saveStr, values...)
+	if err != nil {
+		fmt.Println("Insert data failed:", err.Error())
+		return nil, err
+	}
+
+	id := object[consts.META_ID]
+	savedObject, err := con.QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	//affectedRows, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("RowsAffected failed:", err.Error())
+		return nil, err
+	}
+
+	return savedObject, nil
+}
+
+func (con *Connection) doUpdateOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+
+	sqlBuilder := dialect.GetSQLBuilder()
+
+	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
+	fmt.Println(saveStr)
+	_, err := con.Exec(saveStr, values...)
+	if err != nil {
+		fmt.Println("Update data failed:", err.Error())
+		return nil, err
+	}
+
+	id := object[consts.META_ID]
+
+	savedObject, err := con.QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	return savedObject, nil
+}
+
+func (con *Connection) doSaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+	if object[consts.META_ID] == nil {
+		object[consts.META_ID] = utils.CreateId()
+		return con.doInsertOne(object, entity)
+	} else {
+		return con.doUpdateOne(object, entity)
+	}
 }
