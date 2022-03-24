@@ -27,7 +27,8 @@ func (entity *Entity) Table() *Table {
 	return table
 }
 
-func (entity *Entity) makeColumns() []*Column {
+func (entity *Entity) makeColumns() {
+	entity.Columns = mapColumns(entity.EntityMeta.Columns, entity.model)
 	columns := entity.Columns
 	for i := range entity.Interfaces {
 		intf := entity.Interfaces[i]
@@ -37,7 +38,7 @@ func (entity *Entity) makeColumns() []*Column {
 			}
 		}
 	}
-	return columns
+	entity.AllColumns = columns
 }
 
 func findColumnByName(name string, columns []*Column) bool {

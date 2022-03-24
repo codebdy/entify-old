@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"fmt"
+
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
@@ -97,6 +99,7 @@ func makeOrderBy(entity *model.Entity) *graphql.InputObject {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{Type: columnOrderBy}
 		}
 	}
+	fmt.Println("呵呵", len(columns))
 	return orderByExp
 }
 

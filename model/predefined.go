@@ -42,34 +42,46 @@ var MetaEntity = Entity{
 		Name:       consts.META_ENTITY_NAME,
 		TableName:  "meta",
 		EntityType: meta.ENTITY_NORMAL,
-		Columns: []meta.ColumnMeta{
-			{
+	},
+	Columns: []*Column{
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid: "META_COLUMN_ID_UUID",
 				Type: meta.COLUMN_ID,
 				Name: consts.META_ID,
 			},
-			{
+		},
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid: "META_COLUMN_CONTENT_UUID",
 				Type: meta.COLUMN_SIMPLE_JSON,
 				Name: consts.META_CONTENT,
 			},
-			{
+		},
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid:     "META_COLUMN_STATUS_UUID",
 				Type:     meta.COLUMN_ENUM,
 				Name:     consts.META_STATUS,
 				EnumUuid: META_STATUS_ENUM_UUID,
 			},
-			{
+		},
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid: "META_COLUMN_PUBLISHED_AT_UUID",
 				Type: meta.COLUMN_DATE,
 				Name: consts.META_PUBLISHEDAT,
 			},
-			{
+		},
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid: "META_COLUMN_CREATED_AT_UUID",
 				Type: meta.COLUMN_DATE,
 				Name: consts.META_CREATEDAT,
 			},
-			{
+		},
+		{
+			ColumnMeta: meta.ColumnMeta{
 				Uuid: "META_COLUMN_UPDATED_AT_UUID",
 				Type: meta.COLUMN_DATE,
 				Name: consts.META_UPDATEDAT,
