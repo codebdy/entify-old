@@ -98,6 +98,7 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 	}
 	return object
 }
+
 func (con *Connection) doQueryEntity(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(entity, args)
