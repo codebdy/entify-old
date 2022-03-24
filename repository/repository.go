@@ -30,8 +30,8 @@ func SaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, 
 	if err != nil {
 		panic(err.Error())
 	}
-	err = con.Begin()
-	defer con.clearTx()
+	err = con.BeginTx()
+	defer con.ClearTx()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -54,7 +54,7 @@ func InsertOne(object map[string]interface{}, entity *model.Entity) (interface{}
 		panic(err.Error())
 	}
 	err = con.Close()
-	defer con.clearTx()
+	defer con.ClearTx()
 	if err != nil {
 		panic(err.Error())
 	}

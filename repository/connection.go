@@ -12,7 +12,7 @@ type Connection struct {
 	tx *sql.Tx
 }
 
-func (c *Connection) Begin() error {
+func (c *Connection) BeginTx() error {
 	tx, err := c.db.Begin()
 	if err != nil {
 		return err
@@ -20,6 +20,14 @@ func (c *Connection) Begin() error {
 
 	c.tx = tx
 	return nil
+}
+
+func (c *Connection) ClearTx() {
+	c.validateTx()
+	err := c.Rollback()
+	if err != sql.ErrTxDone && err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func (c *Connection) validateDb() {
@@ -72,14 +80,6 @@ func (c *Connection) Commit() error {
 func (c *Connection) Rollback() error {
 	c.validateTx()
 	return c.tx.Rollback()
-}
-
-func (c *Connection) clearTx() {
-	c.validateTx()
-	err := c.Rollback()
-	if err != sql.ErrTxDone && err != nil {
-		log.Fatalln(err)
-	}
 }
 
 func OpenConnection() (*Connection, error) {
