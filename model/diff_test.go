@@ -113,15 +113,22 @@ func TestModifiedTableName(t *testing.T) {
 
 func TestColumnDifferent(t *testing.T) {
 	diff := columnDifferent(
-		&meta.ColumnMeta{
-			Name: "newColumn1",
-			Uuid: "column1",
-			Type: meta.COLUMN_STRING,
+		&Column{
+			ColumnMeta: meta.ColumnMeta{
+				Name: "newColumn1",
+				Uuid: "column1",
+				Type: meta.COLUMN_STRING,
+			},
+			model: nil,
 		},
-		&meta.ColumnMeta{
-			Name: "nickname",
-			Uuid: "column1",
-			Type: meta.COLUMN_STRING},
+		&Column{
+			ColumnMeta: meta.ColumnMeta{
+				Name: "nickname",
+				Uuid: "column1",
+				Type: meta.COLUMN_STRING,
+			},
+			model: nil,
+		},
 	)
 
 	if diff == nil {
@@ -143,22 +150,27 @@ func TestChangeTableColumnName(t *testing.T) {
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []meta.ColumnMeta{
+			Columns: []*Column{
 				{
-					Name: "newColumn1",
-					Uuid: "column1",
-					Type: meta.COLUMN_STRING,
+					ColumnMeta: meta.ColumnMeta{
+						Name: "newColumn1",
+						Uuid: "column1",
+						Type: meta.COLUMN_STRING,
+					},
+					model: nil,
 				},
 			},
 		},
 		&Table{
 			Name:     "User",
 			MetaUuid: "User-uuid",
-			Columns: []meta.ColumnMeta{
+			Columns: []*Column{
 				{
-					Name: "nickname",
-					Uuid: "column1",
-					Type: meta.COLUMN_STRING,
+					ColumnMeta: meta.ColumnMeta{
+						Name: "nickname",
+						Uuid: "column1",
+						Type: meta.COLUMN_STRING,
+					},
 				},
 			},
 		},

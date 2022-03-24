@@ -47,7 +47,7 @@ func MinFields(entity *model.Entity) graphql.Fields {
 	for _, column := range entity.Columns {
 		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(&column),
+				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil

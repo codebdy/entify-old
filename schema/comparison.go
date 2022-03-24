@@ -3,8 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entity-engine/model"
 )
 
 var BooleanComparisonExp = graphql.InputObjectFieldConfig{
@@ -256,15 +255,15 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 	),
 }
 
-func EnumComparisonExp(column *meta.ColumnMeta) *graphql.InputObjectFieldConfig {
-	enumEntity := repository.GetEntityByUuid(column.EnumUuid)
+func EnumComparisonExp(column *model.Column) *graphql.InputObjectFieldConfig {
+	enumEntity := column.GetEnum()
 	if enumEntity == nil {
 		panic("Can not find enum entity")
 	}
 	if Cache.EnumComparisonExpMap[enumEntity.Name] != nil {
 		return Cache.EnumComparisonExpMap[enumEntity.Name]
 	}
-	enumType := Cache.OutputType(enumEntity)
+	enumType := Cache.EnumType(enumEntity)
 	enumxp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{

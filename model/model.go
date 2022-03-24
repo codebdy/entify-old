@@ -61,6 +61,7 @@ func (model *Model) buildInterfaces(metas []*meta.EntityMeta) {
 	for i := range metas {
 		model.Interfaces[i] = &Interface{
 			EntityMeta:   *metas[i],
+			Columns:      mapColumns(metas[i].Columns, model),
 			Associations: map[string]*Association{},
 			Children:     []*Entity{},
 			model:        model,
@@ -72,6 +73,7 @@ func (model *Model) buildEntities(metas []*meta.EntityMeta) {
 	for i := range metas {
 		model.Entities[i] = &Entity{
 			EntityMeta:   *metas[i],
+			Columns:      mapColumns(metas[i].Columns, model),
 			Interfaces:   []*Interface{},
 			Associations: map[string]*Association{},
 			model:        model,
@@ -127,11 +129,17 @@ func (model *Model) buildRelations(relations []*meta.RelationMeta) {
 		}
 
 		if len(sourceEntities) == 1 && len(targetEntities) == 1 {
+			src := sourceEntities[0]
+			tar := targetEntities[0]
+
+			newRelationMeta := *relation
+			newRelationMeta.SourceId = src.Uuid
+			newRelationMeta.TargetId = tar.Uuid
 			model.Relations = append(model.Relations, &Relation{
-				RelationMeta: *relation,
+				RelationMeta: newRelationMeta,
 				model:        model,
 			})
-			model.decomposeRelation(sourceEntities[0], targetEntities[1], relation)
+			model.decomposeRelation(src, tar, &newRelationMeta)
 		} else {
 			//根据继承关系，创建新的关联
 			for i := range sourceEntities {
@@ -179,16 +187,16 @@ func (model *Model) buildColumns() {
 }
 
 func (model *Model) buildTables() {
+	for i := range model.Entities {
+		model.Tables = append(model.Tables, model.Entities[i].Table())
+	}
+
 	for i := range model.Relations {
 		relation := model.Relations[i]
 		if relation.RelationType != meta.IMPLEMENTS {
 			relationTable := relation.Table()
 			model.Tables = append(model.Tables, relationTable)
 		}
-	}
-
-	for i := range model.Entities {
-		model.Tables = append(model.Tables, model.Entities[i].Table())
 	}
 }
 

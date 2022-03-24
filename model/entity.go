@@ -12,15 +12,11 @@ type Association struct {
 	Description string
 }
 
-type Enum struct {
-	meta.EntityMeta
-	model *Model
-}
-
 type Entity struct {
 	meta.EntityMeta
+	Columns      []*Column
 	Associations map[string]*Association
-	AllColumns   []meta.ColumnMeta
+	AllColumns   []*Column
 	Interfaces   []*Interface
 	model        *Model
 }
@@ -31,7 +27,7 @@ func (entity *Entity) Table() *Table {
 	return table
 }
 
-func (entity *Entity) makeColumns() []meta.ColumnMeta {
+func (entity *Entity) makeColumns() []*Column {
 	columns := entity.Columns
 	for i := range entity.Interfaces {
 		intf := entity.Interfaces[i]
@@ -44,7 +40,7 @@ func (entity *Entity) makeColumns() []meta.ColumnMeta {
 	return columns
 }
 
-func findColumnByName(name string, columns []meta.ColumnMeta) bool {
+func findColumnByName(name string, columns []*Column) bool {
 	for _, column := range columns {
 		if column.Name == name {
 			return true

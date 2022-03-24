@@ -35,13 +35,15 @@ func (c *TypeCache) MakeCache() {
 }
 
 func (c *TypeCache) OutputType(entity *model.Entity) graphql.Type {
-	if entity.EntityType == meta.ENTITY_ENUM {
-		return c.EnumTypeMap[entity.Name]
-	} else if entity.EntityType == meta.ENTITY_INTERFACE {
+	if entity.EntityType == meta.ENTITY_INTERFACE {
 		return c.InterfaceTypeMap[entity.Name]
 	} else {
 		return c.ObjectTypeMap[entity.Name]
 	}
+}
+
+func (c *TypeCache) EnumType(entity *model.Enum) graphql.Type {
+	return c.EnumTypeMap[entity.Name]
 }
 
 func (c *TypeCache) WhereExp(entity *model.Entity) *graphql.InputObject {

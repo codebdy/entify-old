@@ -38,16 +38,6 @@ func QueryNextMeta() interface{} {
 	return nextMeta
 }
 
-func GetEntityByUuid(uuid string) *model.Entity {
-	for _, entity := range model.TheModel.Entities {
-		if entity.Uuid == uuid {
-			return entity
-		}
-	}
-
-	return nil
-}
-
 func DecodeContent(obj interface{}) *meta.MetaContent {
 	content := meta.MetaContent{}
 	if obj != nil {

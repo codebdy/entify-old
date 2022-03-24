@@ -55,7 +55,7 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) ColumnTypeSQL(column *meta.ColumnMeta) string {
+func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 	typeStr := "text"
 	switch column.Type {
 	case meta.COLUMN_ID:
@@ -131,7 +131,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *meta.ColumnMeta) string {
 	return typeStr
 }
 
-func (b *MySQLBuilder) BuildColumnSQL(column *meta.ColumnMeta) string {
+func (b *MySQLBuilder) BuildColumnSQL(column *model.Column) string {
 	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
 	if column.Generated {
 		sql = sql + " AUTO_INCREMENT"
@@ -143,7 +143,7 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *model.Table) string {
 	sql := "CREATE TABLE `%s` (%s)"
 	fieldSqls := make([]string, len(table.Columns))
 	for i := range table.Columns {
-		columnSql := b.BuildColumnSQL(&table.Columns[i])
+		columnSql := b.BuildColumnSQL(table.Columns[i])
 		if table.Columns[i].Nullable {
 			columnSql = columnSql + " NULL"
 		} else {
@@ -264,7 +264,7 @@ func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *model.TableDiff, atoms *[]m
 		//删除列
 		*atoms = append(*atoms, model.ModifyAtom{
 			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
-			UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(&column)),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column)),
 		})
 	}
 }
@@ -273,7 +273,7 @@ func (b *MySQLBuilder) appendAddColumnAtoms(diff *model.TableDiff, atoms *[]mode
 	for _, column := range diff.AddColumns {
 		//添加列
 		*atoms = append(*atoms, model.ModifyAtom{
-			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(&column)),
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column)),
 			UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
 		})
 		//添加索引
@@ -310,13 +310,13 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *model.TableDiff, atoms *[]m
 					"ALTER TABLE %s CHANGE COLUMN %s %s %s",
 					diff.NewTable.Name,
 					columnDiff.OldColumn.Name,
-					columnDiff.NewColumn.Name, b.ColumnTypeSQL(&columnDiff.NewColumn),
+					columnDiff.NewColumn.Name, b.ColumnTypeSQL(columnDiff.NewColumn),
 				),
 				UndoSQL: fmt.Sprintf(
 					"ALTER TABLE %s CHANGE COLUMN %s %s %s",
 					diff.NewTable.Name,
 					columnDiff.NewColumn.Name,
-					columnDiff.OldColumn.Name, b.ColumnTypeSQL(&columnDiff.OldColumn),
+					columnDiff.OldColumn.Name, b.ColumnTypeSQL(columnDiff.OldColumn),
 				),
 			})
 		}

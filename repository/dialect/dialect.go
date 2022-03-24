@@ -1,7 +1,6 @@
 package dialect
 
 import (
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
 )
 
@@ -15,9 +14,9 @@ type SQLBuilder interface {
 
 	BuildCreateTableSQL(table *model.Table) string
 	BuildDeleteTableSQL(table *model.Table) string
-	BuildColumnSQL(column *meta.ColumnMeta) string
+	BuildColumnSQL(column *model.Column) string
 	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
-	ColumnTypeSQL(column *meta.ColumnMeta) string
+	ColumnTypeSQL(column *model.Column) string
 
 	BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
 	BuildUpdateSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})

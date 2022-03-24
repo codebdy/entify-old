@@ -15,22 +15,29 @@ func (relation *Relation) Table() *Table {
 	table := &Table{
 		MetaUuid: relation.Uuid,
 		Name:     relation.TableName(),
-		Columns: []meta.ColumnMeta{
+		Columns: []*Column{
+
 			{
-				Name:  relation.RelationSourceColumnName(),
-				Type:  meta.COLUMN_ID,
-				Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
-				Index: true,
+				ColumnMeta: meta.ColumnMeta{
+					Name:  relation.RelationSourceColumnName(),
+					Type:  meta.COLUMN_ID,
+					Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
+					Index: true,
+				},
+				model: relation.model,
 			},
 			{
-				Name:  relation.RelationTargetColumnName(),
-				Type:  meta.COLUMN_ID,
-				Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
-				Index: true,
+				ColumnMeta: meta.ColumnMeta{
+					Name:  relation.RelationTargetColumnName(),
+					Type:  meta.COLUMN_ID,
+					Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
+					Index: true,
+				},
+				model: relation.model,
 			},
 		},
 	}
-	table.Columns = append(table.Columns, relation.Columns...)
+	table.Columns = append(table.Columns, mapColumns(relation.Columns, relation.model)...)
 
 	return table
 }

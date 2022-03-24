@@ -48,15 +48,19 @@ func TestModifyColumnName(t *testing.T) {
 			},
 			ModifyColumns: []model.ColumnDiff{
 				{
-					OldColumn: meta.ColumnMeta{
-						Name: "newColumn1",
-						Uuid: "column1",
-						Type: meta.COLUMN_STRING,
+					OldColumn: &model.Column{
+						ColumnMeta: meta.ColumnMeta{
+							Name: "newColumn1",
+							Uuid: "column1",
+							Type: meta.COLUMN_STRING,
+						},
 					},
-					NewColumn: meta.ColumnMeta{
-						Name: "nickname",
-						Uuid: "column1",
-						Type: meta.COLUMN_STRING,
+					NewColumn: &model.Column{
+						ColumnMeta: meta.ColumnMeta{
+							Name: "nickname",
+							Uuid: "column1",
+							Type: meta.COLUMN_STRING,
+						},
 					},
 				},
 			},
