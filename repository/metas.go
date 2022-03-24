@@ -9,10 +9,10 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := QueryOne(model.MetaEntity(), QueryArg{
+	publishedMeta, err := QueryOne(&model.MetaEntity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
-				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
+				consts.AEG_EQ: model.META_STATUS_PUBLISHED,
 			},
 		},
 	})
@@ -24,7 +24,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := QueryOne(model.MetaEntity(), QueryArg{
+	nextMeta, err := QueryOne(&model.MetaEntity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,
@@ -62,10 +62,6 @@ func DecodeContent(obj interface{}) *meta.MetaContent {
 func LoadModel() {
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
-
-	publishedContent.Entities = append(publishedContent.Entities, meta.MetaStatusEnum)
-	publishedContent.Entities = append(publishedContent.Entities, meta.MetaEntity)
-
 	model.TheModel = model.NewModel(publishedContent)
 }
 
