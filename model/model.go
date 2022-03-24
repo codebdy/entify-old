@@ -41,10 +41,6 @@ func NewModel(c *meta.MetaContent) *Model {
 	model.buildRelations(relations)
 	model.buildColumns()
 	model.buildTables()
-
-	model.Enums = append(model.Enums, &MetaStatusEnum)
-	MetaEntity.makeColumns()
-	model.Entities = append(model.Entities, &MetaEntity)
 	return &model
 }
 
@@ -238,6 +234,10 @@ func (m *Model) GetEntityByName(name string) *Entity {
 		}
 	}
 	return nil
+}
+
+func (m *Model) GetMetaEntity() *Entity {
+	return m.GetEntityByUuid(MetaEntity.Uuid)
 }
 
 var TheModel *Model

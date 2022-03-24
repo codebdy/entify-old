@@ -12,7 +12,7 @@ import (
 )
 
 func rootMutation() *graphql.Object {
-	metaEntity := &model.MetaEntity
+	metaEntity := model.TheModel.GetMetaEntity()
 	mutationFields := graphql.Fields{
 		consts.LOGIN: &graphql.Field{
 			Type: graphql.String,

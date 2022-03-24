@@ -9,7 +9,7 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := QueryOne(&model.MetaEntity, QueryArg{
+	publishedMeta, err := QueryOne(model.TheModel.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.AEG_EQ: model.META_STATUS_PUBLISHED,
@@ -24,7 +24,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := QueryOne(&model.MetaEntity, QueryArg{
+	nextMeta, err := QueryOne(model.TheModel.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,
@@ -50,8 +50,19 @@ func DecodeContent(obj interface{}) *meta.MetaContent {
 }
 
 func LoadModel() {
+	//初始值，用户取meta信息，取完后，换掉该部分内容
+	initMeta := meta.MetaContent{
+		Entities: []meta.EntityMeta{
+			model.MetaStatusEnum,
+			model.MetaEntity,
+		},
+	}
+	model.TheModel = model.NewModel(&initMeta)
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
+	publishedContent.Entities = append(publishedContent.Entities, model.MetaStatusEnum)
+	publishedContent.Entities = append(publishedContent.Entities, model.MetaEntity)
+
 	model.TheModel = model.NewModel(publishedContent)
 }
 
