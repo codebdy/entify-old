@@ -1,54 +1,52 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
-	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/repository/dialect"
 )
 
 func ExcuteDiff(d *model.Diff) {
 	var undoList []string
-	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
-	defer db.Close()
+	con, err := OpenConnection()
+	defer con.Close()
 	if err != nil {
 		panic("Open db error:" + err.Error())
 	}
 
 	for _, table := range d.DeletedTables {
-		err = DeleteTable(table, &undoList, db)
+		err = DeleteTable(table, &undoList, con)
 		if err != nil {
-			rollback(undoList, db)
+			rollback(undoList, con)
 			panic("Delete table error:" + err.Error())
 		}
 	}
 
 	for _, table := range d.AddedTables {
-		err = CreateTable(table, &undoList, db)
+		err = CreateTable(table, &undoList, con)
 		if err != nil {
-			rollback(undoList, db)
+			rollback(undoList, con)
 			panic("Create table error:" + err.Error())
 		}
 	}
 
 	for _, tableDiff := range d.ModifiedTables {
-		err = ModifyTable(tableDiff, &undoList, db)
+		err = ModifyTable(tableDiff, &undoList, con)
 		if err != nil {
-			rollback(undoList, db)
+			rollback(undoList, con)
 			panic("Modify table error:" + err.Error())
 		}
 	}
 
 }
 
-func DeleteTable(table *model.Table, undoList *[]string, db *sql.DB) error {
+func DeleteTable(table *model.Table, undoList *[]string, con *Connection) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
-	_, err := db.Exec(excuteSQL)
+	_, err := con.Exec(excuteSQL)
 	if err != nil {
 		return err
 	}
@@ -57,11 +55,11 @@ func DeleteTable(table *model.Table, undoList *[]string, db *sql.DB) error {
 	return nil
 }
 
-func CreateTable(table *model.Table, undoList *[]string, db *sql.DB) error {
+func CreateTable(table *model.Table, undoList *[]string, con *Connection) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
 	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
-	_, err := db.Exec(excuteSQL)
+	_, err := con.Exec(excuteSQL)
 	if err != nil {
 		return err
 	}
@@ -71,11 +69,11 @@ func CreateTable(table *model.Table, undoList *[]string, db *sql.DB) error {
 	return nil
 }
 
-func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, db *sql.DB) error {
+func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, con *Connection) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
 	for _, atom := range atoms {
-		_, err := db.Exec(atom.ExcuteSQL)
+		_, err := con.Exec(atom.ExcuteSQL)
 		if err != nil {
 			fmt.Println("出错atom", atom.ExcuteSQL, err.Error())
 			return err
@@ -85,9 +83,9 @@ func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, db *sql.DB) err
 	return nil
 }
 
-func rollback(undoList []string, db *sql.DB) {
+func rollback(undoList []string, con *Connection) {
 	for _, sql := range undoList {
-		_, err := db.Exec(sql)
+		_, err := con.Exec(sql)
 		if err != nil {
 			log.Println("Rollback failed:", sql)
 		}

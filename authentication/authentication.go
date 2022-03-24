@@ -1,23 +1,22 @@
 package authentication
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 
-	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/repository"
 )
 
 func Login(loginName, pwd string) (string, error) {
-	db, err := sql.Open("mysql", config.MYSQL_CONFIG)
-	defer db.Close()
+	con, err := repository.OpenConnection()
+	defer con.Close()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
 
 	var password string
-	err = db.QueryRow("select password from rx_user where loginName = ?", loginName).Scan(&password)
+	err = con.QueryRow("select password from rx_user where loginName = ?", loginName).Scan(&password)
 	if err != nil {
 		fmt.Println(err)
 		return "", errors.New("Login failed!")
