@@ -18,6 +18,8 @@ type SQLBuilder interface {
 	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
 	ColumnTypeSQL(column *model.Column) string
 
+	BuildQuerySQL(entity *model.Entity, args map[string]interface{}) (string, []interface{})
+
 	BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
 	BuildUpdateSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
 }

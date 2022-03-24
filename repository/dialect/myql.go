@@ -189,6 +189,22 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
+func (b *MySQLBuilder) BuildQuerySQL(entity *model.Entity, args map[string]interface{}) (string, []interface{}) {
+	var params []interface{}
+	names := entity.ColumnNames()
+	queryStr := "select %s from %s WHERE true "
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), entity.GetTableName())
+	if args[consts.ARG_WHERE] != nil {
+		whereStr, whereParams := b.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))
+		queryStr = queryStr + " " + whereStr
+		params = append(params, whereParams...)
+	}
+
+	queryStr = queryStr + " order by id desc"
+	fmt.Println("查询SQL:", queryStr)
+	return queryStr, params
+}
+
 func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.GetTableName(), insertFields(keys), insertValueSymbols(keys))

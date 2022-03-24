@@ -8,6 +8,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/repository/dialect"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -102,7 +103,8 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 }
 
 func Query(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
-	queryStr, params := BuildQuerySQL(entity, args)
+	builder := dialect.GetSQLBuilder()
+	queryStr, params := builder.BuildQuerySQL(entity, args)
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
 	if err != nil {
@@ -141,7 +143,9 @@ func QueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, e
 		return nil, err
 	}
 
-	queryStr, params := BuildQuerySQL(entity, args)
+	builder := dialect.GetSQLBuilder()
+
+	queryStr, params := builder.BuildQuerySQL(entity, args)
 
 	values := makeValues(entity)
 	err = db.QueryRow(queryStr, params...).Scan(values...)
