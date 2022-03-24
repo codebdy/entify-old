@@ -310,8 +310,8 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *model.TableDiff, atoms *[]m
 		if columnDiff.OldColumn.Index {
 			indexName := columnDiff.OldColumn.Name + consts.INDEX_SUFFIX
 			*atoms = append(*atoms, model.ModifyAtom{
-				ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.OldTable.Name),
-				UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.OldTable.Name, columnDiff.OldColumn.Name),
+				ExcuteSQL: fmt.Sprintf("DROP INDEX %s ON %s ", indexName, diff.NewTable.Name), //表名已在前面的步骤中被修改，这里用新表名
+				UndoSQL:   fmt.Sprintf("CREATE INDEX %s ON %s (%s)", indexName, diff.NewTable.Name, columnDiff.OldColumn.Name),
 			})
 		}
 		//更改列
