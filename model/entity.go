@@ -15,19 +15,19 @@ type Association struct {
 
 type Entity struct {
 	meta.EntityMeta
-	Columns      []*Column
 	Associations map[string]*Association
-	AllColumns   []*Column
+	Columns      []*Column
 	Interfaces   []*Interface
 	model        *Model
 }
 
 func (entity *Entity) ColumnNames() []string {
-	names := make([]string, len(entity.AllColumns))
+	names := make([]string, len(entity.Columns))
 
-	for i, column := range entity.AllColumns {
+	for i, column := range entity.Columns {
 		names[i] = column.Name
 	}
+
 	return names
 }
 
@@ -50,7 +50,7 @@ func (entity *Entity) GetTableName() string {
 
 func (entity *Entity) Table() *Table {
 	table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
-	table.Columns = append(table.Columns, entity.AllColumns...)
+	table.Columns = append(table.Columns, entity.Columns...)
 	return table
 }
 
@@ -65,7 +65,7 @@ func (entity *Entity) makeColumns() {
 			}
 		}
 	}
-	entity.AllColumns = columns
+	entity.Columns = columns
 }
 
 func findColumnByName(name string, columns []*Column) bool {

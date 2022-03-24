@@ -60,7 +60,7 @@ func (c *TypeCache) makeInputRelations() {
 
 func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.AllColumns {
+	for _, column := range entity.Columns {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type:        ColumnType(column),

@@ -19,7 +19,7 @@ func (c *TypeCache) ObjectType(entity *model.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity.AllColumns),
+				Fields:      outputFields(entity.Columns),
 				Description: entity.Description,
 				Interfaces:  interfaces,
 			},
@@ -28,7 +28,7 @@ func (c *TypeCache) ObjectType(entity *model.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity.AllColumns),
+				Fields:      outputFields(entity.Columns),
 				Description: entity.Description,
 			},
 		)

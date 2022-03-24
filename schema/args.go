@@ -68,7 +68,7 @@ func makeWhereExp(entity *model.Entity) *graphql.InputObject {
 		},
 	}
 
-	columns := entity.AllColumns
+	columns := entity.Columns
 
 	for i := range columns {
 		column := columns[i]
@@ -91,7 +91,7 @@ func makeOrderBy(entity *model.Entity) *graphql.InputObject {
 		},
 	)
 
-	columns := entity.AllColumns
+	columns := entity.Columns
 	for i := range columns {
 		column := columns[i]
 		columnOrderBy := ColumnOrderBy(column)
@@ -105,7 +105,7 @@ func makeOrderBy(entity *model.Entity) *graphql.InputObject {
 
 func makeDistinctOnEnum(entity *model.Entity) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	columns := entity.AllColumns
+	columns := entity.Columns
 	for i := range columns {
 		column := columns[i]
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
