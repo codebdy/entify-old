@@ -11,53 +11,6 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func (tx *Tx) InsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
-	sqlBuilder := dialect.GetSQLBuilder()
-	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
-
-	_, err := tx.Exec(saveStr, values...)
-	if err != nil {
-		fmt.Println("Insert data failed:", err.Error())
-		return nil, err
-	}
-
-	id := object[consts.META_ID]
-	savedObject, err := QueryOneById(entity, id)
-	if err != nil {
-		fmt.Println("QueryOneById failed:", err.Error())
-		return nil, err
-	}
-	//affectedRows, err := result.RowsAffected()
-	if err != nil {
-		fmt.Println("RowsAffected failed:", err.Error())
-		return nil, err
-	}
-
-	return savedObject, nil
-}
-
-func (tx *Tx) UpdateOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
-
-	sqlBuilder := dialect.GetSQLBuilder()
-
-	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
-	fmt.Println(saveStr)
-	_, err := tx.Exec(saveStr, values...)
-	if err != nil {
-		fmt.Println("Update data failed:", err.Error())
-		return nil, err
-	}
-
-	id := object[consts.META_ID]
-
-	savedObject, err := QueryOneById(entity, id)
-	if err != nil {
-		fmt.Println("QueryOneById failed:", err.Error())
-		return nil, err
-	}
-	return savedObject, nil
-}
-
 func SaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
 	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	defer db.Close()
@@ -93,7 +46,7 @@ func InsertOne(object map[string]interface{}, entity *model.Entity) (interface{}
 		panic(err.Error())
 	}
 
-	obj, err := tx.InsertOne(object, entity)
+	obj, err := tx.doInsertOne(object, entity)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -104,11 +57,58 @@ func InsertOne(object map[string]interface{}, entity *model.Entity) (interface{}
 	return obj, nil
 }
 
+func (tx *Tx) doInsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
+
+	_, err := tx.Exec(saveStr, values...)
+	if err != nil {
+		fmt.Println("Insert data failed:", err.Error())
+		return nil, err
+	}
+
+	id := object[consts.META_ID]
+	savedObject, err := QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	//affectedRows, err := result.RowsAffected()
+	if err != nil {
+		fmt.Println("RowsAffected failed:", err.Error())
+		return nil, err
+	}
+
+	return savedObject, nil
+}
+
+func (tx *Tx) doUpdateOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+
+	sqlBuilder := dialect.GetSQLBuilder()
+
+	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
+	fmt.Println(saveStr)
+	_, err := tx.Exec(saveStr, values...)
+	if err != nil {
+		fmt.Println("Update data failed:", err.Error())
+		return nil, err
+	}
+
+	id := object[consts.META_ID]
+
+	savedObject, err := QueryOneById(entity, id)
+	if err != nil {
+		fmt.Println("QueryOneById failed:", err.Error())
+		return nil, err
+	}
+	return savedObject, nil
+}
+
 func (tx *Tx) doSaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
 	if object[consts.META_ID] == nil {
 		object[consts.META_ID] = utils.CreateId()
-		return tx.InsertOne(object, entity)
+		return tx.doInsertOne(object, entity)
 	} else {
-		return tx.UpdateOne(object, entity)
+		return tx.doUpdateOne(object, entity)
 	}
 }
