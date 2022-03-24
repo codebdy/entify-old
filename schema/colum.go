@@ -57,7 +57,7 @@ func ColumnExp(column *model.Column) *graphql.InputObjectFieldConfig {
 	panic("No column type: " + column.Type)
 }
 
-func ColumnOrderBy(column *meta.ColumnMeta) *graphql.Enum {
+func ColumnOrderBy(column *model.Column) *graphql.Enum {
 	switch column.Type {
 	case meta.COLUMN_SIMPLE_JSON:
 		return nil

@@ -63,7 +63,7 @@ func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFie
 	for _, column := range entity.AllColumns {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type:        ColumnType(&column),
+				Type:        ColumnType(column),
 				Description: column.Description,
 			}
 		}

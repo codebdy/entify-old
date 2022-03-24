@@ -2,7 +2,6 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
 )
 
@@ -37,11 +36,11 @@ func (c *TypeCache) ObjectType(entity *model.Entity) *graphql.Object {
 
 }
 
-func outputFields(columns []meta.ColumnMeta) graphql.Fields {
+func outputFields(columns []*model.Column) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range columns {
 		fields[column.Name] = &graphql.Field{
-			Type:        ColumnType(&column),
+			Type:        ColumnType(column),
 			Description: column.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
