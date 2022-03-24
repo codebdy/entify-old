@@ -143,7 +143,7 @@ func (model *Model) buildRelations(relations []*meta.RelationMeta) {
 				for j := range targetEntities {
 					tar := targetEntities[j]
 					newRelationMeta := *relation
-					newRelationMeta.Uuid = fmt.Sprintf("%s-%d-%d", relation.Uuid, i, j)
+					newRelationMeta.Uuid = fmt.Sprintf("%s-%s-%s", relation.Uuid, src.Uuid, tar.Uuid)
 					newRelationMeta.SourceId = src.Uuid
 					newRelationMeta.TargetId = tar.Uuid
 					model.decomposeRelation(src, tar, &newRelationMeta)
