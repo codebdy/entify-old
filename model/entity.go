@@ -2,6 +2,7 @@ package model
 
 import (
 	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type Association struct {
@@ -19,6 +20,32 @@ type Entity struct {
 	AllColumns   []*Column
 	Interfaces   []*Interface
 	model        *Model
+}
+
+func (entity *Entity) ColumnNames() []string {
+	names := make([]string, len(entity.AllColumns))
+
+	for i, column := range entity.AllColumns {
+		names[i] = column.Name
+	}
+	return names
+}
+
+func (entity *Entity) GetColumn(name string) *Column {
+	for _, column := range entity.Columns {
+		if column.Name == name {
+			return column
+		}
+	}
+
+	return nil
+}
+
+func (entity *Entity) GetTableName() string {
+	if (*entity).TableName != "" {
+		return (*entity).TableName
+	}
+	return utils.SnakeString((*entity).Name)
 }
 
 func (entity *Entity) Table() *Table {
