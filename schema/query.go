@@ -33,6 +33,11 @@ func rootQuery() *graphql.Object {
 		},
 		consts.NODE: &graphql.Field{
 			Type: NodeInterfaceType,
+			Args: graphql.FieldConfigArgument{
+				consts.ID: &graphql.ArgumentConfig{
+					Type: graphql.ID,
+				},
+			},
 		},
 	}
 
