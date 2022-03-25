@@ -22,11 +22,13 @@ const (
 	NODES        = "nodes"
 	INPUT        = "Input"
 	UPDATE_INPUT = "UpdateInput"
-	SAVE         = "save"
-	SAVE_ONE     = "saveOne"
+	UPSERT       = "upsert"
+	UPSERT_ONE   = "upsertOne"
 	DELETE       = "delete"
 	BY_ID        = "ById"
 	UPDATE       = "update"
+	HAS_MANY     = "HasMany"
+	HAS_ONE      = "HasOne"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"
@@ -36,7 +38,7 @@ const (
 
 	ARG_ADD    string = "_add"
 	ARG_DELETE string = "_delete"
-	ARG_MODIFY string = "_modify"
+	ARG_UPDATE string = "_update"
 	ARG_SYNC   string = "_sync"
 
 	ARG_AND string = "_and"

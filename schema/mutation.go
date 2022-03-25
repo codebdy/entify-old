@@ -87,7 +87,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)[consts.SAVE+name] = &graphql.Field{
+	(*feilds)[consts.UPSERT+name] = &graphql.Field{
 		Type: Cache.OutputType(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
@@ -102,7 +102,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		},
 	}
 	//Resolve: entity.QueryResolve(),
-	(*feilds)[consts.SAVE_ONE+name] = &graphql.Field{
+	(*feilds)[consts.UPSERT_ONE+name] = &graphql.Field{
 		Type: Cache.OutputType(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{

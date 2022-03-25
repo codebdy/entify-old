@@ -60,7 +60,7 @@ func (c *TypeCache) makeAssociationType(association *model.Association) *graphql
 				consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
 					Type: listType,
 				},
-				consts.ARG_MODIFY: &graphql.InputObjectFieldConfig{
+				consts.ARG_UPDATE: &graphql.InputObjectFieldConfig{
 					Type: listType,
 				},
 				consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
