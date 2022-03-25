@@ -12,9 +12,7 @@ func (c *TypeCache) makeInputs() {
 		c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
 		c.SaveInputMap[entity.Name] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
-
 	}
-
 	c.makeInputRelations()
 }
 
@@ -30,6 +28,9 @@ func (c *TypeCache) makeInputRelations() {
 		for i := range assocs {
 			relation := assocs[i]
 			typeInput := c.SaveInput(relation.TypeEntity.Name)
+			if len(typeInput.Fields()) == 0 {
+				continue
+			}
 			if relation.IsArray() {
 				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
 					Type: &graphql.List{
@@ -54,7 +55,6 @@ func (c *TypeCache) makeInputRelations() {
 				})
 			}
 		}
-
 	}
 }
 

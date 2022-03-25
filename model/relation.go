@@ -17,7 +17,6 @@ func (relation *Relation) Table() *Table {
 		MetaUuid: relation.Uuid,
 		Name:     relation.TableName(),
 		Columns: []*Column{
-
 			{
 				ColumnMeta: meta.ColumnMeta{
 					Name:  relation.RelationSourceColumnName(),

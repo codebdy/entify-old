@@ -114,22 +114,26 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		Resolve: resolve.PostOneResolveFn(entity),
 	}
 
-	(*feilds)[consts.UPDATE+name] = &graphql.Field{
-		Type: *Cache.MutationResponse(entity.Name),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
-				Type: &graphql.NonNull{
-					OfType: &graphql.List{
-						OfType: &graphql.NonNull{
-							OfType: Cache.UpdateInput(entity.Name),
+	updateInput := Cache.UpdateInput(entity.Name)
+	if len(updateInput.Fields()) > 0 {
+		(*feilds)[consts.UPDATE+name] = &graphql.Field{
+			Type: *Cache.MutationResponse(entity.Name),
+			Args: graphql.FieldConfigArgument{
+				consts.ARG_OBJECTS: &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{
+						OfType: &graphql.List{
+							OfType: &graphql.NonNull{
+								OfType: updateInput,
+							},
 						},
 					},
 				},
+				consts.ARG_WHERE: &graphql.ArgumentConfig{
+					Type: Cache.WhereExp(entity.Name),
+				},
 			},
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity.Name),
-			},
-		},
-		//Resolve: entity.QueryResolve(),
+			//Resolve: entity.QueryResolve(),
+		}
 	}
+
 }
