@@ -38,6 +38,7 @@ var MetaEntity = meta.EntityMeta{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       consts.META_ENTITY_NAME,
 	TableName:  "meta",
+	InnerId:    1,
 	EntityType: meta.ENTITY_NORMAL,
 	Columns: []meta.ColumnMeta{
 		{

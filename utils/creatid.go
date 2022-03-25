@@ -6,7 +6,7 @@ import (
 )
 
 func CreateId() snowflake.ID {
-	node, err := snowflake.NewNode(config.NODE_ID)
+	node, err := snowflake.NewNode(int64(config.SERVICE_ID))
 	if err != nil {
 		panic("Create Id error:" + err.Error())
 	}
