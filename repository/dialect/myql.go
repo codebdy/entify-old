@@ -135,7 +135,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 func (b *MySQLBuilder) BuildColumnSQL(column *model.Column) string {
 	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
 	if column.Name == consts.ID {
-		sql = fmt.Sprintf(sql+" AUTO_INCREMENT = %d", config.SERVICE_ID<<52+column.Entity.InnerId<<32)
+		sql = fmt.Sprintf(sql + " AUTO_INCREMENT")
 	}
 	return sql
 }
@@ -167,7 +167,11 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *model.Table) string {
 	}
 
 	sql = fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ","))
+	fmt.Println("Create table sql:", sql)
 
+	if table.Entity != nil {
+		sql = sql + fmt.Sprintf(" AUTO_INCREMENT = %d", config.SERVICE_ID<<52+table.Entity.InnerId<<32)
+	}
 	return sql
 }
 

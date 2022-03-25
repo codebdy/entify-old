@@ -59,7 +59,7 @@ func (entity *Entity) GetTableName() string {
 }
 
 func (entity *Entity) Table() *Table {
-	table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid}
+	table := &Table{Name: entity.GetTableName(), MetaUuid: entity.Uuid, Entity: entity}
 	table.Columns = append(table.Columns, entity.Columns...)
 	return table
 }
