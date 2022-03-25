@@ -161,6 +161,12 @@ func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
+	for _, association := range entity.Associations {
+		if object[association.Name] == nil {
+			continue
+		}
+	}
+
 	result, err := con.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Insert data failed:", err.Error())

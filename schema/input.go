@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/utils"
 )
 
 func (c *TypeCache) makeInputs() {
@@ -23,39 +24,64 @@ func (c *TypeCache) makeInputRelations() {
 		input := c.UpdateInputMap[entity.Name]
 		update := c.SaveInputMap[entity.Name]
 
-		assocs := entity.Associations
+		associas := entity.Associations
 
-		for i := range assocs {
-			relation := assocs[i]
-			typeInput := c.SaveInput(relation.TypeEntity.Name)
+		for i := range associas {
+			assoc := associas[i]
+			typeInput := c.SaveInput(assoc.TypeEntity.Name)
 			if len(typeInput.Fields()) == 0 {
 				continue
 			}
-			if relation.IsArray() {
-				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-					Type: &graphql.List{
-						OfType: typeInput,
-					},
-					Description: relation.Description,
-				})
-				update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-					Type: &graphql.List{
-						OfType: typeInput,
-					},
-					Description: relation.Description,
-				})
-			} else {
-				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-					Type:        typeInput,
-					Description: relation.Description,
-				})
-				update.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
-					Type:        typeInput,
-					Description: relation.Description,
-				})
-			}
+			arrayType := c.makeAssociationType(assoc)
+			input.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
+				Type:        arrayType,
+				Description: assoc.Description,
+			})
+			update.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
+				Type:        arrayType,
+				Description: assoc.Description,
+			})
 		}
 	}
+}
+
+func (c *TypeCache) makeAssociationType(association *model.Association) *graphql.InputObject {
+	typeInput := c.SaveInput(association.TypeEntity.Name)
+	listType := &graphql.List{
+		OfType: typeInput,
+	}
+	if association.IsArray() {
+		return graphql.NewInputObject(graphql.InputObjectConfig{
+			Name: association.OfEntity.Name + utils.FirstUpper(association.Name) + "Input",
+			Fields: graphql.InputObjectConfigFieldMap{
+				consts.ARG_ADD: &graphql.InputObjectFieldConfig{
+					Type: listType,
+				},
+				consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
+					Type: listType,
+				},
+				consts.ARG_MODIFY: &graphql.InputObjectFieldConfig{
+					Type: listType,
+				},
+				consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
+					Type: listType,
+				},
+			},
+		})
+	} else {
+		return graphql.NewInputObject(graphql.InputObjectConfig{
+			Name: association.OfEntity.Name + utils.FirstUpper(association.Name) + "Input",
+			Fields: graphql.InputObjectConfigFieldMap{
+				consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
+					Type: graphql.Boolean,
+				},
+				consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
+					Type: typeInput,
+				},
+			},
+		})
+	}
+
 }
 
 func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
