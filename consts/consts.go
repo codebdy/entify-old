@@ -36,10 +36,11 @@ const (
 	ARG_ORDERBY    string = "orderBy"
 	ARG_WHERE      string = "where"
 
-	ARG_ADD    string = "_add"
-	ARG_DELETE string = "_delete"
-	ARG_UPDATE string = "_update"
-	ARG_SYNC   string = "_sync"
+	ARG_ADD     string = "add"
+	ARG_DELETE  string = "delete"
+	ARG_UPDATE  string = "update"
+	ARG_SYNC    string = "sync"
+	ARG_CASCADE string = "cascade"
 
 	ARG_AND string = "_and"
 	ARG_NOT string = "_not"

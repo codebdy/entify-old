@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/config"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -56,6 +57,14 @@ func (entity *Entity) GetTableName() string {
 		tableName = fmt.Sprintf("%s_%d", tableName, entity.InnerId)
 	}
 	return tableName
+}
+
+func (entity *Entity) GetHasManyName() string {
+	return utils.FirstUpper(consts.UPDATE) + entity.Name + consts.HAS_MANY
+}
+
+func (entity *Entity) GetHasOneName() string {
+	return utils.FirstUpper(consts.UPDATE) + entity.Name + consts.HAS_ONE
 }
 
 func (entity *Entity) Table() *Table {

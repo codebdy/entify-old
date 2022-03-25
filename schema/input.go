@@ -4,7 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/utils"
 )
 
 func (c *TypeCache) makeInputs() {
@@ -14,7 +13,57 @@ func (c *TypeCache) makeInputs() {
 		c.SaveInputMap[entity.Name] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
 	}
+	for i := range model.TheModel.Entities {
+		entity := model.TheModel.Entities[i]
+		c.HasManyInputMap[entity.Name] = c.makeHasManyInput(entity)
+		c.HasOneInputMap[entity.Name] = c.makeHasOneInput(entity)
+	}
 	c.makeInputRelations()
+}
+
+func (c *TypeCache) makeHasManyInput(entity *model.Entity) *graphql.InputObject {
+	typeInput := c.SaveInput(entity.Name)
+	listType := &graphql.List{
+		OfType: typeInput,
+	}
+	return graphql.NewInputObject(graphql.InputObjectConfig{
+		Name: entity.GetHasManyName(),
+		Fields: graphql.InputObjectConfigFieldMap{
+			consts.ARG_ADD: &graphql.InputObjectFieldConfig{
+				Type: listType,
+			},
+			consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
+				Type: listType,
+			},
+			consts.ARG_UPDATE: &graphql.InputObjectFieldConfig{
+				Type: listType,
+			},
+			consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
+				Type: listType,
+			},
+			consts.ARG_CASCADE: &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+		},
+	})
+}
+
+func (c *TypeCache) makeHasOneInput(entity *model.Entity) *graphql.InputObject {
+	typeInput := c.SaveInput(entity.Name)
+	return graphql.NewInputObject(graphql.InputObjectConfig{
+		Name: entity.GetHasOneName(),
+		Fields: graphql.InputObjectConfigFieldMap{
+			consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+			consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
+				Type: typeInput,
+			},
+			consts.ARG_CASCADE: &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+		},
+	})
 }
 
 func (c *TypeCache) makeInputRelations() {
@@ -46,42 +95,11 @@ func (c *TypeCache) makeInputRelations() {
 }
 
 func (c *TypeCache) makeAssociationType(association *model.Association) *graphql.InputObject {
-	typeInput := c.SaveInput(association.TypeEntity.Name)
-	listType := &graphql.List{
-		OfType: typeInput,
-	}
 	if association.IsArray() {
-		return graphql.NewInputObject(graphql.InputObjectConfig{
-			Name: association.OfEntity.Name + utils.FirstUpper(association.Name) + "Input",
-			Fields: graphql.InputObjectConfigFieldMap{
-				consts.ARG_ADD: &graphql.InputObjectFieldConfig{
-					Type: listType,
-				},
-				consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
-					Type: listType,
-				},
-				consts.ARG_UPDATE: &graphql.InputObjectFieldConfig{
-					Type: listType,
-				},
-				consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
-					Type: listType,
-				},
-			},
-		})
+		return c.HasManyInput(association.TypeEntity.Name)
 	} else {
-		return graphql.NewInputObject(graphql.InputObjectConfig{
-			Name: association.OfEntity.Name + utils.FirstUpper(association.Name) + "Input",
-			Fields: graphql.InputObjectConfigFieldMap{
-				consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
-					Type: graphql.Boolean,
-				},
-				consts.ARG_SYNC: &graphql.InputObjectFieldConfig{
-					Type: typeInput,
-				},
-			},
-		})
+		return c.HasOneInput(association.TypeEntity.Name)
 	}
-
 }
 
 func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
