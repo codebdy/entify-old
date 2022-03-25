@@ -89,7 +89,7 @@ const (
 
 const (
 	ID_SUFFIX     string = "_id"
-	SUFFIX_PIVOT  string = "__p"
+	SUFFIX_PIVOT  string = "_p"
 	INDEX_SUFFIX  string = "_idx"
 	SUFFIX_SOURCE string = "_source"
 	SUFFIX_TARGET string = "_target"

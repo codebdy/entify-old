@@ -1,6 +1,9 @@
 package model
 
 import (
+	"fmt"
+
+	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/utils"
@@ -43,11 +46,18 @@ func (relation *Relation) Table() *Table {
 }
 
 func (relation *Relation) TableName() string {
-	return relation.SouceTableName() +
+	tableName := relation.SouceTableName() +
 		"_" + utils.SnakeString(relation.RoleOnSource) +
 		"_" + relation.TargetTableName() +
 		"_" + utils.SnakeString(relation.RoleOnTarget) +
 		consts.SUFFIX_PIVOT
+
+	if len([]rune(tableName)) >= config.TABLE_NAME_MAX_LENGTH {
+		tableName = string([]byte(tableName)[:config.TABLE_NAME_MAX_LENGTH-20])
+		tableName = fmt.Sprintf("%s%s_%d_%d", tableName, consts.SUFFIX_PIVOT, relation.SouceInnerId(), relation.TargetInnerId())
+	}
+
+	return tableName
 }
 
 func (relation *Relation) SouceTableName() string {
@@ -58,4 +68,14 @@ func (relation *Relation) SouceTableName() string {
 func (relation *Relation) TargetTableName() string {
 	targetEntity := relation.model.GetEntityByUuid(relation.TargetId)
 	return targetEntity.GetTableName()
+}
+
+func (relation *Relation) SouceInnerId() uint {
+	sourceEntity := relation.model.GetEntityByUuid(relation.SourceId)
+	return sourceEntity.InnerId
+}
+
+func (relation *Relation) TargetInnerId() uint {
+	targetEntity := relation.model.GetEntityByUuid(relation.TargetId)
+	return targetEntity.InnerId
 }

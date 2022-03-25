@@ -1,6 +1,9 @@
 package model
 
 import (
+	"fmt"
+
+	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -43,10 +46,16 @@ func (entity *Entity) GetColumn(name string) *Column {
 }
 
 func (entity *Entity) GetTableName() string {
-	if (*entity).TableName != "" {
-		return (*entity).TableName
+	tableName := entity.TableName
+	if tableName == "" {
+		tableName = utils.SnakeString(entity.Name)
 	}
-	return utils.SnakeString((*entity).Name)
+
+	if len([]rune(tableName)) >= config.TABLE_NAME_MAX_LENGTH {
+		tableName = string([]byte(tableName)[:config.TABLE_NAME_MAX_LENGTH-10])
+		tableName = fmt.Sprintf("%s_%d", tableName, entity.InnerId)
+	}
+	return tableName
 }
 
 func (entity *Entity) Table() *Table {
