@@ -263,7 +263,7 @@ func EnumComparisonExp(column *model.Column) *graphql.InputObjectFieldConfig {
 	if Cache.EnumComparisonExpMap[enumEntity.Name] != nil {
 		return Cache.EnumComparisonExpMap[enumEntity.Name]
 	}
-	enumType := Cache.EnumType(enumEntity)
+	enumType := Cache.EnumType(enumEntity.Name)
 	enumxp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{

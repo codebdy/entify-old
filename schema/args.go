@@ -30,7 +30,7 @@ func (c *TypeCache) makeRelaionWhereExp() {
 		for i := range associations {
 			assoc := associations[i]
 			exp.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
-				Type: c.WhereExp(assoc.TypeEntity),
+				Type: c.WhereExp(assoc.TypeEntity.Name),
 			})
 		}
 	}

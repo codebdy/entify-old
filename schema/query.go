@@ -40,6 +40,9 @@ func rootQuery() *graphql.Object {
 			},
 		},
 	}
+	for _, intf := range model.TheModel.Interfaces {
+		appendToQueryFields(intf, &queryFields)
+	}
 
 	for _, entity := range model.TheModel.Entities {
 		appendToQueryFields(entity, &queryFields)
@@ -53,7 +56,7 @@ func rootQuery() *graphql.Object {
 func queryResponseType(entity *model.Entity) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
-			OfType: Cache.OutputObjectType(entity),
+			OfType: Cache.OutputType(entity.Name),
 		},
 	}
 }
@@ -61,7 +64,7 @@ func queryResponseType(entity *model.Entity) graphql.Output {
 func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 	return graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-			Type: Cache.DistinctOnEnum(entity),
+			Type: Cache.DistinctOnEnum(entity.Name),
 		},
 		consts.ARG_LIMIT: &graphql.ArgumentConfig{
 			Type: graphql.Int,
@@ -70,10 +73,10 @@ func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 			Type: graphql.Int,
 		},
 		consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-			Type: Cache.OrderByExp(entity),
+			Type: Cache.OrderByExp(entity.Name),
 		},
 		consts.ARG_WHERE: &graphql.ArgumentConfig{
-			Type: Cache.WhereExp(entity),
+			Type: Cache.WhereExp(entity.Name),
 		},
 	}
 }
@@ -85,7 +88,7 @@ func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
 		Resolve: resolve.QueryResolveFn(entity),
 	}
 	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type:    Cache.OutputObjectType(entity),
+		Type:    Cache.OutputType(entity.Name),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryOneResolveFn(entity),
 	}

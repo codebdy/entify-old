@@ -8,7 +8,7 @@ import (
 
 type Model struct {
 	Enums      []*Enum
-	Interfaces []*Interface
+	Interfaces []*Entity
 	Entities   []*Entity
 	Relations  []*Relation
 	Tables     []*Table
@@ -29,7 +29,7 @@ func NewModel(c *meta.MetaContent) *Model {
 
 	model := Model{
 		Enums:      make([]*Enum, len(enums)),
-		Interfaces: make([]*Interface, len(interfaces)),
+		Interfaces: make([]*Entity, len(interfaces)),
 		Entities:   make([]*Entity, len(entities)),
 		Relations:  []*Relation{},
 		Tables:     []*Table{},
@@ -55,7 +55,7 @@ func (model *Model) buildEnums(metas []*meta.EntityMeta) {
 
 func (model *Model) buildInterfaces(metas []*meta.EntityMeta) {
 	for i := range metas {
-		model.Interfaces[i] = &Interface{
+		model.Interfaces[i] = &Entity{
 			EntityMeta:   *metas[i],
 			Columns:      mapColumns(metas[i].Columns, model),
 			Associations: map[string]*Association{},
@@ -70,7 +70,7 @@ func (model *Model) buildEntities(metas []*meta.EntityMeta) {
 		model.Entities[i] = &Entity{
 			EntityMeta:   *metas[i],
 			Columns:      mapColumns(metas[i].Columns, model),
-			Interfaces:   []*Interface{},
+			Interfaces:   []*Entity{},
 			Associations: map[string]*Association{},
 			model:        model,
 		}
@@ -206,7 +206,7 @@ func (m *Model) GetEnumByUuid(uuid string) *Enum {
 	return nil
 }
 
-func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
+func (m *Model) GetInterfaceByUuid(uuid string) *Entity {
 	for i := range m.Interfaces {
 		intf := m.Interfaces[i]
 		if intf.Uuid == uuid {

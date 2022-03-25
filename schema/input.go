@@ -29,7 +29,7 @@ func (c *TypeCache) makeInputRelations() {
 
 		for i := range assocs {
 			relation := assocs[i]
-			typeInput := c.SaveInput(relation.TypeEntity)
+			typeInput := c.SaveInput(relation.TypeEntity.Name)
 			if relation.IsArray() {
 				input.AddFieldConfig(relation.Name, &graphql.InputObjectFieldConfig{
 					Type: &graphql.List{
@@ -104,7 +104,7 @@ func makeMutationResponseType(entity *model.Entity) *graphql.Output {
 				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: Cache.OutputObjectType(entity),
+							OfType: Cache.OutputType(entity.Name),
 						},
 					},
 				},

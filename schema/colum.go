@@ -28,7 +28,7 @@ func ColumnType(column *model.Column) graphql.Output {
 		if enum == nil {
 			panic("Can not find enum entity")
 		}
-		return Cache.EnumType(enum)
+		return Cache.EnumType(enum.Name)
 	}
 
 	panic("No column type:" + column.Type)

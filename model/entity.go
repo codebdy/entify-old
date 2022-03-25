@@ -17,7 +17,8 @@ type Entity struct {
 	meta.EntityMeta
 	Associations map[string]*Association
 	Columns      []*Column
-	Interfaces   []*Interface
+	Interfaces   []*Entity
+	Children     []*Entity
 	model        *Model
 }
 

@@ -39,15 +39,15 @@ func rootMutation() *graphql.Object {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    Cache.OutputObjectType(metaEntity),
+			Type:    Cache.OutputType(metaEntity.Name),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    Cache.OutputObjectType(metaEntity),
+			Type:    Cache.OutputType(metaEntity.Name),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    Cache.OutputObjectType(metaEntity),
+			Type:    Cache.OutputType(metaEntity.Name),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
@@ -70,16 +70,16 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	name := utils.FirstUpper(entity.Name)
 
 	(*feilds)[consts.DELETE+name] = &graphql.Field{
-		Type: *Cache.MutationResponse(entity),
+		Type: *Cache.MutationResponse(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity),
+				Type: Cache.WhereExp(entity.Name),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
-		Type: Cache.OutputObjectType(entity),
+		Type: Cache.OutputType(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ID: &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -88,13 +88,13 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.SAVE+name] = &graphql.Field{
-		Type: Cache.OutputObjectType(entity),
+		Type: Cache.OutputType(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: Cache.SaveInput(entity),
+							OfType: Cache.SaveInput(entity.Name),
 						},
 					},
 				},
@@ -103,11 +103,11 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	}
 	//Resolve: entity.QueryResolve(),
 	(*feilds)[consts.SAVE_ONE+name] = &graphql.Field{
-		Type: Cache.OutputObjectType(entity),
+		Type: Cache.OutputType(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: Cache.SaveInput(entity),
+					OfType: Cache.SaveInput(entity.Name),
 				},
 			},
 		},
@@ -115,19 +115,19 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	}
 
 	(*feilds)[consts.UPDATE+name] = &graphql.Field{
-		Type: *Cache.MutationResponse(entity),
+		Type: *Cache.MutationResponse(entity.Name),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: Cache.UpdateInput(entity),
+							OfType: Cache.UpdateInput(entity.Name),
 						},
 					},
 				},
 			},
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity),
+				Type: Cache.WhereExp(entity.Name),
 			},
 		},
 		//Resolve: entity.QueryResolve(),

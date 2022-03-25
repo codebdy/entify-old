@@ -89,7 +89,7 @@ func appendToSubscriptionFields(entity *model.Entity, fields *graphql.Fields) {
 		},
 	}
 	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type: Cache.OutputObjectType(entity),
+		Type: Cache.OutputType(entity.Name),
 		Args: quryeArgs(entity),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil

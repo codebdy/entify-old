@@ -45,43 +45,47 @@ func (c *TypeCache) MakeCache() {
 	c.makeInputs()
 }
 
-func (c *TypeCache) OutputInterfaceType(entity *model.Entity) graphql.Type {
-	return c.InterfaceTypeMap[entity.Name]
+// func (c *TypeCache) OutputInterfaceType(entity *model.Entity) graphql.Type {
+// 	return c.InterfaceTypeMap[entity.Name]
+// }
+
+func (c *TypeCache) OutputType(name string) graphql.Type {
+	intf := c.InterfaceTypeMap[name]
+	if intf != nil {
+		return intf
+	}
+	return c.ObjectTypeMap[name]
 }
 
-func (c *TypeCache) OutputObjectType(entity *model.Entity) graphql.Type {
-	return c.ObjectTypeMap[entity.Name]
+func (c *TypeCache) EnumType(name string) graphql.Type {
+	return c.EnumTypeMap[name]
 }
 
-func (c *TypeCache) EnumType(entity *model.Enum) graphql.Type {
-	return c.EnumTypeMap[entity.Name]
+func (c *TypeCache) WhereExp(name string) *graphql.InputObject {
+	return c.WhereExpMap[name]
 }
 
-func (c *TypeCache) WhereExp(entity *model.Entity) *graphql.InputObject {
-	return c.WhereExpMap[entity.Name]
+func (c *TypeCache) OrderByExp(name string) *graphql.InputObject {
+	return c.OrderByMap[name]
 }
 
-func (c *TypeCache) OrderByExp(entity *model.Entity) *graphql.InputObject {
-	return c.OrderByMap[entity.Name]
+func (c *TypeCache) DistinctOnEnum(name string) *graphql.Enum {
+	return c.DistinctOnEnumMap[name]
 }
 
-func (c *TypeCache) DistinctOnEnum(entity *model.Entity) *graphql.Enum {
-	return c.DistinctOnEnumMap[entity.Name]
+func (c *TypeCache) SaveInput(name string) *graphql.InputObject {
+	return c.SaveInputMap[name]
 }
 
-func (c *TypeCache) SaveInput(entity *model.Entity) *graphql.InputObject {
-	return c.SaveInputMap[entity.Name]
+func (c *TypeCache) UpdateInput(name string) *graphql.InputObject {
+	return c.UpdateInputMap[name]
 }
 
-func (c *TypeCache) UpdateInput(entity *model.Entity) *graphql.InputObject {
-	return c.UpdateInputMap[entity.Name]
+func (c *TypeCache) MutationResponse(name string) *graphql.Output {
+	return c.MutationResponseMap[name]
 }
 
-func (c *TypeCache) MutationResponse(entity *model.Entity) *graphql.Output {
-	return c.MutationResponseMap[entity.Name]
-}
-
-func (c *TypeCache) mapInterfaces(entities []*model.Interface) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*model.Entity) []*graphql.Interface {
 	interfaces := []*graphql.Interface{NodeInterfaceType}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])
