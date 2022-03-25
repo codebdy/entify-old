@@ -5,6 +5,7 @@ const (
 	ROOT_MUTATION_NAME     = "Mutation"
 	ROOT_SUBSCRIPTION_NAME = "Subscription"
 
+	SERVICE    = "service"
 	LOGIN      = "login"
 	LOGIN_NAME = "loginName"
 	PASSWORD   = "password"
@@ -87,8 +88,7 @@ const (
 
 const (
 	ID_SUFFIX     string = "_id"
-	SUFFIX_PIVOT  string = "__pivot"
-	PARENT_ID     string = "parent_part_id"
+	SUFFIX_PIVOT  string = "__p"
 	INDEX_SUFFIX  string = "_idx"
 	SUFFIX_SOURCE string = "_source"
 	SUFFIX_TARGET string = "_target"

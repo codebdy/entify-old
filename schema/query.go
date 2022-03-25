@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
@@ -9,8 +10,29 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
+var serviceType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: utils.FirstUpper(consts.SERVICE),
+		Fields: graphql.Fields{
+			"id": &graphql.Field{
+				Type: graphql.Int,
+			},
+		},
+		Description: "Micro service info",
+	},
+)
+
 func rootQuery() *graphql.Object {
-	queryFields := graphql.Fields{}
+	queryFields := graphql.Fields{
+		consts.SERVICE: &graphql.Field{
+			Type: serviceType,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return map[string]interface{}{
+					"id": config.SERVICE_ID,
+				}, nil
+			},
+		},
+	}
 
 	for _, entity := range model.TheModel.Entities {
 		appendToQueryFields(entity, &queryFields)
