@@ -3,10 +3,8 @@ package model
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
-	"rxdrag.com/entity-engine/utils"
 )
 
 type Relation struct {
@@ -46,17 +44,7 @@ func (relation *Relation) Table() *Table {
 }
 
 func (relation *Relation) TableName() string {
-	tableName := relation.SouceTableName() +
-		"_" + utils.SnakeString(relation.RoleOnSource) +
-		"_" + relation.TargetTableName() +
-		"_" + utils.SnakeString(relation.RoleOnTarget) +
-		consts.SUFFIX_PIVOT
-
-	if len([]rune(tableName)) >= config.TABLE_NAME_MAX_LENGTH {
-		tableName = string([]byte(tableName)[:config.TABLE_NAME_MAX_LENGTH-20])
-		tableName = fmt.Sprintf("%s%s_%d_%d", tableName, consts.SUFFIX_PIVOT, relation.SouceInnerId(), relation.TargetInnerId())
-	}
-
+	tableName := fmt.Sprintf(consts.PIVOT+"_%d_%d_%d", relation.SouceInnerId(), relation.TargetInnerId(), relation.InnerId)
 	return tableName
 }
 
