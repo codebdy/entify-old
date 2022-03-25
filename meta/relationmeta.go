@@ -15,7 +15,7 @@ const (
 
 type RelationMeta struct {
 	Uuid                string `json:"uuid"`
-	InnerId             uint   `json:"innerId"`
+	InnerId             uint64 `json:"innerId"`
 	RelationType        string `json:"relationType"`
 	SourceId            string `json:"sourceId"`
 	TargetId            string `json:"targetId"`

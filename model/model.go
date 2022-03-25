@@ -55,25 +55,28 @@ func (model *Model) buildEnums(metas []*meta.EntityMeta) {
 
 func (model *Model) buildInterfaces(metas []*meta.EntityMeta) {
 	for i := range metas {
-		model.Interfaces[i] = &Entity{
+		entity := &Entity{
 			EntityMeta:   *metas[i],
-			Columns:      mapColumns(metas[i].Columns, model),
 			Associations: map[string]*Association{},
 			Children:     []*Entity{},
 			model:        model,
 		}
+
+		entity.Columns = mapColumns(metas[i].Columns, entity, model)
+		model.Interfaces[i] = entity
 	}
 }
 
 func (model *Model) buildEntities(metas []*meta.EntityMeta) {
 	for i := range metas {
-		model.Entities[i] = &Entity{
+		entity := &Entity{
 			EntityMeta:   *metas[i],
-			Columns:      mapColumns(metas[i].Columns, model),
 			Interfaces:   []*Entity{},
 			Associations: map[string]*Association{},
 			model:        model,
 		}
+		entity.Columns = mapColumns(metas[i].Columns, entity, model)
+		model.Entities[i] = entity
 	}
 }
 

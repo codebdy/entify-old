@@ -37,7 +37,7 @@ func (relation *Relation) Table() *Table {
 			},
 		},
 	}
-	table.Columns = append(table.Columns, mapColumns(relation.Columns, relation.model)...)
+	table.Columns = append(table.Columns, mapColumns(relation.Columns, nil, relation.model)...)
 
 	return table
 }
@@ -57,12 +57,12 @@ func (relation *Relation) TargetTableName() string {
 	return targetEntity.GetTableName()
 }
 
-func (relation *Relation) SouceInnerId() uint {
+func (relation *Relation) SouceInnerId() uint64 {
 	sourceEntity := relation.model.GetEntityByUuid(relation.SourceId)
 	return sourceEntity.InnerId
 }
 
-func (relation *Relation) TargetInnerId() uint {
+func (relation *Relation) TargetInnerId() uint64 {
 	targetEntity := relation.model.GetEntityByUuid(relation.TargetId)
 	return targetEntity.InnerId
 }

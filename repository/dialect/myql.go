@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
@@ -133,8 +134,8 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 
 func (b *MySQLBuilder) BuildColumnSQL(column *model.Column) string {
 	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
-	if column.Generated {
-		sql = sql + " AUTO_INCREMENT"
+	if column.Name == consts.ID {
+		sql = fmt.Sprintf(sql+" AUTO_INCREMENT = %d", config.SERVICE_ID<<52+column.Entity.InnerId<<32)
 	}
 	return sql
 }

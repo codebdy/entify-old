@@ -14,7 +14,7 @@ const (
 
 type EntityMeta struct {
 	Uuid        string       `json:"uuid"`
-	InnerId     uint         `json:"innerId"`
+	InnerId     uint64       `json:"innerId"`
 	Name        string       `json:"name"`
 	TableName   string       `json:"tableName"`
 	EntityType  string       `json:"entityType"`

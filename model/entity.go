@@ -65,7 +65,7 @@ func (entity *Entity) Table() *Table {
 }
 
 func (entity *Entity) makeColumns() {
-	entity.Columns = mapColumns(entity.EntityMeta.Columns, entity.model)
+	entity.Columns = mapColumns(entity.EntityMeta.Columns, entity, entity.model)
 	columns := entity.Columns
 	for i := range entity.Interfaces {
 		intf := entity.Interfaces[i]
