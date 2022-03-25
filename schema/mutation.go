@@ -39,15 +39,15 @@ func rootMutation() *graphql.Object {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity),
+			Type:    Cache.OutputObjectType(metaEntity),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity),
+			Type:    Cache.OutputObjectType(metaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity),
+			Type:    Cache.OutputObjectType(metaEntity),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
@@ -79,7 +79,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
-		Type: Cache.OutputType(entity),
+		Type: Cache.OutputObjectType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ID: &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -88,7 +88,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.SAVE+name] = &graphql.Field{
-		Type: Cache.OutputType(entity),
+		Type: Cache.OutputObjectType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
@@ -103,7 +103,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	}
 	//Resolve: entity.QueryResolve(),
 	(*feilds)[consts.SAVE_ONE+name] = &graphql.Field{
-		Type: Cache.OutputType(entity),
+		Type: Cache.OutputObjectType(entity),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{

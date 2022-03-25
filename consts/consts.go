@@ -6,6 +6,7 @@ const (
 	ROOT_SUBSCRIPTION_NAME = "Subscription"
 
 	SERVICE    = "service"
+	NODE       = "node"
 	LOGIN      = "login"
 	LOGIN_NAME = "loginName"
 	PASSWORD   = "password"

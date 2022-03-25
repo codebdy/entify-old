@@ -4,7 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
@@ -32,6 +31,9 @@ func rootQuery() *graphql.Object {
 				}, nil
 			},
 		},
+		consts.NODE: &graphql.Field{
+			Type: NodeInterfaceType,
+		},
 	}
 
 	for _, entity := range model.TheModel.Entities {
@@ -46,7 +48,7 @@ func rootQuery() *graphql.Object {
 func queryResponseType(entity *model.Entity) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
-			OfType: Cache.OutputType(entity),
+			OfType: Cache.OutputObjectType(entity),
 		},
 	}
 }
@@ -72,18 +74,13 @@ func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 }
 
 func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
-	//如果是枚举
-	if entity.EntityType == meta.ENTITY_ENUM {
-		return
-	}
-
 	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type:    queryResponseType(entity),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}
 	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type:    Cache.OutputType(entity),
+		Type:    Cache.OutputObjectType(entity),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryOneResolveFn(entity),
 	}

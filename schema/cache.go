@@ -2,8 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/utils"
 )
 
 var Cache TypeCache
@@ -22,7 +23,17 @@ type TypeCache struct {
 	AggregateMap         map[string]*graphql.Output
 }
 
-//where表达式缓存，query跟mutation都用
+var NodeInterfaceType = graphql.NewInterface(
+	graphql.InterfaceConfig{
+		Name: utils.FirstUpper(consts.NODE),
+		Fields: graphql.Fields{
+			"id": &graphql.Field{
+				Type: graphql.ID,
+			},
+		},
+		Description: "Node interface",
+	},
+)
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
@@ -34,12 +45,12 @@ func (c *TypeCache) MakeCache() {
 	c.makeInputs()
 }
 
-func (c *TypeCache) OutputType(entity *model.Entity) graphql.Type {
-	if entity.EntityType == meta.ENTITY_INTERFACE {
-		return c.InterfaceTypeMap[entity.Name]
-	} else {
-		return c.ObjectTypeMap[entity.Name]
-	}
+func (c *TypeCache) OutputInterfaceType(entity *model.Entity) graphql.Type {
+	return c.InterfaceTypeMap[entity.Name]
+}
+
+func (c *TypeCache) OutputObjectType(entity *model.Entity) graphql.Type {
+	return c.ObjectTypeMap[entity.Name]
 }
 
 func (c *TypeCache) EnumType(entity *model.Enum) graphql.Type {
@@ -71,7 +82,7 @@ func (c *TypeCache) MutationResponse(entity *model.Entity) *graphql.Output {
 }
 
 func (c *TypeCache) mapInterfaces(entities []*model.Interface) []*graphql.Interface {
-	interfaces := []*graphql.Interface{}
+	interfaces := []*graphql.Interface{NodeInterfaceType}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])
 	}

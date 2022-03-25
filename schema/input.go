@@ -104,7 +104,7 @@ func makeMutationResponseType(entity *model.Entity) *graphql.Output {
 				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: Cache.OutputType(entity),
+							OfType: Cache.OutputObjectType(entity),
 						},
 					},
 				},

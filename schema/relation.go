@@ -12,7 +12,7 @@ func (c *TypeCache) makeRelations() {
 		for _, assocition := range intf.Associations {
 			objectType.AddFieldConfig(assocition.Name, &graphql.Field{
 				Name:        assocition.Name,
-				Type:        c.OutputType(assocition.TypeEntity),
+				Type:        c.OutputObjectType(assocition.TypeEntity),
 				Description: assocition.Description,
 			})
 		}
@@ -23,7 +23,7 @@ func (c *TypeCache) makeRelations() {
 		for _, assocition := range entity.Associations {
 			objectType.AddFieldConfig(assocition.Name, &graphql.Field{
 				Name:        assocition.Name,
-				Type:        c.OutputType(assocition.TypeEntity),
+				Type:        c.OutputObjectType(assocition.TypeEntity),
 				Description: assocition.Description,
 			})
 		}
