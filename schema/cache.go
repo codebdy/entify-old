@@ -54,7 +54,11 @@ func (c *TypeCache) OutputType(name string) graphql.Type {
 	if intf != nil {
 		return intf
 	}
-	return c.ObjectTypeMap[name]
+	obj := c.ObjectTypeMap[name]
+	if obj == nil {
+		panic("Can not find output type of " + name)
+	}
+	return obj
 }
 
 func (c *TypeCache) EnumType(name string) graphql.Type {

@@ -226,7 +226,13 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	return nil
 }
 
-func (m *Model) GetEntityByName(name string) *Entity {
+func (m *Model) GetEntityOrInterfaceByName(name string) *Entity {
+	for i := range m.Interfaces {
+		intf := m.Interfaces[i]
+		if intf.Name == name {
+			return intf
+		}
+	}
 	for i := range m.Entities {
 		entity := m.Entities[i]
 		if entity.Name == name {

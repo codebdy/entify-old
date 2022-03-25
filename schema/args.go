@@ -7,22 +7,28 @@ import (
 )
 
 func (c *TypeCache) makeArgs() {
+	for i := range model.TheModel.Interfaces {
+		c.makeOneEntityArgs(model.TheModel.Interfaces[i])
+	}
 	for i := range model.TheModel.Entities {
-		entity := model.TheModel.Entities[i]
-		whereExp := makeWhereExp(entity)
-		c.WhereExpMap[entity.Name] = whereExp
-		orderByExp := makeOrderBy(entity)
-		c.OrderByMap[entity.Name] = orderByExp
-		distinctOnEnum := makeDistinctOnEnum(entity)
-		c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
+		c.makeOneEntityArgs(model.TheModel.Entities[i])
 	}
 	c.makeRelaionWhereExp()
+}
+
+func (c *TypeCache) makeOneEntityArgs(entity *model.Entity) {
+	whereExp := makeWhereExp(entity)
+	c.WhereExpMap[entity.Name] = whereExp
+	orderByExp := makeOrderBy(entity)
+	c.OrderByMap[entity.Name] = orderByExp
+	distinctOnEnum := makeDistinctOnEnum(entity)
+	c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
 }
 
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		entity := model.TheModel.GetEntityByName(entityName)
+		entity := model.TheModel.GetEntityOrInterfaceByName(entityName)
 		if entity == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}
