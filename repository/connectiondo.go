@@ -161,13 +161,17 @@ func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
-	_, err := con.Exec(saveStr, values...)
+	result, err := con.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Insert data failed:", err.Error())
 		return nil, err
 	}
 
-	id := object[consts.META_ID]
+	id, err := result.LastInsertId()
+	if err != nil {
+		fmt.Println("LastInsertId failed:", err.Error())
+		return nil, err
+	}
 	savedObject, err := con.QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
@@ -206,7 +210,6 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, entity *model.
 
 func (con *Connection) doSaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
 	if object[consts.META_ID] == nil {
-		object[consts.META_ID] = utils.CreateId()
 		return con.doInsertOne(object, entity)
 	} else {
 		return con.doUpdateOne(object, entity)
