@@ -71,3 +71,11 @@ func (relation *Relation) TargetInnerId() uint64 {
 	targetEntity := relation.model.GetEntityByUuid(relation.TargetId)
 	return targetEntity.InnerId
 }
+
+func (r *Relation) RelationSourceColumnName() string {
+	return r.SouceTableName() + consts.ID_SUFFIX
+}
+
+func (r *Relation) RelationTargetColumnName() string {
+	return r.TargetTableName() + consts.ID_SUFFIX
+}

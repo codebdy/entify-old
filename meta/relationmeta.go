@@ -1,7 +1,5 @@
 package meta
 
-import "rxdrag.com/entity-engine/consts"
-
 const (
 	IMPLEMENTS   string = "implements"
 	ONE_TO_ONE   string = "oneToOne"
@@ -27,12 +25,4 @@ type RelationMeta struct {
 	OwnerId             string `json:"ownerId"`
 	//多对多关联自定义列
 	Columns []ColumnMeta `json:"columns"`
-}
-
-func (r *RelationMeta) RelationSourceColumnName() string {
-	return r.RoleOfTarget + consts.ID_SUFFIX
-}
-
-func (r *RelationMeta) RelationTargetColumnName() string {
-	return r.RoleOfSource + consts.ID_SUFFIX
 }
