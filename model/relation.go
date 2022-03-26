@@ -12,6 +12,11 @@ type Relation struct {
 	model *Model
 }
 
+type InheritedRelation struct {
+	Relation
+	InheritFrom *Relation
+}
+
 func (relation *Relation) Table() *Table {
 	table := &Table{
 		MetaUuid: relation.Uuid,

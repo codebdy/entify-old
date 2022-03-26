@@ -19,8 +19,8 @@ type RelationMeta struct {
 	RelationType        string `json:"relationType"`
 	SourceId            string `json:"sourceId"`
 	TargetId            string `json:"targetId"`
-	RoleOnSource        string `json:"roleOnSource"`
-	RoleOnTarget        string `json:"roleOnTarget"`
+	RoleOfTarget        string `json:"roleOfTarget"`
+	RoleOfSource        string `json:"roleOfSource"`
 	DescriptionOnSource string `json:"descriptionOnSource"`
 	DescriptionOnTarget string `json:"descriptionOnTarget"`
 	CascadeType         string `json:"cascadeType"`
@@ -30,9 +30,9 @@ type RelationMeta struct {
 }
 
 func (r *RelationMeta) RelationSourceColumnName() string {
-	return r.RoleOnSource + consts.ID_SUFFIX
+	return r.RoleOfTarget + consts.ID_SUFFIX
 }
 
 func (r *RelationMeta) RelationTargetColumnName() string {
-	return r.RoleOnTarget + consts.ID_SUFFIX
+	return r.RoleOfSource + consts.ID_SUFFIX
 }

@@ -7,11 +7,12 @@ import (
 )
 
 type Model struct {
-	Enums      []*Enum
-	Interfaces []*Entity
-	Entities   []*Entity
-	Relations  []*Relation
-	Tables     []*Table
+	Enums              []*Enum
+	Interfaces         []*Entity
+	Entities           []*Entity
+	Relations          []*Relation
+	InheritedRelations []*InheritedRelation
+	Tables             []*Table
 }
 
 func (m *Model) Validate() {
@@ -157,8 +158,8 @@ func (model *Model) buildRelations(relations []*meta.RelationMeta) {
 }
 
 func (model *Model) decomposeRelation(src *Entity, tar *Entity, relation *meta.RelationMeta) {
-	src.Associations[relation.RoleOnSource] = &Association{
-		Name: relation.RoleOnSource,
+	src.Associations[relation.RoleOfTarget] = &Association{
+		Name: relation.RoleOfTarget,
 		Relation: &Relation{
 			RelationMeta: *relation,
 			model:        model,
@@ -167,8 +168,8 @@ func (model *Model) decomposeRelation(src *Entity, tar *Entity, relation *meta.R
 		OfEntity:    model.GetEntityByUuid(relation.SourceId),
 		Description: relation.DescriptionOnSource,
 	}
-	tar.Associations[relation.RoleOnTarget] = &Association{
-		Name: relation.RoleOnTarget,
+	tar.Associations[relation.RoleOfSource] = &Association{
+		Name: relation.RoleOfSource,
 		Relation: &Relation{
 			RelationMeta: *relation,
 			model:        model,
