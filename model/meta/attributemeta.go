@@ -1,4 +1,4 @@
-package domain
+package meta
 
 const (
 	ATTRIBUTE_ID           string = "ID"

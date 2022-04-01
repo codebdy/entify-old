@@ -1,4 +1,4 @@
-package domain
+package meta
 
 const (
 	CLASSS_ENTITY      string = "Normal"
