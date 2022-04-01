@@ -3,15 +3,15 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/utils"
 )
 
 func AvgFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -28,7 +28,7 @@ func AvgFields(entity *model.Entity) graphql.Fields {
 func MaxFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -45,7 +45,7 @@ func MaxFields(entity *model.Entity) graphql.Fields {
 func MinFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -73,7 +73,7 @@ func SelectFields(entity *model.Entity) graphql.InputObjectConfigFieldMap {
 func StddevFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -90,7 +90,7 @@ func StddevFields(entity *model.Entity) graphql.Fields {
 func StddevPopFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -106,7 +106,7 @@ func StddevPopFields(entity *model.Entity) graphql.Fields {
 func StddevSampFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -123,7 +123,7 @@ func StddevSampFields(entity *model.Entity) graphql.Fields {
 func SumFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -140,7 +140,7 @@ func SumFields(entity *model.Entity) graphql.Fields {
 func VarPopFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -157,7 +157,7 @@ func VarPopFields(entity *model.Entity) graphql.Fields {
 func VarSampFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -174,7 +174,7 @@ func VarSampFields(entity *model.Entity) graphql.Fields {
 func VarianceFields(entity *model.Entity) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range entity.Columns {
-		if column.Type == meta.COLUMN_INT || column.Type == meta.COLUMN_FLOAT {
+		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: ColumnType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {

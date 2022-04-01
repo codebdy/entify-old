@@ -3,8 +3,8 @@ package dialect
 import (
 	"testing"
 
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 )
 
 func TestModifyTableName(t *testing.T) {
@@ -49,17 +49,17 @@ func TestModifyColumnName(t *testing.T) {
 			ModifyColumns: []model.ColumnDiff{
 				{
 					OldColumn: &model.Column{
-						ColumnMeta: meta.ColumnMeta{
+						ColumnMeta: oldmeta.ColumnMeta{
 							Name: "newColumn1",
 							Uuid: "column1",
-							Type: meta.COLUMN_STRING,
+							Type: oldmeta.COLUMN_STRING,
 						},
 					},
 					NewColumn: &model.Column{
-						ColumnMeta: meta.ColumnMeta{
+						ColumnMeta: oldmeta.ColumnMeta{
 							Name: "nickname",
 							Uuid: "column1",
-							Type: meta.COLUMN_STRING,
+							Type: oldmeta.COLUMN_STRING,
 						},
 					},
 				},

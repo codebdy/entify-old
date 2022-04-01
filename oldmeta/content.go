@@ -1,4 +1,4 @@
-package meta
+package oldmeta
 
 type MetaContent struct {
 	Entities  []EntityMeta   `json:"entities"`

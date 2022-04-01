@@ -1,4 +1,4 @@
-package meta
+package oldmeta
 
 const (
 	IMPLEMENTS   string = "implements"

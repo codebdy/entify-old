@@ -2,7 +2,7 @@ package model
 
 import (
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/oldmeta"
 )
 
 const (
@@ -14,10 +14,10 @@ const (
 	META_STATUS_ENUM_UUID string = "META_STATUS_ENUM_UUID"
 )
 
-var MetaStatusEnum = meta.EntityMeta{
+var MetaStatusEnum = oldmeta.EntityMeta{
 	Uuid:       META_STATUS_ENUM_UUID,
 	Name:       "MetaStatus",
-	EntityType: meta.ENTITY_ENUM,
+	EntityType: oldmeta.ENTITY_ENUM,
 	EnumValues: map[string]interface{}{
 		META_STATUS_PUBLISHED: map[string]string{
 			"value": META_STATUS_PUBLISHED,
@@ -34,42 +34,42 @@ var MetaStatusEnum = meta.EntityMeta{
 	},
 }
 
-var MetaEntity = meta.EntityMeta{
+var MetaEntity = oldmeta.EntityMeta{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       consts.META_ENTITY_NAME,
 	TableName:  "meta",
 	InnerId:    1,
-	EntityType: meta.ENTITY_NORMAL,
-	Columns: []meta.ColumnMeta{
+	EntityType: oldmeta.ENTITY_NORMAL,
+	Columns: []oldmeta.ColumnMeta{
 		{
 			Uuid: "META_COLUMN_ID_UUID",
-			Type: meta.COLUMN_ID,
+			Type: oldmeta.COLUMN_ID,
 			Name: consts.META_ID,
 		},
 		{
 			Uuid: "META_COLUMN_CONTENT_UUID",
-			Type: meta.COLUMN_SIMPLE_JSON,
+			Type: oldmeta.COLUMN_SIMPLE_JSON,
 			Name: consts.META_CONTENT,
 		},
 		{
 			Uuid:     "META_COLUMN_STATUS_UUID",
-			Type:     meta.COLUMN_ENUM,
+			Type:     oldmeta.COLUMN_ENUM,
 			Name:     consts.META_STATUS,
 			EnumUuid: META_STATUS_ENUM_UUID,
 		},
 		{
 			Uuid: "META_COLUMN_PUBLISHED_AT_UUID",
-			Type: meta.COLUMN_DATE,
+			Type: oldmeta.COLUMN_DATE,
 			Name: consts.META_PUBLISHEDAT,
 		},
 		{
 			Uuid: "META_COLUMN_CREATED_AT_UUID",
-			Type: meta.COLUMN_DATE,
+			Type: oldmeta.COLUMN_DATE,
 			Name: consts.META_CREATEDAT,
 		},
 		{
 			Uuid: "META_COLUMN_UPDATED_AT_UUID",
-			Type: meta.COLUMN_DATE,
+			Type: oldmeta.COLUMN_DATE,
 			Name: consts.META_UPDATEDAT,
 		},
 	},

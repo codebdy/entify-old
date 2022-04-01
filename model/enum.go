@@ -1,8 +1,8 @@
 package model
 
-import "rxdrag.com/entity-engine/meta"
+import "rxdrag.com/entity-engine/oldmeta"
 
 type Enum struct {
-	meta.EntityMeta
+	oldmeta.EntityMeta
 	model *Model
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/oldmeta"
 )
 
 func TestModifyEntityName(t *testing.T) {
@@ -60,9 +60,9 @@ func TestModifyEntityName(t *testing.T) {
 	}
 	`
 
-	oldM := NewModel(&meta.MetaContent{})
+	oldM := NewModel(&oldmeta.MetaContent{})
 	json.Unmarshal([]byte(oldData), &oldM)
-	newM := NewModel(&meta.MetaContent{})
+	newM := NewModel(&oldmeta.MetaContent{})
 	json.Unmarshal([]byte(newData), &newM)
 	diff := CreateDiff(oldM, newM)
 
@@ -81,15 +81,15 @@ func TestModifyEntityName(t *testing.T) {
 
 func TestModifiedTableName(t *testing.T) {
 	diff := CreateDiff(
-		NewModel(&meta.MetaContent{
-			Entities: []meta.EntityMeta{
+		NewModel(&oldmeta.MetaContent{
+			Entities: []oldmeta.EntityMeta{
 				{
 					Name: "OldName",
 				},
 			},
 		}),
-		NewModel(&meta.MetaContent{
-			Entities: []meta.EntityMeta{
+		NewModel(&oldmeta.MetaContent{
+			Entities: []oldmeta.EntityMeta{
 				{
 					Name: "NewName",
 				},
@@ -114,18 +114,18 @@ func TestModifiedTableName(t *testing.T) {
 func TestColumnDifferent(t *testing.T) {
 	diff := columnDifferent(
 		&Column{
-			ColumnMeta: meta.ColumnMeta{
+			ColumnMeta: oldmeta.ColumnMeta{
 				Name: "newColumn1",
 				Uuid: "column1",
-				Type: meta.COLUMN_STRING,
+				Type: oldmeta.COLUMN_STRING,
 			},
 			model: nil,
 		},
 		&Column{
-			ColumnMeta: meta.ColumnMeta{
+			ColumnMeta: oldmeta.ColumnMeta{
 				Name: "nickname",
 				Uuid: "column1",
-				Type: meta.COLUMN_STRING,
+				Type: oldmeta.COLUMN_STRING,
 			},
 			model: nil,
 		},
@@ -152,10 +152,10 @@ func TestChangeTableColumnName(t *testing.T) {
 			MetaUuid: "User-uuid",
 			Columns: []*Column{
 				{
-					ColumnMeta: meta.ColumnMeta{
+					ColumnMeta: oldmeta.ColumnMeta{
 						Name: "newColumn1",
 						Uuid: "column1",
-						Type: meta.COLUMN_STRING,
+						Type: oldmeta.COLUMN_STRING,
 					},
 					model: nil,
 				},
@@ -166,10 +166,10 @@ func TestChangeTableColumnName(t *testing.T) {
 			MetaUuid: "User-uuid",
 			Columns: []*Column{
 				{
-					ColumnMeta: meta.ColumnMeta{
+					ColumnMeta: oldmeta.ColumnMeta{
 						Name: "nickname",
 						Uuid: "column1",
-						Type: meta.COLUMN_STRING,
+						Type: oldmeta.COLUMN_STRING,
 					},
 				},
 			},

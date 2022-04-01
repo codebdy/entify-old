@@ -5,7 +5,7 @@ import (
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -18,7 +18,7 @@ type Association struct {
 }
 
 type Entity struct {
-	meta.EntityMeta
+	oldmeta.EntityMeta
 	Associations map[string]*Association
 	Columns      []*Column
 	Interfaces   []*Entity
@@ -97,15 +97,15 @@ func findColumnByName(name string, columns []*Column) bool {
 }
 
 func (a *Association) IsArray() bool {
-	if a.Relation.RelationType == meta.ONE_TO_MANY {
+	if a.Relation.RelationType == oldmeta.ONE_TO_MANY {
 		if a.OfEntity.Uuid == a.Relation.SourceId {
 			return true
 		}
-	} else if a.Relation.RelationType == meta.MANY_TO_ONE {
+	} else if a.Relation.RelationType == oldmeta.MANY_TO_ONE {
 		if a.OfEntity.Uuid == a.Relation.TargetId {
 			return true
 		}
-	} else if a.Relation.RelationType == meta.MANY_TO_MANY {
+	} else if a.Relation.RelationType == oldmeta.MANY_TO_MANY {
 		return true
 	}
 	return false

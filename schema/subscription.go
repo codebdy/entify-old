@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/utils"
 
 	"github.com/graphql-go/graphql"
@@ -77,7 +77,7 @@ func RootSubscription() *graphql.Object {
 
 func appendToSubscriptionFields(entity *model.Entity, fields *graphql.Fields) {
 	//如果是枚举
-	if entity.EntityType == meta.ENTITY_ENUM {
+	if entity.EntityType == oldmeta.ENTITY_ENUM {
 		return
 	}
 

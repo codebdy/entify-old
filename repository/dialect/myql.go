@@ -7,8 +7,8 @@ import (
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -59,10 +59,10 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 	typeStr := "text"
 	switch column.Type {
-	case meta.COLUMN_ID:
+	case oldmeta.COLUMN_ID:
 		typeStr = "bigint(64)"
 		break
-	case meta.COLUMN_INT:
+	case oldmeta.COLUMN_INT:
 		typeStr = "int"
 		if column.Length == 1 {
 			typeStr = "tinyint"
@@ -83,7 +83,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 			typeStr = typeStr + " UNSIGNED"
 		}
 		break
-	case meta.COLUMN_FLOAT:
+	case oldmeta.COLUMN_FLOAT:
 		if column.Length > 4 {
 			typeStr = "double"
 		} else {
@@ -96,10 +96,10 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 			typeStr = typeStr + " UNSIGNED"
 		}
 		break
-	case meta.COLUMN_BOOLEAN:
+	case oldmeta.COLUMN_BOOLEAN:
 		typeStr = "tinyint(1)"
 		break
-	case meta.COLUMN_STRING:
+	case oldmeta.COLUMN_STRING:
 		typeStr = "text"
 		if column.Length > 0 {
 			if column.Length <= 255 {
@@ -113,19 +113,19 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
 			}
 		}
 		break
-	case meta.COLUMN_DATE:
+	case oldmeta.COLUMN_DATE:
 		typeStr = "datetime"
 		break
-	case meta.COLUMN_SIMPLE_JSON:
+	case oldmeta.COLUMN_SIMPLE_JSON:
 		typeStr = "json"
 		break
-	case meta.COLUMN_SIMPLE_ARRAY:
+	case oldmeta.COLUMN_SIMPLE_ARRAY:
 		typeStr = "json"
 		break
-	case meta.COLUMN_JSON_ARRAY:
+	case oldmeta.COLUMN_JSON_ARRAY:
 		typeStr = "json"
 		break
-	case meta.COLUMN_ENUM:
+	case oldmeta.COLUMN_ENUM:
 		typeStr = "tinytext"
 		break
 	}
@@ -261,9 +261,9 @@ func makeValues(keys []string, object map[string]interface{}, entity *model.Enti
 			panic("Can not find column:" + key)
 		}
 
-		if column.Type == meta.COLUMN_SIMPLE_JSON ||
-			column.Type == meta.COLUMN_SIMPLE_ARRAY ||
-			column.Type == meta.COLUMN_JSON_ARRAY {
+		if column.Type == oldmeta.COLUMN_SIMPLE_JSON ||
+			column.Type == oldmeta.COLUMN_SIMPLE_ARRAY ||
+			column.Type == oldmeta.COLUMN_JSON_ARRAY {
 			value, _ = json.Marshal(value)
 		}
 		fmt.Println("Make Field", key)

@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/oldmeta"
 )
 
 type Model struct {
@@ -24,7 +24,7 @@ func (m *Model) Validate() {
 	}
 }
 
-func NewModel(c *meta.MetaContent) *Model {
+func NewModel(c *oldmeta.MetaContent) *Model {
 	enums, interfaces, entities := c.SplitEntities()
 	inherits, relations := c.SplitRelations()
 
@@ -45,7 +45,7 @@ func NewModel(c *meta.MetaContent) *Model {
 	return &model
 }
 
-func (model *Model) buildEnums(metas []*meta.EntityMeta) {
+func (model *Model) buildEnums(metas []*oldmeta.EntityMeta) {
 	for i := range metas {
 		model.Enums[i] = &Enum{
 			EntityMeta: *metas[i],
@@ -54,7 +54,7 @@ func (model *Model) buildEnums(metas []*meta.EntityMeta) {
 	}
 }
 
-func (model *Model) buildInterfaces(metas []*meta.EntityMeta) {
+func (model *Model) buildInterfaces(metas []*oldmeta.EntityMeta) {
 	for i := range metas {
 		entity := &Entity{
 			EntityMeta:   *metas[i],
@@ -68,7 +68,7 @@ func (model *Model) buildInterfaces(metas []*meta.EntityMeta) {
 	}
 }
 
-func (model *Model) buildEntities(metas []*meta.EntityMeta) {
+func (model *Model) buildEntities(metas []*oldmeta.EntityMeta) {
 	for i := range metas {
 		entity := &Entity{
 			EntityMeta:   *metas[i],
@@ -81,7 +81,7 @@ func (model *Model) buildEntities(metas []*meta.EntityMeta) {
 	}
 }
 
-func (model *Model) buildInherits(relations []*meta.RelationMeta) {
+func (model *Model) buildInherits(relations []*oldmeta.RelationMeta) {
 	for i := range relations {
 		relation := relations[i]
 
@@ -98,7 +98,7 @@ func (model *Model) buildInherits(relations []*meta.RelationMeta) {
 		interfaceEntity.Children = append(interfaceEntity.Children, sourceEntity)
 	}
 }
-func (model *Model) buildRelations(relations []*meta.RelationMeta) {
+func (model *Model) buildRelations(relations []*oldmeta.RelationMeta) {
 	for i := range relations {
 		relation := relations[i]
 
@@ -157,7 +157,7 @@ func (model *Model) buildRelations(relations []*meta.RelationMeta) {
 	}
 }
 
-func (model *Model) decomposeRelation(src *Entity, tar *Entity, relation *meta.RelationMeta) {
+func (model *Model) decomposeRelation(src *Entity, tar *Entity, relation *oldmeta.RelationMeta) {
 	src.Associations[relation.RoleOfTarget] = &Association{
 		Name: relation.RoleOfTarget,
 		Relation: &Relation{
@@ -193,7 +193,7 @@ func (model *Model) buildTables() {
 
 	for i := range model.Relations {
 		relation := model.Relations[i]
-		if relation.RelationType != meta.IMPLEMENTS {
+		if relation.RelationType != oldmeta.IMPLEMENTS {
 			relationTable := relation.Table()
 			model.Tables = append(model.Tables, relationTable)
 		}

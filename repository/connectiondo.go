@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/repository/dialect"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -17,23 +17,23 @@ func makeValues(entity *model.Entity) []interface{} {
 	for i, columnName := range names {
 		column := entity.GetColumn(columnName)
 		switch column.Type {
-		case meta.COLUMN_INT:
+		case oldmeta.COLUMN_INT:
 			var value sql.NullInt32
 			values[i] = &value
 			break
-		case meta.COLUMN_FLOAT:
+		case oldmeta.COLUMN_FLOAT:
 			var value sql.NullFloat64
 			values[i] = &value
 			break
-		case meta.COLUMN_BOOLEAN:
+		case oldmeta.COLUMN_BOOLEAN:
 			var value sql.NullBool
 			values[i] = &value
 			break
-		case meta.COLUMN_DATE:
+		case oldmeta.COLUMN_DATE:
 			var value sql.NullTime
 			values[i] = &value
 			break
-		case meta.COLUMN_SIMPLE_JSON:
+		case oldmeta.COLUMN_SIMPLE_JSON:
 			var value utils.JSON
 			values[i] = &value
 			break
@@ -55,37 +55,37 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 		columnName := names[i]
 		column := entity.GetColumn(columnName)
 		switch column.Type {
-		case meta.COLUMN_INT:
+		case oldmeta.COLUMN_INT:
 			nullValue := value.(*sql.NullInt64)
 			if nullValue.Valid {
 				object[columnName] = nullValue.Int64
 			}
 			break
-		case meta.COLUMN_FLOAT:
+		case oldmeta.COLUMN_FLOAT:
 			nullValue := value.(*sql.NullFloat64)
 			if nullValue.Valid {
 				object[columnName] = nullValue.Float64
 			}
 			break
-		case meta.COLUMN_BOOLEAN:
+		case oldmeta.COLUMN_BOOLEAN:
 			nullValue := value.(*sql.NullBool)
 			if nullValue.Valid {
 				object[columnName] = nullValue.Bool
 			}
 			break
-		case meta.COLUMN_DATE:
+		case oldmeta.COLUMN_DATE:
 			nullValue := value.(*sql.NullTime)
 			if nullValue.Valid {
 				object[columnName] = nullValue.Time
 			}
 			break
-		case meta.COLUMN_SIMPLE_JSON:
+		case oldmeta.COLUMN_SIMPLE_JSON:
 			object[columnName] = value
 			break
-		case meta.COLUMN_JSON_ARRAY:
+		case oldmeta.COLUMN_JSON_ARRAY:
 			object[columnName] = value
 			break
-		case meta.COLUMN_SIMPLE_ARRAY:
+		case oldmeta.COLUMN_SIMPLE_ARRAY:
 			object[columnName] = value
 			break
 		default:

@@ -5,8 +5,8 @@ import (
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -63,7 +63,7 @@ func rootMutation() *graphql.Object {
 
 func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	//如果是枚举
-	if entity.EntityType == meta.ENTITY_ENUM {
+	if entity.EntityType == oldmeta.ENTITY_ENUM {
 		return
 	}
 

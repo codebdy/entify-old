@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
+	"rxdrag.com/entity-engine/oldmeta"
 )
 
 type Relation struct {
-	meta.RelationMeta
+	oldmeta.RelationMeta
 	model *Model
 }
 
@@ -23,18 +23,18 @@ func (relation *Relation) Table() *Table {
 		Name:     relation.TableName(),
 		Columns: []*Column{
 			{
-				ColumnMeta: meta.ColumnMeta{
+				ColumnMeta: oldmeta.ColumnMeta{
 					Name:  relation.RelationSourceColumnName(),
-					Type:  meta.COLUMN_ID,
+					Type:  oldmeta.COLUMN_ID,
 					Uuid:  relation.Uuid + consts.SUFFIX_SOURCE,
 					Index: true,
 				},
 				model: relation.model,
 			},
 			{
-				ColumnMeta: meta.ColumnMeta{
+				ColumnMeta: oldmeta.ColumnMeta{
 					Name:  relation.RelationTargetColumnName(),
-					Type:  meta.COLUMN_ID,
+					Type:  oldmeta.COLUMN_ID,
 					Uuid:  relation.Uuid + consts.SUFFIX_TARGET,
 					Index: true,
 				},
