@@ -1,13 +1,14 @@
 package table
 
 type Table struct {
-	MetaUuid string
-	Name     string
+	Uuid    string
+	Name    string
+	Columns []*Column
 }
 
-func FindTable(metaUuid string, tables []*Table) *Table {
+func FindTable(uuid string, tables []*Table) *Table {
 	for i := range tables {
-		if tables[i].MetaUuid == metaUuid {
+		if tables[i].Uuid == uuid {
 			return tables[i]
 		}
 	}
