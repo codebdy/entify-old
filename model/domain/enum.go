@@ -1,5 +1,6 @@
 package domain
 
 type Enum struct {
-	Name string
+	Name   string
+	Values []string
 }

@@ -1,6 +1,8 @@
 package domain
 
+import "rxdrag.com/entity-engine/model/meta"
+
 type Attribute struct {
-	Name  string
+	meta.AttributeMeta
 	Class *Class
 }

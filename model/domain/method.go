@@ -1,5 +1,7 @@
 package domain
 
+import "rxdrag.com/entity-engine/model/meta"
+
 type Method struct {
-	Name string
+	meta.MethodMeta
 }
