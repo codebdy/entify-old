@@ -1,5 +1,7 @@
 package domain
 
+import "rxdrag.com/entity-engine/model/meta"
+
 type Association struct {
 	Relation       *Relation
 	OwnerClassUuid string
@@ -34,5 +36,13 @@ func (a *Association) Description() string {
 		return a.Relation.DescriptionOnTarget
 	} else {
 		return a.Relation.DescriptionOnSource
+	}
+}
+
+func (a *Association) isArray() bool {
+	if a.Relation.Source.Uuid == a.OwnerClassUuid {
+		return a.Relation.SourceMutiplicity == meta.ZERO_MANY
+	} else {
+		return a.Relation.TargetMultiplicity == meta.ZERO_MANY
 	}
 }
