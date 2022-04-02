@@ -28,14 +28,17 @@ func New(m *meta.Model) *Model {
 		sourceClass := model.GetClassByUuid(relation.SourceId)
 		targetClass := model.GetClassByUuid(relation.TargetId)
 		if sourceClass == nil || targetClass == nil {
-			panic("Met not integral, can not find class of relation:" + relation.Uuid)
+			panic("Meta is not integral, can not find class of relation:" + relation.Uuid)
 		}
-		if relation.RelationType != meta.INHERIT {
-			model.Relations = append(model.Relations, NewRelation(relation, sourceClass, targetClass))
+		if relation.RelationType == meta.INHERIT {
+			sourceClass.Parents = append(sourceClass.Parents, targetClass)
+			targetClass.Children = append(targetClass.Children, sourceClass)
 		} else {
-
+			model.Relations = append(model.Relations, NewRelation(relation, sourceClass, targetClass))
 		}
 	}
+
+	//处理枚举属性
 
 	return &model
 }
