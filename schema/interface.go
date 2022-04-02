@@ -2,24 +2,24 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
-func (c *TypeCache) makeOutputInterfaces(interfaces []*model.Entity) {
+func (c *TypeCache) makeOutputInterfaces(interfaces []*graph.Entity) {
 	for i := range interfaces {
 		entity := interfaces[i]
-		c.InterfaceTypeMap[entity.Name] = c.InterfaceType(entity)
+		c.InterfaceTypeMap[entity.Name()] = c.InterfaceType(entity)
 	}
 }
 
-func (c *TypeCache) InterfaceType(entity *model.Entity) *graphql.Interface {
-	name := entity.Name
+func (c *TypeCache) InterfaceType(entity *graph.Entity) *graphql.Interface {
+	name := entity.Name()
 
 	return graphql.NewInterface(
 		graphql.InterfaceConfig{
 			Name:        name,
-			Fields:      outputFields(entity.Columns),
-			Description: entity.Description,
+			Fields:      outputFields(entity.Attributes),
+			Description: entity.Description(),
 		},
 	)
 
