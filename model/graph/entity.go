@@ -19,20 +19,6 @@ func NewEntity(c *domain.Class) *Entity {
 	}
 }
 
-func (e *Entity) Uuid() string {
-	if e.Domain.HasChildren() {
-		return e.Domain.Uuid + "-entity"
-	}
-	return e.Domain.Uuid
-}
-
-func (e *Entity) Name() string {
-	if e.Domain.HasChildren() {
-		return e.Domain.Name + "Enity"
-	}
-	return e.Domain.Name
-}
-
 func (e *Entity) GetHasManyName() string {
 	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_MANY
 }
