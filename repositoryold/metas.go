@@ -1,4 +1,4 @@
-package repository
+package repositoryold
 
 import (
 	"github.com/mitchellh/mapstructure"

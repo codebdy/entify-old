@@ -1,4 +1,4 @@
-package repository
+package repositoryold
 
 import (
 	"database/sql"
@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/oldmeta"
-	"rxdrag.com/entity-engine/repository/dialectold"
+	"rxdrag.com/entity-engine/repositoryold/dialectold"
 	"rxdrag.com/entity-engine/utils"
 )
 

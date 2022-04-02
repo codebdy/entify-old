@@ -1,11 +1,11 @@
-package repository
+package repositoryold
 
 import (
 	"fmt"
 	"log"
 
 	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/repository/dialectold"
+	"rxdrag.com/entity-engine/repositoryold/dialectold"
 )
 
 func ExcuteDiff(d *model.Diff) {
