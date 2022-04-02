@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/repository/dialect"
+	"rxdrag.com/entity-engine/repository/dialectold"
 )
 
 func ExcuteDiff(d *model.Diff) {
@@ -43,7 +43,7 @@ func ExcuteDiff(d *model.Diff) {
 }
 
 func DeleteTable(table *model.Table, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialect.GetSQLBuilder()
+	sqlBuilder := dialectold.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
 	_, err := con.Exec(excuteSQL)
@@ -56,7 +56,7 @@ func DeleteTable(table *model.Table, undoList *[]string, con *Connection) error 
 }
 
 func CreateTable(table *model.Table, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialect.GetSQLBuilder()
+	sqlBuilder := dialectold.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
 	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	_, err := con.Exec(excuteSQL)
@@ -70,7 +70,7 @@ func CreateTable(table *model.Table, undoList *[]string, con *Connection) error 
 }
 
 func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialect.GetSQLBuilder()
+	sqlBuilder := dialectold.GetSQLBuilder()
 	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
 	for _, atom := range atoms {
 		_, err := con.Exec(atom.ExcuteSQL)

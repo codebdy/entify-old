@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/oldmeta"
-	"rxdrag.com/entity-engine/repository/dialect"
+	"rxdrag.com/entity-engine/repository/dialectold"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -100,7 +100,7 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 }
 
 func (con *Connection) doQueryEntity(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
-	builder := dialect.GetSQLBuilder()
+	builder := dialectold.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(entity, args)
 	rows, err := con.Query(queryStr, params...)
 	if err != nil {
@@ -138,7 +138,7 @@ func (con *Connection) QueryOneById(entity *model.Entity, id interface{}) (inter
 
 func (con *Connection) doQueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, error) {
 
-	builder := dialect.GetSQLBuilder()
+	builder := dialectold.GetSQLBuilder()
 
 	queryStr, params := builder.BuildQuerySQL(entity, args)
 
@@ -158,7 +158,7 @@ func (con *Connection) doQueryOne(entity *model.Entity, args map[string]interfac
 }
 
 func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
-	sqlBuilder := dialect.GetSQLBuilder()
+	sqlBuilder := dialectold.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
 	for _, association := range entity.Associations {
@@ -194,7 +194,7 @@ func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.
 
 func (con *Connection) doUpdateOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
 
-	sqlBuilder := dialect.GetSQLBuilder()
+	sqlBuilder := dialectold.GetSQLBuilder()
 
 	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
 	fmt.Println(saveStr)
