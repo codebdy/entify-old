@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entity-engine/repositoryold"
 )
 
 func Login(loginName, pwd string) (string, error) {
-	con, err := repository.OpenConnection()
+	con, err := repositoryold.OpenConnection()
 	defer con.Close()
 	if err != nil {
 		fmt.Println(err)
