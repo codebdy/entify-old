@@ -14,5 +14,5 @@ type Relation struct {
 	DescriptionOnTarget string
 	SourceMutiplicity   string
 	TargetMultiplicity  string
-	AssociationClass    *meta.AssociationClass
+	AssociationClass    meta.AssociationClass
 }

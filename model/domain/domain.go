@@ -19,5 +19,6 @@ func New(m *meta.Model) *Model {
 			model.Classes[i] = NewClass(class)
 		}
 	}
+
 	return &model
 }
