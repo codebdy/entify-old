@@ -8,7 +8,7 @@ import (
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/handler"
 	"rxdrag.com/entity-engine/resolve"
-	"rxdrag.com/entity-engine/schema"
+	"rxdrag.com/entity-engine/schemaold"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	// }()
 
 	h := handler.New(&handler.Config{
-		SchemaResolveFn: schema.ResolveSchema,
+		SchemaResolveFn: schemaold.ResolveSchema,
 		Pretty:          true,
 	})
 
@@ -36,12 +36,11 @@ func main() {
 			),
 		),
 	)
-	http.HandleFunc("/subscriptions", handler.NewFunc(schema.ResolveSchema))
+	http.HandleFunc("/subscriptions", handler.NewFunc(schemaold.ResolveSchema))
 	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
 	fmt.Println("Subscriptions endpoint is http://localhost:8080/subscriptions")
 	err2 := http.ListenAndServe(":8080", nil)
 	if err2 != nil {
 		fmt.Printf("启动失败:%s", err2)
 	}
-
 }
