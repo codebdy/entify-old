@@ -29,24 +29,29 @@ func New(m *domain.Model) *Model {
 		if cls.StereoType == meta.CLASSS_ABSTRACT {
 			model.Interfaces = append(model.Interfaces, NewInterface(cls))
 		} else if cls.StereoType == meta.CLASSS_ENTITY && cls.HasChildren() {
-			model.Interfaces = append(model.Interfaces, NewInterface(cls))
+			intf := NewInterface(cls)
+			entity := NewEntity(cls)
+			intf.Children = append(intf.Children, entity)
+			entity.Interfaces = append(entity.Interfaces, intf)
+			model.Interfaces = append(model.Interfaces, intf)
+			model.Entities = append(model.Entities, entity)
 		}
 	}
 
 	//构建所有实体
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY ||
+		if (cls.StereoType == meta.CLASSS_ENTITY && !cls.HasChildren()) ||
 			cls.StereoType == meta.CLASS_VALUE_OBJECT ||
 			cls.StereoType == meta.CLASS_SERVICE {
-			model.Entities = append(model.Entities, NewEntity(cls))
+			entity := NewEntity(cls)
+			model.Entities = append(model.Entities, entity)
 		}
 	}
 
 	//处理所有关联
 	for i := range m.Relations {
 		relation := m.Relations[i]
-		//这个地方还有问题，这个值应该不是惟一的
 		source := model.GetNodeByUuid(relation.Source.Uuid)
 		target := model.GetNodeByUuid(relation.Target.Uuid)
 		r := NewRelation(relation, source, target)

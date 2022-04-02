@@ -13,6 +13,14 @@ func NewInterface(c *domain.Class) *Interface {
 	}
 }
 
+func (i *Interface) Uuid() string {
+	return i.Domain.Uuid
+}
+
+func (i *Interface) Name() string {
+	return i.Domain.Name
+}
+
 func (i *Interface) isInterface() bool {
 	return true
 }

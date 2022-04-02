@@ -18,6 +18,7 @@ type Relation struct {
 	SourceMutiplicity   string
 	TargetMultiplicity  string
 	AssociationClass    meta.AssociationClass
+	Children            []*DerivedRelation
 }
 
 type DerivedRelation struct {

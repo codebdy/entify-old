@@ -1,5 +1,10 @@
 package domain
 
+/**
+ * 在domain层，把有子类的实体，拆分成接口+实体
+ * 比如A => A + AEntity
+ */
+
 import (
 	"rxdrag.com/entity-engine/model/meta"
 )

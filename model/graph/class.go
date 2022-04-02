@@ -17,14 +17,6 @@ func NewClass(c *domain.Class) *Class {
 	}
 }
 
-func (c *Class) Uuid() string {
-	return c.Domain.Uuid
-}
-
-func (e *Class) Name() string {
-	return e.Domain.Name
-}
-
 func (e *Class) Description() string {
 	return e.Domain.Description
 }
