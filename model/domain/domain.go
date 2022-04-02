@@ -40,9 +40,6 @@ func New(m *meta.Model) *Model {
 			tar.Associations = append(tar.Associations, NewAssociation(r, tar.Uuid))
 		}
 	}
-
-	//处理枚举属性
-
 	return &model
 }
 

@@ -15,3 +15,16 @@ func (m *Model) Validate() {
 		}
 	}
 }
+
+/*
+处理枚举
+	for i := range model.Classes {
+		cls := model.Classes[i]
+		for j := range cls.Attributes {
+			attr := cls.Attributes[j]
+			if attr.Type == meta.ENUM || attr.Type == meta.ENTITY_ARRAY {
+				attr.
+			}
+		}
+	}
+*/
