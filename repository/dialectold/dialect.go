@@ -1,4 +1,4 @@
-package dialect
+package dialectold
 
 import (
 	"rxdrag.com/entity-engine/model"

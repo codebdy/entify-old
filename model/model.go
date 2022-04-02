@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 
+	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model/domain"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
@@ -15,6 +16,7 @@ type Model struct {
 	Domain *domain.Model
 	Grahp  *graph.Model
 	Tables []*table.Table
+	Schema *graphql.Schema
 
 	Enums              []*Enum
 	Interfaces         []*Entity
