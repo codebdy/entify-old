@@ -3,16 +3,14 @@ package db
 import (
 	"database/sql"
 	"log"
-
-	"rxdrag.com/entity-engine/config"
 )
 
-type Connection struct {
+type Dbx struct {
 	db *sql.DB
 	tx *sql.Tx
 }
 
-func (c *Connection) BeginTx() error {
+func (c *Dbx) BeginTx() error {
 	tx, err := c.db.Begin()
 	if err != nil {
 		return err
@@ -22,7 +20,7 @@ func (c *Connection) BeginTx() error {
 	return nil
 }
 
-func (c *Connection) ClearTx() {
+func (c *Dbx) ClearTx() {
 	c.validateTx()
 	err := c.Rollback()
 	if err != sql.ErrTxDone && err != nil {
@@ -30,19 +28,19 @@ func (c *Connection) ClearTx() {
 	}
 }
 
-func (c *Connection) validateDb() {
+func (c *Dbx) validateDb() {
 	if c.db == nil {
 		panic("Not init connection with db")
 	}
 }
 
-func (c *Connection) validateTx() {
+func (c *Dbx) validateTx() {
 	if c.tx == nil {
 		panic("Not init connection with tx")
 	}
 }
 
-func (c *Connection) Exec(sql string, args ...interface{}) (sql.Result, error) {
+func (c *Dbx) Exec(sql string, args ...interface{}) (sql.Result, error) {
 	c.validateDb()
 	if c.tx != nil {
 		return c.tx.Exec(sql, args...)
@@ -50,7 +48,7 @@ func (c *Connection) Exec(sql string, args ...interface{}) (sql.Result, error) {
 	return c.db.Exec(sql, args...)
 }
 
-func (c *Connection) Query(query string, args ...interface{}) (*sql.Rows, error) {
+func (c *Dbx) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	c.validateDb()
 	if c.tx != nil {
 		return c.tx.Query(query, args...)
@@ -59,7 +57,7 @@ func (c *Connection) Query(query string, args ...interface{}) (*sql.Rows, error)
 	}
 }
 
-func (c *Connection) QueryRow(query string, args ...interface{}) *sql.Row {
+func (c *Dbx) QueryRow(query string, args ...interface{}) *sql.Row {
 	c.validateDb()
 	if c.tx != nil {
 		return c.tx.QueryRow(query, args...)
@@ -68,26 +66,26 @@ func (c *Connection) QueryRow(query string, args ...interface{}) *sql.Row {
 	}
 }
 
-func (c *Connection) Close() error {
+func (c *Dbx) Close() error {
 	c.validateDb()
 	return c.db.Close()
 }
 
-func (c *Connection) Commit() error {
+func (c *Dbx) Commit() error {
 	c.validateTx()
 	return c.tx.Commit()
 }
-func (c *Connection) Rollback() error {
+func (c *Dbx) Rollback() error {
 	c.validateTx()
 	return c.tx.Rollback()
 }
 
-func OpenConnection() (*Connection, error) {
-	db, err := sql.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+func Open(driver string, config string) (*Dbx, error) {
+	db, err := sql.Open(driver, config)
 	if err != nil {
 		return nil, err
 	}
-	con := Connection{
+	con := Dbx{
 		db: db,
 	}
 	return &con, err
