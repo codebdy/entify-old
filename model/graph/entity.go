@@ -12,18 +12,6 @@ type Entity struct {
 	Interfaces []*Interface
 }
 
-func (e *Entity) Name() string {
-	return e.Domain.Name
-}
-
-func (e *Entity) Uuid() string {
-	return e.Domain.Uuid
-}
-
-func (e *Entity) Description() string {
-	return e.Domain.Description
-}
-
 func (entity *Entity) GetHasManyName() string {
 	return utils.FirstUpper(consts.UPDATE) + entity.Name() + consts.HAS_MANY
 }

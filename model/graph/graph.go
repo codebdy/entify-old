@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/model/domain"
+	"rxdrag.com/entity-engine/model/table"
 )
 
 type Model struct {
 	Enums      []*Enum
 	Interfaces []*Interface
 	Entities   []*Entity
+	Tables     []*table.Table
 }
 
 func New(m *domain.Model) *Model {
