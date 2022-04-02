@@ -6,6 +6,7 @@ package domain
  */
 
 import (
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/meta"
 )
 
@@ -43,6 +44,29 @@ func New(m *meta.Model) *Model {
 			model.Relations = append(model.Relations, r)
 		}
 	}
+
+	//把实体继承，拆分成接口+实体类
+	newClases := []*Class{}
+	for i := range model.Classes {
+		cls := model.Classes[i]
+		if cls.StereoType == meta.CLASSS_ENTITY && cls.HasChildren() {
+			cls.StereoType = meta.CLASSS_ABSTRACT
+
+			newCls := &Class{
+				Uuid:        cls.Uuid + consts.ENTITY,
+				StereoType:  meta.CLASSS_ENTITY,
+				Name:        cls.Name + consts.ENTITY,
+				Description: cls.Name + " entity class",
+				Parents:     []*Class{cls},
+			}
+
+			cls.Children = append(cls.Children, newCls)
+			newClases = append(newClases, newCls)
+		}
+	}
+
+	model.Classes = append(model.Classes, newClases...)
+
 	return &model
 }
 

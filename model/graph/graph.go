@@ -28,24 +28,16 @@ func New(m *domain.Model) *Model {
 		cls := m.Classes[i]
 		if cls.StereoType == meta.CLASSS_ABSTRACT {
 			model.Interfaces = append(model.Interfaces, NewInterface(cls))
-		} else if cls.StereoType == meta.CLASSS_ENTITY && cls.HasChildren() {
-			intf := NewInterface(cls)
-			entity := NewEntity(cls)
-			intf.Children = append(intf.Children, entity)
-			entity.Interfaces = append(entity.Interfaces, intf)
-			model.Interfaces = append(model.Interfaces, intf)
-			model.Entities = append(model.Entities, entity)
 		}
 	}
 
 	//构建所有实体
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if (cls.StereoType == meta.CLASSS_ENTITY && !cls.HasChildren()) ||
+		if cls.StereoType == meta.CLASSS_ENTITY ||
 			cls.StereoType == meta.CLASS_VALUE_OBJECT ||
 			cls.StereoType == meta.CLASS_SERVICE {
-			entity := NewEntity(cls)
-			model.Entities = append(model.Entities, entity)
+			model.Entities = append(model.Entities, NewEntity(cls))
 		}
 	}
 

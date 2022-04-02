@@ -29,6 +29,7 @@ const (
 	UPDATE       = "update"
 	HAS_MANY     = "HasMany"
 	HAS_ONE      = "HasOne"
+	ENTITY       = "Entity"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"
