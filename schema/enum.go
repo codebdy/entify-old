@@ -2,25 +2,20 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
-func (c *TypeCache) makeEnums(enums []*model.Enum) {
+func (c *TypeCache) makeEnums(enums []*graph.Enum) {
 	for i := range enums {
 		enum := enums[i]
 		c.EnumTypeMap[enum.Name] = EnumType(enum)
 	}
 }
 
-func EnumType(entity *model.Enum) *graphql.Enum {
-	enumValues := entity.EnumValues
+func EnumType(entity *graph.Enum) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	for enumName, enumValue := range enumValues {
-		var value, ok = enumValue.(string)
-		if !ok {
-			value = enumValue.(map[string]string)["value"]
-		}
-		enumValueConfigMap[enumName] = &graphql.EnumValueConfig{
+	for _, value := range entity.Values {
+		enumValueConfigMap[value] = &graphql.EnumValueConfig{
 			Value: value,
 		}
 	}

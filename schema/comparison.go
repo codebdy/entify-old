@@ -3,7 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 var BooleanComparisonExp = graphql.InputObjectFieldConfig{
@@ -255,15 +255,15 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 	),
 }
 
-func EnumComparisonExp(column *model.Column) *graphql.InputObjectFieldConfig {
-	enumEntity := column.GetEnum()
+func EnumComparisonExp(attr *graph.Attribute) *graphql.InputObjectFieldConfig {
+	enumEntity := attr.EnityType
 	if enumEntity == nil {
 		panic("Can not find enum entity")
 	}
-	if Cache.EnumComparisonExpMap[enumEntity.Name] != nil {
-		return Cache.EnumComparisonExpMap[enumEntity.Name]
+	if Cache.EnumComparisonExpMap[enumEntity.Name()] != nil {
+		return Cache.EnumComparisonExpMap[enumEntity.Name()]
 	}
-	enumType := Cache.EnumType(enumEntity.Name)
+	enumType := Cache.EnumType(enumEntity.Name())
 	enumxp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{
@@ -288,6 +288,6 @@ func EnumComparisonExp(column *model.Column) *graphql.InputObjectFieldConfig {
 			},
 		),
 	}
-	Cache.EnumComparisonExpMap[enumEntity.Name] = &enumxp
+	Cache.EnumComparisonExpMap[enumEntity.Name()] = &enumxp
 	return &enumxp
 }
