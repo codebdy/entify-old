@@ -1,4 +1,4 @@
-package grahp
+package graph
 
 import "rxdrag.com/entity-engine/model/domain"
 

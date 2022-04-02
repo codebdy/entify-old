@@ -1,4 +1,4 @@
-package grahp
+package graph
 
 type Model struct {
 	Interfaces []*Interface
