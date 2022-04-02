@@ -46,12 +46,12 @@ func New(m *domain.Model) *Model {
 	//处理所有关联
 	for i := range m.Relations {
 		relation := m.Relations[i]
-		s := model.GetNodeByUuid(relation.Source.Uuid)
-		t := model.GetNodeByUuid(relation.Target.Uuid)
-		r := NewRelation(relation, s, t)
+		source := model.GetNodeByUuid(relation.Source.Uuid)
+		target := model.GetNodeByUuid(relation.Target.Uuid)
+		r := NewRelation(relation, source, target)
 		model.Relations = append(model.Relations, r)
-		s.AddAssociation(NewAssociation(r, s.Uuid()))
-		t.AddAssociation(NewAssociation(r, t.Uuid()))
+		source.AddAssociation(NewAssociation(r, source.Uuid()))
+		target.AddAssociation(NewAssociation(r, target.Uuid()))
 	}
 
 	return &model
