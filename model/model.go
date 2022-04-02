@@ -16,8 +16,8 @@ type Model struct {
 	Schema *graphql.Schema
 }
 
-func NewModel(c *meta.MetaContent) *Model {
-	metaModel := c.ToModel()
+func New(c *meta.MetaContent) *Model {
+	metaModel := meta.New(c)
 	model := Model{
 		Meta:   metaModel,
 		Domain: &domain.Model{},
