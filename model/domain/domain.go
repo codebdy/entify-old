@@ -25,16 +25,19 @@ func New(m *meta.Model) *Model {
 	for i := range m.Relations {
 		relation := m.Relations[i]
 
-		sourceClass := model.GetClassByUuid(relation.SourceId)
-		targetClass := model.GetClassByUuid(relation.TargetId)
-		if sourceClass == nil || targetClass == nil {
+		src := model.GetClassByUuid(relation.SourceId)
+		tar := model.GetClassByUuid(relation.TargetId)
+		if src == nil || tar == nil {
 			panic("Meta is not integral, can not find class of relation:" + relation.Uuid)
 		}
 		if relation.RelationType == meta.INHERIT {
-			sourceClass.Parents = append(sourceClass.Parents, targetClass)
-			targetClass.Children = append(targetClass.Children, sourceClass)
+			src.Parents = append(src.Parents, tar)
+			tar.Children = append(tar.Children, src)
 		} else {
-			model.Relations = append(model.Relations, NewRelation(relation, sourceClass, targetClass))
+			r := NewRelation(relation, src, tar)
+			model.Relations = append(model.Relations, r)
+			src.Associations = append(src.Associations, NewAssociation(r, src.Uuid))
+			tar.Associations = append(tar.Associations, NewAssociation(r, tar.Uuid))
 		}
 	}
 

@@ -7,7 +7,7 @@ type Class struct {
 	Type         string
 	Name         string
 	Description  string
-	Associations map[string]*Association
+	Associations []*Association
 	Attributes   []*Attribute
 	Methods      []*Method
 	Parents      []*Class
@@ -18,7 +18,7 @@ func NewClass(c *meta.ClassMeta) *Class {
 	cls := Class{
 		Name:         c.Name,
 		Description:  c.Description,
-		Associations: map[string]*Association{},
+		Associations: []*Association{},
 		Attributes:   make([]*Attribute, len(c.Attributes)),
 		Methods:      make([]*Method, len(c.Methods)),
 		Parents:      []*Class{},
