@@ -36,8 +36,6 @@ func New(m *meta.Model) *Model {
 		} else {
 			r := NewRelation(relation, src, tar)
 			model.Relations = append(model.Relations, r)
-			src.Associations = append(src.Associations, NewAssociation(r, src.Uuid))
-			tar.Associations = append(tar.Associations, NewAssociation(r, tar.Uuid))
 		}
 	}
 	return &model

@@ -1,10 +1,19 @@
 package graph
 
-import "rxdrag.com/entity-engine/model/meta"
+import (
+	"rxdrag.com/entity-engine/model/meta"
+)
 
 type Association struct {
 	Relation       *Relation
 	OwnerClassUuid string
+}
+
+func NewAssociation(r *Relation, ownerUuid string) *Association {
+	return &Association{
+		Relation:       r,
+		OwnerClassUuid: ownerUuid,
+	}
 }
 
 func (a *Association) Name() string {

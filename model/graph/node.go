@@ -7,4 +7,5 @@ type Node interface {
 	isInterface() bool
 	Interface() *Interface
 	Entity() *Entity
+	AddAssociation(a *Association)
 }

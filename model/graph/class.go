@@ -29,6 +29,10 @@ func (e *Class) Description() string {
 	return e.Domain.Description
 }
 
+func (e *Class) AddAssociation(a *Association) {
+	e.Associations = append(e.Associations, a)
+}
+
 //包含继承来的
 func (e *Class) AllAttributes() []*Attribute {
 	return []*Attribute{}
