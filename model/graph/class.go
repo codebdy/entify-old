@@ -11,6 +11,12 @@ type Class struct {
 	Domain       *domain.Class
 }
 
+func NewClass(c *domain.Class) *Class {
+	return &Class{
+		Domain: c,
+	}
+}
+
 func (c *Class) Uuid() string {
 	return c.Domain.Uuid
 }

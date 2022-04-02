@@ -2,6 +2,7 @@ package graph
 
 import (
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model/domain"
 	"rxdrag.com/entity-engine/model/table"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -12,10 +13,21 @@ type Entity struct {
 	Interfaces []*Interface
 }
 
-func (entity *Entity) GetHasManyName() string {
-	return utils.FirstUpper(consts.UPDATE) + entity.Name() + consts.HAS_MANY
+func NewEntity(c *domain.Class) *Entity {
+	return &Entity{
+		Class: *NewClass(c),
+	}
 }
 
-func (entity *Entity) GetHasOneName() string {
-	return utils.FirstUpper(consts.UPDATE) + entity.Name() + consts.HAS_ONE
+func (e *Entity) GetHasManyName() string {
+	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_MANY
+}
+
+func (e *Entity) GetHasOneName() string {
+	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_ONE
+}
+
+//有同名接口
+func (e *Entity) hasInterfaceWithSameName() bool {
+	return e.Domain.HasChildren()
 }

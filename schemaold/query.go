@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
+	modleold "rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -40,11 +40,11 @@ func rootQuery() *graphql.Object {
 			},
 		},
 	}
-	for _, intf := range model.TheModel.Interfaces {
+	for _, intf := range modleold.TheModel.Interfaces {
 		appendToQueryFields(intf, &queryFields)
 	}
 
-	for _, entity := range model.TheModel.Entities {
+	for _, entity := range modleold.TheModel.Entities {
 		appendToQueryFields(entity, &queryFields)
 	}
 
@@ -53,7 +53,7 @@ func rootQuery() *graphql.Object {
 	return graphql.NewObject(rootQueryConfig)
 }
 
-func queryResponseType(entity *model.Entity) graphql.Output {
+func queryResponseType(entity *modleold.Entity) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
 			OfType: Cache.OutputType(entity.Name),
@@ -61,7 +61,7 @@ func queryResponseType(entity *model.Entity) graphql.Output {
 	}
 }
 
-func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
+func quryeArgs(entity *modleold.Entity) graphql.FieldConfigArgument {
 	return graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(entity.Name),
@@ -81,7 +81,7 @@ func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 	}
 }
 
-func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
+func appendToQueryFields(entity *modleold.Entity, fields *graphql.Fields) {
 	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
 		Type:    queryResponseType(entity),
 		Args:    quryeArgs(entity),
@@ -94,7 +94,7 @@ func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(entity, []*model.Entity{}),
+		Type:    *AggregateType(entity, []*modleold.Entity{}),
 		Args:    quryeArgs(entity),
 		Resolve: resolve.QueryResolveFn(entity),
 	}

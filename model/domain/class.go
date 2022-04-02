@@ -4,7 +4,7 @@ import "rxdrag.com/entity-engine/model/meta"
 
 type Class struct {
 	Uuid         string
-	Type         string
+	StereoType   string
 	Name         string
 	Description  string
 	Associations []*Association
@@ -16,6 +16,8 @@ type Class struct {
 
 func NewClass(c *meta.ClassMeta) *Class {
 	cls := Class{
+		Uuid:         c.Uuid,
+		StereoType:   c.StereoType,
 		Name:         c.Name,
 		Description:  c.Description,
 		Associations: []*Association{},
@@ -34,4 +36,8 @@ func NewClass(c *meta.ClassMeta) *Class {
 	}
 
 	return &cls
+}
+
+func (c *Class) HasChildren() bool {
+	return len(c.Children) > 0
 }

@@ -2,17 +2,17 @@ package schemaold
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/modleold"
 )
 
-func (c *TypeCache) makeOutputObjects(normals []*model.Entity) {
+func (c *TypeCache) makeOutputObjects(normals []*modleold.Entity) {
 	for i := range normals {
 		entity := normals[i]
 		c.ObjectTypeMap[entity.Name] = c.ObjectType(entity)
 	}
 }
 
-func (c *TypeCache) ObjectType(entity *model.Entity) *graphql.Object {
+func (c *TypeCache) ObjectType(entity *modleold.Entity) *graphql.Object {
 	name := entity.Name
 	interfaces := c.mapInterfaces(entity.Interfaces)
 	if len(interfaces) > 0 {
@@ -36,7 +36,7 @@ func (c *TypeCache) ObjectType(entity *model.Entity) *graphql.Object {
 
 }
 
-func outputFields(columns []*model.Column) graphql.Fields {
+func outputFields(columns []*modleold.Column) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range columns {
 		fields[column.Name] = &graphql.Field{
