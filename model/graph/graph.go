@@ -1,10 +1,21 @@
 package graph
 
-import "fmt"
+import (
+	"fmt"
+
+	"rxdrag.com/entity-engine/model/domain"
+)
 
 type Model struct {
+	Enums      []*Enum
 	Interfaces []*Interface
 	Entities   []*Entity
+}
+
+func New(m *domain.Model) *Model {
+	model := Model{}
+
+	return &model
 }
 
 func (m *Model) Validate() {
@@ -14,6 +25,14 @@ func (m *Model) Validate() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name()))
 		}
 	}
+}
+
+func (m *Model) RootEnities() {
+
+}
+
+func (m *Model) RootInterfaces() {
+
 }
 
 /*
