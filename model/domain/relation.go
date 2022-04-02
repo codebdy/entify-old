@@ -16,3 +16,20 @@ type Relation struct {
 	TargetMultiplicity  string
 	AssociationClass    meta.AssociationClass
 }
+
+func NewRelation(r *meta.RelationMeta, s *Class, t *Class) *Relation {
+	return &Relation{
+		Uuid:                r.Uuid,
+		InnerId:             r.InnerId,
+		RelationType:        r.RelationType,
+		Source:              s,
+		Target:              t,
+		RoleOfTarget:        r.RoleOfTarget,
+		RoleOfSource:        r.RoleOfSource,
+		DescriptionOnSource: r.DescriptionOnSource,
+		DescriptionOnTarget: r.DescriptionOnTarget,
+		SourceMutiplicity:   r.SourceMutiplicity,
+		TargetMultiplicity:  r.TargetMultiplicity,
+		AssociationClass:    r.AssociationClass,
+	}
+}
