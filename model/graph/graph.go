@@ -52,7 +52,7 @@ func New(m *domain.Model) *Model {
 		}
 	}
 
-	//处理所有关联
+	//处理关联，只处理自身级别，不处理继承关系
 	for i := range m.Relations {
 		relation := m.Relations[i]
 		source := model.GetNodeByUuid(relation.Source.Uuid)
