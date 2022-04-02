@@ -110,8 +110,8 @@ func CreateDiff(published, next *Model) *Diff {
 		newContent: next,
 	}
 
-	publishedTables := published.Tables
-	nextTables := next.Tables
+	publishedTables := published.OldTables
+	nextTables := next.OldTables
 
 	for _, table := range publishedTables {
 		foundTable := FindTable(table.MetaUuid, nextTables)

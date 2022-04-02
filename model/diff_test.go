@@ -70,12 +70,12 @@ func TestModifyEntityName(t *testing.T) {
 		t.Errorf("Diffent table number is %d ,not 1", len(diff.ModifiedTables))
 	}
 
-	if diff.oldContent.Tables[0].Name != "user" {
-		t.Errorf("Old name is %s, not expected user", diff.oldContent.Tables[0].Name)
+	if diff.oldContent.OldTables[0].Name != "user" {
+		t.Errorf("Old name is %s, not expected user", diff.oldContent.OldTables[0].Name)
 	}
 
-	if diff.newContent.Tables[0].Name != "user2" {
-		t.Errorf("Old name is %s, not expected user2", diff.newContent.Tables[0].Name)
+	if diff.newContent.OldTables[0].Name != "user2" {
+		t.Errorf("Old name is %s, not expected user2", diff.newContent.OldTables[0].Name)
 	}
 }
 

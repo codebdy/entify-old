@@ -3,16 +3,25 @@ package model
 import (
 	"fmt"
 
+	"rxdrag.com/entity-engine/model/domain"
+	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entity-engine/model/table"
 	"rxdrag.com/entity-engine/oldmeta"
 )
 
 type Model struct {
+	Meta   *meta.Model
+	Domain *domain.Model
+	Grahp  *graph.Model
+	Tables []*table.Table
+
 	Enums              []*Enum
 	Interfaces         []*Entity
 	Entities           []*Entity
 	Relations          []*Relation
 	InheritedRelations []*InheritedRelation
-	Tables             []*Table
+	OldTables          []*Table
 }
 
 func (m *Model) Validate() {
@@ -33,7 +42,7 @@ func NewModel(c *oldmeta.MetaContent) *Model {
 		Interfaces: make([]*Entity, len(interfaces)),
 		Entities:   make([]*Entity, len(entities)),
 		Relations:  []*Relation{},
-		Tables:     []*Table{},
+		OldTables:  []*Table{},
 	}
 	model.buildEnums(enums)
 	model.buildInterfaces(interfaces)
@@ -188,14 +197,14 @@ func (model *Model) buildColumns() {
 
 func (model *Model) buildTables() {
 	for i := range model.Entities {
-		model.Tables = append(model.Tables, model.Entities[i].Table())
+		model.OldTables = append(model.OldTables, model.Entities[i].Table())
 	}
 
 	for i := range model.Relations {
 		relation := model.Relations[i]
 		if relation.RelationType != oldmeta.IMPLEMENTS {
 			relationTable := relation.Table()
-			model.Tables = append(model.Tables, relationTable)
+			model.OldTables = append(model.OldTables, relationTable)
 		}
 	}
 }

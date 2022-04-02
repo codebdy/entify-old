@@ -13,7 +13,7 @@ var serviceType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: utils.FirstUpper(consts.SERVICE),
 		Fields: graphql.Fields{
-			"id": &graphql.Field{
+			consts.ID: &graphql.Field{
 				Type: graphql.Int,
 			},
 		},
@@ -27,7 +27,7 @@ func rootQuery() *graphql.Object {
 			Type: serviceType,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return map[string]interface{}{
-					"id": config.SERVICE_ID,
+					consts.ID: config.SERVICE_ID,
 				}, nil
 			},
 		},
