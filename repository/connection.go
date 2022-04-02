@@ -2,7 +2,7 @@ package repository
 
 import (
 	"rxdrag.com/entity-engine/config"
-	"rxdrag.com/entity-engine/dbx"
+	"rxdrag.com/entity-engine/db"
 )
 
 type Connection struct {
@@ -10,7 +10,7 @@ type Connection struct {
 }
 
 func Open() (*Connection, error) {
-	dbx, err := dbx.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+	dbx, err := db.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
 	if err != nil {
 		return nil, err
 	}
@@ -18,4 +18,20 @@ func Open() (*Connection, error) {
 		dbx: dbx,
 	}
 	return &con, err
+}
+
+func (c *Connection) Close() error {
+	return c.dbx.Close()
+}
+
+func (c *Connection) BeginTx() error {
+	return c.dbx.BeginTx()
+}
+
+func (c *Connection) Commit() error {
+	return c.dbx.Commit()
+}
+
+func (c *Connection) ClearTx() {
+	c.dbx.ClearTx()
 }
