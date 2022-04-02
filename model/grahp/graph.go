@@ -1,5 +1,6 @@
 package grahp
 
-type Node interface {
-	Name() string
+type Model struct {
+	Interfaces []*Interface
+	Entities   []*Entity
 }

@@ -1,4 +1,4 @@
 package grahp
 
-type EnumNode struct {
+type Enum struct {
 }
