@@ -31,3 +31,13 @@ func (e *Entity) GetHasOneName() string {
 func (e *Entity) hasInterfaceWithSameName() bool {
 	return e.Domain.HasChildren()
 }
+
+func (e *Entity) isInterface() bool {
+	return false
+}
+func (e *Entity) Interface() *Interface {
+	return nil
+}
+func (e *Entity) Entity() *Entity {
+	return e
+}

@@ -5,6 +5,7 @@ const (
 	CLASSS_ENUM        string = "Enum"
 	CLASSS_ABSTRACT    string = "Abstract"
 	CLASS_VALUE_OBJECT string = "ValueObject"
+	CLASS_SERVICE      string = "Service"
 )
 
 type ClassMeta struct {

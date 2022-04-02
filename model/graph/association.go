@@ -15,7 +15,7 @@ func (a *Association) Name() string {
 	}
 }
 
-func (a *Association) Owner() *Entity {
+func (a *Association) Owner() Node {
 	if a.Relation.Source.Uuid() == a.OwnerClassUuid {
 		return a.Relation.Source
 	} else {
@@ -23,7 +23,7 @@ func (a *Association) Owner() *Entity {
 	}
 }
 
-func (a *Association) TypeClass() *Entity {
+func (a *Association) TypeClass() Node {
 	if a.Relation.Source.Uuid() == a.OwnerClassUuid {
 		return a.Relation.Target
 	} else {
