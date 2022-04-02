@@ -3,7 +3,6 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 )
 
@@ -96,7 +95,7 @@ func makeOrderBy(entity *graph.Entity) *graphql.InputObject {
 		},
 	)
 
-	columns := entity.Columns
+	columns := entity.Attributes
 	for i := range columns {
 		column := columns[i]
 		columnOrderBy := ColumnOrderBy(column)
@@ -107,9 +106,9 @@ func makeOrderBy(entity *graph.Entity) *graphql.InputObject {
 	return orderByExp
 }
 
-func makeDistinctOnEnum(entity *model.Entity) *graphql.Enum {
+func makeDistinctOnEnum(entity *graph.Entity) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	columns := entity.Columns
+	columns := entity.Attributes
 	for i := range columns {
 		column := columns[i]
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
@@ -119,7 +118,7 @@ func makeDistinctOnEnum(entity *model.Entity) *graphql.Enum {
 
 	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
-			Name:   entity.Name + consts.DISTINCTEXP,
+			Name:   entity.Name() + consts.DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)

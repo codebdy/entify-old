@@ -3,7 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -39,9 +39,9 @@ var NodeInterfaceType = graphql.NewInterface(
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
-	c.makeEnums(model.TheModel.Enums)
-	c.makeOutputInterfaces(model.TheModel.Interfaces)
-	c.makeOutputObjects(model.TheModel.Entities)
+	c.makeEnums(Model.graph.Enums)
+	c.makeOutputInterfaces(Model.graph.Interfaces)
+	c.makeOutputObjects(Model.graph.Entities)
 	c.makeRelations()
 	c.makeArgs()
 	c.makeInputs()
@@ -97,10 +97,10 @@ func (c *TypeCache) MutationResponse(name string) *graphql.Output {
 	return c.MutationResponseMap[name]
 }
 
-func (c *TypeCache) mapInterfaces(entities []*model.Entity) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*graph.Entity) []*graphql.Interface {
 	interfaces := []*graphql.Interface{NodeInterfaceType}
 	for i := range entities {
-		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name])
+		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name()])
 	}
 
 	return interfaces

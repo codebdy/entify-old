@@ -2,13 +2,13 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/scalars"
 )
 
-func ColumnType(column *model.Column) graphql.Output {
-	switch column.Type {
+func ColumnType(attr *graph.Attribute) graphql.Output {
+	switch attr.Type {
 	case oldmeta.COLUMN_ID:
 		return graphql.ID
 	case oldmeta.COLUMN_INT:
@@ -24,17 +24,17 @@ func ColumnType(column *model.Column) graphql.Output {
 	case oldmeta.COLUMN_SIMPLE_JSON, oldmeta.COLUMN_SIMPLE_ARRAY, oldmeta.COLUMN_JSON_ARRAY:
 		return scalars.JSONType
 	case oldmeta.COLUMN_ENUM:
-		enum := column.GetEnum()
+		enum := attr.EumnType
 		if enum == nil {
 			panic("Can not find enum entity")
 		}
 		return Cache.EnumType(enum.Name)
 	}
 
-	panic("No column type:" + column.Type)
+	panic("No column type:" + attr.Type)
 }
 
-func ColumnExp(column *model.Column) *graphql.InputObjectFieldConfig {
+func ColumnExp(column *graph.Attribute) *graphql.InputObjectFieldConfig {
 	switch column.Type {
 	case oldmeta.COLUMN_INT:
 		return &IntComparisonExp
@@ -57,7 +57,7 @@ func ColumnExp(column *model.Column) *graphql.InputObjectFieldConfig {
 	panic("No column type: " + column.Type)
 }
 
-func ColumnOrderBy(column *model.Column) *graphql.Enum {
+func ColumnOrderBy(column *graph.Attribute) *graphql.Enum {
 	switch column.Type {
 	case oldmeta.COLUMN_SIMPLE_JSON:
 		return nil
