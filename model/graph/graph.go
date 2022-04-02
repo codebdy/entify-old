@@ -46,6 +46,7 @@ func New(m *domain.Model) *Model {
 	//处理所有关联
 	for i := range m.Relations {
 		relation := m.Relations[i]
+		//这个地方还有问题，这个值应该不是惟一的
 		source := model.GetNodeByUuid(relation.Source.Uuid)
 		target := model.GetNodeByUuid(relation.Target.Uuid)
 		r := NewRelation(relation, source, target)
@@ -53,6 +54,8 @@ func New(m *domain.Model) *Model {
 		source.AddAssociation(NewAssociation(r, source.Uuid()))
 		target.AddAssociation(NewAssociation(r, target.Uuid()))
 	}
+
+	//处理Table
 
 	return &model
 }

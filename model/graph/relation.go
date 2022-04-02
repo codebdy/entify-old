@@ -20,6 +20,12 @@ type Relation struct {
 	AssociationClass    meta.AssociationClass
 }
 
+type DerivedRelation struct {
+	Parent *Relation
+	Source *Entity
+	Target *Entity
+}
+
 func NewRelation(r *domain.Relation, s Node, t Node) *Relation {
 	return &Relation{
 		Uuid:                r.Uuid,
