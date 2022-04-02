@@ -2,11 +2,8 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 )
-
-var Model model.Model
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 	reslult, err := resolve.PublishMetaResolve(p)

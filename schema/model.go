@@ -3,11 +3,13 @@ package schema
 import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
+
+var Model model.Model
 
 func QueryPublishedMeta() interface{} {
 	publishedMeta, err := repository.QueryOne(model.TheModel.GetMetaEntity(), repository.QueryArg{
@@ -39,8 +41,8 @@ func QueryNextMeta() interface{} {
 	return nextMeta
 }
 
-func DecodeContent(obj interface{}) *oldmeta.MetaContent {
-	content := oldmeta.MetaContent{}
+func DecodeContent(obj interface{}) *meta.MetaContent {
+	content := meta.MetaContent{}
 	if obj != nil {
 		err := mapstructure.Decode(obj.(utils.Object)[consts.META_CONTENT], &content)
 		if err != nil {
@@ -52,8 +54,8 @@ func DecodeContent(obj interface{}) *oldmeta.MetaContent {
 
 func LoadModel() {
 	//初始值，用户取meta信息，取完后，换掉该部分内容
-	initMeta := oldmeta.MetaContent{
-		Entities: []oldmeta.EntityMeta{
+	initMeta := meta.MetaContent{
+		Entities: []meta.EntityMeta{
 			model.MetaStatusEnum,
 			model.MetaEntity,
 		},
