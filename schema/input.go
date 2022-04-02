@@ -3,26 +3,26 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 func (c *TypeCache) makeInputs() {
-	for i := range model.TheModel.Entities {
-		entity := model.TheModel.Entities[i]
+	for i := range Model.graph.Entities {
+		entity := Model.graph.Entities[i]
 		c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
 		c.SaveInputMap[entity.Name] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
 	}
-	for i := range model.TheModel.Entities {
-		entity := model.TheModel.Entities[i]
+	for i := range Model.graph.Entities {
+		entity := Model.graph.Entities[i]
 		c.HasManyInputMap[entity.Name] = c.makeHasManyInput(entity)
 		c.HasOneInputMap[entity.Name] = c.makeHasOneInput(entity)
 	}
 	c.makeInputRelations()
 }
 
-func (c *TypeCache) makeHasManyInput(entity *model.Entity) *graphql.InputObject {
-	typeInput := c.SaveInput(entity.Name)
+func (c *TypeCache) makeHasManyInput(entity *graph.Entity) *graphql.InputObject {
+	typeInput := c.SaveInput(entity.Name())
 	listType := &graphql.List{
 		OfType: typeInput,
 	}
@@ -48,8 +48,8 @@ func (c *TypeCache) makeHasManyInput(entity *model.Entity) *graphql.InputObject 
 	})
 }
 
-func (c *TypeCache) makeHasOneInput(entity *model.Entity) *graphql.InputObject {
-	typeInput := c.SaveInput(entity.Name)
+func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
+	typeInput := c.SaveInput(entity.Name())
 	return graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: entity.GetHasOneName(),
 		Fields: graphql.InputObjectConfigFieldMap{
@@ -67,8 +67,8 @@ func (c *TypeCache) makeHasOneInput(entity *model.Entity) *graphql.InputObject {
 }
 
 func (c *TypeCache) makeInputRelations() {
-	for i := range model.TheModel.Entities {
-		entity := model.TheModel.Entities[i]
+	for i := range Model.graph.Entities {
+		entity := Model.graph.Entities[i]
 
 		input := c.UpdateInputMap[entity.Name]
 		update := c.SaveInputMap[entity.Name]
@@ -94,17 +94,17 @@ func (c *TypeCache) makeInputRelations() {
 	}
 }
 
-func (c *TypeCache) makeAssociationType(association *model.Association) *graphql.InputObject {
+func (c *TypeCache) makeAssociationType(association *graph.Association) *graphql.InputObject {
 	if association.IsArray() {
-		return c.HasManyInput(association.TypeEntity.Name)
+		return c.HasManyInput(association.TypeClass().Name())
 	} else {
-		return c.HasOneInput(association.TypeEntity.Name)
+		return c.HasOneInput(association.TypeClass().Name())
 	}
 }
 
-func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
+func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.Columns {
+	for _, column := range entity.Attributes {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type:        ColumnType(column),
@@ -115,8 +115,8 @@ func inputFields(entity *model.Entity, isPost bool) graphql.InputObjectConfigFie
 	return fields
 }
 
-func makeSaveInput(entity *model.Entity) *graphql.InputObject {
-	name := entity.Name + consts.INPUT
+func makeSaveInput(entity *graph.Entity) *graphql.InputObject {
+	name := entity.Name() + consts.INPUT
 
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
@@ -126,21 +126,21 @@ func makeSaveInput(entity *model.Entity) *graphql.InputObject {
 	)
 }
 
-func makeUpdateInput(entity *model.Entity) *graphql.InputObject {
+func makeUpdateInput(entity *graph.Entity) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + consts.UPDATE_INPUT,
+			Name:   entity.Name() + consts.UPDATE_INPUT,
 			Fields: inputFields(entity, false),
 		},
 	)
 }
 
-func makeMutationResponseType(entity *model.Entity) *graphql.Output {
+func makeMutationResponseType(entity *graph.Entity) *graphql.Output {
 	var returnValue graphql.Output
 
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
-			Name: entity.Name + consts.MUTATION_RESPONSE,
+			Name: entity.Name() + consts.MUTATION_RESPONSE,
 			Fields: graphql.Fields{
 				consts.RESPONSE_AFFECTEDROWS: &graphql.Field{
 					Type: graphql.Int,
@@ -148,7 +148,7 @@ func makeMutationResponseType(entity *model.Entity) *graphql.Output {
 				consts.RESPONSE_RETURNING: &graphql.Field{
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
-							OfType: Cache.OutputType(entity.Name),
+							OfType: Cache.OutputType(entity.Name()),
 						},
 					},
 				},

@@ -10,3 +10,7 @@ type Class struct {
 	Methods      []*Method
 	Domain       *domain.Class
 }
+
+func (c *Class) Uuid() string {
+	return c.Domain.Uuid
+}
