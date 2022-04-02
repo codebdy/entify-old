@@ -37,7 +37,18 @@ func New(m *domain.Model) *Model {
 		if cls.StereoType == meta.CLASSS_ENTITY ||
 			cls.StereoType == meta.CLASS_VALUE_OBJECT ||
 			cls.StereoType == meta.CLASS_SERVICE {
-			model.Entities = append(model.Entities, NewEntity(cls))
+			newEntity := NewEntity(cls)
+			model.Entities = append(model.Entities, newEntity)
+			//构建接口实现关系
+			allParents := cls.AllParents()
+			for j := range allParents {
+				parentInterface := model.GetInterfaceByUuid(allParents[j].Uuid)
+				if parentInterface == nil {
+					panic("Can not find interface by uuid:" + allParents[j].Uuid)
+				}
+				parentInterface.Children = append(parentInterface.Children, newEntity)
+				newEntity.Interfaces = append(newEntity.Interfaces, parentInterface)
+			}
 		}
 	}
 

@@ -9,7 +9,7 @@ type Class struct {
 	Description string
 	Attributes  []*Attribute
 	Methods     []*Method
-	Parents     []*Class
+	parents     []*Class
 	Children    []*Class
 }
 
@@ -21,7 +21,7 @@ func NewClass(c *meta.ClassMeta) *Class {
 		Description: c.Description,
 		Attributes:  make([]*Attribute, len(c.Attributes)),
 		Methods:     make([]*Method, len(c.Methods)),
-		Parents:     []*Class{},
+		parents:     []*Class{},
 		Children:    []*Class{},
 	}
 
@@ -38,4 +38,15 @@ func NewClass(c *meta.ClassMeta) *Class {
 
 func (c *Class) HasChildren() bool {
 	return len(c.Children) > 0
+}
+
+func (c *Class) AllParents() []*Class {
+	parents := []*Class{}
+	for i := range c.parents {
+		parent := c.parents[i]
+		parents = append(parents, parent)
+		parents = append(parents, parent.AllParents()...)
+	}
+
+	return parents
 }

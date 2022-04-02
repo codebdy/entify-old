@@ -37,7 +37,7 @@ func New(m *meta.Model) *Model {
 			panic("Meta is not integral, can not find class of relation:" + relation.Uuid)
 		}
 		if relation.RelationType == meta.INHERIT {
-			src.Parents = append(src.Parents, tar)
+			src.parents = append(src.parents, tar)
 			tar.Children = append(tar.Children, src)
 		} else {
 			r := NewRelation(relation, src, tar)
@@ -57,7 +57,7 @@ func New(m *meta.Model) *Model {
 				StereoType:  meta.CLASSS_ENTITY,
 				Name:        cls.Name + consts.ENTITY,
 				Description: cls.Name + " entity class",
-				Parents:     []*Class{cls},
+				parents:     []*Class{cls},
 			}
 
 			cls.Children = append(cls.Children, newCls)
