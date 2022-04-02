@@ -5,13 +5,12 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/oldmeta"
 	"rxdrag.com/entity-engine/repositoryold/dialectold"
 	"rxdrag.com/entity-engine/utils"
 )
 
-func makeValues(entity *model.Entity) []interface{} {
+func makeValues(entity *modelold.Entity) []interface{} {
 	names := entity.ColumnNames()
 	values := make([]interface{}, len(names))
 	for i, columnName := range names {
@@ -48,7 +47,7 @@ func makeValues(entity *model.Entity) []interface{} {
 	return values
 }
 
-func convertValuesToObject(values []interface{}, entity *model.Entity) map[string]interface{} {
+func convertValuesToObject(values []interface{}, entity *modelold.Entity) map[string]interface{} {
 	object := make(map[string]interface{})
 	names := entity.ColumnNames()
 	for i, value := range values {
@@ -99,7 +98,7 @@ func convertValuesToObject(values []interface{}, entity *model.Entity) map[strin
 	return object
 }
 
-func (con *Connection) doQueryEntity(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
+func (con *Connection) doQueryEntity(entity *modelold.Entity, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialectold.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(entity, args)
 	rows, err := con.Query(queryStr, params...)
@@ -126,7 +125,7 @@ func (con *Connection) doQueryEntity(entity *model.Entity, args map[string]inter
 	return instances, nil
 }
 
-func (con *Connection) QueryOneById(entity *model.Entity, id interface{}) (interface{}, error) {
+func (con *Connection) QueryOneById(entity *modelold.Entity, id interface{}) (interface{}, error) {
 	return con.doQueryOne(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -136,7 +135,7 @@ func (con *Connection) QueryOneById(entity *model.Entity, id interface{}) (inter
 	})
 }
 
-func (con *Connection) doQueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, error) {
+func (con *Connection) doQueryOne(entity *modelold.Entity, args map[string]interface{}) (interface{}, error) {
 
 	builder := dialectold.GetSQLBuilder()
 
@@ -157,7 +156,7 @@ func (con *Connection) doQueryOne(entity *model.Entity, args map[string]interfac
 	return convertValuesToObject(values, entity), nil
 }
 
-func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+func (con *Connection) doInsertOne(object map[string]interface{}, entity *modelold.Entity) (interface{}, error) {
 	sqlBuilder := dialectold.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
@@ -192,7 +191,7 @@ func (con *Connection) doInsertOne(object map[string]interface{}, entity *model.
 	return savedObject, nil
 }
 
-func (con *Connection) doUpdateOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+func (con *Connection) doUpdateOne(object map[string]interface{}, entity *modelold.Entity) (interface{}, error) {
 
 	sqlBuilder := dialectold.GetSQLBuilder()
 
@@ -214,7 +213,7 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, entity *model.
 	return savedObject, nil
 }
 
-func (con *Connection) doSaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+func (con *Connection) doSaveOne(object map[string]interface{}, entity *modelold.Entity) (interface{}, error) {
 	if object[consts.META_ID] == nil {
 		return con.doInsertOne(object, entity)
 	} else {

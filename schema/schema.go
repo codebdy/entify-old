@@ -2,10 +2,11 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 )
 
-var GQLSchema *graphql.Schema
+var Model model.Model
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 	reslult, err := resolve.PublishMetaResolve(p)
@@ -37,13 +38,15 @@ func MakeSchema() {
 		panic(err)
 		//log.Fatalf("failed to create new schema, error: %v", err)
 	}
-	GQLSchema = &theSchema
+	Model.Schema = &theSchema
 }
 
 func ResolveSchema() *graphql.Schema {
-	return GQLSchema
+	return Model.Schema
 }
 
 func init() {
+
+	LoadModel()
 	MakeSchema()
 }

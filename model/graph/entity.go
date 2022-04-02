@@ -9,3 +9,7 @@ type Entity struct {
 	Table      *table.Table
 	Interfaces []*Interface
 }
+
+func (e *Entity) Name() string {
+	return e.Domain.Name
+}

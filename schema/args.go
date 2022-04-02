@@ -4,31 +4,32 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 func (c *TypeCache) makeArgs() {
-	for i := range model.TheModel.Interfaces {
-		c.makeOneEntityArgs(model.TheModel.Interfaces[i])
+	for i := range Model.graph.Interfaces {
+		c.makeOneEntityArgs(Model.graph.Interfaces[i])
 	}
-	for i := range model.TheModel.Entities {
-		c.makeOneEntityArgs(model.TheModel.Entities[i])
+	for i := range Model.graph.Entities {
+		c.makeOneEntityArgs(Model.graph.Entities[i])
 	}
 	c.makeRelaionWhereExp()
 }
 
-func (c *TypeCache) makeOneEntityArgs(entity *model.Entity) {
+func (c *TypeCache) makeOneEntityArgs(entity *graph.Entity) {
 	whereExp := makeWhereExp(entity)
-	c.WhereExpMap[entity.Name] = whereExp
+	c.WhereExpMap[entity.Name()] = whereExp
 	orderByExp := makeOrderBy(entity)
-	c.OrderByMap[entity.Name] = orderByExp
+	c.OrderByMap[entity.Name()] = orderByExp
 	distinctOnEnum := makeDistinctOnEnum(entity)
-	c.DistinctOnEnumMap[entity.Name] = distinctOnEnum
+	c.DistinctOnEnumMap[entity.Name()] = distinctOnEnum
 }
 
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		entity := model.TheModel.GetEntityOrInterfaceByName(entityName)
+		entity := Model.graph.GetEntityOrInterfaceByName(entityName)
 		if entity == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}
@@ -42,8 +43,8 @@ func (c *TypeCache) makeRelaionWhereExp() {
 	}
 }
 
-func makeWhereExp(entity *model.Entity) *graphql.InputObject {
-	expName := entity.Name + consts.BOOLEXP
+func makeWhereExp(entity *graph.Entity) *graphql.InputObject {
+	expName := entity.Name() + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -72,7 +73,7 @@ func makeWhereExp(entity *model.Entity) *graphql.InputObject {
 		},
 	}
 
-	columns := entity.Columns
+	columns := entity.Attributes
 
 	for i := range columns {
 		column := columns[i]
@@ -85,12 +86,12 @@ func makeWhereExp(entity *model.Entity) *graphql.InputObject {
 	return boolExp
 }
 
-func makeOrderBy(entity *model.Entity) *graphql.InputObject {
+func makeOrderBy(entity *graph.Entity) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name + consts.ORDERBY,
+			Name:   entity.Name() + consts.ORDERBY,
 			Fields: fields,
 		},
 	)
