@@ -1,6 +1,8 @@
 package table
 
+import "rxdrag.com/entity-engine/model/meta"
+
 type Column struct {
-	Uuid string
-	Name string
+	meta.AttributeMeta
+	Table *Table
 }
