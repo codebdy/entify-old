@@ -1,4 +1,4 @@
-package modleold
+package model
 
 import (
 	"github.com/graphql-go/graphql"

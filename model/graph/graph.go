@@ -167,3 +167,7 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	}
 	return nil
 }
+
+func (m *Model) GetMetaEntity() *Entity {
+	return m.GetEntityByUuid(meta.MetaClass.Uuid)
+}

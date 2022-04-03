@@ -3,19 +3,20 @@ package schema
 import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/meta"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/meta"
+
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
 )
 
-var Model model.Model
+var Model *model.Model
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := repository.QueryOne(model.TheModel.GetMetaEntity(), repository.QueryArg{
+	publishedMeta, err := repository.QueryOne(Model.Grahp.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
-				consts.AEG_EQ: model.META_STATUS_PUBLISHED,
+				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})
@@ -27,7 +28,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := repository.QueryOne(model.TheModel.GetMetaEntity(), repository.QueryArg{
+	nextMeta, err := repository.QueryOne(Model.Grahp.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_ISNULL: true,
@@ -55,18 +56,18 @@ func DecodeContent(obj interface{}) *meta.MetaContent {
 func LoadModel() {
 	//初始值，用户取meta信息，取完后，换掉该部分内容
 	initMeta := meta.MetaContent{
-		Entities: []meta.EntityMeta{
-			model.MetaStatusEnum,
-			model.MetaEntity,
+		Classes: []meta.ClassMeta{
+			meta.MetaStatusEnum,
+			meta.MetaClass,
 		},
 	}
-	model.TheModel = model.NewModel(&initMeta)
+	Model = model.New(&initMeta)
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
-	publishedContent.Entities = append(publishedContent.Entities, model.MetaStatusEnum)
-	publishedContent.Entities = append(publishedContent.Entities, model.MetaEntity)
+	publishedContent.Classes = append(publishedContent.Classes, meta.MetaStatusEnum)
+	publishedContent.Classes = append(publishedContent.Classes, meta.MetaClass)
 
-	model.TheModel = model.NewModel(publishedContent)
+	Model = model.New(publishedContent)
 }
 
 func init() {
