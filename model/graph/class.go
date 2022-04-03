@@ -2,6 +2,7 @@ package graph
 
 import (
 	"rxdrag.com/entity-engine/model/domain"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type Class struct {
@@ -45,4 +46,8 @@ func (e *Class) AllAssociations() []*Association {
 
 func (e *Class) IsEmperty() bool {
 	return len(e.AllAttributes()) < 1 && len(e.AllAssociations()) < 1
+}
+
+func (c *Class) TableName() string {
+	return utils.SnakeString(c.Domain.Name)
 }

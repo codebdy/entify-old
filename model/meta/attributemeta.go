@@ -1,18 +1,5 @@
 package meta
 
-const (
-	ATTRIBUTE_ID           string = "ID"
-	ATTRIBUTE_INT          string = "Int"
-	ATTRIBUTE_FLOAT        string = "Float"
-	ATTRIBUTE_BOOLEAN      string = "Boolean"
-	ATTRIBUTE_STRING       string = "String"
-	ATTRIBUTE_DATE         string = "Date"
-	ATTRIBUTE_SIMPLE_JSON  string = "SimpleJson"
-	ATTRIBUTE_SIMPLE_ARRAY string = "simpleArray"
-	ATTRIBUTE_JSON_ARRAY   string = "JsonArray"
-	ATTRIBUTE_ENUM         string = "Enum"
-)
-
 type AttributeMeta struct {
 	Uuid        string `json:"uuid"`
 	Type        string `json:"type"`
