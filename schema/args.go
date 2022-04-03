@@ -7,43 +7,43 @@ import (
 )
 
 func (c *TypeCache) makeArgs() {
-	for i := range Model.graph.Interfaces {
-		c.makeOneEntityArgs(Model.graph.Interfaces[i])
+	for i := range Model.Grahp.Interfaces {
+		c.makeOneEntityArgs(Model.Grahp.Interfaces[i])
 	}
-	for i := range Model.graph.Entities {
-		c.makeOneEntityArgs(Model.graph.Entities[i])
+	for i := range Model.Grahp.Entities {
+		c.makeOneEntityArgs(Model.Grahp.Entities[i])
 	}
 	c.makeRelaionWhereExp()
 }
 
-func (c *TypeCache) makeOneEntityArgs(entity *graph.Entity) {
-	whereExp := makeWhereExp(entity)
-	c.WhereExpMap[entity.Name()] = whereExp
-	orderByExp := makeOrderBy(entity)
-	c.OrderByMap[entity.Name()] = orderByExp
-	distinctOnEnum := makeDistinctOnEnum(entity)
-	c.DistinctOnEnumMap[entity.Name()] = distinctOnEnum
+func (c *TypeCache) makeOneEntityArgs(node graph.Node) {
+	whereExp := makeWhereExp(node)
+	c.WhereExpMap[node.Name()] = whereExp
+	orderByExp := makeOrderBy(node)
+	c.OrderByMap[node.Name()] = orderByExp
+	distinctOnEnum := makeDistinctOnEnum(node)
+	c.DistinctOnEnumMap[node.Name()] = distinctOnEnum
 }
 
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		entity := Model.graph.GetEntityOrInterfaceByName(entityName)
-		if entity == nil {
+		node := Model.Grahp.GetNodeByUuid(entityName)
+		if node == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}
-		associations := entity.Associations
+		associations := node.Associations()
 		for i := range associations {
 			assoc := associations[i]
-			exp.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
-				Type: c.WhereExp(assoc.TypeEntity.Name),
+			exp.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
+				Type: c.WhereExp(assoc.TypeClass().Name()),
 			})
 		}
 	}
 }
 
-func makeWhereExp(entity *graph.Entity) *graphql.InputObject {
-	expName := entity.Name() + consts.BOOLEXP
+func makeWhereExp(node graph.Node) *graphql.InputObject {
+	expName := node.Name() + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -72,30 +72,30 @@ func makeWhereExp(entity *graph.Entity) *graphql.InputObject {
 		},
 	}
 
-	columns := entity.Attributes
+	attrs := node.Attributes()
 
-	for i := range columns {
-		column := columns[i]
-		columnExp := ColumnExp(column)
+	for i := range attrs {
+		attr := attrs[i]
+		columnExp := AttributeExp(attr)
 
 		if columnExp != nil {
-			fields[column.Name] = columnExp
+			fields[attr.Name] = columnExp
 		}
 	}
 	return boolExp
 }
 
-func makeOrderBy(entity *graph.Entity) *graphql.InputObject {
+func makeOrderBy(node graph.Node) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name() + consts.ORDERBY,
+			Name:   node.Name() + consts.ORDERBY,
 			Fields: fields,
 		},
 	)
 
-	columns := entity.Attributes
+	columns := node.Attributes
 	for i := range columns {
 		column := columns[i]
 		columnOrderBy := ColumnOrderBy(column)
@@ -106,9 +106,9 @@ func makeOrderBy(entity *graph.Entity) *graphql.InputObject {
 	return orderByExp
 }
 
-func makeDistinctOnEnum(entity *graph.Entity) *graphql.Enum {
+func makeDistinctOnEnum(node graph.Node) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	columns := entity.Attributes
+	columns := node.Attributes
 	for i := range columns {
 		column := columns[i]
 		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
@@ -118,7 +118,7 @@ func makeDistinctOnEnum(entity *graph.Entity) *graphql.Enum {
 
 	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
-			Name:   entity.Name() + consts.DISTINCTEXP,
+			Name:   node.Name() + consts.DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)

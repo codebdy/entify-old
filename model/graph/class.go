@@ -6,8 +6,8 @@ import (
 )
 
 type Class struct {
-	Attributes   []*Attribute
-	Associations []*Association
+	attributes   []*Attribute
+	associations []*Association
 	Methods      []*Method
 	Domain       *domain.Class
 }
@@ -31,7 +31,7 @@ func (e *Class) Description() string {
 }
 
 func (e *Class) AddAssociation(a *Association) {
-	e.Associations = append(e.Associations, a)
+	e.associations = append(e.associations, a)
 }
 
 //包含继承来的
@@ -50,4 +50,12 @@ func (e *Class) IsEmperty() bool {
 
 func (c *Class) TableName() string {
 	return utils.SnakeString(c.Domain.Name)
+}
+
+func (c *Class) Attributes() []*Attribute {
+	return c.attributes
+}
+
+func (c *Class) Associations() []*Association {
+	return c.associations
 }

@@ -14,8 +14,8 @@ func NewEntityTable(entity *Entity) *table.Table {
 		Name: entity.TableName(),
 	}
 
-	for i := range entity.Attributes {
-		attr := entity.Attributes[i]
+	for i := range entity.attributes {
+		attr := entity.attributes[i]
 		table.Columns = append(table.Columns, NewAttributeColumn(attr))
 	}
 
