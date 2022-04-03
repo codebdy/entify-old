@@ -3,6 +3,7 @@ package graph
 import (
 	"rxdrag.com/entity-engine/model/domain"
 	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entity-engine/model/table"
 )
 
 type Relation struct {
@@ -19,12 +20,14 @@ type Relation struct {
 	TargetMultiplicity  string
 	AssociationClass    meta.AssociationClass
 	Children            []*DerivedRelation
+	Table               *table.Table
 }
 
 type DerivedRelation struct {
 	Parent *Relation
 	Source *Entity
 	Target *Entity
+	Table  *table.Table
 }
 
 func NewRelation(r *domain.Relation, s Node, t Node) *Relation {

@@ -92,6 +92,15 @@ func New(m *domain.Model) *Model {
 	}
 
 	//处理Table
+	for i := range model.Entities {
+		ent := model.Entities[i]
+		model.Tables = append(model.Tables, NewEntityTable(ent))
+	}
+
+	for i := range model.Relations {
+		relation := model.Relations[i]
+		model.Tables = append(model.Tables, NewRelationTables(relation)...)
+	}
 
 	return &model
 }
