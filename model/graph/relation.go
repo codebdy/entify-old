@@ -43,3 +43,11 @@ func NewRelation(r *domain.Relation, s Node, t Node) *Relation {
 		AssociationClass:    r.AssociationClass,
 	}
 }
+
+func (r *Relation) IsRealRelation() bool {
+	if r.Source.isInterface() || r.Target.isInterface() {
+		return false
+	}
+
+	return true
+}
