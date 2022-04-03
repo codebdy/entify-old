@@ -7,6 +7,7 @@ type Class struct {
 	StereoType  string
 	Name        string
 	Description string
+	Root        bool
 	Attributes  []*Attribute
 	Methods     []*Method
 	parents     []*Class
@@ -19,6 +20,7 @@ func NewClass(c *meta.ClassMeta) *Class {
 		StereoType:  c.StereoType,
 		Name:        c.Name,
 		Description: c.Description,
+		Root:        c.Root,
 		Attributes:  make([]*Attribute, len(c.Attributes)),
 		Methods:     make([]*Method, len(c.Methods)),
 		parents:     []*Class{},

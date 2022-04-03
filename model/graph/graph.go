@@ -114,12 +114,28 @@ func (m *Model) Validate() {
 	}
 }
 
-func (m *Model) RootEnities() {
+func (m *Model) RootEnities() []*Entity {
+	entities := []*Entity{}
+	for i := range m.Entities {
+		ent := m.Entities[i]
+		if ent.Domain.Root {
+			entities = append(entities, ent)
+		}
+	}
 
+	return entities
 }
 
-func (m *Model) RootInterfaces() {
+func (m *Model) RootInterfaces() []*Interface {
+	interfaces := []*Interface{}
+	for i := range m.Interfaces {
+		intf := m.Interfaces[i]
+		if intf.Domain.Root {
+			interfaces = append(interfaces, intf)
+		}
+	}
 
+	return interfaces
 }
 
 func (m *Model) GetNodeByUuid(uuid string) Node {
@@ -151,16 +167,3 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	}
 	return nil
 }
-
-/*
-处理枚举
-	for i := range model.Classes {
-		cls := model.Classes[i]
-		for j := range cls.Attributes {
-			attr := cls.Attributes[j]
-			if attr.Type == meta.ENUM || attr.Type == meta.ENTITY_ARRAY {
-				attr.
-			}
-		}
-	}
-*/
