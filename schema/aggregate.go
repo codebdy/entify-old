@@ -4,16 +4,16 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/utils"
 )
 
 func AvgFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
+	for _, column := range entity.Attributes() {
+		if column.Type == meta.INT || column.Type == meta.FLOAT {
 			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+				Type: AttributeType(column),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -27,10 +27,10 @@ func AvgFields(entity *graph.Entity) graphql.Fields {
 
 func MaxFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -44,10 +44,10 @@ func MaxFields(entity *graph.Entity) graphql.Fields {
 
 func MinFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -61,9 +61,9 @@ func MinFields(entity *graph.Entity) graphql.Fields {
 
 func SelectFields(entity *graph.Entity) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.Attributes {
-		fields[column.Name] = &graphql.InputObjectFieldConfig{
-			Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		fields[attr.Name] = &graphql.InputObjectFieldConfig{
+			Type: AttributeType(attr),
 		}
 	}
 
@@ -72,10 +72,10 @@ func SelectFields(entity *graph.Entity) graphql.InputObjectConfigFieldMap {
 
 func StddevFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -89,10 +89,10 @@ func StddevFields(entity *graph.Entity) graphql.Fields {
 
 func StddevPopFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -105,10 +105,10 @@ func StddevPopFields(entity *graph.Entity) graphql.Fields {
 
 func StddevSampFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -122,10 +122,10 @@ func StddevSampFields(entity *graph.Entity) graphql.Fields {
 
 func SumFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -139,10 +139,10 @@ func SumFields(entity *graph.Entity) graphql.Fields {
 
 func VarPopFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -156,10 +156,10 @@ func VarPopFields(entity *graph.Entity) graphql.Fields {
 
 func VarSampFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -173,10 +173,10 @@ func VarSampFields(entity *graph.Entity) graphql.Fields {
 
 func VarianceFields(entity *graph.Entity) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range entity.Attributes {
-		if column.Type == oldmeta.COLUMN_INT || column.Type == oldmeta.COLUMN_FLOAT {
-			fields[column.Name] = &graphql.Field{
-				Type: ColumnType(column),
+	for _, attr := range entity.Attributes() {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
