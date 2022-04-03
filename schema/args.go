@@ -95,12 +95,12 @@ func makeOrderBy(node graph.Node) *graphql.InputObject {
 		},
 	)
 
-	columns := node.Attributes
-	for i := range columns {
-		column := columns[i]
-		columnOrderBy := ColumnOrderBy(column)
-		if columnOrderBy != nil {
-			fields[column.Name] = &graphql.InputObjectFieldConfig{Type: columnOrderBy}
+	attrs := node.Attributes()
+	for i := range attrs {
+		attr := attrs[i]
+		attrOrderBy := AttributeOrderBy(attr)
+		if attrOrderBy != nil {
+			fields[attr.Name] = &graphql.InputObjectFieldConfig{Type: attrOrderBy}
 		}
 	}
 	return orderByExp
@@ -108,11 +108,11 @@ func makeOrderBy(node graph.Node) *graphql.InputObject {
 
 func makeDistinctOnEnum(node graph.Node) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	columns := node.Attributes
-	for i := range columns {
-		column := columns[i]
-		enumValueConfigMap[column.Name] = &graphql.EnumValueConfig{
-			Value: column.Name,
+	attrs := node.Attributes()
+	for i := range attrs {
+		attr := attrs[i]
+		enumValueConfigMap[attr.Name] = &graphql.EnumValueConfig{
+			Value: attr.Name,
 		}
 	}
 
