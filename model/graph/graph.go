@@ -52,7 +52,7 @@ func New(m *domain.Model) *Model {
 		}
 	}
 
-	//处理关联，只处理自身级别，不处理继承关系
+	//处理关联
 	for i := range m.Relations {
 		relation := m.Relations[i]
 		source := model.GetNodeByUuid(relation.Source.Uuid)
@@ -61,6 +61,34 @@ func New(m *domain.Model) *Model {
 		model.Relations = append(model.Relations, r)
 		source.AddAssociation(NewAssociation(r, source.Uuid()))
 		target.AddAssociation(NewAssociation(r, target.Uuid()))
+
+		//增加派生关联
+		sourceEntities := []*Entity{}
+		targetEntities := []*Entity{}
+
+		if source.isInterface() {
+			sourceEntities = append(sourceEntities, source.Interface().Children...)
+		} else {
+			sourceEntities = append(sourceEntities, source.Entity())
+		}
+
+		if target.isInterface() {
+			targetEntities = append(targetEntities, target.Interface().Children...)
+		} else {
+			targetEntities = append(targetEntities, target.Entity())
+		}
+
+		for i := range sourceEntities {
+			s := sourceEntities[i]
+			for j := range targetEntities {
+				t := targetEntities[j]
+				r.Children = append(r.Children, &DerivedRelation{
+					Parent: r,
+					Source: s,
+					Target: t,
+				})
+			}
+		}
 	}
 
 	//处理Table
