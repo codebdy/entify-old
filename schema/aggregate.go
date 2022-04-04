@@ -329,7 +329,7 @@ func AggregateFields(node graph.Node) graphql.Fields {
 	return fields
 }
 
-func AggregateType(node graph.Node, parents []*graph.Entity) *graphql.Output {
+func AggregateType(node graph.Node) *graphql.Output {
 	name := node.Name() + utils.FirstUpper(consts.AGGREGATE)
 	if Cache.AggregateMap[name] != nil {
 		return Cache.AggregateMap[name]

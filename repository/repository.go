@@ -1,30 +1,30 @@
 package repository
 
 import (
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 type QueryArg = map[string]interface{}
 
-func Query(entity *model.Entity, args map[string]interface{}) ([]interface{}, error) {
+func Query(node graph.Node, args map[string]interface{}) ([]interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryEntity(entity, args)
+	return con.doQueryEntity(node, args)
 }
 
-func QueryOne(entity *model.Entity, args map[string]interface{}) (interface{}, error) {
+func QueryOne(node graph.Node, args map[string]interface{}) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOne(entity, args)
+	return con.doQueryOne(node, args)
 }
 
-func SaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+func SaveOne(object map[string]interface{}, node graph.Node) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
@@ -36,7 +36,7 @@ func SaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, 
 		panic(err.Error())
 	}
 
-	obj, err := con.doSaveOne(object, entity)
+	obj, err := con.doSaveOne(object, node)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -47,7 +47,7 @@ func SaveOne(object map[string]interface{}, entity *model.Entity) (interface{}, 
 	return obj, nil
 }
 
-func InsertOne(object map[string]interface{}, entity *model.Entity) (interface{}, error) {
+func InsertOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {

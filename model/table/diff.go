@@ -1,4 +1,4 @@
-package modleold
+package table
 
 type ModifyAtom struct {
 	ExcuteSQL string

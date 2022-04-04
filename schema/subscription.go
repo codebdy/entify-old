@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/utils"
 
 	"github.com/graphql-go/graphql"
@@ -64,7 +63,7 @@ func RootSubscription() *graphql.Object {
 		},
 	}}
 
-	for _, entity := range model.TheModel.Entities {
+	for _, entity := range Model.Graph.Entities {
 		appendToSubscriptionFields(entity, &subscriptionFields)
 	}
 
@@ -75,30 +74,26 @@ func RootSubscription() *graphql.Object {
 
 }
 
-func appendToSubscriptionFields(entity *model.Entity, fields *graphql.Fields) {
-	//如果是枚举
-	if entity.EntityType == oldmeta.ENTITY_ENUM {
-		return
-	}
+func appendToSubscriptionFields(node graph.Node, fields *graphql.Fields) {
 
-	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
-		Type: queryResponseType(entity),
-		Args: quryeArgs(entity),
+	(*fields)[utils.FirstLower(node.Name())] = &graphql.Field{
+		Type: queryResponseType(node),
+		Args: quryeArgs(node),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil
 		},
 	}
-	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name),
-		Args: quryeArgs(entity),
+	(*fields)[consts.ONE+node.Name()] = &graphql.Field{
+		Type: Cache.OutputType(node.Name()),
+		Args: quryeArgs(node),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil
 		},
 	}
 
-	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type: *AggregateType(entity, []*model.Entity{}),
-		Args: quryeArgs(entity),
+	(*fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+		Type: *AggregateType(node),
+		Args: quryeArgs(node),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			return p.Source, nil
 		},

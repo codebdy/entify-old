@@ -94,7 +94,7 @@ func appendToQueryFields(node graph.Node, fields *graphql.Fields) {
 	}
 
 	(*fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(node, []*graph.Entity{}),
+		Type:    *AggregateType(node),
 		Args:    quryeArgs(node),
 		Resolve: resolve.QueryResolveFn(node),
 	}

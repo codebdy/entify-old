@@ -1,4 +1,4 @@
-package dialectold
+package dialect
 
 import (
 	"testing"

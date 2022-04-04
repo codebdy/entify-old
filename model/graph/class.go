@@ -44,8 +44,8 @@ func (e *Class) AllAssociations() []*Association {
 	return []*Association{}
 }
 
-func (e *Class) IsEmperty() bool {
-	return len(e.AllAttributes()) < 1 && len(e.AllAssociations()) < 1
+func (c *Class) IsEmperty() bool {
+	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1
 }
 
 func (c *Class) TableName() string {
@@ -58,4 +58,24 @@ func (c *Class) Attributes() []*Attribute {
 
 func (c *Class) Associations() []*Association {
 	return c.associations
+}
+
+func (c *Class) AllAttributeNames() []string {
+	names := make([]string, len(c.AllAttributes()))
+
+	for i, column := range c.AllAttributes() {
+		names[i] = column.Name
+	}
+
+	return names
+}
+
+func (c *Class) GetAttributeByName(name string) *Attribute {
+	for _, attr := range c.AllAttributes() {
+		if attr.Name == name {
+			return attr
+		}
+	}
+
+	return nil
 }

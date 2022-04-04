@@ -1,4 +1,4 @@
-package modleold
+package table
 
 import (
 	"encoding/json"
