@@ -5,14 +5,14 @@ import (
 	"rxdrag.com/entity-engine/authentication"
 	"rxdrag.com/entity-engine/authentication/jwt"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
 
 func rootMutation() *graphql.Object {
-	metaEntity := model.TheModel.GetMetaEntity()
+	metaEntity := Model.Graph.GetMetaEntity()
 	mutationFields := graphql.Fields{
 		consts.LOGIN: &graphql.Field{
 			Type: graphql.String,
@@ -39,20 +39,20 @@ func rootMutation() *graphql.Object {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity.Name),
+			Type:    Cache.OutputType(metaEntity.Name()),
 			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity.Name),
+			Type:    Cache.OutputType(metaEntity.Name()),
 			Resolve: resolve.SyncMetaResolve,
 		},
 		consts.SYNC_META: &graphql.Field{
-			Type:    Cache.OutputType(metaEntity.Name),
+			Type:    Cache.OutputType(metaEntity.Name()),
 			Resolve: resolve.SyncMetaResolve,
 		},
 	}
 
-	for _, entity := range model.TheModel.Entities {
+	for _, entity := range Model.Graph.RootEnities() {
 		appendToMutationFields(entity, &mutationFields)
 	}
 
@@ -61,25 +61,25 @@ func rootMutation() *graphql.Object {
 	return graphql.NewObject(rootMutation)
 }
 
-func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
+func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
 	//如果是枚举
-	if entity.EntityType == oldmeta.ENTITY_ENUM {
+	if entity.Domain.StereoType == meta.ENUM {
 		return
 	}
 
-	name := utils.FirstUpper(entity.Name)
+	name := utils.FirstUpper(entity.Name())
 
 	(*feilds)[consts.DELETE+name] = &graphql.Field{
-		Type: *Cache.MutationResponse(entity.Name),
+		Type: *Cache.MutationResponse(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity.Name),
+				Type: Cache.WhereExp(entity.Name()),
 			},
 		},
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name),
+		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ID: &graphql.ArgumentConfig{
 				Type: graphql.Int,
@@ -88,13 +88,13 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 		//Resolve: entity.QueryResolve(),
 	}
 	(*feilds)[consts.UPSERT+name] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name),
+		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
 					OfType: &graphql.List{
 						OfType: &graphql.NonNull{
-							OfType: Cache.SaveInput(entity.Name),
+							OfType: Cache.SaveInput(entity.Name()),
 						},
 					},
 				},
@@ -103,21 +103,21 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 	}
 	//Resolve: entity.QueryResolve(),
 	(*feilds)[consts.UPSERT_ONE+name] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name),
+		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
 				Type: &graphql.NonNull{
-					OfType: Cache.SaveInput(entity.Name),
+					OfType: Cache.SaveInput(entity.Name()),
 				},
 			},
 		},
 		Resolve: resolve.PostOneResolveFn(entity),
 	}
 
-	updateInput := Cache.UpdateInput(entity.Name)
+	updateInput := Cache.UpdateInput(entity.Name())
 	if len(updateInput.Fields()) > 0 {
 		(*feilds)[consts.UPDATE+name] = &graphql.Field{
-			Type: *Cache.MutationResponse(entity.Name),
+			Type: *Cache.MutationResponse(entity.Name()),
 			Args: graphql.FieldConfigArgument{
 				consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 					Type: &graphql.NonNull{
@@ -129,7 +129,7 @@ func appendToMutationFields(entity *model.Entity, feilds *graphql.Fields) {
 					},
 				},
 				consts.ARG_WHERE: &graphql.ArgumentConfig{
-					Type: Cache.WhereExp(entity.Name),
+					Type: Cache.WhereExp(entity.Name()),
 				},
 			},
 			//Resolve: entity.QueryResolve(),
