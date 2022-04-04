@@ -8,7 +8,8 @@ import (
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -56,84 +57,85 @@ func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []int
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) ColumnTypeSQL(column *model.Column) string {
+func (b *MySQLBuilder) AttributeTypeSQL(attr *graph.Attribute) string {
 	typeStr := "text"
-	switch column.Type {
-	case oldmeta.COLUMN_ID:
+	switch attr.Type {
+	case meta.ID:
 		typeStr = "bigint(64)"
 		break
-	case oldmeta.COLUMN_INT:
+	case meta.INT:
 		typeStr = "int"
-		if column.Length == 1 {
+		if attr.Length == 1 {
 			typeStr = "tinyint"
-		} else if column.Length == 2 {
+		} else if attr.Length == 2 {
 			typeStr = "smallint"
-		} else if column.Length == 3 {
+		} else if attr.Length == 3 {
 			typeStr = "mediumint"
-		} else if column.Length == 4 {
+		} else if attr.Length == 4 {
 			typeStr = "int"
-		} else if column.Length > 4 {
-			length := column.Length
+		} else if attr.Length > 4 {
+			length := attr.Length
 			if length > 64 {
 				length = 64
 			}
 			typeStr = fmt.Sprintf("bigint(%d)", length)
 		}
-		if column.Unsigned {
+		if attr.Unsigned {
 			typeStr = typeStr + " UNSIGNED"
 		}
 		break
-	case oldmeta.COLUMN_FLOAT:
-		if column.Length > 4 {
+	case meta.FLOAT:
+		if attr.Length > 4 {
 			typeStr = "double"
 		} else {
 			typeStr = "float"
 		}
-		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
-			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
+		if attr.FloatM > 0 && attr.FloatD > 0 && attr.FloatM >= attr.FloatD {
+			typeStr = fmt.Sprint(typeStr+"(%d,%d)", attr.FloatM, attr.FloatD)
 		}
-		if column.Unsigned {
+		if attr.Unsigned {
 			typeStr = typeStr + " UNSIGNED"
 		}
 		break
-	case oldmeta.COLUMN_BOOLEAN:
+	case meta.BOOLEAN:
 		typeStr = "tinyint(1)"
 		break
-	case oldmeta.COLUMN_STRING:
+	case meta.STRING:
 		typeStr = "text"
-		if column.Length > 0 {
-			if column.Length <= 255 {
-				typeStr = fmt.Sprintf("varchar(%d)", column.Length)
-			} else if column.Length <= 65535 {
+		if attr.Length > 0 {
+			if attr.Length <= 255 {
+				typeStr = fmt.Sprintf("varchar(%d)", attr.Length)
+			} else if attr.Length <= 65535 {
 				typeStr = "text"
-			} else if column.Length <= 16777215 {
+			} else if attr.Length <= 16777215 {
 				typeStr = "mediumtext"
 			} else {
 				typeStr = "longtext"
 			}
 		}
 		break
-	case oldmeta.COLUMN_DATE:
+	case meta.DATE:
 		typeStr = "datetime"
 		break
-	case oldmeta.COLUMN_SIMPLE_JSON:
-		typeStr = "json"
-		break
-	case oldmeta.COLUMN_SIMPLE_ARRAY:
-		typeStr = "json"
-		break
-	case oldmeta.COLUMN_JSON_ARRAY:
-		typeStr = "json"
-		break
-	case oldmeta.COLUMN_ENUM:
+	case meta.ENUM:
 		typeStr = "tinytext"
+		break
+	case meta.VALUE_OBJECT,
+		meta.ID_ARRAY,
+		meta.INT_ARRAY,
+		meta.FLOAT_ARRAY,
+		meta.STRING_ARRAY,
+		meta.DATE_ARRAY,
+		meta.ENUM_ARRAY,
+		meta.VALUE_OBJECT_ARRAY:
+		typeStr = "json"
 		break
 	}
 	return typeStr
 }
 
 func (b *MySQLBuilder) BuildColumnSQL(column *model.Column) string {
-	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
+	sql := "`" + column.Name + "` " + b.AttributeTypeSQL(column)
 	if column.Name == consts.ID {
 		sql = fmt.Sprintf(sql + " AUTO_INCREMENT")
 	}
@@ -261,9 +263,9 @@ func makeValues(keys []string, object map[string]interface{}, entity *model.Enti
 			panic("Can not find column:" + key)
 		}
 
-		if column.Type == oldmeta.COLUMN_SIMPLE_JSON ||
-			column.Type == oldmeta.COLUMN_SIMPLE_ARRAY ||
-			column.Type == oldmeta.COLUMN_JSON_ARRAY {
+		if column.Type == meta.SIMPLE_JSON ||
+			column.Type == meta.SIMPLE_ARRAY ||
+			column.Type == meta.JSON_ARRAY {
 			value, _ = json.Marshal(value)
 		}
 		fmt.Println("Make Field", key)
@@ -285,7 +287,7 @@ func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *model.TableDiff, atoms *[]m
 		//删除列
 		*atoms = append(*atoms, model.ModifyAtom{
 			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
-			UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column)),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.AttributeTypeSQL(column)),
 		})
 	}
 }
@@ -294,7 +296,7 @@ func (b *MySQLBuilder) appendAddColumnAtoms(diff *model.TableDiff, atoms *[]mode
 	for _, column := range diff.AddColumns {
 		//添加列
 		*atoms = append(*atoms, model.ModifyAtom{
-			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column)),
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.AttributeTypeSQL(column)),
 			UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
 		})
 		//添加索引
@@ -331,13 +333,13 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *model.TableDiff, atoms *[]m
 					"ALTER TABLE %s CHANGE COLUMN %s %s %s",
 					diff.NewTable.Name,
 					columnDiff.OldColumn.Name,
-					columnDiff.NewColumn.Name, b.ColumnTypeSQL(columnDiff.NewColumn),
+					columnDiff.NewColumn.Name, b.AttributeTypeSQL(columnDiff.NewColumn),
 				),
 				UndoSQL: fmt.Sprintf(
 					"ALTER TABLE %s CHANGE COLUMN %s %s %s",
 					diff.NewTable.Name,
 					columnDiff.NewColumn.Name,
-					columnDiff.OldColumn.Name, b.ColumnTypeSQL(columnDiff.OldColumn),
+					columnDiff.OldColumn.Name, b.AttributeTypeSQL(columnDiff.OldColumn),
 				),
 			})
 		}

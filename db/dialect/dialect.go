@@ -17,7 +17,7 @@ type SQLBuilder interface {
 	BuildDeleteTableSQL(table *table.Table) string
 	BuildColumnSQL(column *table.Column) string
 	BuildModifyTableAtoms(diff *table.TableDiff) []table.ModifyAtom
-	ColumnTypeSQL(column *table.Column) string
+	AttributeTypeSQL(column *table.Column) string
 
 	BuildQuerySQL(entity graph.Node, args map[string]interface{}) (string, []interface{})
 
