@@ -8,7 +8,6 @@ import (
 	"rxdrag.com/entity-engine/db/dialect"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/repositoryold/dialectold"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -159,7 +158,7 @@ func (con *Connection) QueryOneById(node graph.Node, id interface{}) (interface{
 
 func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) (interface{}, error) {
 
-	builder := dialectold.GetSQLBuilder()
+	builder := dialect.GetSQLBuilder()
 
 	queryStr, params := builder.BuildQuerySQL(node, args)
 
@@ -178,11 +177,11 @@ func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) 
 	return convertValuesToObject(values, node), nil
 }
 
-func (con *Connection) doInsertOne(object map[string]interface{}, node graph.Node) (interface{}, error) {
-	sqlBuilder := dialectold.GetSQLBuilder()
-	saveStr, values := sqlBuilder.BuildInsertSQL(object, node)
+func (con *Connection) doInsertOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
-	for _, association := range node.Associations() {
+	for _, association := range entity.Associations() {
 		if object[association.Name()] == nil {
 			continue
 		}
@@ -199,7 +198,7 @@ func (con *Connection) doInsertOne(object map[string]interface{}, node graph.Nod
 		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
-	savedObject, err := con.QueryOneById(node, id)
+	savedObject, err := con.QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
@@ -213,11 +212,11 @@ func (con *Connection) doInsertOne(object map[string]interface{}, node graph.Nod
 	return savedObject, nil
 }
 
-func (con *Connection) doUpdateOne(object map[string]interface{}, node graph.Node) (interface{}, error) {
+func (con *Connection) doUpdateOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
 
-	sqlBuilder := dialectold.GetSQLBuilder()
+	sqlBuilder := dialect.GetSQLBuilder()
 
-	saveStr, values := sqlBuilder.BuildUpdateSQL(object, node)
+	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
 	fmt.Println(saveStr)
 	_, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
@@ -227,7 +226,7 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, node graph.Nod
 
 	id := object[consts.META_ID]
 
-	savedObject, err := con.QueryOneById(node, id)
+	savedObject, err := con.QueryOneById(entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
@@ -235,10 +234,10 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, node graph.Nod
 	return savedObject, nil
 }
 
-func (con *Connection) doSaveOne(object map[string]interface{}, node graph.Node) (interface{}, error) {
+func (con *Connection) doSaveOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
 	if object[consts.META_ID] == nil {
-		return con.doInsertOne(object, node)
+		return con.doInsertOne(object, entity)
 	} else {
-		return con.doUpdateOne(object, node)
+		return con.doUpdateOne(object, entity)
 	}
 }

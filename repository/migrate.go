@@ -1,10 +1,10 @@
-package repositoryold
+package repository
 
 import (
 	"fmt"
 	"log"
 
-	"rxdrag.com/entity-engine/repositoryold/dialectold"
+	"rxdrag.com/entity-engine/repository/dialect"
 )
 
 func ExcuteDiff(d *modelold.Diff) {
@@ -42,7 +42,7 @@ func ExcuteDiff(d *modelold.Diff) {
 }
 
 func DeleteTable(table *modelold.Table, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialectold.GetSQLBuilder()
+	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
 	_, err := con.Exec(excuteSQL)
@@ -55,7 +55,7 @@ func DeleteTable(table *modelold.Table, undoList *[]string, con *Connection) err
 }
 
 func CreateTable(table *modelold.Table, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialectold.GetSQLBuilder()
+	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
 	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	_, err := con.Exec(excuteSQL)
@@ -69,7 +69,7 @@ func CreateTable(table *modelold.Table, undoList *[]string, con *Connection) err
 }
 
 func ModifyTable(tableDiff *modelold.TableDiff, undoList *[]string, con *Connection) error {
-	sqlBuilder := dialectold.GetSQLBuilder()
+	sqlBuilder := dialect.GetSQLBuilder()
 	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
 	for _, atom := range atoms {
 		_, err := con.Exec(atom.ExcuteSQL)
