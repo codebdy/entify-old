@@ -55,6 +55,7 @@ func New(m *meta.Model) *Model {
 			newCls := &Class{
 				Uuid:        cls.Uuid + consts.ENTITY,
 				StereoType:  meta.CLASSS_ENTITY,
+				InnerId:     cls.InnerId,
 				Name:        cls.Name + consts.ENTITY,
 				Description: cls.Name + " entity class",
 				parents:     []*Class{cls},

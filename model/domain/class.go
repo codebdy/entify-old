@@ -4,6 +4,7 @@ import "rxdrag.com/entity-engine/model/meta"
 
 type Class struct {
 	Uuid        string
+	InnerId     uint64
 	StereoType  string
 	Name        string
 	Description string
@@ -17,6 +18,7 @@ type Class struct {
 func NewClass(c *meta.ClassMeta) *Class {
 	cls := Class{
 		Uuid:        c.Uuid,
+		InnerId:     c.InnerId,
 		StereoType:  c.StereoType,
 		Name:        c.Name,
 		Description: c.Description,

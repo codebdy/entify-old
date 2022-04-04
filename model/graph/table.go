@@ -10,8 +10,9 @@ import (
 
 func NewEntityTable(entity *Entity) *table.Table {
 	table := &table.Table{
-		Uuid: entity.Uuid(),
-		Name: entity.TableName(),
+		Uuid:          entity.Uuid(),
+		Name:          entity.TableName(),
+		EntityInnerId: entity.Domain.InnerId,
 	}
 
 	for i := range entity.attributes {

@@ -3,19 +3,18 @@ package dialect
 import (
 	"testing"
 
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/table"
 )
 
 func TestModifyTableName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&model.TableDiff{
-			OldTable: &model.Table{
+		&table.TableDiff{
+			OldTable: &table.Table{
 				Name: "User",
 			},
-			NewTable: &model.Table{
+			NewTable: &table.Table{
 				Name: "User2",
 			},
 		},
@@ -37,32 +36,14 @@ func TestModifyTableName(t *testing.T) {
 func TestModifyColumnName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&model.TableDiff{
-			OldTable: &model.Table{
-				MetaUuid: "uuid1",
-				Name:     "User",
+		&table.TableDiff{
+			OldTable: &table.Table{
+				Uuid: "uuid1",
+				Name: "User",
 			},
-			NewTable: &model.Table{
-				MetaUuid: "uuid1",
-				Name:     "User",
-			},
-			ModifyColumns: []model.ColumnDiff{
-				{
-					OldColumn: &model.Column{
-						ColumnMeta: oldmeta.ColumnMeta{
-							Name: "newColumn1",
-							Uuid: "column1",
-							Type: oldmeta.COLUMN_STRING,
-						},
-					},
-					NewColumn: &model.Column{
-						ColumnMeta: oldmeta.ColumnMeta{
-							Name: "nickname",
-							Uuid: "column1",
-							Type: oldmeta.COLUMN_STRING,
-						},
-					},
-				},
+			NewTable: &table.Table{
+				Uuid: "uuid1",
+				Name: "User",
 			},
 		},
 	)
