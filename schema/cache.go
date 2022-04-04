@@ -97,7 +97,7 @@ func (c *TypeCache) MutationResponse(name string) *graphql.Output {
 	return c.MutationResponseMap[name]
 }
 
-func (c *TypeCache) mapInterfaces(entities []*graph.Entity) []*graphql.Interface {
+func (c *TypeCache) mapInterfaces(entities []*graph.Interface) []*graphql.Interface {
 	interfaces := []*graphql.Interface{NodeInterfaceType}
 	for i := range entities {
 		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name()])

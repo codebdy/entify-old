@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -40,11 +40,11 @@ func rootQuery() *graphql.Object {
 			},
 		},
 	}
-	for _, intf := range model.TheModel.Interfaces {
+	for _, intf := range Model.Graph.Interfaces {
 		appendToQueryFields(intf, &queryFields)
 	}
 
-	for _, entity := range model.TheModel.Entities {
+	for _, entity := range Model.Graph.Entities {
 		appendToQueryFields(entity, &queryFields)
 	}
 
@@ -53,18 +53,18 @@ func rootQuery() *graphql.Object {
 	return graphql.NewObject(rootQueryConfig)
 }
 
-func queryResponseType(entity *model.Entity) graphql.Output {
+func queryResponseType(node graph.Node) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
-			OfType: Cache.OutputType(entity.Name),
+			OfType: Cache.OutputType(node.Name()),
 		},
 	}
 }
 
-func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
+func quryeArgs(node graph.Node) graphql.FieldConfigArgument {
 	return graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-			Type: Cache.DistinctOnEnum(entity.Name),
+			Type: Cache.DistinctOnEnum(node.Name()),
 		},
 		consts.ARG_LIMIT: &graphql.ArgumentConfig{
 			Type: graphql.Int,
@@ -73,29 +73,29 @@ func quryeArgs(entity *model.Entity) graphql.FieldConfigArgument {
 			Type: graphql.Int,
 		},
 		consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-			Type: Cache.OrderByExp(entity.Name),
+			Type: Cache.OrderByExp(node.Name()),
 		},
 		consts.ARG_WHERE: &graphql.ArgumentConfig{
-			Type: Cache.WhereExp(entity.Name),
+			Type: Cache.WhereExp(node.Name()),
 		},
 	}
 }
 
-func appendToQueryFields(entity *model.Entity, fields *graphql.Fields) {
-	(*fields)[utils.FirstLower(entity.Name)] = &graphql.Field{
-		Type:    queryResponseType(entity),
-		Args:    quryeArgs(entity),
-		Resolve: resolve.QueryResolveFn(entity),
+func appendToQueryFields(node graph.Node, fields *graphql.Fields) {
+	(*fields)[utils.FirstLower(node.Name())] = &graphql.Field{
+		Type:    queryResponseType(node),
+		Args:    quryeArgs(node),
+		Resolve: resolve.QueryResolveFn(node),
 	}
-	(*fields)[consts.ONE+entity.Name] = &graphql.Field{
-		Type:    Cache.OutputType(entity.Name),
-		Args:    quryeArgs(entity),
-		Resolve: resolve.QueryOneResolveFn(entity),
+	(*fields)[consts.ONE+node.Name()] = &graphql.Field{
+		Type:    Cache.OutputType(node.Name()),
+		Args:    quryeArgs(node),
+		Resolve: resolve.QueryOneResolveFn(node),
 	}
 
-	(*fields)[utils.FirstLower(entity.Name)+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(entity, []*model.Entity{}),
-		Args:    quryeArgs(entity),
-		Resolve: resolve.QueryResolveFn(entity),
+	(*fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+		Type:    *AggregateType(node, []*graph.Entity{}),
+		Args:    quryeArgs(node),
+		Resolve: resolve.QueryResolveFn(node),
 	}
 }

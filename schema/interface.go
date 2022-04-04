@@ -12,14 +12,14 @@ func (c *TypeCache) makeOutputInterfaces(interfaces []*graph.Interface) {
 	}
 }
 
-func (c *TypeCache) InterfaceType(entity *graph.Interface) *graphql.Interface {
-	name := entity.Name()
+func (c *TypeCache) InterfaceType(intf *graph.Interface) *graphql.Interface {
+	name := intf.Name()
 
 	return graphql.NewInterface(
 		graphql.InterfaceConfig{
 			Name:        name,
-			Fields:      outputFields(entity.Attributes),
-			Description: entity.Description(),
+			Fields:      outputFields(intf.Attributes()),
+			Description: intf.Description(),
 		},
 	)
 
