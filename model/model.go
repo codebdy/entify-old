@@ -10,7 +10,7 @@ import (
 type Model struct {
 	Meta   *meta.Model
 	Domain *domain.Model
-	Grahp  *graph.Model
+	Graph  *graph.Model
 	Schema *graphql.Schema
 }
 
@@ -21,7 +21,7 @@ func New(c *meta.MetaContent) *Model {
 	model := Model{
 		Meta:   metaModel,
 		Domain: domainModel,
-		Grahp:  grahpModel,
+		Graph:  grahpModel,
 		Schema: nil,
 	}
 	return &model

@@ -7,16 +7,16 @@ import (
 )
 
 func (c *TypeCache) makeInputs() {
-	for i := range Model.graph.Entities {
-		entity := Model.graph.Entities[i]
-		c.UpdateInputMap[entity.Name] = makeUpdateInput(entity)
-		c.SaveInputMap[entity.Name] = makeSaveInput(entity)
-		c.MutationResponseMap[entity.Name] = makeMutationResponseType(entity)
+	for i := range Model.Graph.Entities {
+		entity := Model.Graph.Entities[i]
+		c.UpdateInputMap[entity.Name()] = makeUpdateInput(entity)
+		c.SaveInputMap[entity.Name()] = makeSaveInput(entity)
+		c.MutationResponseMap[entity.Name()] = makeMutationResponseType(entity)
 	}
-	for i := range Model.graph.Entities {
-		entity := Model.graph.Entities[i]
-		c.HasManyInputMap[entity.Name] = c.makeHasManyInput(entity)
-		c.HasOneInputMap[entity.Name] = c.makeHasOneInput(entity)
+	for i := range Model.Graph.Entities {
+		entity := Model.Graph.Entities[i]
+		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
+		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
 	}
 	c.makeInputRelations()
 }
@@ -67,13 +67,13 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 }
 
 func (c *TypeCache) makeInputRelations() {
-	for i := range Model.graph.Entities {
-		entity := Model.graph.Entities[i]
+	for i := range Model.Graph.Entities {
+		entity := Model.Graph.Entities[i]
 
-		input := c.UpdateInputMap[entity.Name]
-		update := c.SaveInputMap[entity.Name]
+		input := c.UpdateInputMap[entity.Name()]
+		update := c.SaveInputMap[entity.Name()]
 
-		associas := entity.Associations
+		associas := entity.Associations()
 
 		for i := range associas {
 			assoc := associas[i]
@@ -104,10 +104,10 @@ func (c *TypeCache) makeAssociationType(association *graph.Association) *graphql
 
 func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.Attributes {
+	for _, column := range entity.Attributes() {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type:        ColumnType(column),
+				Type:        AttributeType(column),
 				Description: column.Description,
 			}
 		}

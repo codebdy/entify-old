@@ -40,7 +40,7 @@ func outputFields(columns []*model.Column) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range columns {
 		fields[column.Name] = &graphql.Field{
-			Type:        ColumnType(column),
+			Type:        AttributeType(column),
 			Description: column.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))

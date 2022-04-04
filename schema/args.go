@@ -7,11 +7,11 @@ import (
 )
 
 func (c *TypeCache) makeArgs() {
-	for i := range Model.Grahp.Interfaces {
-		c.makeOneEntityArgs(Model.Grahp.Interfaces[i])
+	for i := range Model.Graph.Interfaces {
+		c.makeOneEntityArgs(Model.Graph.Interfaces[i])
 	}
-	for i := range Model.Grahp.Entities {
-		c.makeOneEntityArgs(Model.Grahp.Entities[i])
+	for i := range Model.Graph.Entities {
+		c.makeOneEntityArgs(Model.Graph.Entities[i])
 	}
 	c.makeRelaionWhereExp()
 }
@@ -28,7 +28,7 @@ func (c *TypeCache) makeOneEntityArgs(node graph.Node) {
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		node := Model.Grahp.GetNodeByUuid(entityName)
+		node := Model.Graph.GetNodeByUuid(entityName)
 		if node == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}

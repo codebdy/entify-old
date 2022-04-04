@@ -13,7 +13,7 @@ import (
 var Model *model.Model
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := repository.QueryOne(Model.Grahp.GetMetaEntity(), repository.QueryArg{
+	publishedMeta, err := repository.QueryOne(Model.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
@@ -28,7 +28,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := repository.QueryOne(Model.Grahp.GetMetaEntity(), repository.QueryArg{
+	nextMeta, err := repository.QueryOne(Model.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_ISNULL: true,

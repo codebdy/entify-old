@@ -39,9 +39,9 @@ var NodeInterfaceType = graphql.NewInterface(
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
-	c.makeEnums(Model.graph.Enums)
-	c.makeOutputInterfaces(Model.graph.Interfaces)
-	c.makeOutputObjects(Model.graph.Entities)
+	c.makeEnums(Model.Graph.Enums)
+	c.makeOutputInterfaces(Model.Graph.Interfaces)
+	c.makeOutputObjects(Model.Graph.Entities)
 	c.makeRelations()
 	c.makeArgs()
 	c.makeInputs()
