@@ -6,7 +6,7 @@ import (
 )
 
 type Connection struct {
-	dbx *db.Dbx
+	Dbx *db.Dbx
 }
 
 func Open() (*Connection, error) {
@@ -15,23 +15,23 @@ func Open() (*Connection, error) {
 		return nil, err
 	}
 	con := Connection{
-		dbx: dbx,
+		Dbx: dbx,
 	}
 	return &con, err
 }
 
 func (c *Connection) Close() error {
-	return c.dbx.Close()
+	return c.Dbx.Close()
 }
 
 func (c *Connection) BeginTx() error {
-	return c.dbx.BeginTx()
+	return c.Dbx.BeginTx()
 }
 
 func (c *Connection) Commit() error {
-	return c.dbx.Commit()
+	return c.Dbx.Commit()
 }
 
 func (c *Connection) ClearTx() {
-	c.dbx.ClearTx()
+	c.Dbx.ClearTx()
 }

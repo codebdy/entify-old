@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/db/dialect"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/repositoryold/dialectold"
@@ -122,7 +123,7 @@ func convertValuesToObject(values []interface{}, node graph.Node) map[string]int
 func (con *Connection) doQueryEntity(node graph.Node, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(node, args)
-	rows, err := con.dbx.Query(queryStr, params...)
+	rows, err := con.Dbx.Query(queryStr, params...)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -163,7 +164,7 @@ func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) 
 	queryStr, params := builder.BuildQuerySQL(node, args)
 
 	values := makeValues(node)
-	err := con.dbx.QueryRow(queryStr, params...).Scan(values...)
+	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -187,7 +188,7 @@ func (con *Connection) doInsertOne(object map[string]interface{}, node graph.Nod
 		}
 	}
 
-	result, err := con.dbx.Exec(saveStr, values...)
+	result, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Insert data failed:", err.Error())
 		return nil, err
@@ -218,7 +219,7 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, node graph.Nod
 
 	saveStr, values := sqlBuilder.BuildUpdateSQL(object, node)
 	fmt.Println(saveStr)
-	_, err := con.dbx.Exec(saveStr, values...)
+	_, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Update data failed:", err.Error())
 		return nil, err

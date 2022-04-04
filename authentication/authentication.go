@@ -4,11 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"rxdrag.com/entity-engine/repositoryold"
+	"rxdrag.com/entity-engine/repository"
 )
 
 func Login(loginName, pwd string) (string, error) {
-	con, err := repositoryold.OpenConnection()
+	con, err := repository.Open()
 	defer con.Close()
 	if err != nil {
 		fmt.Println(err)
@@ -16,7 +16,7 @@ func Login(loginName, pwd string) (string, error) {
 	}
 
 	var password string
-	err = con.QueryRow("select password from rx_user where loginName = ?", loginName).Scan(&password)
+	err = con.Dbx.QueryRow("select password from rx_user where loginName = ?", loginName).Scan(&password)
 	if err != nil {
 		fmt.Println(err)
 		return "", errors.New("Login failed!")

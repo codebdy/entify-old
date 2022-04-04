@@ -1,7 +1,8 @@
 package dialect
 
 import (
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/table"
 )
 
 const (
@@ -12,16 +13,16 @@ type SQLBuilder interface {
 	BuildBoolExp(where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 
-	BuildCreateTableSQL(table *model.Table) string
-	BuildDeleteTableSQL(table *model.Table) string
-	BuildColumnSQL(column *model.Column) string
-	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
-	ColumnTypeSQL(column *model.Column) string
+	BuildCreateTableSQL(table *table.Table) string
+	BuildDeleteTableSQL(table *table.Table) string
+	BuildColumnSQL(column *table.Column) string
+	BuildModifyTableAtoms(diff *table.TableDiff) []table.ModifyAtom
+	ColumnTypeSQL(column *table.Column) string
 
-	BuildQuerySQL(entity *model.Entity, args map[string]interface{}) (string, []interface{})
+	BuildQuerySQL(entity graph.Node, args map[string]interface{}) (string, []interface{})
 
-	BuildInsertSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
-	BuildUpdateSQL(object map[string]interface{}, entity *model.Entity) (string, []interface{})
+	BuildInsertSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{})
+	BuildUpdateSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{})
 }
 
 func GetSQLBuilder() SQLBuilder {
