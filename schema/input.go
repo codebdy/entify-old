@@ -77,18 +77,18 @@ func (c *TypeCache) makeInputRelations() {
 
 		for i := range associas {
 			assoc := associas[i]
-			typeInput := c.SaveInput(assoc.TypeEntity.Name)
+			typeInput := c.SaveInput(assoc.Owner().Name())
 			if len(typeInput.Fields()) == 0 {
 				continue
 			}
 			arrayType := c.makeAssociationType(assoc)
-			input.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
+			input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
 				Type:        arrayType,
-				Description: assoc.Description,
+				Description: assoc.Description(),
 			})
-			update.AddFieldConfig(assoc.Name, &graphql.InputObjectFieldConfig{
+			update.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
 				Type:        arrayType,
-				Description: assoc.Description,
+				Description: assoc.Description(),
 			})
 		}
 	}
