@@ -3,6 +3,7 @@ package dialect
 import (
 	"testing"
 
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/table"
 )
 
@@ -10,7 +11,7 @@ func TestModifyTableName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&table.TableDiff{
+		&model.TableDiff{
 			OldTable: &table.Table{
 				Name: "User",
 			},
@@ -36,7 +37,7 @@ func TestModifyTableName(t *testing.T) {
 func TestModifyColumnName(t *testing.T) {
 	var mysqlBuilder MySQLBuilder
 	atoms := mysqlBuilder.BuildModifyTableAtoms(
-		&table.TableDiff{
+		&model.TableDiff{
 			OldTable: &table.Table{
 				Uuid: "uuid1",
 				Name: "User",

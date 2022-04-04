@@ -1,6 +1,7 @@
 package dialect
 
 import (
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/table"
 )
@@ -16,7 +17,7 @@ type SQLBuilder interface {
 	BuildCreateTableSQL(table *table.Table) string
 	BuildDeleteTableSQL(table *table.Table) string
 	BuildColumnSQL(column *table.Column) string
-	BuildModifyTableAtoms(diff *table.TableDiff) []table.ModifyAtom
+	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
 	ColumnTypeSQL(column *table.Column) string
 
 	BuildQuerySQL(entity graph.Node, args map[string]interface{}) (string, []interface{})
