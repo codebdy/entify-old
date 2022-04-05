@@ -3,18 +3,19 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 )
 
 func (c *TypeCache) makeInputs() {
-	for i := range Model.Graph.Entities {
-		entity := Model.Graph.Entities[i]
+	for i := range model.GlobalModel.Graph.Entities {
+		entity := model.GlobalModel.Graph.Entities[i]
 		c.UpdateInputMap[entity.Name()] = makeUpdateInput(entity)
 		c.SaveInputMap[entity.Name()] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name()] = makeMutationResponseType(entity)
 	}
-	for i := range Model.Graph.Entities {
-		entity := Model.Graph.Entities[i]
+	for i := range model.GlobalModel.Graph.Entities {
+		entity := model.GlobalModel.Graph.Entities[i]
 		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
 		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
 	}
@@ -67,8 +68,8 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 }
 
 func (c *TypeCache) makeInputRelations() {
-	for i := range Model.Graph.Entities {
-		entity := Model.Graph.Entities[i]
+	for i := range model.GlobalModel.Graph.Entities {
+		entity := model.GlobalModel.Graph.Entities[i]
 
 		input := c.UpdateInputMap[entity.Name()]
 		update := c.SaveInputMap[entity.Name()]

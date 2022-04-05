@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 )
 
@@ -35,11 +36,11 @@ func MakeSchema() {
 		panic(err)
 		//log.Fatalf("failed to create new schema, error: %v", err)
 	}
-	Model.Schema = &theSchema
+	model.GlobalModel.Schema = &theSchema
 }
 
 func ResolveSchema() *graphql.Schema {
-	return Model.Schema
+	return model.GlobalModel.Schema
 }
 
 func init() {

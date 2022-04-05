@@ -3,15 +3,16 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 )
 
 func (c *TypeCache) makeArgs() {
-	for i := range Model.Graph.Interfaces {
-		c.makeOneEntityArgs(Model.Graph.Interfaces[i])
+	for i := range model.GlobalModel.Graph.Interfaces {
+		c.makeOneEntityArgs(model.GlobalModel.Graph.Interfaces[i])
 	}
-	for i := range Model.Graph.Entities {
-		c.makeOneEntityArgs(Model.Graph.Entities[i])
+	for i := range model.GlobalModel.Graph.Entities {
+		c.makeOneEntityArgs(model.GlobalModel.Graph.Entities[i])
 	}
 	c.makeRelaionWhereExp()
 }
@@ -28,7 +29,7 @@ func (c *TypeCache) makeOneEntityArgs(node graph.Node) {
 func (c *TypeCache) makeRelaionWhereExp() {
 	for entityName := range c.WhereExpMap {
 		exp := c.WhereExpMap[entityName]
-		node := Model.Graph.GetNodeByUuid(entityName)
+		node := model.GlobalModel.Graph.GetNodeByUuid(entityName)
 		if node == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/utils"
 
@@ -63,7 +64,7 @@ func RootSubscription() *graphql.Object {
 		},
 	}}
 
-	for _, entity := range Model.Graph.Entities {
+	for _, entity := range model.GlobalModel.Graph.Entities {
 		appendToSubscriptionFields(entity, &subscriptionFields)
 	}
 

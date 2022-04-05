@@ -26,3 +26,5 @@ func New(c *meta.MetaContent) *Model {
 	}
 	return &model
 }
+
+var GlobalModel *Model

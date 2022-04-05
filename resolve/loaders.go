@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/graph-gophers/dataloader"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 type Loaders struct {
@@ -17,14 +17,14 @@ func CreateDataLoaders() *Loaders {
 	}
 }
 
-func (l *Loaders) GetLoader(entity *oldmeta.EntityMeta) *dataloader.Loader {
-	if l.loaders[entity.Name] == nil {
-		l.loaders[entity.Name] = dataloader.NewBatchedLoader(QueryBatchFn(entity))
+func (l *Loaders) GetLoader(entity *graph.Entity) *dataloader.Loader {
+	if l.loaders[entity.Name()] == nil {
+		l.loaders[entity.Name()] = dataloader.NewBatchedLoader(QueryBatchFn(entity))
 	}
-	return l.loaders[entity.Name]
+	return l.loaders[entity.Name()]
 }
 
-func QueryBatchFn(entity *oldmeta.EntityMeta) dataloader.BatchFunc {
+func QueryBatchFn(entity *graph.Entity) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		var results []*dataloader.Result
 		// handleError := func(err error) []*dataloader.Result {

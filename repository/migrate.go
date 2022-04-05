@@ -4,48 +4,52 @@ import (
 	"fmt"
 	"log"
 
-	"rxdrag.com/entity-engine/repository/dialect"
+	"rxdrag.com/entity-engine/db"
+	"rxdrag.com/entity-engine/db/dialect"
+	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/table"
 )
 
-func ExcuteDiff(d *modelold.Diff) {
+func ExcuteDiff(d *model.Diff) {
 	var undoList []string
-	con, err := OpenConnection()
-	defer con.Close()
+	con, err := Open()
+	dbx := con.Dbx
+	defer dbx.Close()
 	if err != nil {
 		panic("Open db error:" + err.Error())
 	}
 
 	for _, table := range d.DeletedTables {
-		err = DeleteTable(table, &undoList, con)
+		err = DeleteTable(table, &undoList, dbx)
 		if err != nil {
-			rollback(undoList, con)
+			rollback(undoList, dbx)
 			panic("Delete table error:" + err.Error())
 		}
 	}
 
 	for _, table := range d.AddedTables {
-		err = CreateTable(table, &undoList, con)
+		err = CreateTable(table, &undoList, dbx)
 		if err != nil {
-			rollback(undoList, con)
+			rollback(undoList, dbx)
 			panic("Create table error:" + err.Error())
 		}
 	}
 
 	for _, tableDiff := range d.ModifiedTables {
-		err = ModifyTable(tableDiff, &undoList, con)
+		err = ModifyTable(tableDiff, &undoList, dbx)
 		if err != nil {
-			rollback(undoList, con)
+			rollback(undoList, dbx)
 			panic("Modify table error:" + err.Error())
 		}
 	}
 
 }
 
-func DeleteTable(table *modelold.Table, undoList *[]string, con *Connection) error {
+func DeleteTable(table *table.Table, undoList *[]string, dbx *db.Dbx) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildDeleteTableSQL(table)
 	undoSQL := sqlBuilder.BuildCreateTableSQL(table)
-	_, err := con.Exec(excuteSQL)
+	_, err := dbx.Exec(excuteSQL)
 	if err != nil {
 		return err
 	}
@@ -54,11 +58,11 @@ func DeleteTable(table *modelold.Table, undoList *[]string, con *Connection) err
 	return nil
 }
 
-func CreateTable(table *modelold.Table, undoList *[]string, con *Connection) error {
+func CreateTable(table *table.Table, undoList *[]string, dbx *db.Dbx) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	excuteSQL := sqlBuilder.BuildCreateTableSQL(table)
 	undoSQL := sqlBuilder.BuildDeleteTableSQL(table)
-	_, err := con.Exec(excuteSQL)
+	_, err := dbx.Exec(excuteSQL)
 	if err != nil {
 		return err
 	}
@@ -68,11 +72,11 @@ func CreateTable(table *modelold.Table, undoList *[]string, con *Connection) err
 	return nil
 }
 
-func ModifyTable(tableDiff *modelold.TableDiff, undoList *[]string, con *Connection) error {
+func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, dbx *db.Dbx) error {
 	sqlBuilder := dialect.GetSQLBuilder()
 	atoms := sqlBuilder.BuildModifyTableAtoms(tableDiff)
 	for _, atom := range atoms {
-		_, err := con.Exec(atom.ExcuteSQL)
+		_, err := dbx.Exec(atom.ExcuteSQL)
 		if err != nil {
 			fmt.Println("出错atom", atom.ExcuteSQL, err.Error())
 			return err
@@ -82,7 +86,7 @@ func ModifyTable(tableDiff *modelold.TableDiff, undoList *[]string, con *Connect
 	return nil
 }
 
-func rollback(undoList []string, con *Connection) {
+func rollback(undoList []string, con *db.Dbx) {
 	for _, sql := range undoList {
 		_, err := con.Exec(sql)
 		if err != nil {

@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -39,9 +40,9 @@ var NodeInterfaceType = graphql.NewInterface(
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
-	c.makeEnums(Model.Graph.Enums)
-	c.makeOutputInterfaces(Model.Graph.Interfaces)
-	c.makeOutputObjects(Model.Graph.Entities)
+	c.makeEnums(model.GlobalModel.Graph.Enums)
+	c.makeOutputInterfaces(model.GlobalModel.Graph.Interfaces)
+	c.makeOutputObjects(model.GlobalModel.Graph.Entities)
 	c.makeRelations()
 	c.makeArgs()
 	c.makeInputs()

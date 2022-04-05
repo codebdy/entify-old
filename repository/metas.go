@@ -3,15 +3,16 @@ package repository
 import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/utils"
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := QueryOne(modelold.TheModel.GetMetaEntity(), QueryArg{
+	publishedMeta, err := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
-				consts.AEG_EQ: modelold.META_STATUS_PUBLISHED,
+				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})
@@ -23,7 +24,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := QueryOne(modelold.TheModel.GetMetaEntity(), QueryArg{
+	nextMeta, err := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,
@@ -37,8 +38,8 @@ func QueryNextMeta() interface{} {
 	return nextMeta
 }
 
-func DecodeContent(obj interface{}) *oldmeta.MetaContent {
-	content := oldmeta.MetaContent{}
+func DecodeContent(obj interface{}) *meta.MetaContent {
+	content := meta.MetaContent{}
 	if obj != nil {
 		err := mapstructure.Decode(obj.(utils.Object)[consts.META_CONTENT], &content)
 		if err != nil {
@@ -50,19 +51,19 @@ func DecodeContent(obj interface{}) *oldmeta.MetaContent {
 
 func LoadModel() {
 	//初始值，用户取meta信息，取完后，换掉该部分内容
-	initMeta := oldmeta.MetaContent{
-		Entities: []oldmeta.EntityMeta{
-			modelold.MetaStatusEnum,
-			modelold.MetaEntity,
+	initMeta := meta.MetaContent{
+		Classes: []meta.ClassMeta{
+			meta.MetaStatusEnum,
+			meta.MetaClass,
 		},
 	}
-	modelold.TheModel = modelold.NewModel(&initMeta)
+	model.GlobalModel = modelold.NewModel(&initMeta)
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
 	publishedContent.Entities = append(publishedContent.Entities, modelold.MetaStatusEnum)
 	publishedContent.Entities = append(publishedContent.Entities, modelold.MetaEntity)
 
-	modelold.TheModel = modelold.NewModel(publishedContent)
+	model.GlobalModel = modelold.NewModel(publishedContent)
 }
 
 func init() {
