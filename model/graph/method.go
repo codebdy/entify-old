@@ -6,7 +6,14 @@ import (
 
 type Method struct {
 	Method *domain.Method
-	Entity *Entity
+	Class  *Class
+}
+
+func NewMethod(m *domain.Method, c *Class) *Method {
+	return &Method{
+		Method: m,
+		Class:  c,
+	}
 }
 
 func (c *Method) Uuid() string {

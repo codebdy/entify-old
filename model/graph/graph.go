@@ -91,6 +91,8 @@ func New(m *domain.Model) *Model {
 		}
 	}
 
+	//处理属性的实体类型跟枚举类型
+
 	//处理Table
 	for i := range model.Entities {
 		ent := model.Entities[i]

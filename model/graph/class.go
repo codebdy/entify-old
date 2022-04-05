@@ -13,9 +13,21 @@ type Class struct {
 }
 
 func NewClass(c *domain.Class) *Class {
-	return &Class{
-		Domain: c,
+	cls := Class{
+		Domain:     c,
+		attributes: make([]*Attribute, len(c.Attributes)),
+		Methods:    make([]*Method, len(c.Methods)),
 	}
+
+	for i := range c.Attributes {
+		cls.attributes[i] = NewAttribute(c.Attributes[i], &cls)
+	}
+
+	for i := range c.Methods {
+		cls.Methods[i] = NewMethod(c.Methods[i], &cls)
+	}
+
+	return &cls
 }
 
 func (c *Class) Uuid() string {
