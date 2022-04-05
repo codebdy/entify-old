@@ -57,13 +57,13 @@ func LoadModel() {
 			meta.MetaClass,
 		},
 	}
-	model.GlobalModel = modelold.NewModel(&initMeta)
+	model.GlobalModel = model.New(&initMeta)
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
-	publishedContent.Entities = append(publishedContent.Entities, modelold.MetaStatusEnum)
-	publishedContent.Entities = append(publishedContent.Entities, modelold.MetaEntity)
+	publishedContent.Classes = append(publishedContent.Classes, meta.MetaStatusEnum)
+	publishedContent.Classes = append(publishedContent.Classes, meta.MetaClass)
 
-	model.GlobalModel = modelold.NewModel(publishedContent)
+	model.GlobalModel = model.New(publishedContent)
 }
 
 func init() {

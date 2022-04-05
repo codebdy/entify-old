@@ -24,7 +24,7 @@ func QueryOne(node graph.Node, args map[string]interface{}) (interface{}, error)
 	return con.doQueryOne(node, args)
 }
 
-func SaveOne(object map[string]interface{}, node graph.Node) (interface{}, error) {
+func SaveOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
@@ -36,7 +36,7 @@ func SaveOne(object map[string]interface{}, node graph.Node) (interface{}, error
 		panic(err.Error())
 	}
 
-	obj, err := con.doSaveOne(object, node)
+	obj, err := con.doSaveOne(object, entity)
 	if err != nil {
 		panic(err.Error())
 	}
