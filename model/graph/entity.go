@@ -41,3 +41,47 @@ func (e *Entity) Interface() *Interface {
 func (e *Entity) Entity() *Entity {
 	return e
 }
+
+//包含继承来的
+func (e *Entity) AllAttributes() []*Attribute {
+	attrs := []*Attribute{}
+	attrs = append(attrs, e.attributes...)
+	for i := range e.Interfaces {
+		attrs = append(attrs, e.Interfaces[i].attributes...)
+	}
+	return attrs
+}
+
+//包含继承来的
+func (e *Entity) AllAssociations() []*Association {
+	associas := []*Association{}
+	associas = append(associas, e.associations...)
+	for i := range e.Interfaces {
+		associas = append(associas, e.Interfaces[i].associations...)
+	}
+	return associas
+}
+
+func (c *Entity) IsEmperty() bool {
+	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1
+}
+
+func (c *Entity) AllAttributeNames() []string {
+	names := make([]string, len(c.AllAttributes()))
+
+	for i, attr := range c.AllAttributes() {
+		names[i] = attr.Name
+	}
+
+	return names
+}
+
+func (c *Entity) GetAttributeByName(name string) *Attribute {
+	for _, attr := range c.AllAttributes() {
+		if attr.Name == name {
+			return attr
+		}
+	}
+
+	return nil
+}

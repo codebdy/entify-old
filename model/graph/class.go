@@ -34,20 +34,6 @@ func (e *Class) AddAssociation(a *Association) {
 	e.associations = append(e.associations, a)
 }
 
-//包含继承来的
-func (e *Class) AllAttributes() []*Attribute {
-	return []*Attribute{}
-}
-
-//包含继承来的
-func (e *Class) AllAssociations() []*Association {
-	return []*Association{}
-}
-
-func (c *Class) IsEmperty() bool {
-	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1
-}
-
 func (c *Class) TableName() string {
 	return utils.SnakeString(c.Domain.Name)
 }
@@ -58,24 +44,4 @@ func (c *Class) Attributes() []*Attribute {
 
 func (c *Class) Associations() []*Association {
 	return c.associations
-}
-
-func (c *Class) AllAttributeNames() []string {
-	names := make([]string, len(c.AllAttributes()))
-
-	for i, column := range c.AllAttributes() {
-		names[i] = column.Name
-	}
-
-	return names
-}
-
-func (c *Class) GetAttributeByName(name string) *Attribute {
-	for _, attr := range c.AllAttributes() {
-		if attr.Name == name {
-			return attr
-		}
-	}
-
-	return nil
 }
