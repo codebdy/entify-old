@@ -22,9 +22,9 @@ func New(m *meta.Model) *Model {
 	for i := range m.Classes {
 		class := m.Classes[i]
 		if class.StereoType == meta.CLASSS_ENUM {
-			model.Enums[i] = NewEnum(class)
+			model.Enums = append(model.Enums, NewEnum(class))
 		} else {
-			model.Classes[i] = NewClass(class)
+			model.Classes = append(model.Classes, NewClass(class))
 		}
 	}
 
