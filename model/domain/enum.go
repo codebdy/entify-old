@@ -3,12 +3,14 @@ package domain
 import "rxdrag.com/entity-engine/model/meta"
 
 type Enum struct {
+	Uuid   string
 	Name   string
 	Values []string
 }
 
 func NewEnum(c *meta.ClassMeta) *Enum {
 	enum := Enum{
+		Uuid:   c.Uuid,
 		Name:   c.Name,
 		Values: make([]string, len(c.Attributes)),
 	}

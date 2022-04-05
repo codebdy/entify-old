@@ -256,14 +256,14 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 }
 
 func EnumComparisonExp(attr *graph.Attribute) *graphql.InputObjectFieldConfig {
-	enumEntity := attr.EnityType
+	enumEntity := attr.EumnType
 	if enumEntity == nil {
 		panic("Can not find enum entity")
 	}
-	if Cache.EnumComparisonExpMap[enumEntity.Name()] != nil {
-		return Cache.EnumComparisonExpMap[enumEntity.Name()]
+	if Cache.EnumComparisonExpMap[enumEntity.Name] != nil {
+		return Cache.EnumComparisonExpMap[enumEntity.Name]
 	}
-	enumType := Cache.EnumType(enumEntity.Name())
+	enumType := Cache.EnumType(enumEntity.Name)
 	enumxp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{
@@ -288,6 +288,6 @@ func EnumComparisonExp(attr *graph.Attribute) *graphql.InputObjectFieldConfig {
 			},
 		),
 	}
-	Cache.EnumComparisonExpMap[enumEntity.Name()] = &enumxp
+	Cache.EnumComparisonExpMap[enumEntity.Name] = &enumxp
 	return &enumxp
 }

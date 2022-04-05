@@ -92,7 +92,43 @@ func New(m *domain.Model) *Model {
 	}
 
 	//处理属性的实体类型跟枚举类型
+	for i := range model.Interfaces {
+		intf := model.Interfaces[i]
+		for j := range intf.attributes {
+			attr := intf.attributes[j]
+			if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
+				attr.EumnType = model.GetEnumByUuid(attr.TypeUuid)
+			}
 
+			if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
+				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+			}
+
+			//这个代码并不成熟
+			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT {
+				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+			}
+		}
+	}
+
+	for i := range model.Entities {
+		ent := model.Entities[i]
+		for j := range ent.attributes {
+			attr := ent.attributes[j]
+			if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
+				attr.EumnType = model.GetEnumByUuid(attr.TypeUuid)
+			}
+
+			if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
+				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+			}
+
+			//这个代码并不成熟
+			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT {
+				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+			}
+		}
+	}
 	//处理Table
 	for i := range model.Entities {
 		ent := model.Entities[i]
@@ -172,4 +208,14 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 
 func (m *Model) GetMetaEntity() *Entity {
 	return m.GetEntityByUuid(meta.MetaClass.Uuid)
+}
+
+func (m *Model) GetEnumByUuid(uuid string) *Enum {
+	for i := range m.Enums {
+		enum := m.Enums[i]
+		if enum.Uuid == uuid {
+			return enum
+		}
+	}
+	return nil
 }
