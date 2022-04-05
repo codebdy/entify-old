@@ -3,27 +3,36 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/oldmeta"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/scalars"
 )
 
 func AttributeType(attr *graph.Attribute) graphql.Output {
 	switch attr.Type {
-	case oldmeta.COLUMN_ID:
+	case meta.ID:
 		return graphql.ID
-	case oldmeta.COLUMN_INT:
+	case meta.INT:
 		return graphql.Int
-	case oldmeta.COLUMN_FLOAT:
+	case meta.FLOAT:
 		return graphql.Float
-	case oldmeta.COLUMN_BOOLEAN:
+	case meta.BOOLEAN:
 		return graphql.Boolean
-	case oldmeta.COLUMN_STRING:
+	case meta.STRING:
 		return graphql.String
-	case oldmeta.COLUMN_DATE:
+	case meta.DATE:
 		return graphql.DateTime
-	case oldmeta.COLUMN_SIMPLE_JSON, oldmeta.COLUMN_SIMPLE_ARRAY, oldmeta.COLUMN_JSON_ARRAY:
+	case meta.VALUE_OBJECT,
+		meta.ENTITY,
+		meta.ID_ARRAY,
+		meta.INT_ARRAY,
+		meta.FLOAT_ARRAY,
+		meta.STRING_ARRAY,
+		meta.DATE_ARRAY,
+		meta.ENUM_ARRAY,
+		meta.VALUE_OBJECT_ARRAY,
+		meta.ENTITY_ARRAY:
 		return scalars.JSONType
-	case oldmeta.COLUMN_ENUM:
+	case meta.ENUM:
 		enum := attr.EumnType
 		if enum == nil {
 			panic("Can not find enum entity")
@@ -36,21 +45,30 @@ func AttributeType(attr *graph.Attribute) graphql.Output {
 
 func AttributeExp(column *graph.Attribute) *graphql.InputObjectFieldConfig {
 	switch column.Type {
-	case oldmeta.COLUMN_INT:
+	case meta.INT:
 		return &IntComparisonExp
-	case oldmeta.COLUMN_FLOAT:
+	case meta.FLOAT:
 		return &FloatComparisonExp
-	case oldmeta.COLUMN_BOOLEAN:
+	case meta.BOOLEAN:
 		return &BooleanComparisonExp
-	case oldmeta.COLUMN_STRING:
+	case meta.STRING:
 		return &StringComparisonExp
-	case oldmeta.COLUMN_DATE:
+	case meta.DATE:
 		return &DateTimeComparisonExp
-	case oldmeta.COLUMN_SIMPLE_JSON, oldmeta.COLUMN_SIMPLE_ARRAY, oldmeta.COLUMN_JSON_ARRAY:
+	case meta.VALUE_OBJECT,
+		meta.ENTITY,
+		meta.ID_ARRAY,
+		meta.INT_ARRAY,
+		meta.FLOAT_ARRAY,
+		meta.STRING_ARRAY,
+		meta.DATE_ARRAY,
+		meta.ENUM_ARRAY,
+		meta.VALUE_OBJECT_ARRAY,
+		meta.ENTITY_ARRAY:
 		return nil
-	case oldmeta.COLUMN_ID:
+	case meta.ID:
 		return &IdComparisonExp
-	case oldmeta.COLUMN_ENUM:
+	case meta.ENUM:
 		return EnumComparisonExp(column)
 	}
 
@@ -59,11 +77,17 @@ func AttributeExp(column *graph.Attribute) *graphql.InputObjectFieldConfig {
 
 func AttributeOrderBy(column *graph.Attribute) *graphql.Enum {
 	switch column.Type {
-	case oldmeta.COLUMN_SIMPLE_JSON:
-		return nil
-	case oldmeta.COLUMN_SIMPLE_ARRAY:
-		return nil
-	case oldmeta.COLUMN_JSON_ARRAY:
+	case meta.VALUE_OBJECT,
+		meta.BOOLEAN,
+		meta.ENTITY,
+		meta.ID_ARRAY,
+		meta.INT_ARRAY,
+		meta.FLOAT_ARRAY,
+		meta.STRING_ARRAY,
+		meta.DATE_ARRAY,
+		meta.ENUM_ARRAY,
+		meta.VALUE_OBJECT_ARRAY,
+		meta.ENTITY_ARRAY:
 		return nil
 	}
 
