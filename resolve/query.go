@@ -5,17 +5,17 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
-	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/repository"
 )
 
-func QueryOneResolveFn(entity *model.Entity) graphql.FieldResolveFn {
+func QueryOneResolveFn(node graph.Node) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
-		return repository.QueryOne(entity, p.Args)
+		return repository.QueryOne(node, p.Args)
 	}
 }
 
-func QueryResolveFn(entity *model.Entity) graphql.FieldResolveFn {
+func QueryResolveFn(node graph.Node) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		// names := entity.ColumnNames()
 		// queryStr := "select %s from %s "
@@ -29,6 +29,6 @@ func QueryResolveFn(entity *model.Entity) graphql.FieldResolveFn {
 		}
 
 		//err = db.Select(&instances, queryStr)
-		return repository.Query(entity, p.Args)
+		return repository.Query(node, p.Args)
 	}
 }
