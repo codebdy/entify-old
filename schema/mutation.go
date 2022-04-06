@@ -7,7 +7,6 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -63,11 +62,6 @@ func rootMutation() *graphql.Object {
 }
 
 func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
-	//如果是枚举
-	if entity.Domain.StereoType == meta.ENUM {
-		return
-	}
-
 	name := utils.FirstUpper(entity.Name())
 
 	(*feilds)[consts.DELETE+name] = &graphql.Field{
