@@ -3,6 +3,7 @@ package graph
 import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/domain"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/model/table"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -63,7 +64,7 @@ func (e *Entity) AllAssociations() []*Association {
 }
 
 func (c *Entity) IsEmperty() bool {
-	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1
+	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1 && c.Domain.StereoType != meta.CLASS_SERVICE
 }
 
 func (c *Entity) AllAttributeNames() []string {
