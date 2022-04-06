@@ -28,6 +28,7 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	nextModel.Graph.Validate()
 	diff := model.CreateDiff(publishedModel, nextModel)
 	repository.ExcuteDiff(diff)
+	fmt.Println("ExcuteDiff success")
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()

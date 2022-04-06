@@ -225,11 +225,12 @@ func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *gra
 func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
 	sql := fmt.Sprintf(
-		"UPDATE `%s` SET %s WHERE ID = %s",
+		"UPDATE `%s` SET %s WHERE ID = %d",
 		entity.TableName(),
 		updateSetFields(keys),
 		object[consts.ID],
 	)
+
 	return sql, makeValues(keys, object, entity)
 }
 

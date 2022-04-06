@@ -5,9 +5,9 @@ import (
 	"rxdrag.com/entity-engine/model/graph"
 )
 
-func (c *TypeCache) makeOutputObjects(normals []*graph.Entity) {
-	for i := range normals {
-		entity := normals[i]
+func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
+	for i := range nodes {
+		entity := nodes[i]
 		c.ObjectTypeMap[entity.Name()] = c.ObjectType(entity)
 	}
 }
