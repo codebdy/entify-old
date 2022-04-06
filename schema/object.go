@@ -19,7 +19,7 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity.AllAttributes()),
+				Fields:      outputFields(entity),
 				Description: entity.Description(),
 				Interfaces:  interfaces,
 			},
@@ -28,7 +28,7 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity.AllAttributes()),
+				Fields:      outputFields(entity),
 				Description: entity.Description(),
 			},
 		)
@@ -36,12 +36,22 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 
 }
 
-func outputFields(attrs []*graph.Attribute) graphql.Fields {
+func outputFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range attrs {
-		fields[column.Name] = &graphql.Field{
-			Type:        AttributeType(column),
-			Description: column.Description,
+	for _, attr := range node.AllAttributes() {
+		fields[attr.Name] = &graphql.Field{
+			Type:        AttributeType(attr),
+			Description: attr.Description,
+			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			// 	fmt.Println(p.Context.Value("data"))
+			// 	return "world", nil
+			// },
+		}
+	}
+	for _, method := range node.AllMethods() {
+		fields[method.Name()] = &graphql.Field{
+			Type:        MethodType(method),
+			Description: method.Method.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
 			// 	return "world", nil

@@ -5,8 +5,10 @@ import (
 )
 
 type Method struct {
-	Method *domain.Method
-	Class  *Class
+	Method    *domain.Method
+	EumnType  *Enum
+	EnityType *Entity
+	Class     *Class
 }
 
 func NewMethod(m *domain.Method, c *Class) *Method {

@@ -18,7 +18,7 @@ func (c *TypeCache) InterfaceType(intf *graph.Interface) *graphql.Interface {
 	return graphql.NewInterface(
 		graphql.InterfaceConfig{
 			Name:        name,
-			Fields:      outputFields(intf.Attributes()),
+			Fields:      outputFields(intf),
 			Description: intf.Description(),
 		},
 	)

@@ -115,6 +115,22 @@ func New(m *domain.Model) *Model {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 		}
+		for j := range intf.Methods {
+			method := intf.Methods[j]
+			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
+				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
+			}
+
+			if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
+				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
+			}
+
+			//这个代码并不成熟
+			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
+				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
+			}
+		}
+
 	}
 
 	for i := range model.Entities {
@@ -132,6 +148,21 @@ func New(m *domain.Model) *Model {
 			//这个代码并不成熟
 			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+			}
+		}
+		for j := range ent.Methods {
+			method := ent.Methods[j]
+			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
+				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
+			}
+
+			if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
+				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
+			}
+
+			//这个代码并不成熟
+			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
+				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
 			}
 		}
 	}

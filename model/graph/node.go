@@ -12,6 +12,7 @@ type Node interface {
 	Attributes() []*Attribute
 	Associations() []*Association
 	AllAttributes() []*Attribute
+	AllMethods() []*Method
 	AllAttributeNames() []string
 	GetAttributeByName(name string) *Attribute
 	IsEmperty() bool

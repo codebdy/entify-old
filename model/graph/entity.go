@@ -53,6 +53,15 @@ func (e *Entity) AllAttributes() []*Attribute {
 	return attrs
 }
 
+func (e *Entity) AllMethods() []*Method {
+	methods := []*Method{}
+	methods = append(methods, e.Methods...)
+	for i := range e.Interfaces {
+		methods = append(methods, e.Interfaces[i].Methods...)
+	}
+	return methods
+}
+
 //包含继承来的
 func (e *Entity) AllAssociations() []*Association {
 	associas := []*Association{}
