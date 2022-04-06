@@ -22,8 +22,12 @@ func (c *TypeCache) makeArgs() {
 func (c *TypeCache) makeOneEntityArgs(node graph.Node) {
 	whereExp := makeWhereExp(node)
 	c.WhereExpMap[node.Name()] = whereExp
+
 	orderByExp := makeOrderBy(node)
-	c.OrderByMap[node.Name()] = orderByExp
+	if len(orderByExp.Fields()) > 0 {
+		c.OrderByMap[node.Name()] = orderByExp
+	}
+
 	distinctOnEnum := makeDistinctOnEnum(node)
 	c.DistinctOnEnumMap[node.Name()] = distinctOnEnum
 }
