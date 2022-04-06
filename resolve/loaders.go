@@ -5,6 +5,7 @@ import (
 
 	"github.com/graph-gophers/dataloader"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type Loaders struct {
@@ -26,6 +27,7 @@ func (l *Loaders) GetLoader(entity *graph.Entity) *dataloader.Loader {
 
 func QueryBatchFn(entity *graph.Entity) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+		defer utils.PrintErrorStack()
 		var results []*dataloader.Result
 		// handleError := func(err error) []*dataloader.Result {
 		// 	var results []*dataloader.Result
