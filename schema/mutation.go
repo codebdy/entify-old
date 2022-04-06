@@ -56,7 +56,11 @@ func rootMutation() *graphql.Object {
 		appendToMutationFields(entity, &mutationFields)
 	}
 
-	rootMutation := graphql.ObjectConfig{Name: consts.ROOT_MUTATION_NAME, Fields: mutationFields}
+	rootMutation := graphql.ObjectConfig{
+		Name:        consts.ROOT_MUTATION_NAME,
+		Fields:      mutationFields,
+		Description: "Root mutation of entity engine.",
+	}
 
 	return graphql.NewObject(rootMutation)
 }

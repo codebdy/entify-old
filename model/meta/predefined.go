@@ -38,6 +38,7 @@ var MetaClass = ClassMeta{
 	Name:       consts.META_ENTITY_NAME,
 	InnerId:    1,
 	StereoType: CLASSS_ENTITY,
+	Root:       true,
 	Attributes: []AttributeMeta{
 		{
 			Uuid: "META_COLUMN_ID_UUID",

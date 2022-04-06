@@ -41,11 +41,11 @@ func rootQuery() *graphql.Object {
 			},
 		},
 	}
-	for _, intf := range model.GlobalModel.Graph.Interfaces {
+	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		appendToQueryFields(intf, &queryFields)
 	}
 
-	for _, entity := range model.GlobalModel.Graph.Entities {
+	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		appendToQueryFields(entity, &queryFields)
 	}
 
