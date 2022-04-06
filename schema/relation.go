@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model"
 )
@@ -15,7 +13,6 @@ func (c *TypeCache) makeRelations() {
 			panic("Can find object type:" + intf.Name())
 		}
 		for _, assocition := range intf.Associations() {
-			fmt.Println("哈哈", assocition, assocition.Name(), interfaceType)
 			interfaceType.AddFieldConfig(assocition.Name(), &graphql.Field{
 				Name:        assocition.Name(),
 				Type:        c.OutputType(assocition.TypeClass().Name()),
