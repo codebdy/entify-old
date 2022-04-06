@@ -105,7 +105,7 @@ func New(m *domain.Model) *Model {
 			}
 
 			//这个代码并不成熟
-			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT {
+			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 		}
@@ -124,7 +124,7 @@ func New(m *domain.Model) *Model {
 			}
 
 			//这个代码并不成熟
-			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT {
+			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 		}
@@ -186,6 +186,16 @@ func (m *Model) GetNodeByUuid(uuid string) Node {
 	return m.GetEntityByUuid(uuid)
 }
 
+func (m *Model) GetNodeByName(name string) Node {
+	intf := m.GetInterfaceByName(name)
+
+	if intf != nil {
+		return intf
+	}
+
+	return m.GetEntityByName(name)
+}
+
 func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
 	for i := range m.Interfaces {
 		intf := m.Interfaces[i]
@@ -200,6 +210,26 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	for i := range m.Entities {
 		ent := m.Entities[i]
 		if ent.Uuid() == uuid {
+			return ent
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetInterfaceByName(name string) *Interface {
+	for i := range m.Interfaces {
+		intf := m.Interfaces[i]
+		if intf.Name() == name {
+			return intf
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetEntityByName(name string) *Entity {
+	for i := range m.Entities {
+		ent := m.Entities[i]
+		if ent.Name() == name {
 			return ent
 		}
 	}
