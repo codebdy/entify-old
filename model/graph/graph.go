@@ -56,7 +56,13 @@ func New(m *domain.Model) *Model {
 	for i := range m.Relations {
 		relation := m.Relations[i]
 		source := model.GetNodeByUuid(relation.Source.Uuid)
+		if source.Entity() == nil && source.Interface() == nil {
+			panic("Can not find souce by uuid:" + relation.Source.Uuid)
+		}
 		target := model.GetNodeByUuid(relation.Target.Uuid)
+		if target.Entity() == nil && target.Interface() == nil {
+			panic("Can not find target by uuid:" + relation.Target.Uuid)
+		}
 		r := NewRelation(relation, source, target)
 		model.Relations = append(model.Relations, r)
 		source.AddAssociation(NewAssociation(r, source.Uuid()))
