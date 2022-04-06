@@ -63,7 +63,7 @@ func queryResponseType(node graph.Node) graphql.Output {
 }
 
 func quryeArgs(node graph.Node) graphql.FieldConfigArgument {
-	return graphql.FieldConfigArgument{
+	config := graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(node.Name()),
 		},
@@ -73,13 +73,18 @@ func quryeArgs(node graph.Node) graphql.FieldConfigArgument {
 		consts.ARG_OFFSET: &graphql.ArgumentConfig{
 			Type: graphql.Int,
 		},
-		consts.ARG_ORDERBY: &graphql.ArgumentConfig{
-			Type: Cache.OrderByExp(node.Name()),
-		},
 		consts.ARG_WHERE: &graphql.ArgumentConfig{
 			Type: Cache.WhereExp(node.Name()),
 		},
 	}
+	orderByExp := Cache.OrderByExp(node.Name())
+
+	if orderByExp != nil {
+		config[consts.ARG_ORDERBY] = &graphql.ArgumentConfig{
+			Type: orderByExp,
+		}
+	}
+	return config
 }
 
 func appendToQueryFields(node graph.Node, fields *graphql.Fields) {
