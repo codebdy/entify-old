@@ -1,7 +1,7 @@
 package meta
 
 const (
-	CLASSS_ENTITY      string = "Normal"
+	CLASSS_ENTITY      string = "Entity"
 	CLASSS_ENUM        string = "Enum"
 	CLASSS_ABSTRACT    string = "Abstract"
 	CLASS_VALUE_OBJECT string = "ValueObject"
