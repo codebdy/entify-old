@@ -121,28 +121,28 @@ func CreateDiff(published, next *Model) *Diff {
 		newContent: next,
 	}
 
-	publishedTables := published.Graph.Tables
-	nextTables := next.Graph.Tables
+	// publishedTables := published.Graph.Tables
+	// nextTables := next.Graph.Tables
 
-	for _, table := range publishedTables {
-		foundTable := findTable(table.Uuid, nextTables)
-		//删除的Table
-		if foundTable == nil {
-			diff.DeletedTables = append(diff.DeletedTables, table)
-		}
-	}
-	for _, table := range nextTables {
-		foundTable := findTable(table.Uuid, publishedTables)
-		//添加的Table
-		if foundTable == nil {
-			diff.AddedTables = append(diff.AddedTables, table)
-		} else { //修改的Table
-			tableDiff := tableDifferent(foundTable, table)
-			if tableDiff != nil {
-				diff.ModifiedTables = append(diff.ModifiedTables, tableDiff)
-			}
-		}
-	}
+	// for _, table := range publishedTables {
+	// 	foundTable := findTable(table.Uuid, nextTables)
+	// 	//删除的Table
+	// 	if foundTable == nil {
+	// 		diff.DeletedTables = append(diff.DeletedTables, table)
+	// 	}
+	// }
+	// for _, table := range nextTables {
+	// 	foundTable := findTable(table.Uuid, publishedTables)
+	// 	//添加的Table
+	// 	if foundTable == nil {
+	// 		diff.AddedTables = append(diff.AddedTables, table)
+	// 	} else { //修改的Table
+	// 		tableDiff := tableDifferent(foundTable, table)
+	// 		if tableDiff != nil {
+	// 			diff.ModifiedTables = append(diff.ModifiedTables, tableDiff)
+	// 		}
+	// 	}
+	// }
 
 	return &diff
 }
