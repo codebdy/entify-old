@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"strconv"
 
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/db/dialect"
@@ -240,16 +239,7 @@ func (con *Connection) doSaveOne(object map[string]interface{}, entity *graph.En
 		return con.doInsertOne(object, entity)
 	} else {
 
-		switch object[consts.ID].(type) {
-		case string:
-			id, err := strconv.ParseInt(object[consts.ID].(string), 10, 64)
-			if err != nil {
-				panic("Convert id error:" + err.Error())
-			}
-
-			object[consts.ID] = id
-		}
-
+		ConvertId(object)
 		return con.doUpdateOne(object, entity)
 	}
 }
