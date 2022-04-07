@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 )
 
 func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
@@ -15,6 +16,9 @@ func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
 func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 	name := entity.Name()
 	interfaces := c.mapInterfaces(entity.Interfaces)
+	if entity.Domain.StereoType != meta.CLASS_SERVICE && entity.Domain.StereoType != meta.CLASS_VALUE_OBJECT {
+		interfaces = append(interfaces, NodeInterfaceType)
+	}
 	if len(interfaces) > 0 {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
