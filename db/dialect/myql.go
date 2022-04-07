@@ -3,6 +3,7 @@ package dialect
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"rxdrag.com/entity-engine/config"
@@ -224,11 +225,15 @@ func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *gra
 }
 func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{}) {
 	keys := utils.MapStringKeys(object, "")
+	id, err := strconv.ParseInt(object[consts.ID].(string), 10, 64)
+	if err != nil {
+		panic("Convert Id error: " + err.Error())
+	}
 	sql := fmt.Sprintf(
 		"UPDATE `%s` SET %s WHERE ID = %d",
 		entity.TableName(),
 		updateSetFields(keys),
-		object[consts.ID],
+		id,
 	)
 
 	return sql, makeValues(keys, object, entity)
