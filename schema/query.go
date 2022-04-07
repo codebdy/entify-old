@@ -24,6 +24,13 @@ var serviceType = graphql.NewObject(
 )
 
 func rootQuery() *graphql.Object {
+
+	rootQueryConfig := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields()}
+
+	return graphql.NewObject(rootQueryConfig)
+}
+
+func queryFields() graphql.Fields {
 	queryFields := graphql.Fields{
 		consts.SERVICE: &graphql.Field{
 			Type: serviceType,
@@ -54,9 +61,7 @@ func rootQuery() *graphql.Object {
 		}
 	}
 
-	rootQueryConfig := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields}
-
-	return graphql.NewObject(rootQueryConfig)
+	return queryFields
 }
 
 func queryResponseType(node graph.Node) graphql.Output {
