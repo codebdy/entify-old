@@ -12,6 +12,7 @@ type Model struct {
 	Enums      []*Enum
 	Interfaces []*Interface
 	Entities   []*Entity
+	Services   []*Class
 	Relations  []*Relation
 	Tables     []*table.Table
 }
