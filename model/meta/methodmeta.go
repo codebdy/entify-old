@@ -24,6 +24,7 @@ type MethodMeta struct {
 	TypeUuid         string    `json:"typeUuid"`
 	TypeLabel        string    `json:"typeLabel"`
 	Args             []ArgMeta `json:"args"`
+	OperateType      string    `json:"operateType"` //Mutation or Query
 	ImplementType    string    `json:"implementType"`
 	MethodImplements string    `json:"methodImplements"`
 	Description      string    `json:"description"`
