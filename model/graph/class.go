@@ -61,3 +61,15 @@ func (c *Class) Attributes() []*Attribute {
 func (c *Class) Associations() []*Association {
 	return c.associations
 }
+
+func (c *Class) MethodsByType(operateType string) []*Method {
+	methods := []*Method{}
+	for i := range c.Methods {
+		method := c.Methods[i]
+		if method.Method.OperateType == operateType {
+			methods = append(methods, method)
+		}
+	}
+
+	return methods
+}

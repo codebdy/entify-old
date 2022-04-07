@@ -10,7 +10,7 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-var serviceType = graphql.NewObject(
+var serviceNodeType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: utils.FirstUpper(consts.SERVICE),
 		Fields: graphql.Fields{
@@ -32,7 +32,7 @@ func rootQuery() *graphql.Object {
 func queryFields() graphql.Fields {
 	queryFields := graphql.Fields{
 		consts.SERVICE: &graphql.Field{
-			Type: serviceType,
+			Type: serviceNodeType,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return map[string]interface{}{
 					consts.ID: config.SERVICE_ID,
@@ -54,6 +54,10 @@ func queryFields() graphql.Fields {
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		appendToQueryFields(entity, &queryFields)
+	}
+
+	for _, service := range model.GlobalModel.Graph.RootServices() {
+		appendServiceQueryFields(service, &queryFields)
 	}
 
 	return queryFields

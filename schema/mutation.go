@@ -58,6 +58,10 @@ func rootMutation() *graphql.Object {
 		}
 	}
 
+	for _, service := range model.GlobalModel.Graph.RootServices() {
+		appendServiceMutationFields(service, &mutationFields)
+	}
+
 	rootMutation := graphql.ObjectConfig{
 		Name:        consts.ROOT_MUTATION_NAME,
 		Fields:      mutationFields,

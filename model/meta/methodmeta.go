@@ -5,8 +5,8 @@ const (
 	CLOUD_FUNCTION string = "cloudFunction"
 	MICRO_SERVICE  string = "microService"
 
-	Query    string = "query"
-	Mutation string = "mutation"
+	QUERY    string = "query"
+	MUTATION string = "mutation"
 )
 
 type ArgMeta struct {

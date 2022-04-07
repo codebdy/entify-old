@@ -218,6 +218,18 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
+func (m *Model) RootServices() []*Class {
+	classes := []*Class{}
+	for i := range m.Services {
+		serc := m.Services[i]
+		if serc.Domain.Root {
+			classes = append(classes, serc)
+		}
+	}
+
+	return classes
+}
+
 func (m *Model) GetNodeByUuid(uuid string) Node {
 	intf := m.GetInterfaceByUuid(uuid)
 
