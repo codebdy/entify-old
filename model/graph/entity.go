@@ -48,7 +48,12 @@ func (e *Entity) AllAttributes() []*Attribute {
 	attrs := []*Attribute{}
 	attrs = append(attrs, e.attributes...)
 	for i := range e.Interfaces {
-		attrs = append(attrs, e.Interfaces[i].attributes...)
+		for j := range e.Interfaces[i].attributes {
+			attr := e.Interfaces[i].attributes[j]
+			if findAttribute(attr.Name, attrs) == nil {
+				attrs = append(attrs, attr)
+			}
+		}
 	}
 	return attrs
 }
@@ -57,7 +62,12 @@ func (e *Entity) AllMethods() []*Method {
 	methods := []*Method{}
 	methods = append(methods, e.Methods...)
 	for i := range e.Interfaces {
-		methods = append(methods, e.Interfaces[i].Methods...)
+		for j := range e.Interfaces[i].Methods {
+			method := e.Interfaces[i].Methods[j]
+			if findMethod(method.Name(), methods) == nil {
+				methods = append(methods, method)
+			}
+		}
 	}
 	return methods
 }
@@ -67,7 +77,12 @@ func (e *Entity) AllAssociations() []*Association {
 	associas := []*Association{}
 	associas = append(associas, e.associations...)
 	for i := range e.Interfaces {
-		associas = append(associas, e.Interfaces[i].associations...)
+		for j := range e.Interfaces[i].associations {
+			asso := e.Interfaces[i].associations[j]
+			if findAssociation(asso.Name(), associas) == nil {
+				associas = append(associas, asso)
+			}
+		}
 	}
 	return associas
 }
@@ -93,5 +108,32 @@ func (c *Entity) GetAttributeByName(name string) *Attribute {
 		}
 	}
 
+	return nil
+}
+
+func findAttribute(name string, attrs []*Attribute) *Attribute {
+	for i := range attrs {
+		if attrs[i].Name == name {
+			return attrs[i]
+		}
+	}
+	return nil
+}
+
+func findMethod(name string, methods []*Method) *Method {
+	for i := range methods {
+		if methods[i].Name() == name {
+			return methods[i]
+		}
+	}
+	return nil
+}
+
+func findAssociation(name string, assos []*Association) *Association {
+	for i := range assos {
+		if assos[i].Name() == name {
+			return assos[i]
+		}
+	}
 	return nil
 }

@@ -70,3 +70,7 @@ func (a *DerivedAssociation) TargetEntities() []*Entity {
 	//targetNode := a.Relation.Target
 	return []*Entity{}
 }
+
+func (a *Association) GetName() string {
+	return a.Name()
+}
