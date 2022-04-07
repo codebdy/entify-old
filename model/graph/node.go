@@ -2,6 +2,7 @@ package graph
 
 type Node interface {
 	Uuid() string
+	InnerId() uint64
 	Name() string
 	TableName() string
 	Description() string

@@ -34,6 +34,10 @@ func (c *Class) Uuid() string {
 	return c.Domain.Uuid
 }
 
+func (c *Class) InnerId() uint64 {
+	return c.Domain.InnerId
+}
+
 func (c *Class) Name() string {
 	return c.Domain.Name
 }

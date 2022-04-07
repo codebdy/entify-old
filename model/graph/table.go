@@ -37,11 +37,11 @@ func NewRelationTables(relation *Relation) []*table.Table {
 	if relation.IsRealRelation() {
 		table := &table.Table{
 			Name: fmt.Sprintf(
-				"%s_%s_%s_%s",
+				"%s_%d_%d_%d",
 				consts.PIVOT,
-				relation.Source.Uuid(),
-				relation.Uuid,
-				relation.Target.Uuid(),
+				relation.Source.InnerId(),
+				relation.InnerId,
+				relation.Target.InnerId(),
 			),
 			Columns: []*table.Column{
 				{
@@ -76,11 +76,11 @@ func NewRelationTables(relation *Relation) []*table.Table {
 
 func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 	name := fmt.Sprintf(
-		"%s_%s_%s_%s",
+		"%s_%d_%d_%d",
 		consts.PIVOT,
-		derived.Source.Uuid(),
-		derived.Parent.Uuid,
-		derived.Target.Uuid(),
+		derived.Source.InnerId(),
+		derived.Parent.InnerId,
+		derived.Target.InnerId(),
 	)
 	table := &table.Table{
 		Uuid: name,
