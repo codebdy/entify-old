@@ -169,7 +169,9 @@ func New(m *domain.Model) *Model {
 	//处理Table
 	for i := range model.Entities {
 		ent := model.Entities[i]
-		model.Tables = append(model.Tables, NewEntityTable(ent))
+		if ent.Domain.StereoType == meta.CLASSS_ENTITY {
+			model.Tables = append(model.Tables, NewEntityTable(ent))
+		}
 	}
 
 	for i := range model.Relations {

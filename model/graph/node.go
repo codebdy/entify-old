@@ -9,7 +9,7 @@ type Node interface {
 	Interface() *Interface
 	Entity() *Entity
 	AddAssociation(a *Association)
-	Attributes() []*Attribute
+	//Attributes() []*Attribute
 	Associations() []*Association
 	AllAttributes() []*Attribute
 	AllMethods() []*Method

@@ -15,8 +15,9 @@ func NewEntityTable(entity *Entity) *table.Table {
 		EntityInnerId: entity.Domain.InnerId,
 	}
 
-	for i := range entity.attributes {
-		attr := entity.attributes[i]
+	allAttrs := entity.AllAttributes()
+	for i := range allAttrs {
+		attr := allAttrs[i]
 		table.Columns = append(table.Columns, NewAttributeColumn(attr))
 	}
 

@@ -80,7 +80,7 @@ func makeWhereExp(node graph.Node) *graphql.InputObject {
 		},
 	}
 
-	attrs := node.Attributes()
+	attrs := node.AllAttributes()
 
 	for i := range attrs {
 		attr := attrs[i]
@@ -103,7 +103,7 @@ func makeOrderBy(node graph.Node) *graphql.InputObject {
 		},
 	)
 
-	attrs := node.Attributes()
+	attrs := node.AllAttributes()
 	for i := range attrs {
 		attr := attrs[i]
 		attrOrderBy := AttributeOrderBy(attr)

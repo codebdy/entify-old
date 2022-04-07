@@ -10,7 +10,7 @@ import (
 
 func AvgFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range node.Attributes() {
+	for _, column := range node.AllAttributes() {
 		if column.Type == meta.INT || column.Type == meta.FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: AttributeType(column),
@@ -27,7 +27,7 @@ func AvgFields(node graph.Node) graphql.Fields {
 
 func MaxFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -44,7 +44,7 @@ func MaxFields(node graph.Node) graphql.Fields {
 
 func MinFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -61,7 +61,7 @@ func MinFields(node graph.Node) graphql.Fields {
 
 func SelectFields(node graph.Node) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		fields[attr.Name] = &graphql.InputObjectFieldConfig{
 			Type: AttributeType(attr),
 		}
@@ -72,7 +72,7 @@ func SelectFields(node graph.Node) graphql.InputObjectConfigFieldMap {
 
 func StddevFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -89,7 +89,7 @@ func StddevFields(node graph.Node) graphql.Fields {
 
 func StddevPopFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -105,7 +105,7 @@ func StddevPopFields(node graph.Node) graphql.Fields {
 
 func StddevSampFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -122,7 +122,7 @@ func StddevSampFields(node graph.Node) graphql.Fields {
 
 func SumFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -139,7 +139,7 @@ func SumFields(node graph.Node) graphql.Fields {
 
 func VarPopFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -156,7 +156,7 @@ func VarPopFields(node graph.Node) graphql.Fields {
 
 func VarSampFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -173,7 +173,7 @@ func VarSampFields(node graph.Node) graphql.Fields {
 
 func VarianceFields(node graph.Node) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.Attributes() {
+	for _, attr := range node.AllAttributes() {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
