@@ -6,7 +6,6 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -54,11 +53,7 @@ func queryFields() graphql.Fields {
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		if entity.Domain.StereoType != meta.CLASS_SERVICE {
-			appendToQueryFields(entity, &queryFields)
-		} else {
-			//添加 service代码
-		}
+		appendToQueryFields(entity, &queryFields)
 	}
 
 	return queryFields

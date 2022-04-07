@@ -7,7 +7,6 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/resolve"
 	"rxdrag.com/entity-engine/utils"
 )
@@ -54,9 +53,7 @@ func rootMutation() *graphql.Object {
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		if entity.Domain.Root &&
-			entity.Domain.StereoType != meta.CLASS_SERVICE &&
-			entity.Domain.StereoType != meta.CLASS_VALUE_OBJECT {
+		if entity.Domain.Root {
 			appendToMutationFields(entity, &mutationFields)
 		}
 	}
