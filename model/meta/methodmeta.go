@@ -24,7 +24,6 @@ type MethodMeta struct {
 	TypeUuid         string    `json:"typeUuid"`
 	TypeLabel        string    `json:"typeLabel"`
 	Args             []ArgMeta `json:"args"`
-	MethodType       string    `json:"methodType"`
 	ImplementType    string    `json:"implementType"`
 	MethodImplements string    `json:"methodImplements"`
 	Description      string    `json:"description"`

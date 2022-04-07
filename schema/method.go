@@ -8,7 +8,7 @@ import (
 )
 
 func MethodType(method *graph.Method) graphql.Output {
-	switch method.Method.MethodType {
+	switch method.Method.Type {
 	case meta.ID:
 		return graphql.ID
 	case meta.INT:
@@ -39,6 +39,5 @@ func MethodType(method *graph.Method) graphql.Output {
 		}
 		return Cache.EnumType(enum.Name)
 	}
-
-	panic("No column type:" + method.Method.MethodType)
+	panic("No column type:" + method.Method.Type)
 }
