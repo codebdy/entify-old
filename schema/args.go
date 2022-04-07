@@ -1,8 +1,6 @@
 package schema
 
 import (
-	"fmt"
-
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
@@ -41,7 +39,6 @@ func (c *TypeCache) makeRelaionWhereExp() {
 		}
 		associations := node.Associations()
 		for i := range associations {
-			fmt.Println(i)
 			assoc := associations[i]
 			exp.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
 				Type: c.WhereExp(assoc.TypeClass().Name()),
