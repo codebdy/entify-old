@@ -8,6 +8,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/utils"
 
 	"github.com/graphql-go/graphql"
@@ -65,7 +66,11 @@ func RootSubscription() *graphql.Object {
 	}}
 
 	for _, entity := range model.GlobalModel.Graph.Entities {
-		appendToSubscriptionFields(entity, &subscriptionFields)
+		if entity.Domain.StereoType != meta.CLASS_SERVICE {
+			appendToSubscriptionFields(entity, &subscriptionFields)
+		} else {
+			//添加 service代码
+		}
 	}
 
 	return graphql.NewObject(graphql.ObjectConfig{

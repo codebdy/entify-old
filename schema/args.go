@@ -116,7 +116,7 @@ func makeOrderBy(node graph.Node) *graphql.InputObject {
 
 func makeDistinctOnEnum(node graph.Node) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
-	attrs := node.Attributes()
+	attrs := node.AllAttributes()
 	for i := range attrs {
 		attr := attrs[i]
 		enumValueConfigMap[attr.Name] = &graphql.EnumValueConfig{
