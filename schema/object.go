@@ -52,6 +52,7 @@ func outputFields(node graph.Node) graphql.Fields {
 			// },
 		}
 	}
+
 	for _, method := range node.AllMethods() {
 		fields[method.Name()] = &graphql.Field{
 			Type:        MethodType(method),

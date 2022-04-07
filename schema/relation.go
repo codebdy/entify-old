@@ -23,7 +23,7 @@ func (c *TypeCache) makeRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 		objectType := c.ObjectTypeMap[entity.Name()]
-		for _, assocition := range entity.Associations() {
+		for _, assocition := range entity.AllAssociations() {
 			objectType.AddFieldConfig(assocition.Name(), &graphql.Field{
 				Name:        assocition.Name(),
 				Type:        c.OutputType(assocition.TypeClass().Name()),

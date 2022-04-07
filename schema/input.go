@@ -5,17 +5,24 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 )
 
 func (c *TypeCache) makeInputs() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
+		if entity.Domain.StereoType == meta.CLASS_SERVICE {
+			continue
+		}
 		c.UpdateInputMap[entity.Name()] = makeUpdateInput(entity)
 		c.SaveInputMap[entity.Name()] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name()] = makeMutationResponseType(entity)
 	}
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
+		if entity.Domain.StereoType == meta.CLASS_SERVICE {
+			continue
+		}
 		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
 		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
 	}
@@ -70,28 +77,34 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 func (c *TypeCache) makeInputRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
-
-		input := c.UpdateInputMap[entity.Name()]
-		update := c.SaveInputMap[entity.Name()]
-
-		associas := entity.Associations()
-
-		for i := range associas {
-			assoc := associas[i]
-			typeInput := c.SaveInput(assoc.Owner().Name())
-			if len(typeInput.Fields()) == 0 {
-				continue
-			}
-			arrayType := c.makeAssociationType(assoc)
-			input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
-				Type:        arrayType,
-				Description: assoc.Description(),
-			})
-			update.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
-				Type:        arrayType,
-				Description: assoc.Description(),
-			})
+		if entity.Domain.StereoType == meta.CLASS_SERVICE {
+			continue
 		}
+
+		// input := c.UpdateInputMap[entity.Name()]
+		// update := c.SaveInputMap[entity.Name()]
+
+		// associas := entity.Associations()
+
+		// for i := range associas {
+		// 	assoc := associas[i]
+		// 	typeInput := c.SaveInput(assoc.Owner().Name())
+		// 	if len(typeInput.Fields()) == 0 {
+		// 		continue
+		// 	}
+		// 	arrayType := c.makeAssociationType(assoc)
+		// 	if arrayType == nil {
+		// 		panic("Can not make association type:" + assoc.Owner().Name() + "." + assoc.Name())
+		// 	}
+		// 	input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
+		// 		Type:        arrayType,
+		// 		Description: assoc.Description(),
+		// 	})
+		// 	update.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
+		// 		Type:        arrayType,
+		// 		Description: assoc.Description(),
+		// 	})
+		// }
 	}
 }
 
@@ -105,7 +118,7 @@ func (c *TypeCache) makeAssociationType(association *graph.Association) *graphql
 
 func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, column := range entity.Attributes() {
+	for _, column := range entity.AllAttributes() {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type:        AttributeType(column),
@@ -118,7 +131,6 @@ func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFie
 
 func makeSaveInput(entity *graph.Entity) *graphql.InputObject {
 	name := entity.Name() + consts.INPUT
-
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   name,
