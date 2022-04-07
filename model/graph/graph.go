@@ -9,12 +9,13 @@ import (
 )
 
 type Model struct {
-	Enums      []*Enum
-	Interfaces []*Interface
-	Entities   []*Entity
-	Services   []*Class
-	Relations  []*Relation
-	Tables     []*table.Table
+	Enums        []*Enum
+	Interfaces   []*Interface
+	Entities     []*Entity
+	ValueObjects []*Class
+	Services     []*Class
+	Relations    []*Relation
+	Tables       []*table.Table
 }
 
 func New(m *domain.Model) *Model {
@@ -32,12 +33,9 @@ func New(m *domain.Model) *Model {
 		}
 	}
 
-	//构建所有实体
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY ||
-			cls.StereoType == meta.CLASS_VALUE_OBJECT ||
-			cls.StereoType == meta.CLASS_SERVICE {
+		if cls.StereoType == meta.CLASSS_ENTITY {
 			newEntity := NewEntity(cls)
 			model.Entities = append(model.Entities, newEntity)
 			//构建接口实现关系
@@ -50,6 +48,10 @@ func New(m *domain.Model) *Model {
 				parentInterface.Children = append(parentInterface.Children, newEntity)
 				newEntity.Interfaces = append(newEntity.Interfaces, parentInterface)
 			}
+		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
+			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
+		} else if cls.StereoType == meta.CLASS_SERVICE {
+			model.Services = append(model.Services, NewClass(cls))
 		}
 	}
 
