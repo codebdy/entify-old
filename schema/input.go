@@ -68,37 +68,45 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 }
 
 func (c *TypeCache) makeInputRelations() {
-	// for i := range model.GlobalModel.Graph.Entities {
-	//entity := model.GlobalModel.Graph.Entities[i]
+	for i := range model.GlobalModel.Graph.Entities {
+		entity := model.GlobalModel.Graph.Entities[i]
 
-	// input := c.UpdateInputMap[entity.Name()]
-	// update := c.SaveInputMap[entity.Name()]
+		input := c.UpdateInputMap[entity.Name()]
+		update := c.SaveInputMap[entity.Name()]
 
-	// associas := entity.Associations()
+		associas := entity.AllAssociations()
 
-	// for i := range associas {
-	// 	assoc := associas[i]
-	// 	typeInput := c.SaveInput(assoc.Owner().Name())
-	// 	if len(typeInput.Fields()) == 0 {
-	// 		continue
-	// 	}
-	// 	arrayType := c.makeAssociationType(assoc)
-	// 	if arrayType == nil {
-	// 		panic("Can not make association type:" + assoc.Owner().Name() + "." + assoc.Name())
-	// 	}
-	// 	input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
-	// 		Type:        arrayType,
-	// 		Description: assoc.Description(),
-	// 	})
-	// 	update.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
-	// 		Type:        arrayType,
-	// 		Description: assoc.Description(),
-	// 	})
-	// }
-	// }
+		for i := range associas {
+			assoc := associas[i]
+			if !assoc.IsAbstract() {
+				typeInput := c.SaveInput(assoc.Owner().Name())
+				if typeInput == nil {
+					panic("can not find save input:" + assoc.Owner().Name())
+				}
+				if len(typeInput.Fields()) == 0 {
+					continue
+				}
+
+				arrayType := c.getAssociationType(assoc)
+				if arrayType == nil {
+					panic("Can not get association type:" + assoc.Owner().Name() + "." + assoc.Name())
+				}
+				input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
+					Type:        arrayType,
+					Description: assoc.Description(),
+				})
+				update.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
+					Type:        arrayType,
+					Description: assoc.Description(),
+				})
+			} else {
+
+			}
+		}
+	}
 }
 
-func (c *TypeCache) makeAssociationType(association *graph.Association) *graphql.InputObject {
+func (c *TypeCache) getAssociationType(association *graph.Association) *graphql.InputObject {
 	if association.IsArray() {
 		return c.HasManyInput(association.TypeClass().Name())
 	} else {
