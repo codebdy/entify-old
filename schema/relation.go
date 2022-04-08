@@ -6,7 +6,7 @@ import (
 	"rxdrag.com/entity-engine/model/graph"
 )
 
-func (c *TypeCache) makeQueryRelations() {
+func (c *TypeCache) makeRelations() {
 	for i := range model.GlobalModel.Graph.Interfaces {
 		intf := model.GlobalModel.Graph.Interfaces[i]
 		interfaceType := c.InterfaceTypeMap[intf.Name()]

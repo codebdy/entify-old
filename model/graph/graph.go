@@ -94,13 +94,13 @@ func New(m *domain.Model) *Model {
 
 		if source.isInterface() {
 			sourceEntities = append(sourceEntities, source.Interface().Children...)
-		} else {
+		} else if target.isInterface() {
 			sourceEntities = append(sourceEntities, source.Entity())
 		}
 
 		if target.isInterface() {
 			targetEntities = append(targetEntities, target.Interface().Children...)
-		} else {
+		} else if source.isInterface() {
 			targetEntities = append(targetEntities, target.Entity())
 		}
 

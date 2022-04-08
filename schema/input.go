@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"fmt"
+
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
@@ -84,6 +86,7 @@ func (c *TypeCache) makeInputRelations() {
 					panic("can not find save input:" + assoc.Owner().Name())
 				}
 				if len(typeInput.Fields()) == 0 {
+					fmt.Println("Fields == 0")
 					continue
 				}
 
