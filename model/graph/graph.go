@@ -82,7 +82,11 @@ func New(m *domain.Model) *Model {
 		r := NewRelation(relation, source, target)
 		model.Relations = append(model.Relations, r)
 		source.AddAssociation(NewAssociation(r, source.Uuid()))
-		target.AddAssociation(NewAssociation(r, target.Uuid()))
+		if relation.RelationType == meta.TWO_WAY_AGGREGATION ||
+			relation.RelationType == meta.TWO_WAY_ASSOCIATION ||
+			relation.RelationType == meta.TWO_WAY_COMBINATION {
+			target.AddAssociation(NewAssociation(r, target.Uuid()))
+		}
 
 		//增加派生关联
 		sourceEntities := []*Entity{}
