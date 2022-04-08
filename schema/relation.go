@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/graph"
 )
 
 func (c *TypeCache) makeQueryRelations() {
@@ -12,23 +13,35 @@ func (c *TypeCache) makeQueryRelations() {
 		if interfaceType == nil {
 			panic("Can find object type:" + intf.Name())
 		}
-		for _, assocition := range intf.QueryAssociations() {
-			interfaceType.AddFieldConfig(assocition.Name(), &graphql.Field{
-				Name:        assocition.Name(),
-				Type:        c.OutputType(assocition.TypeClass().Name()),
-				Description: assocition.Description(),
+		for _, association := range intf.QueryAssociations() {
+			interfaceType.AddFieldConfig(association.Name(), &graphql.Field{
+				Name:        association.Name(),
+				Type:        c.AssociationType(association),
+				Description: association.Description(),
 			})
 		}
 	}
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 		objectType := c.ObjectTypeMap[entity.Name()]
-		for _, assocition := range entity.QueryAssociations() {
-			objectType.AddFieldConfig(assocition.Name(), &graphql.Field{
-				Name:        assocition.Name(),
-				Type:        c.OutputType(assocition.TypeClass().Name()),
-				Description: assocition.Description(),
+		for _, association := range entity.QueryAssociations() {
+			objectType.AddFieldConfig(association.Name(), &graphql.Field{
+				Name:        association.Name(),
+				Type:        c.AssociationType(association),
+				Description: association.Description(),
 			})
 		}
+	}
+}
+
+func (c *TypeCache) AssociationType(association *graph.Association) graphql.Output {
+	if association.IsArray() {
+		return &graphql.NonNull{
+			OfType: &graphql.List{
+				OfType: c.OutputType(association.TypeClass().Name()),
+			},
+		}
+	} else {
+		return c.OutputType(association.TypeClass().Name())
 	}
 }
