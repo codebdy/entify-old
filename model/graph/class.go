@@ -8,7 +8,7 @@ import (
 type Class struct {
 	attributes   []*Attribute
 	associations []*Association
-	Methods      []*Method
+	methods      []*Method
 	Domain       *domain.Class
 }
 
@@ -16,7 +16,7 @@ func NewClass(c *domain.Class) *Class {
 	cls := Class{
 		Domain:     c,
 		attributes: make([]*Attribute, len(c.Attributes)),
-		Methods:    make([]*Method, len(c.Methods)),
+		methods:    make([]*Method, len(c.Methods)),
 	}
 
 	for i := range c.Attributes {
@@ -24,7 +24,7 @@ func NewClass(c *domain.Class) *Class {
 	}
 
 	for i := range c.Methods {
-		cls.Methods[i] = NewMethod(c.Methods[i], &cls)
+		cls.methods[i] = NewMethod(c.Methods[i], &cls)
 	}
 
 	return &cls
@@ -54,18 +54,18 @@ func (c *Class) TableName() string {
 	return utils.SnakeString(c.Domain.Name)
 }
 
-func (c *Class) Attributes() []*Attribute {
-	return c.attributes
-}
+// func (c *Class) Attributes() []*Attribute {
+// 	return c.attributes
+// }
 
-func (c *Class) Associations() []*Association {
-	return c.associations
-}
+// func (c *Class) Associations() []*Association {
+// 	return c.associations
+// }
 
 func (c *Class) MethodsByType(operateType string) []*Method {
 	methods := []*Method{}
-	for i := range c.Methods {
-		method := c.Methods[i]
+	for i := range c.methods {
+		method := c.methods[i]
 		if method.Method.OperateType == operateType {
 			methods = append(methods, method)
 		}

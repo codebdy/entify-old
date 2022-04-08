@@ -28,7 +28,7 @@ func (i *Interface) AllAttributes() []*Attribute {
 }
 
 func (i *Interface) AllMethods() []*Method {
-	return i.Methods
+	return i.methods
 }
 
 func (i *Interface) AllAssociations() []*Association {

@@ -12,7 +12,7 @@ func (c *TypeCache) makeRelations() {
 		if interfaceType == nil {
 			panic("Can find object type:" + intf.Name())
 		}
-		for _, assocition := range intf.Associations() {
+		for _, assocition := range intf.AllAssociations() {
 			interfaceType.AddFieldConfig(assocition.Name(), &graphql.Field{
 				Name:        assocition.Name(),
 				Type:        c.OutputType(assocition.TypeClass().Name()),

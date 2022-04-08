@@ -118,8 +118,8 @@ func New(m *domain.Model) *Model {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 		}
-		for j := range intf.Methods {
-			method := intf.Methods[j]
+		for j := range intf.methods {
+			method := intf.methods[j]
 			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
 				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
 			}
@@ -153,8 +153,8 @@ func New(m *domain.Model) *Model {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 		}
-		for j := range ent.Methods {
-			method := ent.Methods[j]
+		for j := range ent.methods {
+			method := ent.methods[j]
 			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
 				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
 			}

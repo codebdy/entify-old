@@ -59,10 +59,10 @@ func (e *Entity) AllAttributes() []*Attribute {
 
 func (e *Entity) AllMethods() []*Method {
 	methods := []*Method{}
-	methods = append(methods, e.Methods...)
+	methods = append(methods, e.methods...)
 	for i := range e.Interfaces {
-		for j := range e.Interfaces[i].Methods {
-			method := e.Interfaces[i].Methods[j]
+		for j := range e.Interfaces[i].methods {
+			method := e.Interfaces[i].methods[j]
 			if findMethod(method.Name(), methods) == nil {
 				methods = append(methods, method)
 			}
