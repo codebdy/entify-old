@@ -33,16 +33,17 @@ func NewAttributeColumn(attr *Attribute) *table.Column {
 
 func NewRelationTables(relation *Relation) []*table.Table {
 	var tables []*table.Table
-
+	name := fmt.Sprintf(
+		"%s_%d_%d_%d",
+		consts.PIVOT,
+		relation.Source.InnerId(),
+		relation.InnerId,
+		relation.Target.InnerId(),
+	)
 	if relation.IsRealRelation() {
 		table := &table.Table{
-			Name: fmt.Sprintf(
-				"%s_%d_%d_%d",
-				consts.PIVOT,
-				relation.Source.InnerId(),
-				relation.InnerId,
-				relation.Target.InnerId(),
-			),
+			Uuid: name,
+			Name: name,
 			Columns: []*table.Column{
 				{
 					AttributeMeta: meta.AttributeMeta{
