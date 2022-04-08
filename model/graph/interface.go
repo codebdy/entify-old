@@ -52,7 +52,7 @@ func (f *Interface) AllMethods() []*Method {
 	return methods
 }
 
-func (f *Interface) QueryAssociations() []*Association {
+func (f *Interface) AllAssociations() []*Association {
 	associas := []*Association{}
 	associas = append(associas, f.associations...)
 	for i := range f.Parents {
@@ -67,7 +67,7 @@ func (f *Interface) QueryAssociations() []*Association {
 }
 
 func (f *Interface) IsEmperty() bool {
-	return len(f.AllAttributes()) < 1 && len(f.QueryAssociations()) < 1
+	return len(f.AllAttributes()) < 1 && len(f.AllAssociations()) < 1
 }
 
 func (f *Interface) AllAttributeNames() []string {

@@ -72,7 +72,7 @@ func (e *Entity) AllMethods() []*Method {
 }
 
 //包含继承来的
-func (e *Entity) QueryAssociations() []*Association {
+func (e *Entity) AllAssociations() []*Association {
 	associas := []*Association{}
 	associas = append(associas, e.associations...)
 	for i := range e.Interfaces {
@@ -87,7 +87,7 @@ func (e *Entity) QueryAssociations() []*Association {
 }
 
 func (e *Entity) IsEmperty() bool {
-	return len(e.AllAttributes()) < 1 && len(e.QueryAssociations()) < 1
+	return len(e.AllAttributes()) < 1 && len(e.AllAssociations()) < 1
 }
 
 func (e *Entity) AllAttributeNames() []string {
@@ -108,10 +108,6 @@ func (e *Entity) GetAttributeByName(name string) *Attribute {
 	}
 
 	return nil
-}
-
-func (e *Entity) MutationAssociations() []*Association {
-	return []*Association{}
 }
 
 func findAttribute(name string, attrs []*Attribute) *Attribute {

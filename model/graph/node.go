@@ -11,7 +11,7 @@ type Node interface {
 	Entity() *Entity
 	AddAssociation(a *Association)
 	//Attributes() []*Attribute
-	QueryAssociations() []*Association
+	AllAssociations() []*Association
 	AllAttributes() []*Attribute
 	AllMethods() []*Method
 	AllAttributeNames() []string

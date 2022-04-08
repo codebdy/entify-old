@@ -66,12 +66,44 @@ func (a *Association) IsSource() bool {
 	return a.Relation.Source.Uuid() == a.OwnerClassUuid
 }
 
-//对手实体类
-func (a *DerivedAssociation) TargetEntities() []*Entity {
-	//targetNode := a.Relation.Target
-	return []*Entity{}
+func (a *Association) IsAbstract() bool {
+	return len(a.Relation.Children) > 0
+}
+
+func (a *Association) DerivedAssociations() []*DerivedAssociation {
+	associations := []*DerivedAssociation{}
+	for i := range a.Relation.Children {
+		derivedRelation := a.Relation.Children[i]
+		ownerUuid := derivedRelation.Source.Uuid()
+		if a.Relation.Target.Uuid() == a.OwnerClassUuid {
+			ownerUuid = derivedRelation.Target.Uuid()
+		}
+		associations = append(associations, &DerivedAssociation{
+			Relation:       derivedRelation,
+			DerivedFrom:    a,
+			OwnerClassUuid: ownerUuid,
+		})
+	}
+	return associations
+}
+
+func (a *Association) DerivedAssociationsByOwnerUuid(ownerUuid string) []*DerivedAssociation {
+	associations := []*DerivedAssociation{}
+	allDerived := a.DerivedAssociations()
+	for i := range allDerived {
+		if allDerived[i].OwnerClassUuid == ownerUuid {
+			associations = append(associations, allDerived[i])
+		}
+	}
+	return associations
 }
 
 func (a *Association) GetName() string {
 	return a.Name()
+}
+
+//对手实体类
+func (a *DerivedAssociation) TargetEntities() []*Entity {
+	//targetNode := a.Relation.Target
+	return []*Entity{}
 }

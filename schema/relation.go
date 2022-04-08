@@ -13,7 +13,7 @@ func (c *TypeCache) makeQueryRelations() {
 		if interfaceType == nil {
 			panic("Can find object type:" + intf.Name())
 		}
-		for _, association := range intf.QueryAssociations() {
+		for _, association := range intf.AllAssociations() {
 			interfaceType.AddFieldConfig(association.Name(), &graphql.Field{
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
@@ -24,7 +24,7 @@ func (c *TypeCache) makeQueryRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 		objectType := c.ObjectTypeMap[entity.Name()]
-		for _, association := range entity.QueryAssociations() {
+		for _, association := range entity.AllAssociations() {
 			objectType.AddFieldConfig(association.Name(), &graphql.Field{
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
