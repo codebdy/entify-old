@@ -11,6 +11,7 @@ type Association struct {
 
 type DerivedAssociation struct {
 	Relation       *DerivedRelation
+	DerivedFrom    *Association
 	OwnerClassUuid string
 }
 

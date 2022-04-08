@@ -5,14 +5,14 @@ import (
 	"rxdrag.com/entity-engine/model"
 )
 
-func (c *TypeCache) makeRelations() {
+func (c *TypeCache) makeQueryRelations() {
 	for i := range model.GlobalModel.Graph.Interfaces {
 		intf := model.GlobalModel.Graph.Interfaces[i]
 		interfaceType := c.InterfaceTypeMap[intf.Name()]
 		if interfaceType == nil {
 			panic("Can find object type:" + intf.Name())
 		}
-		for _, assocition := range intf.AllAssociations() {
+		for _, assocition := range intf.QueryAssociations() {
 			interfaceType.AddFieldConfig(assocition.Name(), &graphql.Field{
 				Name:        assocition.Name(),
 				Type:        c.OutputType(assocition.TypeClass().Name()),
@@ -23,7 +23,7 @@ func (c *TypeCache) makeRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 		objectType := c.ObjectTypeMap[entity.Name()]
-		for _, assocition := range entity.AllAssociations() {
+		for _, assocition := range entity.QueryAssociations() {
 			objectType.AddFieldConfig(assocition.Name(), &graphql.Field{
 				Name:        assocition.Name(),
 				Type:        c.OutputType(assocition.TypeClass().Name()),

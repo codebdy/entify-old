@@ -31,12 +31,12 @@ func (i *Interface) AllMethods() []*Method {
 	return i.methods
 }
 
-func (i *Interface) AllAssociations() []*Association {
+func (i *Interface) QueryAssociations() []*Association {
 	return i.associations
 }
 
 func (c *Interface) IsEmperty() bool {
-	return len(c.AllAttributes()) < 1 && len(c.AllAssociations()) < 1
+	return len(c.AllAttributes()) < 1 && len(c.QueryAssociations()) < 1
 }
 
 func (c *Interface) AllAttributeNames() []string {

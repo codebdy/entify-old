@@ -37,7 +37,7 @@ func (c *TypeCache) makeRelaionWhereExp() {
 		if node.Entity() == nil && node.Interface() == nil {
 			panic("Fatal error, can not find entity by name:" + entityName)
 		}
-		associations := node.AllAssociations()
+		associations := node.QueryAssociations()
 		for i := range associations {
 			assoc := associations[i]
 			exp.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{

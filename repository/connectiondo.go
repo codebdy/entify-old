@@ -181,7 +181,7 @@ func (con *Connection) doInsertOne(object map[string]interface{}, entity *graph.
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
-	for _, association := range entity.AllAssociations() {
+	for _, association := range entity.MutationAssociations() {
 		if object[association.Name()] == nil {
 			continue
 		}
