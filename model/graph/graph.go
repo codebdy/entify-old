@@ -48,6 +48,19 @@ func New(m *domain.Model) *Model {
 				parentInterface.Children = append(parentInterface.Children, newEntity)
 				newEntity.Interfaces = append(newEntity.Interfaces, parentInterface)
 			}
+		} else if cls.StereoType == meta.CLASSS_ABSTRACT {
+			allParents := cls.AllParents()
+			intf := model.GetInterfaceByUuid(cls.Uuid)
+			if intf == nil {
+				panic("Can not find interface by uuid:" + cls.Uuid)
+			}
+			for j := range allParents {
+				parentInterface := model.GetInterfaceByUuid(allParents[j].Uuid)
+				if parentInterface == nil {
+					panic("Can not find interface by uuid:" + allParents[j].Uuid)
+				}
+				intf.Parents = append(intf.Parents, parentInterface)
+			}
 		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
 		} else if cls.StereoType == meta.CLASS_SERVICE {

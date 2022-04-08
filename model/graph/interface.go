@@ -5,6 +5,7 @@ import "rxdrag.com/entity-engine/model/domain"
 type Interface struct {
 	Class
 	Children []*Entity
+	Parents  []*Interface
 }
 
 func NewInterface(c *domain.Class) *Interface {
@@ -13,44 +14,74 @@ func NewInterface(c *domain.Class) *Interface {
 	}
 }
 
-func (i *Interface) isInterface() bool {
+func (f *Interface) isInterface() bool {
 	return true
 }
-func (i *Interface) Interface() *Interface {
-	return i
+func (f *Interface) Interface() *Interface {
+	return f
 }
-func (i *Interface) Entity() *Entity {
+func (f *Interface) Entity() *Entity {
 	return nil
 }
 
-func (i *Interface) AllAttributes() []*Attribute {
-	return i.attributes
+func (f *Interface) AllAttributes() []*Attribute {
+	attrs := []*Attribute{}
+	attrs = append(attrs, f.attributes...)
+	for i := range f.Parents {
+		for j := range f.Parents[i].attributes {
+			attr := f.Parents[i].attributes[j]
+			if findAttribute(attr.Name, attrs) == nil {
+				attrs = append(attrs, attr)
+			}
+		}
+	}
+	return attrs
 }
 
-func (i *Interface) AllMethods() []*Method {
-	return i.methods
+func (f *Interface) AllMethods() []*Method {
+	methods := []*Method{}
+	methods = append(methods, f.methods...)
+	for i := range f.Parents {
+		for j := range f.Parents[i].methods {
+			method := f.Parents[i].methods[j]
+			if findMethod(method.Name(), methods) == nil {
+				methods = append(methods, method)
+			}
+		}
+	}
+	return methods
 }
 
-func (i *Interface) QueryAssociations() []*Association {
-	return i.associations
+func (f *Interface) QueryAssociations() []*Association {
+	associas := []*Association{}
+	associas = append(associas, f.associations...)
+	for i := range f.Parents {
+		for j := range f.Parents[i].associations {
+			asso := f.Parents[i].associations[j]
+			if findAssociation(asso.Name(), associas) == nil {
+				associas = append(associas, asso)
+			}
+		}
+	}
+	return associas
 }
 
-func (c *Interface) IsEmperty() bool {
-	return len(c.AllAttributes()) < 1 && len(c.QueryAssociations()) < 1
+func (f *Interface) IsEmperty() bool {
+	return len(f.AllAttributes()) < 1 && len(f.QueryAssociations()) < 1
 }
 
-func (c *Interface) AllAttributeNames() []string {
-	names := make([]string, len(c.AllAttributes()))
+func (f *Interface) AllAttributeNames() []string {
+	names := make([]string, len(f.AllAttributes()))
 
-	for i, attr := range c.AllAttributes() {
+	for i, attr := range f.AllAttributes() {
 		names[i] = attr.Name
 	}
 
 	return names
 }
 
-func (i *Interface) GetAttributeByName(name string) *Attribute {
-	for _, attr := range i.AllAttributes() {
+func (f *Interface) GetAttributeByName(name string) *Attribute {
+	for _, attr := range f.AllAttributes() {
 		if attr.Name == name {
 			return attr
 		}
