@@ -130,9 +130,8 @@ func New(m *domain.Model) *Model {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 
-			//这个代码并不成熟
 			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
-				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+				attr.ValueObjectType = model.GetValueObjectByUuid(attr.TypeUuid)
 			}
 		}
 		for j := range intf.methods {
@@ -145,9 +144,8 @@ func New(m *domain.Model) *Model {
 				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
 			}
 
-			//这个代码并不成熟
 			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
-				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
+				method.ValueObjectType = model.GetValueObjectByUuid(method.Method.TypeUuid)
 			}
 		}
 
@@ -165,9 +163,8 @@ func New(m *domain.Model) *Model {
 				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
 			}
 
-			//这个代码并不成熟
 			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
-				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
+				attr.ValueObjectType = model.GetValueObjectByUuid(attr.TypeUuid)
 			}
 		}
 		for j := range ent.methods {
@@ -180,9 +177,8 @@ func New(m *domain.Model) *Model {
 				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
 			}
 
-			//这个代码并不成熟
 			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
-				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
+				method.ValueObjectType = model.GetValueObjectByUuid(method.Method.TypeUuid)
 			}
 		}
 	}
@@ -280,6 +276,16 @@ func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
 func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	for i := range m.Entities {
 		ent := m.Entities[i]
+		if ent.Uuid() == uuid {
+			return ent
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetValueObjectByUuid(uuid string) *Class {
+	for i := range m.ValueObjects {
+		ent := m.ValueObjects[i]
 		if ent.Uuid() == uuid {
 			return ent
 		}

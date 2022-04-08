@@ -5,10 +5,11 @@ import (
 )
 
 type Method struct {
-	Method    *domain.Method
-	EumnType  *Enum
-	EnityType *Entity
-	Class     *Class
+	Method          *domain.Method
+	EumnType        *Enum
+	EnityType       *Entity
+	ValueObjectType *Class
+	Class           *Class
 }
 
 func NewMethod(m *domain.Method, c *Class) *Method {
