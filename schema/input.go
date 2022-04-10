@@ -103,9 +103,32 @@ func (c *TypeCache) makeInputRelations() {
 					Description: assoc.Description(),
 				})
 			} else {
-
+				c.makeDevrivedInputRelations(assoc, entity, input, update)
 			}
 		}
+	}
+}
+
+func (c *TypeCache) makeDevrivedInputRelations(association *graph.Association,
+	entity *graph.Entity,
+	input *graphql.InputObject,
+	update *graphql.InputObject,
+) {
+	derivedAssociations := association.DerivedAssociationsByOwnerUuid(entity.Uuid())
+	for i := range derivedAssociations {
+		derivedAssociation := derivedAssociations[i]
+		arrayType := c.getDerivedAssociationType(derivedAssociation)
+		if arrayType == nil {
+			panic("Can not get derived association type:" + derivedAssociation.OwnerClassUuid + "." + derivedAssociation.DerivedFrom.Name())
+		}
+		input.AddFieldConfig(derivedAssociation.Name(), &graphql.InputObjectFieldConfig{
+			Type:        arrayType,
+			Description: association.Description(),
+		})
+		update.AddFieldConfig(derivedAssociation.Name(), &graphql.InputObjectFieldConfig{
+			Type:        arrayType,
+			Description: association.Description(),
+		})
 	}
 }
 
@@ -114,6 +137,14 @@ func (c *TypeCache) getAssociationType(association *graph.Association) *graphql.
 		return c.HasManyInput(association.TypeClass().Name())
 	} else {
 		return c.HasOneInput(association.TypeClass().Name())
+	}
+}
+
+func (c *TypeCache) getDerivedAssociationType(association *graph.DerivedAssociation) *graphql.InputObject {
+	if association.DerivedFrom.IsArray() {
+		return c.HasManyInput(association.TypeEntity().Name())
+	} else {
+		return c.HasOneInput(association.TypeEntity().Name())
 	}
 }
 

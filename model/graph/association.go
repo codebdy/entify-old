@@ -103,7 +103,10 @@ func (a *Association) GetName() string {
 }
 
 //对手实体类
-func (a *DerivedAssociation) TargetEntities() []*Entity {
-	//targetNode := a.Relation.Target
-	return []*Entity{}
+func (d *DerivedAssociation) TypeEntity() *Entity {
+	return d.Relation.Target
+}
+
+func (d *DerivedAssociation) Name() string {
+	return d.DerivedFrom.Name() + "For" + d.TypeEntity().Name()
 }
