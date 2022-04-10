@@ -42,7 +42,7 @@ func NewRelationTables(relation *Relation) []*table.Table {
 	)
 	if relation.IsRealRelation() {
 		table := &table.Table{
-			Uuid: name,
+			Uuid: relation.Source.Uuid() + relation.Uuid + relation.Target.Uuid(),
 			Name: name,
 			Columns: []*table.Column{
 				{
@@ -84,7 +84,7 @@ func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 		derived.Target.InnerId(),
 	)
 	table := &table.Table{
-		Uuid: name,
+		Uuid: derived.Source.Uuid() + derived.Parent.Uuid + derived.Target.Uuid(),
 		Name: name,
 		Columns: []*table.Column{
 			{
