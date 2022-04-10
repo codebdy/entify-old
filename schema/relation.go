@@ -14,6 +14,9 @@ func (c *TypeCache) makeRelations() {
 			panic("Can find object type:" + intf.Name())
 		}
 		for _, association := range intf.AllAssociations() {
+			if interfaceType.Fields()[association.Name()] != nil {
+				panic("Duplicate interface field: " + intf.Name() + "." + association.Name())
+			}
 			interfaceType.AddFieldConfig(association.Name(), &graphql.Field{
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
@@ -25,6 +28,9 @@ func (c *TypeCache) makeRelations() {
 		entity := model.GlobalModel.Graph.Entities[i]
 		objectType := c.ObjectTypeMap[entity.Name()]
 		for _, association := range entity.AllAssociations() {
+			if objectType.Fields()[association.Name()] != nil {
+				panic("Duplicate entity field: " + entity.Name() + "." + association.Name())
+			}
 			objectType.AddFieldConfig(association.Name(), &graphql.Field{
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
