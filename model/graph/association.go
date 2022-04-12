@@ -104,9 +104,19 @@ func (a *Association) GetName() string {
 
 //对手实体类
 func (d *DerivedAssociation) TypeEntity() *Entity {
-	return d.Relation.Target
+	if d.Relation.Source.Uuid() == d.OwnerClassUuid {
+		return d.Relation.Target
+	} else {
+		return d.Relation.Source
+	}
+
 }
 
 func (d *DerivedAssociation) Name() string {
-	return d.DerivedFrom.Name() + "For" + d.TypeEntity().Name()
+	if d.TypeEntity().Uuid() == d.DerivedFrom.TypeClass().Uuid() {
+		return d.DerivedFrom.Name()
+	} else {
+		return d.DerivedFrom.Name() + "For" + d.TypeEntity().Name()
+	}
+
 }
