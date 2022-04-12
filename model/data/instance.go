@@ -2,12 +2,17 @@ package data
 
 import "rxdrag.com/entity-engine/model/graph"
 
-type Fields = map[string]interface{}
+type Field struct {
+	Attribute *graph.Attribute
+	Value     interface{}
+}
+
+type Fields = map[string]Field
 
 type Instance struct {
 	Entity     *graph.Entity
 	Fields     Fields
-	references []Reference
+	References []Reference
 }
 
 func New(object map[string]interface{}, entity *graph.Entity) *Instance {
