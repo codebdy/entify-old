@@ -30,6 +30,6 @@ type RelationMeta struct {
 	DescriptionOnTarget    string           `json:"descriptionOnTarget"`
 	SourceMutiplicity      string           `json:"sourceMutiplicity"`
 	TargetMultiplicity     string           `json:"targetMultiplicity"`
-	EnableAssociaitonClass string           `json:"enableAssociaitonClass"`
+	EnableAssociaitonClass bool             `json:"enableAssociaitonClass"`
 	AssociationClass       AssociationClass `json:"associationClass"`
 }

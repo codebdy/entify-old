@@ -41,7 +41,7 @@ func NewRelationTables(relation *Relation) []*table.Table {
 		relation.Target.InnerId(),
 	)
 	if relation.IsRealRelation() {
-		table := &table.Table{
+		tab := &table.Table{
 			Uuid: relation.Source.Uuid() + relation.Uuid + relation.Target.Uuid(),
 			Name: name,
 			Columns: []*table.Column{
@@ -63,8 +63,15 @@ func NewRelationTables(relation *Relation) []*table.Table {
 				},
 			},
 		}
-		relation.Table = table
-		tables = append(tables, table)
+		if relation.EnableAssociaitonClass {
+			for i := range relation.AssociationClass.Attributes {
+				tab.Columns = append(tab.Columns, &table.Column{
+					AttributeMeta: relation.AssociationClass.Attributes[i],
+				})
+			}
+		}
+		relation.Table = tab
+		tables = append(tables, tab)
 	} else {
 		for i := range relation.Children {
 			derivied := relation.Children[i]
@@ -83,7 +90,7 @@ func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 		derived.Parent.InnerId,
 		derived.Target.InnerId(),
 	)
-	table := &table.Table{
+	tab := &table.Table{
 		Uuid: derived.Source.Uuid() + derived.Parent.Uuid + derived.Target.Uuid(),
 		Name: name,
 		Columns: []*table.Column{
@@ -105,6 +112,13 @@ func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 			},
 		},
 	}
-	derived.Table = table
-	return table
+	if derived.Parent.EnableAssociaitonClass {
+		for i := range derived.Parent.AssociationClass.Attributes {
+			tab.Columns = append(tab.Columns, &table.Column{
+				AttributeMeta: derived.Parent.AssociationClass.Attributes[i],
+			})
+		}
+	}
+	derived.Table = tab
+	return tab
 }
