@@ -4,14 +4,14 @@ import "rxdrag.com/entity-engine/model/graph"
 
 type Attributes = map[string]interface{}
 
-type Instance struct {
+type Node struct {
 	Entity       *graph.Entity
 	Atrributes   Attributes
-	Associations []Association
+	Associations []Edge
 }
 
-func New(object map[string]interface{}, entity *graph.Entity) *Instance {
-	instance := Instance{
+func New(object map[string]interface{}, entity *graph.Entity) *Node {
+	instance := Node{
 		Entity: entity,
 	}
 
