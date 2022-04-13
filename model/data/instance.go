@@ -27,5 +27,15 @@ func New(object map[string]interface{}, entity *graph.Entity) *Instance {
 			})
 		}
 	}
+	allAssociation := entity.AllAssociations()
+	for i := range allAssociation {
+		asso := allAssociation[i]
+		if object[asso.Name()] != nil {
+			instance.References = append(instance.References, &Reference{
+				Association: asso,
+				Value:       object[asso.Name()],
+			})
+		}
+	}
 	return &instance
 }

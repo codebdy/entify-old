@@ -20,6 +20,5 @@ type HasMany struct {
 
 type Reference struct {
 	Association *graph.Association
-	HasOne      HasOne
-	HasMany     HasMany
+	Value       interface{}
 }
