@@ -1,6 +1,9 @@
 package data
 
-import "rxdrag.com/entity-engine/model/graph"
+import (
+	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model/graph"
+)
 
 type Field struct {
 	Attribute *graph.Attribute
@@ -13,7 +16,7 @@ type Instance struct {
 	References []*Reference
 }
 
-func New(object map[string]interface{}, entity *graph.Entity) *Instance {
+func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance {
 	instance := Instance{
 		Entity: entity,
 	}
@@ -38,4 +41,16 @@ func New(object map[string]interface{}, entity *graph.Entity) *Instance {
 		}
 	}
 	return &instance
+}
+
+func (ins *Instance) IsInsert() bool {
+	for i := range ins.Fields {
+		field := ins.Fields[i]
+		if field.Attribute.Name == consts.ID {
+			if field.Value != nil {
+				return false
+			}
+		}
+	}
+	return true
 }

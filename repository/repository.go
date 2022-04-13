@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
 )
 
@@ -24,7 +25,7 @@ func QueryOne(node graph.Node, args map[string]interface{}) (interface{}, error)
 	return con.doQueryOne(node, args)
 }
 
-func SaveOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
+func SaveOne(instance *data.Instance) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
@@ -36,7 +37,7 @@ func SaveOne(object map[string]interface{}, entity *graph.Entity) (interface{}, 
 		panic(err.Error())
 	}
 
-	obj, err := con.doSaveOne(object, entity)
+	obj, err := con.doSaveOne(instance)
 	if err != nil {
 		panic(err.Error())
 	}

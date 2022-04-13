@@ -1,4 +1,4 @@
-package repository
+package resolve
 
 import (
 	"strconv"
@@ -7,6 +7,9 @@ import (
 )
 
 func ConvertId(object map[string]interface{}) map[string]interface{} {
+	if object[consts.ID] == nil {
+		return object
+	}
 	switch object[consts.ID].(type) {
 	case string:
 		id, err := strconv.ParseInt(object[consts.ID].(string), 10, 64)

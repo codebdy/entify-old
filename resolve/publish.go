@@ -7,6 +7,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
@@ -32,7 +33,7 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
-	repository.SaveOne(metaObj, model.GlobalModel.Graph.GetMetaEntity())
+	repository.SaveOne(data.NewInstance(metaObj, model.GlobalModel.Graph.GetMetaEntity()))
 	repository.LoadModel()
 	return "success", nil
 }

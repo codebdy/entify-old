@@ -6,6 +6,7 @@ import (
 
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/db/dialect"
+	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/utils"
@@ -177,7 +178,7 @@ func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) 
 	return convertValuesToObject(values, node), nil
 }
 
-func (con *Connection) doInsertOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
+func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
 
@@ -234,12 +235,10 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, entity *graph.
 	return savedObject, nil
 }
 
-func (con *Connection) doSaveOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
-	if object[consts.META_ID] == nil {
-		return con.doInsertOne(object, entity)
+func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
+	if instance.IsInsert() {
+		return con.doInsertOne(instance)
 	} else {
-
-		ConvertId(object)
-		return con.doUpdateOne(object, entity)
+		return con.doUpdateOne(instance)
 	}
 }
