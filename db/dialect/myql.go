@@ -8,10 +8,10 @@ import (
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/model/table"
-	"rxdrag.com/entity-engine/utils"
 )
 
 type MySQLBuilder struct {
@@ -214,42 +214,44 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Node, args map[string]interface{
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) BuildInsertSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{}) {
-	keys := utils.MapStringKeys(object, "")
-	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", entity.TableName(), insertFields(keys), insertValueSymbols(keys))
+func (b *MySQLBuilder) BuildInsertSQL(fields []*data.Field, table *table.Table) (string, []interface{}) {
+	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", table.Name, insertFields(fields), insertValueSymbols(fields))
 
-	values := makeValues(keys, object, entity)
+	values := makeValues(fields)
 
 	return sql, values
 }
-func (b *MySQLBuilder) BuildUpdateSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{}) {
-	keys := utils.MapStringKeys(object, "")
+func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) (string, []interface{}) {
 	sql := fmt.Sprintf(
 		"UPDATE `%s` SET %s WHERE ID = %d",
-		entity.TableName(),
-		updateSetFields(keys),
-		object[consts.ID],
+		table.Name,
+		updateSetFields(fields),
+		id,
 	)
 
-	return sql, makeValues(keys, object, entity)
+	return sql, makeValues(fields)
 }
 
-func updateSetFields(keys []string) string {
-	if len(keys) == 0 {
+func updateSetFields(fields []*data.Field) string {
+	if len(fields) == 0 {
 		panic("No update fields")
 	}
-	newKeys := make([]string, len(keys))
-	for i, key := range keys {
-		newKeys[i] = key + "=?"
+	newKeys := make([]string, len(fields))
+	for i, field := range fields {
+		newKeys[i] = field.Column.Name + "=?"
 	}
 	return strings.Join(newKeys, ",")
 }
 
-func insertFields(fields []string) string {
-	return strings.Join(fields, ",")
+func insertFields(fields []*data.Field) string {
+	names := make([]string, len(fields))
+	for i := range fields {
+		names[i] = fields[i].Column.Name
+	}
+	return strings.Join(names, ",")
 }
 
-func insertValueSymbols(fields []string) string {
+func insertValueSymbols(fields []*data.Field) string {
 	array := make([]string, len(fields))
 	for i := range array {
 		array[i] = "?"
@@ -257,27 +259,23 @@ func insertValueSymbols(fields []string) string {
 	return strings.Join(array, ",")
 }
 
-func makeValues(keys []string, object map[string]interface{}, entity *graph.Entity) []interface{} {
-	objValues := make([]interface{}, 0, len(keys))
-	for _, key := range keys {
-		value := object[key]
-		attr := entity.GetAttributeByName(key)
-		if attr == nil {
-			panic("Can not find column:" + key)
-		}
+func makeValues(fields []*data.Field) []interface{} {
+	objValues := make([]interface{}, 0, len(fields))
+	for _, field := range fields {
+		value := field.Value
+		column := field.Column
 
-		if attr.Type == meta.VALUE_OBJECT ||
-			attr.Type == meta.ID_ARRAY ||
-			attr.Type == meta.INT_ARRAY ||
-			attr.Type == meta.FLOAT_ARRAY ||
-			attr.Type == meta.STRING_ARRAY ||
-			attr.Type == meta.DATE_ARRAY ||
-			attr.Type == meta.ENUM_ARRAY ||
-			attr.Type == meta.VALUE_OBJECT_ARRAY ||
-			attr.Type == meta.ENTITY_ARRAY {
+		if column.Type == meta.VALUE_OBJECT ||
+			column.Type == meta.ID_ARRAY ||
+			column.Type == meta.INT_ARRAY ||
+			column.Type == meta.FLOAT_ARRAY ||
+			column.Type == meta.STRING_ARRAY ||
+			column.Type == meta.DATE_ARRAY ||
+			column.Type == meta.ENUM_ARRAY ||
+			column.Type == meta.VALUE_OBJECT_ARRAY ||
+			column.Type == meta.ENTITY_ARRAY {
 			value, _ = json.Marshal(value)
 		}
-		fmt.Println("Make Field", key)
 		objValues = append(objValues, value)
 	}
 	return objValues

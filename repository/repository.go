@@ -48,7 +48,7 @@ func SaveOne(instance *data.Instance) (interface{}, error) {
 	return obj, nil
 }
 
-func InsertOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
+func InsertOne(instance *data.Instance) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
@@ -60,7 +60,7 @@ func InsertOne(object map[string]interface{}, entity *graph.Entity) (interface{}
 		panic(err.Error())
 	}
 
-	obj, err := con.doInsertOne(object, entity)
+	obj, err := con.doInsertOne(instance)
 	if err != nil {
 		panic(err.Error())
 	}

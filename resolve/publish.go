@@ -40,5 +40,5 @@ func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 
 func SyncMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
-	return repository.InsertOne(object, model.GlobalModel.Graph.GetMetaEntity())
+	return repository.InsertOne(data.NewInstance(object, model.GlobalModel.Graph.GetMetaEntity()))
 }

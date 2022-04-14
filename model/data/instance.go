@@ -3,14 +3,16 @@ package data
 import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/table"
 )
 
 type Field struct {
-	Attribute *graph.Attribute
-	Value     interface{}
+	Column *table.Column
+	Value  interface{}
 }
 
 type Instance struct {
+	Id         uint64
 	Entity     *graph.Entity
 	Fields     []*Field
 	References []*Reference
@@ -20,13 +22,17 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 	instance := Instance{
 		Entity: entity,
 	}
-	allAttributes := entity.AllAttributes()
-	for i := range allAttributes {
-		attr := allAttributes[i]
-		if object[attr.Name] != nil {
+	if object[consts.ID] != nil {
+		instance.Id = object[consts.ID].(uint64)
+	}
+
+	columns := entity.Table.Columns
+	for i := range columns {
+		column := columns[i]
+		if object[column.Name] != nil {
 			instance.Fields = append(instance.Fields, &Field{
-				Attribute: attr,
-				Value:     object[attr.Name],
+				Column: column,
+				Value:  object[column.Name],
 			})
 		}
 	}
@@ -46,11 +52,15 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 func (ins *Instance) IsInsert() bool {
 	for i := range ins.Fields {
 		field := ins.Fields[i]
-		if field.Attribute.Name == consts.ID {
+		if field.Column.Name == consts.ID {
 			if field.Value != nil {
 				return false
 			}
 		}
 	}
 	return true
+}
+
+func (ins *Instance) Table() *table.Table {
+	return ins.Table()
 }

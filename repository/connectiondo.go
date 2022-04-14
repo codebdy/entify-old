@@ -180,13 +180,13 @@ func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) 
 
 func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
-	saveStr, values := sqlBuilder.BuildInsertSQL(object, entity)
+	saveStr, values := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 
-	for _, association := range entity.AllAssociations() {
-		if object[association.Name()] == nil {
-			continue
-		}
-	}
+	// for _, association := range entity.AllAssociations() {
+	// 	if object[association.Name()] == nil {
+	// 		continue
+	// 	}
+	// }
 
 	result, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
@@ -199,7 +199,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
-	savedObject, err := con.QueryOneById(entity, id)
+	savedObject, err := con.QueryOneById(instance.Entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
@@ -213,11 +213,11 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 	return savedObject, nil
 }
 
-func (con *Connection) doUpdateOne(object map[string]interface{}, entity *graph.Entity) (interface{}, error) {
+func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
-	saveStr, values := sqlBuilder.BuildUpdateSQL(object, entity)
+	saveStr, values := sqlBuilder.BuildUpdateSQL(id, instance.Fields, instance.Table())
 	fmt.Println(saveStr)
 	_, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
@@ -225,9 +225,7 @@ func (con *Connection) doUpdateOne(object map[string]interface{}, entity *graph.
 		return nil, err
 	}
 
-	id := object[consts.META_ID]
-
-	savedObject, err := con.QueryOneById(entity, id)
+	savedObject, err := con.QueryOneById(instance.Entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err

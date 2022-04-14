@@ -2,6 +2,7 @@ package dialect
 
 import (
 	"rxdrag.com/entity-engine/model"
+	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/table"
 )
@@ -22,8 +23,8 @@ type SQLBuilder interface {
 
 	BuildQuerySQL(entity graph.Node, args map[string]interface{}) (string, []interface{})
 
-	BuildInsertSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{})
-	BuildUpdateSQL(object map[string]interface{}, entity *graph.Entity) (string, []interface{})
+	BuildInsertSQL(fields []*data.Field, table *table.Table) (string, []interface{})
+	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) (string, []interface{})
 }
 
 func GetSQLBuilder() SQLBuilder {
