@@ -1,7 +1,6 @@
 package dialect
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -217,7 +216,7 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Node, args map[string]interface{
 func (b *MySQLBuilder) BuildInsertSQL(fields []*data.Field, table *table.Table) (string, []interface{}) {
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", table.Name, insertFields(fields), insertValueSymbols(fields))
 
-	values := makeValues(fields)
+	values := data.MakeValues(fields)
 
 	return sql, values
 }
@@ -229,7 +228,7 @@ func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *ta
 		id,
 	)
 
-	return sql, makeValues(fields)
+	return sql, data.MakeValues(fields)
 }
 
 func updateSetFields(fields []*data.Field) string {
@@ -257,28 +256,6 @@ func insertValueSymbols(fields []*data.Field) string {
 		array[i] = "?"
 	}
 	return strings.Join(array, ",")
-}
-
-func makeValues(fields []*data.Field) []interface{} {
-	objValues := make([]interface{}, 0, len(fields))
-	for _, field := range fields {
-		value := field.Value
-		column := field.Column
-
-		if column.Type == meta.VALUE_OBJECT ||
-			column.Type == meta.ID_ARRAY ||
-			column.Type == meta.INT_ARRAY ||
-			column.Type == meta.FLOAT_ARRAY ||
-			column.Type == meta.STRING_ARRAY ||
-			column.Type == meta.DATE_ARRAY ||
-			column.Type == meta.ENUM_ARRAY ||
-			column.Type == meta.VALUE_OBJECT_ARRAY ||
-			column.Type == meta.ENTITY_ARRAY {
-			value, _ = json.Marshal(value)
-		}
-		objValues = append(objValues, value)
-	}
-	return objValues
 }
 
 func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *model.TableDiff, atoms *[]model.ModifyAtom) {
