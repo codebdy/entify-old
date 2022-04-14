@@ -62,5 +62,5 @@ func (ins *Instance) IsInsert() bool {
 }
 
 func (ins *Instance) Table() *table.Table {
-	return ins.Table()
+	return ins.Entity.Table
 }
