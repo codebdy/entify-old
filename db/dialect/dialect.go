@@ -23,8 +23,8 @@ type SQLBuilder interface {
 
 	BuildQuerySQL(entity graph.Node, args map[string]interface{}) (string, []interface{})
 
-	BuildInsertSQL(fields []*data.Field, table *table.Table) (string, []interface{})
-	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) (string, []interface{})
+	BuildInsertSQL(fields []*data.Field, table *table.Table) string
+	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string
 }
 
 func GetSQLBuilder() SQLBuilder {

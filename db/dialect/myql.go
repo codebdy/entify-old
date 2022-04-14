@@ -213,14 +213,12 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Node, args map[string]interface{
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) BuildInsertSQL(fields []*data.Field, table *table.Table) (string, []interface{}) {
+func (b *MySQLBuilder) BuildInsertSQL(fields []*data.Field, table *table.Table) string {
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", table.Name, insertFields(fields), insertValueSymbols(fields))
 
-	values := data.MakeValues(fields)
-
-	return sql, values
+	return sql
 }
-func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) (string, []interface{}) {
+func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string {
 	sql := fmt.Sprintf(
 		"UPDATE `%s` SET %s WHERE ID = %d",
 		table.Name,
@@ -228,7 +226,7 @@ func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *ta
 		id,
 	)
 
-	return sql, data.MakeValues(fields)
+	return sql
 }
 
 func updateSetFields(fields []*data.Field) string {

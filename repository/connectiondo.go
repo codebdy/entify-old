@@ -180,8 +180,8 @@ func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) 
 
 func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
-	saveStr, values := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
-
+	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
+	values := data.MakeValues(instance.Fields)
 	// for _, association := range entity.AllAssociations() {
 	// 	if object[association.Name()] == nil {
 	// 		continue
@@ -217,7 +217,8 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
-	saveStr, values := sqlBuilder.BuildUpdateSQL(instance.Id, instance.Fields, instance.Table())
+	saveStr := sqlBuilder.BuildUpdateSQL(instance.Id, instance.Fields, instance.Table())
+	values := data.MakeValues(instance.Fields)
 	fmt.Println(saveStr)
 	_, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
