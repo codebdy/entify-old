@@ -217,7 +217,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
-	saveStr, values := sqlBuilder.BuildUpdateSQL(id, instance.Fields, instance.Table())
+	saveStr, values := sqlBuilder.BuildUpdateSQL(instance.Id, instance.Fields, instance.Table())
 	fmt.Println(saveStr)
 	_, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
@@ -225,7 +225,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 		return nil, err
 	}
 
-	savedObject, err := con.QueryOneById(instance.Entity, id)
+	savedObject, err := con.QueryOneById(instance.Entity, instance.Id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
