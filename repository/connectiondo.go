@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/db"
 	"rxdrag.com/entity-engine/db/dialect"
 	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
@@ -19,7 +20,7 @@ func makeValues(node graph.Node) []interface{} {
 		attr := node.GetAttributeByName(attrName)
 		switch attr.Type {
 		case meta.ID:
-			var value sql.NullInt64
+			var value db.NullUint64
 			values[i] = &value
 			break
 		case meta.INT:
@@ -69,9 +70,9 @@ func convertValuesToObject(values []interface{}, node graph.Node) map[string]int
 		column := node.GetAttributeByName(attrName)
 		switch column.Type {
 		case meta.ID:
-			nullValue := value.(*sql.NullInt64)
+			nullValue := value.(*db.NullUint64)
 			if nullValue.Valid {
-				object[attrName] = nullValue.Int64
+				object[attrName] = nullValue.Uint64
 			}
 			break
 		case meta.INT:
