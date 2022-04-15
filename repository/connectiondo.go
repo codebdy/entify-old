@@ -201,7 +201,11 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		return nil, err
 	}
 	for _, ref := range instance.References {
-		con.doSaveReference(ref, uint64(id))
+		err = con.doSaveReference(ref, uint64(id))
+		if err != nil {
+			fmt.Println("Save reference failed:", err.Error())
+			return nil, err
+		}
 	}
 
 	savedObject, err := con.QueryOneById(instance.Entity, id)
@@ -244,8 +248,29 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 	return savedObject, nil
 }
 
-func (con *Connection) doSaveReference(r *data.Reference, ownerId uint64) {
+func (con *Connection) doSaveReference(r *data.Reference, ownerId uint64) error {
+	for _, ins := range r.Deleted() {
+		con.doDeleteInstance(ins)
+	}
 
+	for _, ins := range r.Added() {
+		saved, err := con.doSaveOne(ins)
+		if err != nil {
+			return err
+		}
+
+		relationInstance := &data.AssociationInstance{
+			Table: r.Association.Relation.Table,
+		}
+
+		con.doAssociationInstance(relationInstance)
+	}
+
+	return nil
+}
+
+func (con *Connection) doAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
+	return nil, nil
 }
 
 func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
@@ -254,4 +279,8 @@ func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
 	} else {
 		return con.doUpdateOne(instance)
 	}
+}
+
+func (con *Connection) doDeleteInstance(instance *data.Instance) error {
+	return nil
 }
