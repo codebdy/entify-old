@@ -200,6 +200,10 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
+	for _, ref := range instance.References {
+		con.doSaveReference(ref, uint64(id))
+	}
+
 	savedObject, err := con.QueryOneById(instance.Entity, id)
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
@@ -227,12 +231,21 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 		return nil, err
 	}
 
+	for _, ref := range instance.References {
+		con.doSaveReference(ref, instance.Id)
+	}
+
 	savedObject, err := con.QueryOneById(instance.Entity, instance.Id)
+
 	if err != nil {
 		fmt.Println("QueryOneById failed:", err.Error())
 		return nil, err
 	}
 	return savedObject, nil
+}
+
+func (con *Connection) doSaveReference(r *data.Reference, ownerId uint64) {
+
 }
 
 func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
