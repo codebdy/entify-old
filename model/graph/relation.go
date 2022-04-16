@@ -10,8 +10,8 @@ type Relation struct {
 	Uuid                   string
 	InnerId                uint64
 	RelationType           string
-	Source                 Node
-	Target                 Node
+	Source                 Noder
+	Target                 Noder
 	RoleOfTarget           string
 	RoleOfSource           string
 	DescriptionOnSource    string
@@ -31,7 +31,7 @@ type DerivedRelation struct {
 	Table  *table.Table
 }
 
-func NewRelation(r *domain.Relation, s Node, t Node) *Relation {
+func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
 	return &Relation{
 		Uuid:                   r.Uuid,
 		InnerId:                r.InnerId,

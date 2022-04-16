@@ -3,8 +3,8 @@ package data
 import "rxdrag.com/entity-engine/model/table"
 
 type AssociationInstance struct {
-	Fields    []*Field
-	Reference *Reference
+	Fields      []*Field
+	Association *Associationer
 }
 
 type DerivedAssociationInstance struct {
@@ -12,11 +12,11 @@ type DerivedAssociationInstance struct {
 	DerivedReference *DerivedReference
 }
 
-func NewAssociationInstance(ref *Reference, sourceId uint64, targetId uint64) *AssociationInstance {
-	sourceColumn := ref.SourceColumn()
-	targetColumn := ref.TargetColumn()
+func NewAssociationInstance(association *Associationer, sourceId uint64, targetId uint64) *AssociationInstance {
+	sourceColumn := association.SourceColumn()
+	targetColumn := association.TargetColumn()
 	instance := AssociationInstance{
-		Reference: ref,
+		Association: association,
 		Fields: []*Field{
 			{
 				Column: sourceColumn,
@@ -31,5 +31,5 @@ func NewAssociationInstance(ref *Reference, sourceId uint64, targetId uint64) *A
 }
 
 func (a *AssociationInstance) Table() *table.Table {
-	return a.Reference.Association.Relation.Table
+	return a.Association.Table()
 }

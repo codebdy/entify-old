@@ -63,7 +63,7 @@ func queryFields() graphql.Fields {
 	return queryFields
 }
 
-func queryResponseType(node graph.Node) graphql.Output {
+func queryResponseType(node graph.Noder) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
 			OfType: Cache.OutputType(node.Name()),
@@ -71,7 +71,7 @@ func queryResponseType(node graph.Node) graphql.Output {
 	}
 }
 
-func quryeArgs(node graph.Node) graphql.FieldConfigArgument {
+func quryeArgs(node graph.Noder) graphql.FieldConfigArgument {
 	config := graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(node.Name()),
@@ -96,7 +96,7 @@ func quryeArgs(node graph.Node) graphql.FieldConfigArgument {
 	return config
 }
 
-func appendToQueryFields(node graph.Node, fields *graphql.Fields) {
+func appendToQueryFields(node graph.Noder, fields *graphql.Fields) {
 	(*fields)[utils.FirstLower(node.Name())] = &graphql.Field{
 		Type:    queryResponseType(node),
 		Args:    quryeArgs(node),

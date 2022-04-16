@@ -17,7 +17,7 @@ func (c *TypeCache) makeArgs() {
 	c.makeRelaionWhereExp()
 }
 
-func (c *TypeCache) makeOneEntityArgs(node graph.Node) {
+func (c *TypeCache) makeOneEntityArgs(node graph.Noder) {
 	whereExp := makeWhereExp(node)
 	c.WhereExpMap[node.Name()] = whereExp
 
@@ -47,7 +47,7 @@ func (c *TypeCache) makeRelaionWhereExp() {
 	}
 }
 
-func makeWhereExp(node graph.Node) *graphql.InputObject {
+func makeWhereExp(node graph.Noder) *graphql.InputObject {
 	expName := node.Name() + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
@@ -90,7 +90,7 @@ func makeWhereExp(node graph.Node) *graphql.InputObject {
 	return boolExp
 }
 
-func makeOrderBy(node graph.Node) *graphql.InputObject {
+func makeOrderBy(node graph.Noder) *graphql.InputObject {
 	fields := graphql.InputObjectConfigFieldMap{}
 
 	orderByExp := graphql.NewInputObject(
@@ -111,7 +111,7 @@ func makeOrderBy(node graph.Node) *graphql.InputObject {
 	return orderByExp
 }
 
-func makeDistinctOnEnum(node graph.Node) *graphql.Enum {
+func makeDistinctOnEnum(node graph.Noder) *graphql.Enum {
 	enumValueConfigMap := graphql.EnumValueConfigMap{}
 	attrs := node.AllAttributes()
 	for i := range attrs {

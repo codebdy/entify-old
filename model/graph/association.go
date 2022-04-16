@@ -30,7 +30,7 @@ func (a *Association) Name() string {
 	}
 }
 
-func (a *Association) Owner() Node {
+func (a *Association) Owner() Noder {
 	if a.IsSource() {
 		return a.Relation.Source
 	} else {
@@ -38,7 +38,7 @@ func (a *Association) Owner() Node {
 	}
 }
 
-func (a *Association) TypeClass() Node {
+func (a *Association) TypeClass() Noder {
 	if a.IsSource() {
 		return a.Relation.Target
 	} else {

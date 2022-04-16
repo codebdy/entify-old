@@ -38,7 +38,7 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 
 }
 
-func outputFields(node graph.Node) graphql.Fields {
+func outputFields(node graph.Noder) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, attr := range node.AllAttributes() {
 		fields[attr.Name] = &graphql.Field{

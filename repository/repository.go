@@ -7,7 +7,7 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func Query(node graph.Node, args map[string]interface{}) ([]interface{}, error) {
+func Query(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
@@ -16,7 +16,7 @@ func Query(node graph.Node, args map[string]interface{}) ([]interface{}, error) 
 	return con.doQueryEntity(node, args)
 }
 
-func QueryOne(node graph.Node, args map[string]interface{}) (interface{}, error) {
+func QueryOne(node graph.Noder, args map[string]interface{}) (interface{}, error) {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {

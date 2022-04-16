@@ -12,11 +12,10 @@ type Field struct {
 }
 
 type Instance struct {
-	Id                uint64
-	Entity            *graph.Entity
-	Fields            []*Field
-	References        []*Reference
-	DerivedReferences []*DerivedReference
+	Id           uint64
+	Entity       *graph.Entity
+	Fields       []*Field
+	Associations []Associationer
 }
 
 func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance {
@@ -41,11 +40,12 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 	for i := range allAssociation {
 		asso := allAssociation[i]
 		if !asso.IsAbstract() {
+			ref := Reference{
+				Association: asso,
+				Value:       object[asso.Name()].(map[string]interface{}),
+			}
 			if object[asso.Name()] != nil {
-				instance.References = append(instance.References, &Reference{
-					Association: asso,
-					Value:       object[asso.Name()].(map[string]interface{}),
-				})
+				instance.Associations = append(instance.Associations, &ref)
 			}
 
 		} else {

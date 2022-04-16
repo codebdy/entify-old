@@ -10,14 +10,14 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func QueryOneResolveFn(node graph.Node) graphql.FieldResolveFn {
+func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
 		return repository.QueryOne(node, p.Args)
 	}
 }
 
-func QueryResolveFn(node graph.Node) graphql.FieldResolveFn {
+func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
 		// names := entity.ColumnNames()

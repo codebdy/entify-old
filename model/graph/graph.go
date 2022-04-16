@@ -243,7 +243,7 @@ func (m *Model) RootServices() []*Class {
 	return classes
 }
 
-func (m *Model) GetNodeByUuid(uuid string) Node {
+func (m *Model) GetNodeByUuid(uuid string) Noder {
 	intf := m.GetInterfaceByUuid(uuid)
 
 	if intf != nil {
@@ -253,7 +253,7 @@ func (m *Model) GetNodeByUuid(uuid string) Node {
 	return m.GetEntityByUuid(uuid)
 }
 
-func (m *Model) GetNodeByName(name string) Node {
+func (m *Model) GetNodeByName(name string) Noder {
 	intf := m.GetInterfaceByName(name)
 
 	if intf != nil {

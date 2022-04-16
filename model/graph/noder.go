@@ -1,6 +1,6 @@
 package graph
 
-type Node interface {
+type Noder interface {
 	Uuid() string
 	InnerId() uint64
 	Name() string

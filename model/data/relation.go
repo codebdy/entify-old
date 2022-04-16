@@ -22,6 +22,17 @@ import (
 // 	Sync    []Instance
 // }
 
+type Associationer interface {
+	Deleted() []*Instance
+	Added() []*Instance
+	Updated() []*Instance
+	Synced() []*Instance
+	Cascade() bool
+	SourceColumn() *table.Column
+	TargetColumn() *table.Column
+	Table() *table.Table
+}
+
 type Reference struct {
 	Association *graph.Association
 	Value       map[string]interface{}
@@ -78,4 +89,8 @@ func (r *Reference) TargetColumn() *table.Column {
 		}
 	}
 	return nil
+}
+
+func (r *Reference) Table() *table.Table {
+	return r.Association.Relation.Table
 }

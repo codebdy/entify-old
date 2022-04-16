@@ -196,7 +196,7 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
-func (b *MySQLBuilder) BuildQuerySQL(node graph.Node, args map[string]interface{}) (string, []interface{}) {
+func (b *MySQLBuilder) BuildQuerySQL(node graph.Noder, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	names := node.AllAttributeNames()
 	queryStr := "select %s from %s WHERE true "

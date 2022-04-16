@@ -13,7 +13,7 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-func makeValues(node graph.Node) []interface{} {
+func makeValues(node graph.Noder) []interface{} {
 	names := node.AllAttributeNames()
 	values := make([]interface{}, len(names))
 	for i, attrName := range names {
@@ -62,7 +62,7 @@ func makeValues(node graph.Node) []interface{} {
 	return values
 }
 
-func convertValuesToObject(values []interface{}, node graph.Node) map[string]interface{} {
+func convertValuesToObject(values []interface{}, node graph.Noder) map[string]interface{} {
 	object := make(map[string]interface{})
 	names := node.AllAttributeNames()
 	for i, value := range values {
@@ -121,7 +121,7 @@ func convertValuesToObject(values []interface{}, node graph.Node) map[string]int
 	return object
 }
 
-func (con *Connection) doQueryEntity(node graph.Node, args map[string]interface{}) ([]interface{}, error) {
+func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(node, args)
 	rows, err := con.Dbx.Query(queryStr, params...)
@@ -148,7 +148,7 @@ func (con *Connection) doQueryEntity(node graph.Node, args map[string]interface{
 	return instances, nil
 }
 
-func (con *Connection) QueryOneById(node graph.Node, id interface{}) (interface{}, error) {
+func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (interface{}, error) {
 	return con.doQueryOne(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -158,7 +158,7 @@ func (con *Connection) QueryOneById(node graph.Node, id interface{}) (interface{
 	})
 }
 
-func (con *Connection) doQueryOne(node graph.Node, args map[string]interface{}) (interface{}, error) {
+func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (interface{}, error) {
 
 	builder := dialect.GetSQLBuilder()
 
@@ -200,7 +200,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
-	for _, ref := range instance.References {
+	for _, ref := range instance.Associations {
 		err = con.doSaveReference(ref, uint64(id))
 		if err != nil {
 			fmt.Println("Save reference failed:", err.Error())
@@ -235,7 +235,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 		return nil, err
 	}
 
-	for _, ref := range instance.References {
+	for _, ref := range instance.Associations {
 		con.doSaveReference(ref, instance.Id)
 	}
 
