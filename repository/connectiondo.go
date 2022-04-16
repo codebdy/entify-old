@@ -148,7 +148,7 @@ func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface
 	return instances, nil
 }
 
-func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (interface{}, error) {
+func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (map[string]interface{}, error) {
 	return con.doQueryOne(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -158,7 +158,7 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (interface
 	})
 }
 
-func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (interface{}, error) {
+func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (map[string]interface{}, error) {
 
 	builder := dialect.GetSQLBuilder()
 
@@ -179,7 +179,7 @@ func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{})
 	return convertValuesToObject(values, node), nil
 }
 
-func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
+func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := data.MakeValues(instance.Fields)
@@ -222,7 +222,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 	return savedObject, nil
 }
 
-func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error) {
+func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
@@ -259,7 +259,15 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 			return err
 		}
 
-		relationInstance := &data.AssociationInstance{}
+		sourceId := ownerId
+		targetId := saved[consts.ID].(uint64)
+
+		if !r.IsSource() {
+			sourceId = targetId
+			targetId = ownerId
+		}
+
+		relationInstance := data.NewAssociationInstance(r, sourceId, targetId)
 
 		con.doAssociationInstance(relationInstance)
 	}
@@ -271,7 +279,7 @@ func (con *Connection) doAssociationInstance(instance *data.AssociationInstance)
 	return nil, nil
 }
 
-func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
+func (con *Connection) doSaveOne(instance *data.Instance) (map[string]interface{}, error) {
 	if instance.IsInsert() {
 		return con.doInsertOne(instance)
 	} else {

@@ -31,6 +31,7 @@ type Associationer interface {
 	SourceColumn() *table.Column
 	TargetColumn() *table.Column
 	Table() *table.Table
+	IsSource() bool
 }
 
 type Reference struct {
@@ -93,4 +94,8 @@ func (r *Reference) TargetColumn() *table.Column {
 
 func (r *Reference) Table() *table.Table {
 	return r.Association.Relation.Table
+}
+
+func (r *Reference) IsSource() bool {
+	return r.IsSource()
 }
