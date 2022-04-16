@@ -248,9 +248,30 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interfac
 	return savedObject, nil
 }
 
+func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) *data.AssociationInstance {
+	sourceId := ownerId
+	targetId := tarId
+
+	if !r.IsSource() {
+		sourceId = targetId
+		targetId = ownerId
+	}
+
+	return data.NewAssociationInstance(r, sourceId, targetId)
+}
+
 func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) error {
 	for _, ins := range r.Deleted() {
-		con.doDeleteInstance(ins)
+		if r.Cascade() {
+			con.doDeleteInstance(ins)
+		} else {
+			relationInstance := newAssociationInstance(r, ownerId, ins.Id)
+			err := con.doDeleteAssociationInstance(relationInstance)
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+
 	}
 
 	for _, ins := range r.Added() {
@@ -259,24 +280,21 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 			return err
 		}
 
-		sourceId := ownerId
-		targetId := saved[consts.ID].(uint64)
+		tarId := saved[consts.ID].(uint64)
+		relationInstance := newAssociationInstance(r, ownerId, tarId)
 
-		if !r.IsSource() {
-			sourceId = targetId
-			targetId = ownerId
-		}
-
-		relationInstance := data.NewAssociationInstance(r, sourceId, targetId)
-
-		con.doAssociationInstance(relationInstance)
+		con.doSaveAssociationInstance(relationInstance)
 	}
 
 	return nil
 }
 
-func (con *Connection) doAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
+func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
 	return nil, nil
+}
+
+func (con *Connection) doDeleteAssociationInstance(instance *data.AssociationInstance) error {
+	return nil
 }
 
 func (con *Connection) doSaveOne(instance *data.Instance) (map[string]interface{}, error) {
