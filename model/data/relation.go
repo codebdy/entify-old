@@ -99,3 +99,60 @@ func (r *Reference) Table() *table.Table {
 func (r *Reference) IsSource() bool {
 	return r.IsSource()
 }
+
+//====derived
+func (r *DerivedReference) Deleted() []*Instance {
+	instances := []*Instance{}
+
+	return instances
+}
+
+func (r *DerivedReference) Added() []*Instance {
+	instances := []*Instance{}
+
+	return instances
+}
+
+func (r *DerivedReference) Updated() []*Instance {
+	instances := []*Instance{}
+
+	return instances
+}
+
+func (r *DerivedReference) Synced() []*Instance {
+	instances := []*Instance{}
+
+	return instances
+}
+
+func (r *DerivedReference) Cascade() bool {
+	return r.Value[consts.ARG_CASCADE].(bool)
+}
+
+func (r *DerivedReference) SourceColumn() *table.Column {
+	for i := range r.Association.Relation.Table.Columns {
+		column := r.Association.Relation.Table.Columns[i]
+		if column.Name == r.Association.Relation.Source.TableName() {
+			return column
+		}
+	}
+	return nil
+}
+
+func (r *DerivedReference) TargetColumn() *table.Column {
+	for i := range r.Association.Relation.Table.Columns {
+		column := r.Association.Relation.Table.Columns[i]
+		if column.Name == r.Association.Relation.Target.TableName() {
+			return column
+		}
+	}
+	return nil
+}
+
+func (r *DerivedReference) Table() *table.Table {
+	return r.Association.Relation.Table
+}
+
+func (r *DerivedReference) IsSource() bool {
+	return r.IsSource()
+}

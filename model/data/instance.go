@@ -40,16 +40,28 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 	for i := range allAssociation {
 		asso := allAssociation[i]
 		if !asso.IsAbstract() {
-			ref := Reference{
-				Association: asso,
-				Value:       object[asso.Name()].(map[string]interface{}),
-			}
-			if object[asso.Name()] != nil {
+			value := object[asso.Name()]
+			if value != nil {
+				ref := Reference{
+					Association: asso,
+					Value:       value.(map[string]interface{}),
+				}
 				instance.Associations = append(instance.Associations, &ref)
 			}
 
 		} else {
-
+			derivedAssociations := asso.DerivedAssociationsByOwnerUuid(entity.Uuid())
+			for j := range derivedAssociations {
+				derivedAsso := derivedAssociations[j]
+				value := object[derivedAsso.Name()]
+				if value != nil {
+					ref := DerivedReference{
+						Association: derivedAsso,
+						Value:       value.(map[string]interface{}),
+					}
+					instance.Associations = append(instance.Associations, &ref)
+				}
+			}
 		}
 	}
 	return &instance
