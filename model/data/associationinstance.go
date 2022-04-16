@@ -4,7 +4,7 @@ import "rxdrag.com/entity-engine/model/table"
 
 type AssociationInstance struct {
 	Fields      []*Field
-	Association *Associationer
+	Association Associationer
 }
 
 type DerivedAssociationInstance struct {
@@ -12,7 +12,7 @@ type DerivedAssociationInstance struct {
 	DerivedReference *DerivedReference
 }
 
-func NewAssociationInstance(association *Associationer, sourceId uint64, targetId uint64) *AssociationInstance {
+func NewAssociationInstance(association Associationer, sourceId uint64, targetId uint64) *AssociationInstance {
 	sourceColumn := association.SourceColumn()
 	targetColumn := association.TargetColumn()
 	instance := AssociationInstance{

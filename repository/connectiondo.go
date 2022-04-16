@@ -200,8 +200,8 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		fmt.Println("LastInsertId failed:", err.Error())
 		return nil, err
 	}
-	for _, ref := range instance.Associations {
-		err = con.doSaveReference(ref, uint64(id))
+	for _, asso := range instance.Associations {
+		err = con.doSaveReference(asso, uint64(id))
 		if err != nil {
 			fmt.Println("Save reference failed:", err.Error())
 			return nil, err
@@ -248,7 +248,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 	return savedObject, nil
 }
 
-func (con *Connection) doSaveReference(r *data.Reference, ownerId uint64) error {
+func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) error {
 	for _, ins := range r.Deleted() {
 		con.doDeleteInstance(ins)
 	}
@@ -259,9 +259,7 @@ func (con *Connection) doSaveReference(r *data.Reference, ownerId uint64) error 
 			return err
 		}
 
-		relationInstance := &data.AssociationInstance{
-			Table: r.Association.Relation.Table,
-		}
+		relationInstance := &data.AssociationInstance{}
 
 		con.doAssociationInstance(relationInstance)
 	}
