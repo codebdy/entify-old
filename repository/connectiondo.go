@@ -271,7 +271,6 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 				panic(err.Error())
 			}
 		}
-
 	}
 
 	for _, ins := range r.Added() {
@@ -286,7 +285,48 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 		con.doSaveAssociationInstance(relationInstance)
 	}
 
+	for _, ins := range r.Updated() {
+		if ins.Id == 0 {
+			panic("Can not add new instance when update")
+		}
+		saved, err := con.doSaveOne(ins)
+		if err != nil {
+			return err
+		}
+
+		tarId := saved[consts.ID].(uint64)
+		relationInstance := newAssociationInstance(r, ownerId, tarId)
+
+		con.doSaveAssociationInstance(relationInstance)
+	}
+
+	synced := r.Synced()
+	if len(synced) == 0 {
+		return nil
+	}
+
+	con.clearAssociation(r)
+
+	for _, ins := range synced {
+		if ins.Id == 0 {
+			panic("Can not add new instance when update")
+		}
+		saved, err := con.doSaveOne(ins)
+		if err != nil {
+			return err
+		}
+
+		tarId := saved[consts.ID].(uint64)
+		relationInstance := newAssociationInstance(r, ownerId, tarId)
+
+		con.doSaveAssociationInstance(relationInstance)
+	}
+
 	return nil
+}
+
+func (con *Connection) clearAssociation(r data.Associationer) {
+
 }
 
 func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
