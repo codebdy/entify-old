@@ -229,6 +229,16 @@ func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *ta
 	return sql
 }
 
+func (b *MySQLBuilder) BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string {
+	sql := fmt.Sprintf(
+		"DELETE FROM %s WHERE (`%s` = '%d');",
+		tableName,
+		ownerFieldName,
+		ownerId,
+	)
+	return sql
+}
+
 func updateSetFields(fields []*data.Field) string {
 	if len(fields) == 0 {
 		panic("No update fields")

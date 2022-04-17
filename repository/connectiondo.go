@@ -201,7 +201,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 		return nil, err
 	}
 	for _, asso := range instance.Associations {
-		err = con.doSaveReference(asso, uint64(id))
+		err = con.doSaveAssociation(asso, uint64(id))
 		if err != nil {
 			fmt.Println("Save reference failed:", err.Error())
 			return nil, err
@@ -236,7 +236,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interfac
 	}
 
 	for _, ref := range instance.Associations {
-		con.doSaveReference(ref, instance.Id)
+		con.doSaveAssociation(ref, instance.Id)
 	}
 
 	savedObject, err := con.QueryOneById(instance.Entity, instance.Id)
@@ -260,7 +260,7 @@ func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) 
 	return data.NewAssociationInstance(r, sourceId, targetId)
 }
 
-func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) error {
+func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) error {
 	for _, ins := range r.Deleted() {
 		if r.Cascade() {
 			con.doDeleteInstance(ins)
@@ -305,7 +305,7 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 		return nil
 	}
 
-	con.clearAssociation(r)
+	con.clearAssociation(r, ownerId)
 
 	for _, ins := range synced {
 		if ins.Id == 0 {
@@ -325,8 +325,21 @@ func (con *Connection) doSaveReference(r data.Associationer, ownerId uint64) err
 	return nil
 }
 
-func (con *Connection) clearAssociation(r data.Associationer) {
+func (con *Connection) clearAssociation(r data.Associationer, ownerId uint64) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	fieldName := r.SourceColumn().Name
+	if !r.IsSource() {
+		fieldName = r.TargetColumn().Name
+	}
+	sql := sqlBuilder.BuildClearAssociationSQL(ownerId, r.Table().Name, fieldName)
+	_, err := con.Dbx.Exec(sql)
+	if err != nil {
+		panic(err.Error())
+	}
 
+	if r.Cascade() {
+
+	}
 }
 
 func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {

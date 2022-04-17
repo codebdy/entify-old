@@ -25,6 +25,8 @@ type SQLBuilder interface {
 
 	BuildInsertSQL(fields []*data.Field, table *table.Table) string
 	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string
+
+	BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string
 }
 
 func GetSQLBuilder() SQLBuilder {
