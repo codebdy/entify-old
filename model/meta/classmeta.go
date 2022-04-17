@@ -17,4 +17,5 @@ type ClassMeta struct {
 	Methods     []MethodMeta    `json:"methods"`
 	Root        bool            `json:"root"`
 	Description string          `json:"description"`
+	SoftDelete  bool            `json:"softDelete"`
 }

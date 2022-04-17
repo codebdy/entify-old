@@ -9,6 +9,7 @@ type Class struct {
 	Name        string
 	Description string
 	Root        bool
+	SoftDelete  bool
 	Attributes  []*Attribute
 	Methods     []*Method
 	parents     []*Class
@@ -23,6 +24,7 @@ func NewClass(c *meta.ClassMeta) *Class {
 		Name:        c.Name,
 		Description: c.Description,
 		Root:        c.Root,
+		SoftDelete:  c.SoftDelete,
 		Attributes:  make([]*Attribute, len(c.Attributes)),
 		Methods:     make([]*Method, len(c.Methods)),
 		parents:     []*Class{},

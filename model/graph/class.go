@@ -73,3 +73,7 @@ func (c *Class) MethodsByType(operateType string) []*Method {
 
 	return methods
 }
+
+func (c *Class) IsSoftDelete() bool {
+	return c.Domain.SoftDelete
+}

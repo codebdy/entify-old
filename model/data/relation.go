@@ -34,6 +34,7 @@ type Associationer interface {
 	IsSource() bool
 	OwnerColumn() *table.Column
 	TypeColumn() *table.Column
+	TypeEntity() *graph.Entity
 }
 
 type Reference struct {
@@ -117,6 +118,10 @@ func (r *Reference) TypeColumn() *table.Column {
 	}
 }
 
+func (r *Reference) TypeEntity() *graph.Entity {
+	return r.Association.TypeClass().Entity()
+}
+
 //====derived
 func (r *DerivedReference) Deleted() []*Instance {
 	instances := []*Instance{}
@@ -187,4 +192,8 @@ func (r *DerivedReference) TypeColumn() *table.Column {
 	} else {
 		return r.TargetColumn()
 	}
+}
+
+func (r *DerivedReference) TypeEntity() *graph.Entity {
+	return r.Association.TypeEntity()
 }
