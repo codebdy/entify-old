@@ -327,19 +327,18 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 
 func (con *Connection) clearAssociation(r data.Associationer, ownerId uint64) {
 	sqlBuilder := dialect.GetSQLBuilder()
-	fieldName := r.SourceColumn().Name
-	if !r.IsSource() {
-		fieldName = r.TargetColumn().Name
-	}
-	sql := sqlBuilder.BuildClearAssociationSQL(ownerId, r.Table().Name, fieldName)
+	sql := sqlBuilder.BuildClearAssociationSQL(ownerId, r.Table().Name, r.OwnerColumn().Name)
 	_, err := con.Dbx.Exec(sql)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	if r.Cascade() {
-
+		con.deleteAssociatedInstances(r, ownerId)
 	}
+}
+
+func (con *Connection) deleteAssociatedInstances(r data.Associationer, ownerId uint64) {
 }
 
 func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {

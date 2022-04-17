@@ -32,6 +32,8 @@ type Associationer interface {
 	TargetColumn() *table.Column
 	Table() *table.Table
 	IsSource() bool
+	OwnerColumn() *table.Column
+	TypeColumn() *table.Column
 }
 
 type Reference struct {
@@ -100,6 +102,21 @@ func (r *Reference) IsSource() bool {
 	return r.IsSource()
 }
 
+func (r *Reference) OwnerColumn() *table.Column {
+	if r.IsSource() {
+		return r.SourceColumn()
+	} else {
+		return r.TargetColumn()
+	}
+}
+func (r *Reference) TypeColumn() *table.Column {
+	if !r.IsSource() {
+		return r.SourceColumn()
+	} else {
+		return r.TargetColumn()
+	}
+}
+
 //====derived
 func (r *DerivedReference) Deleted() []*Instance {
 	instances := []*Instance{}
@@ -155,4 +172,19 @@ func (r *DerivedReference) Table() *table.Table {
 
 func (r *DerivedReference) IsSource() bool {
 	return r.IsSource()
+}
+
+func (r *DerivedReference) OwnerColumn() *table.Column {
+	if r.IsSource() {
+		return r.SourceColumn()
+	} else {
+		return r.TargetColumn()
+	}
+}
+func (r *DerivedReference) TypeColumn() *table.Column {
+	if !r.IsSource() {
+		return r.SourceColumn()
+	} else {
+		return r.TargetColumn()
+	}
 }
