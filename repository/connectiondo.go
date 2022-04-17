@@ -222,6 +222,11 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 	return savedObject, nil
 }
 
+func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId uint64) []map[string]interface{} {
+	var instances []map[string]interface{}
+	return instances
+}
+
 func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
@@ -339,6 +344,12 @@ func (con *Connection) clearAssociation(r data.Associationer, ownerId uint64) {
 }
 
 func (con *Connection) deleteAssociatedInstances(r data.Associationer, ownerId uint64) {
+	typeEntity := r.TypeEntity()
+	associatedInstances := con.doQueryAssociatedInstances(r, ownerId)
+	for i := range associatedInstances {
+		ins := data.NewInstance(associatedInstances[i], typeEntity)
+		con.doDeleteInstance(ins)
+	}
 }
 
 func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
