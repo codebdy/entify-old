@@ -18,10 +18,6 @@ func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface
 		fmt.Println(err)
 		return nil, err
 	}
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
 	var instances []interface{}
 	for rows.Next() {
 		values := makeQueryValues(node)
@@ -113,6 +109,22 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 
 func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId uint64) []map[string]interface{} {
 	var instances []map[string]interface{}
+	builder := dialect.GetSQLBuilder()
+	entity := r.TypeEntity()
+	queryStr := builder.BuildQueryAssociatedInstancesSQL(entity, ownerId, r.Table().Name, r.OwnerColumn().Name, r.TypeColumn().Name)
+	rows, err := con.Dbx.Query(queryStr)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for rows.Next() {
+		values := makeQueryValues(entity)
+		err = rows.Scan(values...)
+		instances = append(instances, convertValuesToObject(values, entity))
+	}
+	if err != nil {
+		panic(err.Error())
+	}
 
 	return instances
 }
