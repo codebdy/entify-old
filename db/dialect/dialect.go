@@ -27,6 +27,7 @@ type SQLBuilder interface {
 	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string
 
 	BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string
+	BuildQueryAssociatedInstancesSQL(node graph.Noder, ownerId uint64, povitTableName string, ownerFieldName string, typeFieldName string) string
 }
 
 func GetSQLBuilder() SQLBuilder {

@@ -213,6 +213,18 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Noder, args map[string]interface
 	return queryStr, params
 }
 
+func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder, ownerId uint64, povitTableName string, ownerFieldName string, typeFieldName string) string {
+	names := node.AllAttributeNames()
+	for i := range names {
+		names[i] = "a." + names[i]
+	}
+	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s=%d "
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), node.Entity().TableName(), povitTableName, typeFieldName, ownerFieldName, ownerId)
+
+	fmt.Println("BuildQueryAssociatedInstancesSQL:", queryStr)
+	return queryStr
+}
+
 func (b *MySQLBuilder) BuildInsertSQL(fields []*data.Field, table *table.Table) string {
 	sql := fmt.Sprintf("INSERT INTO `%s`(%s) VALUES(%s)", table.Name, insertFields(fields), insertValueSymbols(fields))
 

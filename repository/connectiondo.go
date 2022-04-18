@@ -113,6 +113,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 
 func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId uint64) []map[string]interface{} {
 	var instances []map[string]interface{}
+
 	return instances
 }
 
