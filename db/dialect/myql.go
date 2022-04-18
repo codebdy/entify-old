@@ -3,6 +3,7 @@ package dialect
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
@@ -243,10 +244,32 @@ func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *ta
 
 func (b *MySQLBuilder) BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string {
 	sql := fmt.Sprintf(
-		"DELETE FROM %s WHERE (`%s` = '%d');",
+		"DELETE FROM %s WHERE (`%s` = '%d')",
 		tableName,
 		ownerFieldName,
 		ownerId,
+	)
+	return sql
+}
+
+func (b *MySQLBuilder) BuildDeleteSQL(id uint64, tableName string) string {
+	sql := fmt.Sprintf(
+		"DELETE FROM %s WHERE (`%s` = '%d')",
+		tableName,
+		"id",
+		id,
+	)
+	return sql
+}
+
+func (b *MySQLBuilder) BuildSoftDeleteSQL(id uint64, tableName string) string {
+	sql := fmt.Sprintf(
+		"UPDATE %s SET %s = '%s' WHERE (%s = %d)",
+		tableName,
+		consts.DELETED_AT,
+		time.Now(),
+		"id",
+		id,
 	)
 	return sql
 }

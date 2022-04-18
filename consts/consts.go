@@ -111,6 +111,10 @@ const (
 )
 
 const (
+	DELETED_AT string = "deletedAt"
+)
+
+const (
 	BOOLEXP           string = "BoolExp"
 	ORDERBY           string = "OrderBy"
 	DISTINCTEXP       string = "DistinctExp"

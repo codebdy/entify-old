@@ -28,6 +28,8 @@ type SQLBuilder interface {
 
 	BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string
 	BuildQueryAssociatedInstancesSQL(node graph.Noder, ownerId uint64, povitTableName string, ownerFieldName string, typeFieldName string) string
+	BuildDeleteSQL(id uint64, tableName string) string
+	BuildSoftDeleteSQL(id uint64, tableName string) string
 }
 
 func GetSQLBuilder() SQLBuilder {
