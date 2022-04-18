@@ -244,7 +244,7 @@ func (b *MySQLBuilder) BuildUpdateSQL(id uint64, fields []*data.Field, table *ta
 
 func (b *MySQLBuilder) BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string {
 	sql := fmt.Sprintf(
-		"DELETE FROM %s WHERE (`%s` = '%d')",
+		"DELETE FROM `%s` WHERE (`%s` = '%d')",
 		tableName,
 		ownerFieldName,
 		ownerId,
@@ -254,7 +254,7 @@ func (b *MySQLBuilder) BuildClearAssociationSQL(ownerId uint64, tableName string
 
 func (b *MySQLBuilder) BuildDeleteSQL(id uint64, tableName string) string {
 	sql := fmt.Sprintf(
-		"DELETE FROM %s WHERE (`%s` = '%d')",
+		"DELETE FROM `%s` WHERE (`%s` = '%d')",
 		tableName,
 		"id",
 		id,
@@ -264,7 +264,7 @@ func (b *MySQLBuilder) BuildDeleteSQL(id uint64, tableName string) string {
 
 func (b *MySQLBuilder) BuildSoftDeleteSQL(id uint64, tableName string) string {
 	sql := fmt.Sprintf(
-		"UPDATE %s SET %s = '%s' WHERE (%s = %d)",
+		"UPDATE `%s` SET `%s` = '%s' WHERE (`%s` = %d)",
 		tableName,
 		consts.DELETED_AT,
 		time.Now(),

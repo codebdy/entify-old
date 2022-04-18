@@ -3,6 +3,7 @@ package data
 import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/model/table"
 )
 
@@ -35,6 +36,7 @@ type Associationer interface {
 	OwnerColumn() *table.Column
 	TypeColumn() *table.Column
 	TypeEntity() *graph.Entity
+	IsCombination() bool
 }
 
 type Reference struct {
@@ -122,6 +124,12 @@ func (r *Reference) TypeEntity() *graph.Entity {
 	return r.Association.TypeClass().Entity()
 }
 
+func (r *Reference) IsCombination() bool {
+	return r.IsSource() &&
+		(r.Association.Relation.RelationType == meta.TWO_WAY_COMBINATION ||
+			r.Association.Relation.RelationType == meta.ONE_WAY_COMBINATION)
+}
+
 //====derived
 func (r *DerivedReference) Deleted() []*Instance {
 	instances := []*Instance{}
@@ -196,4 +204,10 @@ func (r *DerivedReference) TypeColumn() *table.Column {
 
 func (r *DerivedReference) TypeEntity() *graph.Entity {
 	return r.Association.TypeEntity()
+}
+
+func (r *DerivedReference) IsCombination() bool {
+	return r.IsSource() &&
+		(r.Association.Relation.Parent.RelationType == meta.TWO_WAY_COMBINATION ||
+			r.Association.Relation.Parent.RelationType == meta.ONE_WAY_COMBINATION)
 }

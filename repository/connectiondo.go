@@ -233,15 +233,19 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 }
 
 func (con *Connection) clearAssociation(r data.Associationer, ownerId uint64) {
+	con.clearAssociationPovit(r, ownerId)
+
+	if r.Cascade() {
+		con.deleteAssociatedInstances(r, ownerId)
+	}
+}
+
+func (con *Connection) clearAssociationPovit(r data.Associationer, ownerId uint64) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	sql := sqlBuilder.BuildClearAssociationSQL(ownerId, r.Table().Name, r.OwnerColumn().Name)
 	_, err := con.Dbx.Exec(sql)
 	if err != nil {
 		panic(err.Error())
-	}
-
-	if r.Cascade() {
-		con.deleteAssociatedInstances(r, ownerId)
 	}
 }
 
@@ -270,6 +274,28 @@ func (con *Connection) doSaveOne(instance *data.Instance) (map[string]interface{
 	}
 }
 
-func (con *Connection) doDeleteInstance(instance *data.Instance) error {
-	return nil
+func (con *Connection) doDeleteInstance(instance *data.Instance) {
+	var sql string
+	sqlBuilder := dialect.GetSQLBuilder()
+	tableName := instance.Table().Name
+	if instance.Entity.IsSoftDelete() {
+		sql = sqlBuilder.BuildSoftDeleteSQL(instance.Id, tableName)
+	} else {
+		sql = sqlBuilder.BuildDeleteSQL(instance.Id, tableName)
+	}
+
+	_, err := con.Dbx.Exec(sql)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	associstions := instance.Associations
+	for i := range associstions {
+		asso := associstions[i]
+		if asso.IsCombination() {
+			con.clearAssociation(associstions[i], instance.Id)
+		} else {
+			con.deleteAssociatedInstances(asso, instance.Id)
+		}
+	}
 }
