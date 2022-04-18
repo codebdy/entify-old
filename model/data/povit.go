@@ -2,20 +2,20 @@ package data
 
 import "rxdrag.com/entity-engine/model/table"
 
-type AssociationInstance struct {
+type AssociationPovit struct {
 	Fields      []*Field
 	Association Associationer
 }
 
-type DerivedAssociationInstance struct {
+type DerivedAssociationPovit struct {
 	Fields           []*Field
 	DerivedReference *DerivedReference
 }
 
-func NewAssociationInstance(association Associationer, sourceId uint64, targetId uint64) *AssociationInstance {
+func NewAssociationPovit(association Associationer, sourceId uint64, targetId uint64) *AssociationPovit {
 	sourceColumn := association.SourceColumn()
 	targetColumn := association.TargetColumn()
-	instance := AssociationInstance{
+	instance := AssociationPovit{
 		Association: association,
 		Fields: []*Field{
 			{
@@ -30,6 +30,6 @@ func NewAssociationInstance(association Associationer, sourceId uint64, targetId
 	return &instance
 }
 
-func (a *AssociationInstance) Table() *table.Table {
+func (a *AssociationPovit) Table() *table.Table {
 	return a.Association.Table()
 }

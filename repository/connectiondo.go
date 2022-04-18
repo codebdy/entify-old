@@ -155,7 +155,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interfac
 	return savedObject, nil
 }
 
-func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) *data.AssociationInstance {
+func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) *data.AssociationPovit {
 	sourceId := ownerId
 	targetId := tarId
 
@@ -164,7 +164,7 @@ func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) 
 		targetId = ownerId
 	}
 
-	return data.NewAssociationInstance(r, sourceId, targetId)
+	return data.NewAssociationPovit(r, sourceId, targetId)
 }
 
 func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) error {
@@ -233,14 +233,14 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 }
 
 func (con *Connection) clearAssociation(r data.Associationer, ownerId uint64) {
-	con.clearAssociationPovit(r, ownerId)
+	con.deleteAssociationPovit(r, ownerId)
 
 	if r.Cascade() {
 		con.deleteAssociatedInstances(r, ownerId)
 	}
 }
 
-func (con *Connection) clearAssociationPovit(r data.Associationer, ownerId uint64) {
+func (con *Connection) deleteAssociationPovit(r data.Associationer, ownerId uint64) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	sql := sqlBuilder.BuildClearAssociationSQL(ownerId, r.Table().Name, r.OwnerColumn().Name)
 	_, err := con.Dbx.Exec(sql)
@@ -258,11 +258,11 @@ func (con *Connection) deleteAssociatedInstances(r data.Associationer, ownerId u
 	}
 }
 
-func (con *Connection) doSaveAssociationInstance(instance *data.AssociationInstance) (interface{}, error) {
+func (con *Connection) doSaveAssociationInstance(instance *data.AssociationPovit) (interface{}, error) {
 	return nil, nil
 }
 
-func (con *Connection) doDeleteAssociationInstance(instance *data.AssociationInstance) error {
+func (con *Connection) doDeleteAssociationInstance(instance *data.AssociationPovit) error {
 	return nil
 }
 
@@ -293,8 +293,9 @@ func (con *Connection) doDeleteInstance(instance *data.Instance) {
 	for i := range associstions {
 		asso := associstions[i]
 		if asso.IsCombination() {
-			con.clearAssociation(associstions[i], instance.Id)
-		} else {
+			if !asso.TypeEntity().IsSoftDelete() {
+				con.deleteAssociationPovit(asso, instance.Id)
+			}
 			con.deleteAssociatedInstances(asso, instance.Id)
 		}
 	}
