@@ -155,7 +155,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interfac
 	return savedObject, nil
 }
 
-func newAssociationInstance(r data.Associationer, ownerId uint64, tarId uint64) *data.AssociationPovit {
+func newAssociationPovit(r data.Associationer, ownerId uint64, tarId uint64) *data.AssociationPovit {
 	sourceId := ownerId
 	targetId := tarId
 
@@ -172,8 +172,8 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		if r.Cascade() {
 			con.doDeleteInstance(ins)
 		} else {
-			relationInstance := newAssociationInstance(r, ownerId, ins.Id)
-			err := con.doDeleteAssociationInstance(relationInstance)
+			relationInstance := newAssociationPovit(r, ownerId, ins.Id)
+			err := con.doDeleteAssociationPovit(relationInstance)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -187,9 +187,9 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		}
 
 		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationInstance(r, ownerId, tarId)
+		relationInstance := newAssociationPovit(r, ownerId, tarId)
 
-		con.doSaveAssociationInstance(relationInstance)
+		con.doSaveAssociationPovit(relationInstance)
 	}
 
 	for _, ins := range r.Updated() {
@@ -202,9 +202,9 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		}
 
 		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationInstance(r, ownerId, tarId)
+		relationInstance := newAssociationPovit(r, ownerId, tarId)
 
-		con.doSaveAssociationInstance(relationInstance)
+		con.doSaveAssociationPovit(relationInstance)
 	}
 
 	synced := r.Synced()
@@ -224,9 +224,9 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		}
 
 		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationInstance(r, ownerId, tarId)
+		relationInstance := newAssociationPovit(r, ownerId, tarId)
 
-		con.doSaveAssociationInstance(relationInstance)
+		con.doSaveAssociationPovit(relationInstance)
 	}
 
 	return nil
@@ -258,11 +258,11 @@ func (con *Connection) deleteAssociatedInstances(r data.Associationer, ownerId u
 	}
 }
 
-func (con *Connection) doSaveAssociationInstance(instance *data.AssociationPovit) (interface{}, error) {
+func (con *Connection) doSaveAssociationPovit(povit *data.AssociationPovit) (interface{}, error) {
 	return nil, nil
 }
 
-func (con *Connection) doDeleteAssociationInstance(instance *data.AssociationPovit) error {
+func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) error {
 	return nil
 }
 
