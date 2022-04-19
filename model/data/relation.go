@@ -49,28 +49,31 @@ type DerivedReference struct {
 	Value       map[string]interface{}
 }
 
-func (r *Reference) Deleted() []*Instance {
+func convertToInstances(objects interface{}, entity *graph.Entity) []*Instance {
 	instances := []*Instance{}
-
+	if objects != nil {
+		objs := objects.([]interface{})
+		for i := range objs {
+			instances = append(instances, NewInstance(objs[i].(map[string]interface{}), entity))
+		}
+	}
 	return instances
+}
+
+func (r *Reference) Deleted() []*Instance {
+	return convertToInstances(r.Value[consts.ARG_DELETE], r.TypeEntity())
 }
 
 func (r *Reference) Added() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_ADD], r.TypeEntity())
 }
 
 func (r *Reference) Updated() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_UPDATE], r.TypeEntity())
 }
 
 func (r *Reference) Synced() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_SYNC], r.TypeEntity())
 }
 
 func (r *Reference) Cascade() bool {
@@ -132,27 +135,19 @@ func (r *Reference) IsCombination() bool {
 
 //====derived
 func (r *DerivedReference) Deleted() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_DELETE], r.TypeEntity())
 }
 
 func (r *DerivedReference) Added() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_ADD], r.TypeEntity())
 }
 
 func (r *DerivedReference) Updated() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_UPDATE], r.TypeEntity())
 }
 
 func (r *DerivedReference) Synced() []*Instance {
-	instances := []*Instance{}
-
-	return instances
+	return convertToInstances(r.Value[consts.ARG_SYNC], r.TypeEntity())
 }
 
 func (r *DerivedReference) Cascade() bool {

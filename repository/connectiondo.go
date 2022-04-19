@@ -68,12 +68,6 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := makeSaveValues(instance.Fields)
-	// for _, association := range entity.AllAssociations() {
-	// 	if object[association.Name()] == nil {
-	// 		continue
-	// 	}
-	// }
-
 	result, err := con.Dbx.Exec(saveStr, values...)
 	if err != nil {
 		fmt.Println("Insert data failed:", err.Error())
