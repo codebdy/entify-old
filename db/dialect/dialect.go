@@ -30,6 +30,10 @@ type SQLBuilder interface {
 	BuildQueryAssociatedInstancesSQL(node graph.Noder, ownerId uint64, povitTableName string, ownerFieldName string, typeFieldName string) string
 	BuildDeleteSQL(id uint64, tableName string) string
 	BuildSoftDeleteSQL(id uint64, tableName string) string
+
+	BuildQueryPovitSQL(povit *data.AssociationPovit) string
+	BuildInsertPovitSQL(povit *data.AssociationPovit) string
+	BuildDeletePovitSQL(povit *data.AssociationPovit) string
 }
 
 func GetSQLBuilder() SQLBuilder {

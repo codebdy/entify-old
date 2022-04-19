@@ -172,11 +172,8 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		if r.Cascade() {
 			con.doDeleteInstance(ins)
 		} else {
-			relationInstance := newAssociationPovit(r, ownerId, ins.Id)
-			err := con.doDeleteAssociationPovit(relationInstance)
-			if err != nil {
-				panic(err.Error())
-			}
+			povit := newAssociationPovit(r, ownerId, ins.Id)
+			con.doDeleteAssociationPovit(povit)
 		}
 	}
 
@@ -258,12 +255,30 @@ func (con *Connection) deleteAssociatedInstances(r data.Associationer, ownerId u
 	}
 }
 
-func (con *Connection) doSaveAssociationPovit(povit *data.AssociationPovit) (interface{}, error) {
-	return nil, nil
+func (con *Connection) doSaveAssociationPovit(povit *data.AssociationPovit) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	sql := sqlBuilder.BuildQueryPovitSQL(povit)
+	rows, err := con.Dbx.Query(sql)
+	defer rows.Close()
+	if err != nil {
+		panic(err.Error())
+	}
+	if rows.Next() {
+		sql = sqlBuilder.BuildInsertPovitSQL(povit)
+		_, err := con.Dbx.Exec(sql)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 }
 
-func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) error {
-	return nil
+func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) {
+	sqlBuilder := dialect.GetSQLBuilder()
+	sql := sqlBuilder.BuildDeletePovitSQL(povit)
+	_, err := con.Dbx.Exec(sql)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (con *Connection) doSaveOne(instance *data.Instance) (map[string]interface{}, error) {

@@ -274,6 +274,38 @@ func (b *MySQLBuilder) BuildSoftDeleteSQL(id uint64, tableName string) string {
 	return sql
 }
 
+func (b *MySQLBuilder) BuildQueryPovitSQL(povit *data.AssociationPovit) string {
+	return fmt.Sprintf(
+		"SELECT * FROM `%s` WHERE (`%s` = %d AND `%s` = %d)",
+		povit.Table().Name,
+		povit.Source.Column.Name,
+		povit.Source.Value,
+		povit.Target.Column.Name,
+		povit.Target.Value,
+	)
+}
+func (b *MySQLBuilder) BuildInsertPovitSQL(povit *data.AssociationPovit) string {
+	return fmt.Sprintf(
+		"INSERT INTO `%s`(%s,%s) VALUES(%d, %d)",
+		povit.Table().Name,
+		povit.Source.Column.Name,
+		povit.Target.Column.Name,
+		povit.Source.Value,
+		povit.Target.Value,
+	)
+}
+
+func (b *MySQLBuilder) BuildDeletePovitSQL(povit *data.AssociationPovit) string {
+	return fmt.Sprintf(
+		"DELETE FROM `%s` WHERE (`%s` = %d AND `%s` = %d)",
+		povit.Table().Name,
+		povit.Source.Column.Name,
+		povit.Source.Value,
+		povit.Target.Column.Name,
+		povit.Target.Value,
+	)
+}
+
 func updateSetFields(fields []*data.Field) string {
 	if len(fields) == 0 {
 		panic("No update fields")
