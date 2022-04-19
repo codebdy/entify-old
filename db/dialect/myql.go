@@ -148,11 +148,7 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *table.Table) string {
 	fieldSqls := make([]string, len(table.Columns))
 	for i := range table.Columns {
 		columnSql := b.BuildColumnSQL(table.Columns[i])
-		if table.Columns[i].Nullable {
-			columnSql = columnSql + " NULL"
-		} else {
-			columnSql = columnSql + " NOT NULL"
-		}
+		columnSql = columnSql + nullableString(table.Columns[i].Nullable)
 		fieldSqls[i] = columnSql
 	}
 	for _, column := range table.Columns {
@@ -353,9 +349,10 @@ func (b *MySQLBuilder) appendDeleteColumnAtoms(diff *model.TableDiff, atoms *[]m
 
 func (b *MySQLBuilder) appendAddColumnAtoms(diff *model.TableDiff, atoms *[]model.ModifyAtom) {
 	for _, column := range diff.AddColumns {
+
 		//添加列
 		*atoms = append(*atoms, model.ModifyAtom{
-			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column)),
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s ADD COLUMN  %s %s %s", diff.NewTable.Name, column.Name, b.ColumnTypeSQL(column), nullableString(column.Nullable)),
 			UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  %s ", diff.NewTable.Name, column.Name),
 		})
 		//添加索引
@@ -402,6 +399,24 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *model.TableDiff, atoms *[]m
 				),
 			})
 		}
+		if columnDiff.OldColumn.Nullable != columnDiff.NewColumn.Nullable {
+			*atoms = append(*atoms, model.ModifyAtom{
+				ExcuteSQL: fmt.Sprintf(
+					"ALTER TABLE %s MODIFY  %s %s %s",
+					diff.NewTable.Name,
+					columnDiff.NewColumn.Name,
+					b.ColumnTypeSQL(columnDiff.NewColumn),
+					nullableString(columnDiff.NewColumn.Nullable),
+				),
+				UndoSQL: fmt.Sprintf(
+					"ALTER TABLE %s MODIFY  %s %s %s",
+					diff.NewTable.Name,
+					columnDiff.NewColumn.Name,
+					b.ColumnTypeSQL(columnDiff.OldColumn),
+					nullableString(!columnDiff.NewColumn.Nullable),
+				),
+			})
+		}
 		//添加索引
 		if columnDiff.NewColumn.Index {
 			indexName := columnDiff.NewColumn.Name + consts.INDEX_SUFFIX
@@ -411,4 +426,11 @@ func (b *MySQLBuilder) appendModifyColumnAtoms(diff *model.TableDiff, atoms *[]m
 			})
 		}
 	}
+}
+
+func nullableString(nullable bool) string {
+	if nullable {
+		return " NULL "
+	}
+	return " NOT NULL "
 }
