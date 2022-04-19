@@ -105,7 +105,7 @@ func (r *Reference) Table() *table.Table {
 }
 
 func (r *Reference) IsSource() bool {
-	return r.IsSource()
+	return r.Association.IsSource()
 }
 
 func (r *Reference) OwnerColumn() *table.Column {
@@ -179,7 +179,7 @@ func (r *DerivedReference) Table() *table.Table {
 }
 
 func (r *DerivedReference) IsSource() bool {
-	return r.IsSource()
+	return r.Association.DerivedFrom.IsSource()
 }
 
 func (r *DerivedReference) OwnerColumn() *table.Column {
