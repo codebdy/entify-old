@@ -257,7 +257,7 @@ func (con *Connection) doSaveAssociationPovit(povit *data.AssociationPovit) {
 	if err != nil {
 		panic(err.Error())
 	}
-	if rows.Next() {
+	if !rows.Next() {
 		sql = sqlBuilder.BuildInsertPovitSQL(povit)
 		_, err := con.Dbx.Exec(sql)
 		if err != nil {
