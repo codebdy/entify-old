@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/repository"
 	"rxdrag.com/entity-engine/utils"
@@ -44,8 +45,21 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
+		loadersObj := p.Context.Value(consts.LOADERS)
+		if loadersObj == nil {
+			panic("Data loaders is nil")
+		}
+		loaders := loadersObj.(Loaders)
+		loader := loaders.GetLoader(asso)
+		loader.LoadMany(p.Context)
 		fmt.Println("哈哈", asso)
+		var retValue interface{}
+		if asso.IsArray() {
+			retValue = []map[string]interface{}{}
+		} else {
+			retValue = nil
+		}
 		//err = db.Select(&instances, queryStr)
-		return []map[string]interface{}{}, nil //repository.Query(node, p.Args)
+		return retValue, nil //repository.Query(node, p.Args)
 	}
 }

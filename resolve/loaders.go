@@ -18,14 +18,14 @@ func CreateDataLoaders() *Loaders {
 	}
 }
 
-func (l *Loaders) GetLoader(entity *graph.Entity) *dataloader.Loader {
-	if l.loaders[entity.Name()] == nil {
-		l.loaders[entity.Name()] = dataloader.NewBatchedLoader(QueryBatchFn(entity))
+func (l *Loaders) GetLoader(association *graph.Association) *dataloader.Loader {
+	if l.loaders[association.Path()] == nil {
+		l.loaders[association.Path()] = dataloader.NewBatchedLoader(QueryBatchFn(association))
 	}
-	return l.loaders[entity.Name()]
+	return l.loaders[association.Path()]
 }
 
-func QueryBatchFn(entity *graph.Entity) dataloader.BatchFunc {
+func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		defer utils.PrintErrorStack()
 		var results []*dataloader.Result
