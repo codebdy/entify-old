@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entity-engine/resolve"
 )
 
 func (c *TypeCache) makeRelations() {
@@ -21,6 +22,7 @@ func (c *TypeCache) makeRelations() {
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
+				Resolve:     resolve.QueryAssociationFn(association),
 			})
 		}
 	}
@@ -35,6 +37,7 @@ func (c *TypeCache) makeRelations() {
 				Name:        association.Name(),
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
+				Resolve:     resolve.QueryAssociationFn(association),
 			})
 		}
 	}

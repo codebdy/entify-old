@@ -1,5 +1,7 @@
 package consts
 
+const LOADERS = "loaders"
+
 const (
 	ROOT_QUERY_NAME        = "Query"
 	ROOT_MUTATION_NAME     = "Mutation"
