@@ -28,7 +28,10 @@ func (l *Loaders) GetLoader(association *graph.Association) *dataloader.Loader {
 func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		defer utils.PrintErrorStack()
-		var results []*dataloader.Result
+		results := make([]*dataloader.Result, len(keys))
+		for i := range results {
+			results[i] = &dataloader.Result{}
+		}
 		// handleError := func(err error) []*dataloader.Result {
 		// 	var results []*dataloader.Result
 		// 	var result dataloader.Result
