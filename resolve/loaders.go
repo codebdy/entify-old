@@ -36,7 +36,6 @@ func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
 		// 	results = append(results, &result)
 		// 	return results
 		// }
-
 		return results
 	}
 }

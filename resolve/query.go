@@ -10,6 +10,24 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
+type ResolverKey struct {
+	Key string
+}
+
+func NewResolverKey(id uint64) *ResolverKey {
+	return &ResolverKey{
+		Key: fmt.Sprintf("%d", id),
+	}
+}
+
+func (rk *ResolverKey) String() string {
+	return rk.Key
+}
+
+func (rk *ResolverKey) Raw() interface{} {
+	return rk.Key
+}
+
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
@@ -36,6 +54,14 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 
 func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
+		var (
+			source      = p.Source.(map[string]interface{})
+			v           = p.Context.Value
+			loaders     = v(consts.LOADERS).(*Loaders)
+			handleError = func(err error) error {
+				return fmt.Errorf(err.Error())
+			}
+		)
 		defer utils.PrintErrorStack()
 		// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
 		// 	switch selection := iSelection.(type) {
@@ -45,21 +71,29 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
-		loadersObj := p.Context.Value(consts.LOADERS)
-		if loadersObj == nil {
+		if loaders == nil {
 			panic("Data loaders is nil")
 		}
-		loaders := loadersObj.(Loaders)
 		loader := loaders.GetLoader(asso)
-		loader.LoadMany(p.Context)
+		thunk := loader.Load(p.Context, NewResolverKey(source[consts.ID].(uint64)))
 		fmt.Println("哈哈", asso)
-		var retValue interface{}
-		if asso.IsArray() {
-			retValue = []map[string]interface{}{}
-		} else {
-			retValue = nil
-		}
-		//err = db.Select(&instances, queryStr)
-		return retValue, nil //repository.Query(node, p.Args)
+		return func() (interface{}, error) {
+			data, err := thunk()
+			if err != nil {
+				return nil, handleError(err)
+			}
+
+			var retValue interface{}
+			if data == nil {
+				if asso.IsArray() {
+					retValue = []map[string]interface{}{}
+				} else {
+					retValue = nil
+				}
+			} else {
+				retValue = data
+			}
+			return retValue, nil
+		}, nil
 	}
 }
