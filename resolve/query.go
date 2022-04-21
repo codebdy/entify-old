@@ -10,24 +10,6 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-type ResolverKey struct {
-	Key string
-}
-
-func NewResolverKey(id uint64) *ResolverKey {
-	return &ResolverKey{
-		Key: fmt.Sprintf("%d", id),
-	}
-}
-
-func (rk *ResolverKey) String() string {
-	return rk.Key
-}
-
-func (rk *ResolverKey) Raw() interface{} {
-	return rk.Key
-}
-
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
@@ -75,7 +57,7 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 			panic("Data loaders is nil")
 		}
 		loader := loaders.GetLoader(asso)
-		thunk := loader.Load(p.Context, NewResolverKey(source[consts.ID].(uint64)))
+		thunk := loader.Load(p.Context, NewKey(source[consts.ID].(uint64)))
 		fmt.Println("哈哈", asso)
 		return func() (interface{}, error) {
 			data, err := thunk()

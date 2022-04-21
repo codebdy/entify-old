@@ -123,6 +123,10 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	return instances
 }
 
+func (con *Connection) doBatchQueryAssociations(association *graph.Association, ids []uint64) ([]interface{}, error) {
+
+}
+
 func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()

@@ -122,3 +122,5 @@ const (
 	DISTINCTEXP       string = "DistinctExp"
 	MUTATION_RESPONSE string = "MutationResponse"
 )
+
+const ASSOCIATION_OWNER_ID = "owner__rx__id"

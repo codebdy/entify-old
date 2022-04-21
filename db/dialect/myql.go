@@ -237,13 +237,15 @@ func (b *MySQLBuilder) BuildBatchAssociationSQL(node graph.Noder,
 	ownerFieldName string,
 	typeFieldName string,
 ) string {
-	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
+	queryStr := "select %s, b.%s as %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
 	parms := make([]string, count)
 	for i := range parms {
 		parms[i] = "?"
 	}
 	queryStr = fmt.Sprintf(queryStr,
 		associationFieldSQL(node),
+		ownerFieldName,
+		consts.ASSOCIATION_OWNER_ID,
 		node.Entity().TableName(),
 		povitTableName,
 		typeFieldName,
