@@ -58,7 +58,6 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 		}
 		loader := loaders.GetLoader(asso)
 		thunk := loader.Load(p.Context, NewKey(source[consts.ID].(uint64)))
-		fmt.Println("哈哈", asso)
 		return func() (interface{}, error) {
 			data, err := thunk()
 			if err != nil {

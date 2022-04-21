@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/db/dialect"
@@ -124,15 +125,36 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 }
 
 func (con *Connection) doBatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
-	var instances []map[string]interface{}
+	var (
+		instances []map[string]interface{}
+		sqls      []string
+	)
 	builder := dialect.GetSQLBuilder()
 	entity := association.TypeClass().Entity()
-	queryStr := builder.BuildBatchAssociationSQL(entity,
-		len(ids), association.Relation.Table.Name,
-		association.Owner().TableName(),
-		association.TypeClass().TableName(),
-	)
-	rows, err := con.Dbx.Query(queryStr)
+	fmt.Println("哈哈", association.Relation.Table, association.IsAbstract())
+	if association.IsAbstract() {
+		derivedAssociations := association.DerivedAssociations()
+		for i := range derivedAssociations {
+			derivedAsso := derivedAssociations[i]
+			queryStr := builder.BuildBatchAssociationSQL(entity,
+				len(ids),
+				derivedAsso.Relation.Table.Name,
+				association.Owner().TableName(),
+				association.TypeClass().TableName(),
+			)
+			sqls = append(sqls, queryStr)
+		}
+	} else {
+		queryStr := builder.BuildBatchAssociationSQL(entity,
+			len(ids),
+			association.Relation.Table.Name,
+			association.Owner().TableName(),
+			association.TypeClass().TableName(),
+		)
+		sqls = append(sqls, queryStr)
+	}
+
+	rows, err := con.Dbx.Query(strings.Join(sqls, " UNION "))
 	if err != nil {
 		panic(err.Error())
 	}
