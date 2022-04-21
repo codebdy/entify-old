@@ -232,15 +232,15 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 }
 
 func (b *MySQLBuilder) BuildBatchAssociationSQL(node graph.Noder,
-	count int,
+	ids []uint64,
 	povitTableName string,
 	ownerFieldName string,
 	typeFieldName string,
 ) string {
 	queryStr := "select %s, b.%s as %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
-	parms := make([]string, count)
+	parms := make([]string, len(ids))
 	for i := range parms {
-		parms[i] = "?"
+		parms[i] = fmt.Sprintf("%d", ids[i])
 	}
 	queryStr = fmt.Sprintf(queryStr,
 		associationFieldSQL(node),

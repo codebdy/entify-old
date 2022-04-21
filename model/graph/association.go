@@ -116,6 +116,15 @@ func (d *DerivedAssociation) TypeEntity() *Entity {
 
 }
 
+func (d *DerivedAssociation) Owner() *Entity {
+	if d.Relation.Source.Uuid() == d.OwnerClassUuid {
+		return d.Relation.Source
+	} else {
+		return d.Relation.Target
+	}
+
+}
+
 func (d *DerivedAssociation) Name() string {
 	if d.TypeEntity().Uuid() == d.DerivedFrom.TypeClass().Uuid() {
 		return d.DerivedFrom.Name()

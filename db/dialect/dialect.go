@@ -34,7 +34,7 @@ type SQLBuilder interface {
 		typeFieldName string,
 	) string
 	BuildBatchAssociationSQL(node graph.Noder,
-		count int,
+		ids []uint64,
 		povitTableName string,
 		ownerFieldName string,
 		typeFieldName string,

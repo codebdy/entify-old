@@ -131,22 +131,21 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 	)
 	builder := dialect.GetSQLBuilder()
 	entity := association.TypeClass().Entity()
-	fmt.Println("哈哈", association.Relation.Table, association.IsAbstract())
 	if association.IsAbstract() {
 		derivedAssociations := association.DerivedAssociations()
 		for i := range derivedAssociations {
 			derivedAsso := derivedAssociations[i]
 			queryStr := builder.BuildBatchAssociationSQL(entity,
-				len(ids),
+				ids,
 				derivedAsso.Relation.Table.Name,
-				association.Owner().TableName(),
-				association.TypeClass().TableName(),
+				derivedAsso.Owner().TableName(),
+				derivedAsso.TypeEntity().TableName(),
 			)
 			sqls = append(sqls, queryStr)
 		}
 	} else {
 		queryStr := builder.BuildBatchAssociationSQL(entity,
-			len(ids),
+			ids,
 			association.Relation.Table.Name,
 			association.Owner().TableName(),
 			association.TypeClass().TableName(),
