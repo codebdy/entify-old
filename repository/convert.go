@@ -85,7 +85,8 @@ func makeQueryValues(node graph.Noder) []interface{} {
 func convertValuesToObject(values []interface{}, node graph.Noder) map[string]interface{} {
 	object := make(map[string]interface{})
 	names := node.AllAttributeNames()
-	for i, value := range values {
+	for i := range names {
+		value := values[i]
 		attrName := names[i]
 		column := node.GetAttributeByName(attrName)
 		switch column.Type {

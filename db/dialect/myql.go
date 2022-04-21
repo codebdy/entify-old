@@ -231,7 +231,7 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 	return queryStr
 }
 
-func (b *MySQLBuilder) BuildBatchAssociationSQL(node graph.Noder,
+func (b *MySQLBuilder) BuildBatchAssociationSQL(typeNode graph.Noder,
 	ids []uint64,
 	povitTableName string,
 	ownerFieldName string,
@@ -243,17 +243,16 @@ func (b *MySQLBuilder) BuildBatchAssociationSQL(node graph.Noder,
 		parms[i] = fmt.Sprintf("%d", ids[i])
 	}
 	queryStr = fmt.Sprintf(queryStr,
-		associationFieldSQL(node),
+		associationFieldSQL(typeNode),
 		ownerFieldName,
 		consts.ASSOCIATION_OWNER_ID,
-		node.Entity().TableName(),
+		typeNode.Entity().TableName(),
 		povitTableName,
 		typeFieldName,
 		ownerFieldName,
 		strings.Join(parms, ","),
 	)
 
-	fmt.Println("BuildBatchAssociationSQL:", queryStr)
 	return queryStr
 }
 

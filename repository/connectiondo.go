@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/db"
 	"rxdrag.com/entity-engine/db/dialect"
 	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
@@ -130,12 +131,11 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 		sqls      []string
 	)
 	builder := dialect.GetSQLBuilder()
-	entity := association.TypeClass().Entity()
 	if association.IsAbstract() {
 		derivedAssociations := association.DerivedAssociations()
 		for i := range derivedAssociations {
 			derivedAsso := derivedAssociations[i]
-			queryStr := builder.BuildBatchAssociationSQL(derivedAsso.Owner(),
+			queryStr := builder.BuildBatchAssociationSQL(derivedAsso.TypeEntity(),
 				ids,
 				derivedAsso.Relation.Table.Name,
 				derivedAsso.Owner().TableName(),
@@ -144,7 +144,7 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 			sqls = append(sqls, queryStr)
 		}
 	} else {
-		queryStr := builder.BuildBatchAssociationSQL(entity,
+		queryStr := builder.BuildBatchAssociationSQL(association.TypeClass(),
 			ids,
 			association.Relation.Table.Name,
 			association.Owner().TableName(),
@@ -152,16 +152,22 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 		)
 		sqls = append(sqls, queryStr)
 	}
-
-	rows, err := con.Dbx.Query(strings.Join(sqls, " UNION "))
+	sql := strings.Join(sqls, " UNION ")
+	fmt.Println("doBatchQueryAssociations SQL:" + sql)
+	rows, err := con.Dbx.Query(sql)
 	if err != nil {
 		panic(err.Error())
 	}
 
+	typeClass := association.TypeClass()
 	for rows.Next() {
-		values := makeQueryValues(entity)
+		values := makeQueryValues(typeClass)
+		var idValue db.NullUint64
+		values = append(values, &idValue)
 		err = rows.Scan(values...)
-		instances = append(instances, convertValuesToObject(values, entity))
+		instance := convertValuesToObject(values, typeClass)
+		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1]
+		instances = append(instances, instance)
 	}
 	if err != nil {
 		panic(err.Error())
