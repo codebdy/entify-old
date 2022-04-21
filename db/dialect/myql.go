@@ -210,15 +210,48 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Noder, args map[string]interface
 	return queryStr, params
 }
 
-func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder, ownerId uint64, povitTableName string, ownerFieldName string, typeFieldName string) string {
+func associationFieldSQL(node graph.Noder) string {
 	names := node.AllAttributeNames()
 	for i := range names {
 		names[i] = "a." + names[i]
 	}
+	return strings.Join(names, ",")
+}
+
+func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
+	ownerId uint64,
+	povitTableName string,
+	ownerFieldName string,
+	typeFieldName string,
+) string {
 	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s=%d "
-	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), node.Entity().TableName(), povitTableName, typeFieldName, ownerFieldName, ownerId)
+	queryStr = fmt.Sprintf(queryStr, associationFieldSQL(node), node.Entity().TableName(), povitTableName, typeFieldName, ownerFieldName, ownerId)
 
 	fmt.Println("BuildQueryAssociatedInstancesSQL:", queryStr)
+	return queryStr
+}
+
+func (b *MySQLBuilder) BuildBatchAssociationSQL(node graph.Noder,
+	count int,
+	povitTableName string,
+	ownerFieldName string,
+	typeFieldName string,
+) string {
+	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
+	parms := make([]string, count)
+	for i := range parms {
+		parms[i] = "?"
+	}
+	queryStr = fmt.Sprintf(queryStr,
+		associationFieldSQL(node),
+		node.Entity().TableName(),
+		povitTableName,
+		typeFieldName,
+		ownerFieldName,
+		strings.Join(parms, ","),
+	)
+
+	fmt.Println("BuildBatchAssociationSQL:", queryStr)
 	return queryStr
 }
 
