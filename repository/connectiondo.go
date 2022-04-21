@@ -166,7 +166,7 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 		values = append(values, &idValue)
 		err = rows.Scan(values...)
 		instance := convertValuesToObject(values, typeClass)
-		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1]
+		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
 		instances = append(instances, instance)
 	}
 	if err != nil {
