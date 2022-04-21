@@ -54,10 +54,8 @@ func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
 		for i := range ids {
 			ids[i] = keys[i].Raw().(uint64)
 		}
-		instances, err := repository.BatchQueryAssociations(association, ids)
-		if err != nil {
-			panic(err.Error())
-		}
+		instances := repository.BatchQueryAssociations(association, ids)
+
 		for i := range results {
 			var data interface{}
 			associationInstances := findInstanceFromArray(ids[i], instances)
@@ -81,10 +79,10 @@ func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
 	}
 }
 
-func findInstanceFromArray(id uint64, array []interface{}) []interface{} {
+func findInstanceFromArray(id uint64, array []map[string]interface{}) []interface{} {
 	var instances []interface{}
 	for i, obj := range array {
-		if obj.(map[string]interface{})[consts.ASSOCIATION_OWNER_ID] == id {
+		if obj[consts.ASSOCIATION_OWNER_ID] == id {
 			instances = append(instances, array[i])
 		}
 	}

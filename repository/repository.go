@@ -71,7 +71,7 @@ func InsertOne(instance *data.Instance) (interface{}, error) {
 	return obj, nil
 }
 
-func BatchQueryAssociations(association *graph.Association, ids []uint64) ([]interface{}, error) {
+func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {

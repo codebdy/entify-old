@@ -123,8 +123,30 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	return instances
 }
 
-func (con *Connection) doBatchQueryAssociations(association *graph.Association, ids []uint64) ([]interface{}, error) {
+func (con *Connection) doBatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+	var instances []map[string]interface{}
+	builder := dialect.GetSQLBuilder()
+	entity := association.TypeClass().Entity()
+	queryStr := builder.BuildBatchAssociationSQL(entity,
+		len(ids), association.Relation.Table.Name,
+		association.Owner().TableName(),
+		association.TypeClass().TableName(),
+	)
+	rows, err := con.Dbx.Query(queryStr)
+	if err != nil {
+		panic(err.Error())
+	}
 
+	for rows.Next() {
+		values := makeQueryValues(entity)
+		err = rows.Scan(values...)
+		instances = append(instances, convertValuesToObject(values, entity))
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return instances
 }
 
 func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
