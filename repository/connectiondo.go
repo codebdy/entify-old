@@ -135,7 +135,7 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 		derivedAssociations := association.DerivedAssociations()
 		for i := range derivedAssociations {
 			derivedAsso := derivedAssociations[i]
-			queryStr := builder.BuildBatchAssociationSQL(entity,
+			queryStr := builder.BuildBatchAssociationSQL(derivedAsso.Owner(),
 				ids,
 				derivedAsso.Relation.Table.Name,
 				derivedAsso.Owner().TableName(),
