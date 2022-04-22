@@ -12,6 +12,7 @@ var Cache TypeCache
 
 type TypeCache struct {
 	ObjectTypeMap        map[string]*graphql.Object
+	ObjectMapById        map[uint64]*graphql.Object
 	EnumTypeMap          map[string]*graphql.Enum
 	InterfaceTypeMap     map[string]*graphql.Interface
 	UpdateInputMap       map[string]*graphql.InputObject
@@ -64,6 +65,10 @@ func (c *TypeCache) OutputType(name string) graphql.Type {
 	return obj
 }
 
+func (c *TypeCache) GetEntityTypeByInnerId(id uint64) *graphql.Object {
+	return c.ObjectMapById[id]
+}
+
 func (c *TypeCache) EnumType(name string) graphql.Type {
 	return c.EnumTypeMap[name]
 }
@@ -109,6 +114,7 @@ func (c *TypeCache) mapInterfaces(entities []*graph.Interface) []*graphql.Interf
 
 func (c *TypeCache) clearCache() {
 	c.ObjectTypeMap = make(map[string]*graphql.Object)
+	c.ObjectMapById = make(map[uint64]*graphql.Object)
 	c.EnumTypeMap = make(map[string]*graphql.Enum)
 	c.InterfaceTypeMap = make(map[string]*graphql.Interface)
 	c.UpdateInputMap = make(map[string]*graphql.InputObject)

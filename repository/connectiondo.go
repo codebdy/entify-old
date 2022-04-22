@@ -153,7 +153,6 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 		sqls = append(sqls, queryStr)
 	}
 	sql := strings.Join(sqls, " UNION ")
-	fmt.Println("doBatchQueryAssociations SQL:" + sql)
 	rows, err := con.Dbx.Query(sql)
 	if err != nil {
 		panic(err.Error())

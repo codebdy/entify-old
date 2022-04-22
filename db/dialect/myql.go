@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"rxdrag.com/entity-engine/config"
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/data"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/model/meta"
 	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entity-engine/utils"
 )
 
 type MySQLBuilder struct {
@@ -169,7 +169,7 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *table.Table) string {
 	fmt.Println("Create table sql:", sql)
 
 	if table.EntityInnerId > 0 {
-		sql = sql + fmt.Sprintf(" AUTO_INCREMENT = %d", config.SERVICE_ID<<52+table.EntityInnerId<<32)
+		sql = sql + fmt.Sprintf(" AUTO_INCREMENT = %d", utils.EncodeBaseId(table.EntityInnerId))
 	}
 	return sql
 }

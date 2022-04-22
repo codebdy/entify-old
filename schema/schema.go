@@ -44,7 +44,6 @@ func ResolveSchema() *graphql.Schema {
 }
 
 func init() {
-
 	LoadModel()
 	MakeSchema()
 }

@@ -8,7 +8,9 @@ import (
 func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
 	for i := range nodes {
 		entity := nodes[i]
-		c.ObjectTypeMap[entity.Name()] = c.ObjectType(entity)
+		objType := c.ObjectType(entity)
+		c.ObjectTypeMap[entity.Name()] = objType
+		c.ObjectMapById[entity.InnerId()] = objType
 	}
 }
 

@@ -42,7 +42,6 @@ func ExcuteDiff(d *model.Diff) {
 			panic("Modify table error:" + err.Error())
 		}
 	}
-
 }
 
 func DeleteTable(table *table.Table, undoList *[]string, dbx *db.Dbx) error {
