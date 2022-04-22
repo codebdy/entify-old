@@ -29,6 +29,7 @@ func MakeSchema() {
 				Locations: []string{graphql.DirectiveLocationField},
 			}),
 		},
+		Types: Cache.EntityTypes(),
 	}
 	theSchema, err := graphql.NewSchema(schemaConfig)
 

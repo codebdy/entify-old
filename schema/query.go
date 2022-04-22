@@ -24,7 +24,10 @@ var serviceNodeType = graphql.NewObject(
 
 func rootQuery() *graphql.Object {
 
-	rootQueryConfig := graphql.ObjectConfig{Name: consts.ROOT_QUERY_NAME, Fields: queryFields()}
+	rootQueryConfig := graphql.ObjectConfig{
+		Name:   consts.ROOT_QUERY_NAME,
+		Fields: queryFields(),
+	}
 
 	return graphql.NewObject(rootQueryConfig)
 }

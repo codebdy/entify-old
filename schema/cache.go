@@ -69,6 +69,15 @@ func (c *TypeCache) GetEntityTypeByInnerId(id uint64) *graphql.Object {
 	return c.ObjectMapById[id]
 }
 
+func (c *TypeCache) EntityTypes() []graphql.Type {
+	objs := []graphql.Type{}
+	for key := range c.ObjectTypeMap {
+		objs = append(objs, c.ObjectTypeMap[key])
+	}
+
+	return objs
+}
+
 func (c *TypeCache) EnumType(name string) graphql.Type {
 	return c.EnumTypeMap[name]
 }
