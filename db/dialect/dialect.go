@@ -26,6 +26,7 @@ type SQLBuilder interface {
 	BuildInsertSQL(fields []*data.Field, table *table.Table) string
 	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string
 
+	BuildQueryByIdsSQL(entity *graph.Entity, idCounts int) string
 	BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string
 	BuildQueryAssociatedInstancesSQL(node graph.Noder,
 		ownerId uint64,

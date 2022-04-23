@@ -12,6 +12,8 @@ import (
 	"rxdrag.com/entity-engine/model/graph"
 )
 
+type InsanceData = map[string]interface{}
+
 func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(node, args)
@@ -35,7 +37,7 @@ func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface
 	return instances, nil
 }
 
-func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (map[string]interface{}, error) {
+func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (InsanceData, error) {
 	return con.doQueryOne(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -45,7 +47,7 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (map[strin
 	})
 }
 
-func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (map[string]interface{}, error) {
+func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (InsanceData, error) {
 
 	builder := dialect.GetSQLBuilder()
 
@@ -66,7 +68,7 @@ func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{})
 	return convertValuesToObject(values, node), nil
 }
 
-func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interface{}, error) {
+func (con *Connection) doInsertOne(instance *data.Instance) (InsanceData, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := makeSaveValues(instance.Fields)
@@ -103,8 +105,8 @@ func (con *Connection) doInsertOne(instance *data.Instance) (map[string]interfac
 	return savedObject, nil
 }
 
-func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId uint64) []map[string]interface{} {
-	var instances []map[string]interface{}
+func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId uint64) []InsanceData {
+	var instances []InsanceData
 	builder := dialect.GetSQLBuilder()
 	entity := r.TypeEntity()
 	queryStr := builder.BuildQueryAssociatedInstancesSQL(entity, ownerId, r.Table().Name, r.OwnerColumn().Name, r.TypeColumn().Name)
@@ -125,10 +127,9 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	return instances
 }
 
-func (con *Connection) doBatchRealAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
-	var (
-		instances []map[string]interface{}
-	)
+func (con *Connection) doBatchRealAssociations(association *graph.Association, ids []uint64) []InsanceData {
+	var instances []map[string]interface{}
+
 	builder := dialect.GetSQLBuilder()
 	typeClass := association.TypeClass()
 	queryStr := builder.BuildBatchAssociationSQL(association.TypeClass().TableName(),
@@ -159,9 +160,28 @@ func (con *Connection) doBatchRealAssociations(association *graph.Association, i
 	return instances
 }
 
-func (con *Connection) doBatchAbstractRealAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+func (con *Connection) doQueryByIds(entity *graph.Entity, ids []interface{}) []InsanceData {
+	var instances []map[string]interface{}
+	builder := dialect.GetSQLBuilder()
+	sql := builder.BuildQueryByIdsSQL(entity, len(ids))
+	rows, err := con.Dbx.Query(sql, ids...)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		values := makeQueryValues(entity)
+		err = rows.Scan(values...)
+		instances = append(instances, convertValuesToObject(values, entity))
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+	return instances
+}
+
+func (con *Connection) doBatchAbstractRealAssociations(association *graph.Association, ids []uint64) []InsanceData {
 	var (
-		instances []map[string]interface{}
+		instances []InsanceData
 		sqls      []string
 	)
 	builder := dialect.GetSQLBuilder()
@@ -198,10 +218,34 @@ func (con *Connection) doBatchAbstractRealAssociations(association *graph.Associ
 		panic(err.Error())
 	}
 
+	instancesIds := make([]interface{}, len(instances))
+	for i := range instances {
+		instancesIds[i] = instances[i][consts.ID]
+	}
+
+	for i := range derivedAssociations {
+		derivedAsso := derivedAssociations[i]
+		oneEntityInstances := con.doQueryByIds(derivedAsso.TypeEntity(), instancesIds)
+		merageInstances(instances, oneEntityInstances)
+	}
+
 	return instances
 }
 
-func (con *Connection) doBatchAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+func merageInstances(source []InsanceData, target []InsanceData) {
+	for i := range source {
+		souceObj := source[i]
+		for j := range target {
+			targetObj := target[j]
+			if souceObj[consts.ID] == targetObj[consts.ID] {
+				targetObj[consts.ASSOCIATION_OWNER_ID] = souceObj[consts.ASSOCIATION_OWNER_ID]
+				source[i] = targetObj
+			}
+		}
+	}
+}
+
+func (con *Connection) doBatchAssociations(association *graph.Association, ids []uint64) []InsanceData {
 	if association.IsAbstract() {
 		return con.doBatchAbstractRealAssociations(association, ids)
 	} else {
@@ -209,7 +253,7 @@ func (con *Connection) doBatchAssociations(association *graph.Association, ids [
 	}
 }
 
-func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
+func (con *Connection) doUpdateOne(instance *data.Instance) (InsanceData, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
@@ -361,7 +405,7 @@ func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) {
 	}
 }
 
-func (con *Connection) doSaveOne(instance *data.Instance) (map[string]interface{}, error) {
+func (con *Connection) doSaveOne(instance *data.Instance) (InsanceData, error) {
 	if instance.IsInsert() {
 		return con.doInsertOne(instance)
 	} else {

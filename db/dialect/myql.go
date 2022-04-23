@@ -218,6 +218,24 @@ func associationFieldSQL(node graph.Noder) string {
 	return strings.Join(names, ",")
 }
 
+func (b *MySQLBuilder) BuildQueryByIdsSQL(entity *graph.Entity, idCounts int) string {
+	parms := make([]string, idCounts)
+
+	for i := range parms {
+		parms[i] = "?"
+	}
+	queryStr := "select %s from %s WHERE id in(%s) "
+	names := entity.AllAttributeNames()
+	queryStr = fmt.Sprintf(queryStr,
+		strings.Join(names, ","),
+		entity.TableName(),
+		strings.Join(parms, ","),
+	)
+
+	fmt.Println("BuildQueryByIdsSQL:", queryStr)
+	return queryStr
+}
+
 func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 	ownerId uint64,
 	povitTableName string,
@@ -225,7 +243,13 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 	typeFieldName string,
 ) string {
 	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s=%d "
-	queryStr = fmt.Sprintf(queryStr, associationFieldSQL(node), node.Entity().TableName(), povitTableName, typeFieldName, ownerFieldName, ownerId)
+	queryStr = fmt.Sprintf(queryStr,
+		associationFieldSQL(node),
+		node.Entity().TableName(),
+		povitTableName,
+		typeFieldName,
+		ownerFieldName,
+		ownerId)
 
 	fmt.Println("BuildQueryAssociatedInstancesSQL:", queryStr)
 	return queryStr
