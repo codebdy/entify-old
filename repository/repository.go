@@ -77,5 +77,5 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doBatchQueryAssociations(association, ids)
+	return con.doBatchAssociations(association, ids)
 }

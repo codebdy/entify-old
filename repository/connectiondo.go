@@ -125,33 +125,57 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	return instances
 }
 
-func (con *Connection) doBatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+func (con *Connection) doBatchRealAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+	var (
+		instances []map[string]interface{}
+	)
+	builder := dialect.GetSQLBuilder()
+	typeClass := association.TypeClass()
+	queryStr := builder.BuildBatchAssociationSQL(association.TypeClass().TableName(),
+		typeClass.AllAttributes(),
+		ids,
+		association.Relation.Table.Name,
+		association.Owner().TableName(),
+		association.TypeClass().TableName(),
+	)
+	rows, err := con.Dbx.Query(queryStr)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for rows.Next() {
+		values := makeQueryValues(typeClass)
+		var idValue db.NullUint64
+		values = append(values, &idValue)
+		err = rows.Scan(values...)
+		instance := convertValuesToObject(values, typeClass)
+		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
+		instances = append(instances, instance)
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return instances
+}
+
+func (con *Connection) doBatchAbstractRealAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
 	var (
 		instances []map[string]interface{}
 		sqls      []string
 	)
 	builder := dialect.GetSQLBuilder()
 	abstractTypeClass := association.TypeClass()
-	if association.IsAbstract() {
-		derivedAssociations := association.DerivedAssociations()
-		for i := range derivedAssociations {
-			derivedAsso := derivedAssociations[i]
-			queryStr := builder.BuildBatchAssociationSQL(derivedAsso.TypeEntity().TableName(),
-				abstractTypeClass.AllAttributes(),
-				ids,
-				derivedAsso.Relation.Table.Name,
-				derivedAsso.Owner().TableName(),
-				derivedAsso.TypeEntity().TableName(),
-			)
-			sqls = append(sqls, queryStr)
-		}
-	} else {
-		queryStr := builder.BuildBatchAssociationSQL(association.TypeClass().TableName(),
+
+	derivedAssociations := association.DerivedAssociations()
+	for i := range derivedAssociations {
+		derivedAsso := derivedAssociations[i]
+		queryStr := builder.BuildBatchAssociationSQL(derivedAsso.TypeEntity().TableName(),
 			abstractTypeClass.AllAttributes(),
 			ids,
-			association.Relation.Table.Name,
-			association.Owner().TableName(),
-			association.TypeClass().TableName(),
+			derivedAsso.Relation.Table.Name,
+			derivedAsso.Owner().TableName(),
+			derivedAsso.TypeEntity().TableName(),
 		)
 		sqls = append(sqls, queryStr)
 	}
@@ -175,6 +199,14 @@ func (con *Connection) doBatchQueryAssociations(association *graph.Association, 
 	}
 
 	return instances
+}
+
+func (con *Connection) doBatchAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
+	if association.IsAbstract() {
+		return con.doBatchAbstractRealAssociations(association, ids)
+	} else {
+		return con.doBatchRealAssociations(association, ids)
+	}
 }
 
 func (con *Connection) doUpdateOne(instance *data.Instance) (map[string]interface{}, error) {
