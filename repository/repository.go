@@ -7,7 +7,7 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func Query(node graph.Noder, args map[string]interface{}) []interface{} {
+func Query(node graph.Noder, args map[string]interface{}) []InsanceData {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {

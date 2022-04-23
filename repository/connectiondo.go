@@ -14,7 +14,7 @@ import (
 
 type InsanceData = map[string]interface{}
 
-func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []interface{} {
+func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []InsanceData {
 	var (
 		sqls       []string
 		paramsList []interface{}
@@ -30,7 +30,7 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	if err != nil {
 		panic(err.Error())
 	}
-	var instances []interface{}
+	var instances []InsanceData
 	for rows.Next() {
 		values := makeQueryValues(intf)
 		err = rows.Scan(values...)
@@ -40,17 +40,28 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 		panic(err.Error())
 	}
 
+	instancesIds := make([]interface{}, len(instances))
+	for i := range instances {
+		instancesIds[i] = instances[i][consts.ID]
+	}
+
+	for i := range intf.Children {
+		child := intf.Children[i]
+		oneEntityInstances := con.doQueryByIds(child, instancesIds)
+		merageInstances(instances, oneEntityInstances)
+	}
+
 	return instances
 }
 
-func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []interface{} {
+func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(entity.TableName(), entity.AllAttributes(), args)
 	rows, err := con.Dbx.Query(queryStr, params...)
 	if err != nil {
 		panic(err.Error())
 	}
-	var instances []interface{}
+	var instances []InsanceData
 	for rows.Next() {
 		values := makeQueryValues(entity)
 		err = rows.Scan(values...)
@@ -63,7 +74,7 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	return instances
 }
 
-func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []interface{} {
+func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []InsanceData {
 	if node.IsInterface() {
 		return con.doQueryInterface(node.Interface(), args)
 	} else {
