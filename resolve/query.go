@@ -30,7 +30,7 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// }
 
 		//err = db.Select(&instances, queryStr)
-		return repository.Query(node, p.Args)
+		return repository.Query(node, p.Args), nil
 	}
 }
 

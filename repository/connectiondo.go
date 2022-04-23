@@ -14,13 +14,14 @@ import (
 
 type InsanceData = map[string]interface{}
 
-func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
+// func (con *Connection) doQueryInterface()
+
+func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []interface{} {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(node, args)
 	rows, err := con.Dbx.Query(queryStr, params...)
 	if err != nil {
-		fmt.Println(err)
-		return nil, err
+		panic(err.Error())
 	}
 	var instances []interface{}
 	for rows.Next() {
@@ -29,12 +30,11 @@ func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}
 		instances = append(instances, convertValuesToObject(values, node))
 	}
 	if err != nil {
-		fmt.Println(err)
-		return nil, err
+		panic(err.Error())
 	}
 
 	//fmt.Println(p.Context.Value("data"))
-	return instances, nil
+	return instances
 }
 
 func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (InsanceData, error) {
