@@ -32,7 +32,7 @@ func (e *Entity) hasInterfaceWithSameName() bool {
 	return e.Domain.HasChildren()
 }
 
-func (e *Entity) isInterface() bool {
+func (e *Entity) IsInterface() bool {
 	return false
 }
 func (e *Entity) Interface() *Interface {

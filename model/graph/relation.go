@@ -50,7 +50,7 @@ func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
 }
 
 func (r *Relation) IsRealRelation() bool {
-	if r.Source.isInterface() || r.Target.isInterface() {
+	if r.Source.IsInterface() || r.Target.IsInterface() {
 		return false
 	}
 

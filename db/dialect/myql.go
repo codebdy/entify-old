@@ -193,11 +193,14 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
-func (b *MySQLBuilder) BuildQuerySQL(node graph.Noder, args map[string]interface{}) (string, []interface{}) {
+func (b *MySQLBuilder) BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
-	names := node.AllAttributeNames()
+	names := make([]string, len(fields))
+	for i := range fields {
+		names[i] = fields[i].Name
+	}
 	queryStr := "select %s from %s WHERE true "
-	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), node.Entity().TableName())
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), tableName)
 	if args[consts.ARG_WHERE] != nil {
 		whereStr, whereParams := b.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))
 		queryStr = queryStr + " " + whereStr

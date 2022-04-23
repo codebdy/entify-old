@@ -6,7 +6,7 @@ type Noder interface {
 	Name() string
 	TableName() string
 	Description() string
-	isInterface() bool
+	IsInterface() bool
 	Interface() *Interface
 	Entity() *Entity
 	AddAssociation(a *Association)

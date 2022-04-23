@@ -14,27 +14,61 @@ import (
 
 type InsanceData = map[string]interface{}
 
-// func (con *Connection) doQueryInterface()
-
-func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []interface{} {
+func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []interface{} {
+	var (
+		sqls       []string
+		paramsList []interface{}
+	)
 	builder := dialect.GetSQLBuilder()
-	queryStr, params := builder.BuildQuerySQL(node, args)
+	for i := range intf.Children {
+		child := intf.Children[i]
+		queryStr, params := builder.BuildQuerySQL(child.TableName(), intf.AllAttributes(), args)
+		sqls = append(sqls, queryStr)
+		paramsList = append(paramsList, params...)
+	}
+	rows, err := con.Dbx.Query(strings.Join(sqls, " UNION "), paramsList...)
+	if err != nil {
+		panic(err.Error())
+	}
+	var instances []interface{}
+	for rows.Next() {
+		values := makeQueryValues(intf)
+		err = rows.Scan(values...)
+		instances = append(instances, convertValuesToObject(values, intf))
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return instances
+}
+
+func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []interface{} {
+	builder := dialect.GetSQLBuilder()
+	queryStr, params := builder.BuildQuerySQL(entity.TableName(), entity.AllAttributes(), args)
 	rows, err := con.Dbx.Query(queryStr, params...)
 	if err != nil {
 		panic(err.Error())
 	}
 	var instances []interface{}
 	for rows.Next() {
-		values := makeQueryValues(node)
+		values := makeQueryValues(entity)
 		err = rows.Scan(values...)
-		instances = append(instances, convertValuesToObject(values, node))
+		instances = append(instances, convertValuesToObject(values, entity))
 	}
 	if err != nil {
 		panic(err.Error())
 	}
 
-	//fmt.Println(p.Context.Value("data"))
 	return instances
+}
+
+func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []interface{} {
+	if node.IsInterface() {
+		return con.doQueryInterface(node.Interface(), args)
+	} else {
+		return con.doQueryEntity(node.Entity(), args)
+	}
 }
 
 func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (InsanceData, error) {
@@ -51,7 +85,7 @@ func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{})
 
 	builder := dialect.GetSQLBuilder()
 
-	queryStr, params := builder.BuildQuerySQL(node, args)
+	queryStr, params := builder.BuildQuerySQL(node.TableName(), node.AllAttributes(), args)
 
 	values := makeQueryValues(node)
 	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)

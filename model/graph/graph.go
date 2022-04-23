@@ -92,15 +92,15 @@ func New(m *domain.Model) *Model {
 		sourceEntities := []*Entity{}
 		targetEntities := []*Entity{}
 
-		if source.isInterface() {
+		if source.IsInterface() {
 			sourceEntities = append(sourceEntities, source.Interface().Children...)
-		} else if target.isInterface() {
+		} else if target.IsInterface() {
 			sourceEntities = append(sourceEntities, source.Entity())
 		}
 
-		if target.isInterface() {
+		if target.IsInterface() {
 			targetEntities = append(targetEntities, target.Interface().Children...)
-		} else if source.isInterface() {
+		} else if source.IsInterface() {
 			targetEntities = append(targetEntities, target.Entity())
 		}
 

@@ -14,7 +14,7 @@ func NewInterface(c *domain.Class) *Interface {
 	}
 }
 
-func (f *Interface) isInterface() bool {
+func (f *Interface) IsInterface() bool {
 	return true
 }
 func (f *Interface) Interface() *Interface {
