@@ -82,8 +82,8 @@ func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}
 	}
 }
 
-func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (InsanceData, error) {
-	return con.doQueryOne(node, QueryArg{
+func (con *Connection) QueryOneById(node graph.Noder, id interface{}) InsanceData {
+	return con.doQueryOneNode(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
 				consts.AEG_EQ: id,
@@ -91,26 +91,66 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) (InsanceDa
 		},
 	})
 }
+func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) InsanceData {
+	var (
+		sqls       []string
+		paramsList []interface{}
+	)
+	builder := dialect.GetSQLBuilder()
+	for i := range intf.Children {
+		child := intf.Children[i]
+		queryStr, params := builder.BuildQuerySQL(child.TableName(), intf.AllAttributes(), args)
+		sqls = append(sqls, queryStr)
+		paramsList = append(paramsList, params...)
+	}
 
-func (con *Connection) doQueryOne(node graph.Noder, args map[string]interface{}) (InsanceData, error) {
+	values := makeQueryValues(intf)
+	err := con.Dbx.QueryRow(strings.Join(sqls, " UNION "), paramsList...).Scan(values...)
 
+	switch {
+	case err == sql.ErrNoRows:
+		return nil
+	case err != nil:
+		panic(err.Error())
+	}
+
+	instance := convertValuesToObject(values, intf)
+	for i := range intf.Children {
+		child := intf.Children[i]
+		oneEntityInstances := con.doQueryByIds(child, []interface{}{instance[consts.ID]})
+		if len(oneEntityInstances) > 0 {
+			return oneEntityInstances[0]
+		}
+	}
+	return nil
+}
+
+func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) InsanceData {
 	builder := dialect.GetSQLBuilder()
 
-	queryStr, params := builder.BuildQuerySQL(node.TableName(), node.AllAttributes(), args)
+	queryStr, params := builder.BuildQuerySQL(entity.TableName(), entity.AllAttributes(), args)
 
-	values := makeQueryValues(node)
+	values := makeQueryValues(entity)
 	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)
 
 	switch {
 	case err == sql.ErrNoRows:
-		return nil, nil
+		return nil
 	case err != nil:
-		fmt.Println(err)
-		return nil, err
+		panic(err.Error())
 	}
 
-	fmt.Println("Query one entity:" + node.Name())
-	return convertValuesToObject(values, node), nil
+	fmt.Println("Query one entity:" + entity.Name())
+	return convertValuesToObject(values, entity)
+}
+
+func (con *Connection) doQueryOneNode(node graph.Noder, args map[string]interface{}) InsanceData {
+
+	if node.IsInterface() {
+		return con.doQueryOneInterface(node.Interface(), args)
+	} else {
+		return con.doQueryOneEntity(node.Entity(), args)
+	}
 }
 
 func (con *Connection) doInsertOne(instance *data.Instance) (InsanceData, error) {
@@ -136,11 +176,8 @@ func (con *Connection) doInsertOne(instance *data.Instance) (InsanceData, error)
 		}
 	}
 
-	savedObject, err := con.QueryOneById(instance.Entity, id)
-	if err != nil {
-		fmt.Println("QueryOneById failed:", err.Error())
-		return nil, err
-	}
+	savedObject := con.QueryOneById(instance.Entity, id)
+
 	//affectedRows, err := result.RowsAffected()
 	if err != nil {
 		fmt.Println("RowsAffected failed:", err.Error())
@@ -315,12 +352,8 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (InsanceData, error)
 		con.doSaveAssociation(ref, instance.Id)
 	}
 
-	savedObject, err := con.QueryOneById(instance.Entity, instance.Id)
+	savedObject := con.QueryOneById(instance.Entity, instance.Id)
 
-	if err != nil {
-		fmt.Println("QueryOneById failed:", err.Error())
-		return nil, err
-	}
 	return savedObject, nil
 }
 

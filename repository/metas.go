@@ -9,32 +9,25 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
+	publishedMeta := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})
-	if err != nil {
-		panic("Read published meta error" + err.Error())
-	}
 
 	return publishedMeta
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
+	nextMeta := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,
 			},
 		},
 	})
-	if err != nil {
-		panic("Read next meta error" + err.Error())
-	}
-
 	return nextMeta
 }
 

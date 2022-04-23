@@ -11,31 +11,25 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta, err := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
+	publishedMeta := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})
-	if err != nil {
-		panic("Read published meta error" + err.Error())
-	}
 
 	return publishedMeta
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta, err := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
+	nextMeta := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_ISNULL: true,
 			},
 		},
 	})
-	if err != nil {
-		panic("Read next meta error" + err.Error())
-	}
 
 	return nextMeta
 }

@@ -16,13 +16,13 @@ func Query(node graph.Noder, args map[string]interface{}) []InsanceData {
 	return con.doQueryNode(node, args)
 }
 
-func QueryOne(node graph.Noder, args map[string]interface{}) (interface{}, error) {
+func QueryOne(node graph.Noder, args map[string]interface{}) interface{} {
 	con, err := Open()
 	defer con.Close()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOne(node, args)
+	return con.doQueryOneNode(node, args)
 }
 
 func SaveOne(instance *data.Instance) (interface{}, error) {
