@@ -6,7 +6,8 @@ import (
 )
 
 type Connection struct {
-	Dbx *db.Dbx
+	idSeed int //use for sql join table
+	Dbx    *db.Dbx
 }
 
 func Open() (*Connection, error) {
@@ -15,7 +16,8 @@ func Open() (*Connection, error) {
 		return nil, err
 	}
 	con := Connection{
-		Dbx: dbx,
+		idSeed: 1,
+		Dbx:    dbx,
 	}
 	return &con, err
 }
@@ -34,4 +36,10 @@ func (c *Connection) Commit() error {
 
 func (c *Connection) ClearTx() {
 	c.Dbx.ClearTx()
+}
+
+//use for sql join table
+func (c *Connection) createId() int {
+	c.idSeed++
+	return c.idSeed
 }
