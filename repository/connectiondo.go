@@ -14,7 +14,7 @@ import (
 
 type InsanceData = map[string]interface{}
 
-func (con *Connection) doQueryEntity(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
+func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) ([]interface{}, error) {
 	builder := dialect.GetSQLBuilder()
 	queryStr, params := builder.BuildQuerySQL(node, args)
 	rows, err := con.Dbx.Query(queryStr, params...)

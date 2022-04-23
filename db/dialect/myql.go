@@ -197,7 +197,6 @@ func (b *MySQLBuilder) BuildQuerySQL(node graph.Noder, args map[string]interface
 	var params []interface{}
 	names := node.AllAttributeNames()
 	queryStr := "select %s from %s WHERE true "
-	//@@@@尚未处理接口的情况
 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), node.Entity().TableName())
 	if args[consts.ARG_WHERE] != nil {
 		whereStr, whereParams := b.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))

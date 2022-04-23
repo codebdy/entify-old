@@ -13,7 +13,7 @@ func Query(node graph.Noder, args map[string]interface{}) ([]interface{}, error)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryEntity(node, args)
+	return con.doQueryNode(node, args)
 }
 
 func QueryOne(node graph.Noder, args map[string]interface{}) (interface{}, error) {
