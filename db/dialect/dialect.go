@@ -33,7 +33,9 @@ type SQLBuilder interface {
 		ownerFieldName string,
 		typeFieldName string,
 	) string
-	BuildBatchAssociationSQL(node graph.Noder,
+	BuildBatchAssociationSQL(
+		tableName string,
+		fields []*graph.Attribute,
 		ids []uint64,
 		povitTableName string,
 		ownerFieldName string,

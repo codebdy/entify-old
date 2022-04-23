@@ -231,7 +231,8 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 	return queryStr
 }
 
-func (b *MySQLBuilder) BuildBatchAssociationSQL(typeNode graph.Noder,
+func (b *MySQLBuilder) BuildBatchAssociationSQL(tableName string,
+	fields []*graph.Attribute,
 	ids []uint64,
 	povitTableName string,
 	ownerFieldName string,
@@ -239,14 +240,19 @@ func (b *MySQLBuilder) BuildBatchAssociationSQL(typeNode graph.Noder,
 ) string {
 	queryStr := "select %s, b.%s as %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
 	parms := make([]string, len(ids))
+	names := make([]string, len(fields))
 	for i := range parms {
 		parms[i] = fmt.Sprintf("%d", ids[i])
 	}
+	for i := range fields {
+		names[i] = "a." + fields[i].Name
+	}
+
 	queryStr = fmt.Sprintf(queryStr,
-		associationFieldSQL(typeNode),
+		strings.Join(names, ","),
 		ownerFieldName,
 		consts.ASSOCIATION_OWNER_ID,
-		typeNode.Entity().TableName(),
+		tableName,
 		povitTableName,
 		typeFieldName,
 		ownerFieldName,
