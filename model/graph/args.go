@@ -1,48 +1,49 @@
-package repository
+package graph
 
-import (
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/graph"
-)
+import "rxdrag.com/entity-engine/consts"
 
-//path Entity Map
+type QueryArg = map[string]interface{}
+
+type Ider interface {
+	createId() int
+}
 
 type ArgAssociation struct {
-	association *graph.Association
+	association *Association
 	argClass    *ArgClass
 }
 
 type ArgEntity struct {
 	id     int
-	entity *graph.Entity
+	entity *Entity
 }
 
 type ArgClass struct {
-	noder        graph.Noder
+	noder        Noder
 	associations []*ArgAssociation
-	con          *Connection
+	ider         Ider
 	children     []*ArgEntity
 }
 
-func (con *Connection) NewArgClass(noder graph.Noder) *ArgClass {
+func NewArgClass(noder Noder, ider Ider) *ArgClass {
 	var entities []*ArgEntity
 	if noder.IsInterface() {
 		children := noder.Interface().Children
 		for i := range children {
 			entities = append(entities, &ArgEntity{
-				id:     con.createId(),
+				id:     ider.createId(),
 				entity: children[i],
 			})
 		}
 	} else {
 		entities = append(entities, &ArgEntity{
-			id:     con.createId(),
+			id:     ider.createId(),
 			entity: noder.Entity(),
 		})
 	}
 	return &ArgClass{
 		noder:    noder,
-		con:      con,
+		ider:     ider,
 		children: entities,
 	}
 }
@@ -58,7 +59,7 @@ func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
 		if allAssociations[i].Name() == name {
 			asso := &ArgAssociation{
 				association: allAssociations[i],
-				argClass:    a.con.NewArgClass(allAssociations[i].TypeClass()),
+				argClass:    NewArgClass(allAssociations[i].TypeClass(), a.ider),
 			}
 
 			a.associations = append(a.associations, asso)
@@ -69,8 +70,8 @@ func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
 	panic("Can not find entity association:" + a.noder.Name() + "." + name)
 }
 
-func (con *Connection) buildWhereNodes(noder graph.Noder, where QueryArg) *ArgClass {
-	rootClass := con.NewArgClass(noder)
+func buildWhereNodes(noder Noder, where QueryArg, ider Ider) *ArgClass {
+	rootClass := NewArgClass(noder, ider)
 	if where == nil {
 		buildWhereClass(rootClass, where)
 	}
