@@ -10,6 +10,7 @@ type Noder interface {
 	Interface() *Interface
 	Entity() *Entity
 	AddAssociation(a *Association)
+	GetAssociationByName(name string) *Association
 	//Attributes() []*Attribute
 	AllAssociations() []*Association
 	AllAttributes() []*Attribute

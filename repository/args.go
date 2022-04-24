@@ -1,6 +1,9 @@
 package repository
 
-import "rxdrag.com/entity-engine/model/graph"
+import (
+	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entity-engine/model/graph"
+)
 
 //path Entity Map
 
@@ -68,6 +71,29 @@ func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
 
 func (con *Connection) buildWhereNodes(noder graph.Noder, where QueryArg) *ArgClass {
 	rootClass := con.NewArgClass(noder)
-
+	if where == nil {
+		buildWhereClass(rootClass, where)
+	}
 	return rootClass
+}
+
+func buildWhereClass(cls *ArgClass, where QueryArg) {
+	for key, value := range where {
+		switch key {
+		case consts.ARG_AND, consts.ARG_NOT, consts.ARG_OR:
+			if subWhere, ok := value.(QueryArg); ok {
+				buildWhereClass(cls, subWhere)
+			}
+			break
+		default:
+			association := cls.noder.GetAssociationByName(key)
+			if association != nil {
+				argAssociation := cls.GetWithMakeAssociation(key)
+				if subWhere, ok := value.(QueryArg); ok {
+					buildWhereClass(argAssociation.argClass, subWhere)
+				}
+			}
+			break
+		}
+	}
 }

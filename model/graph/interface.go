@@ -66,6 +66,17 @@ func (f *Interface) AllAssociations() []*Association {
 	return associas
 }
 
+func (f *Interface) GetAssociationByName(name string) *Association {
+	associations := f.AllAssociations()
+	for i := range associations {
+		if associations[i].Name() == name {
+			return associations[i]
+		}
+	}
+
+	return nil
+}
+
 func (f *Interface) IsEmperty() bool {
 	return len(f.AllAttributes()) < 1 && len(f.AllAssociations()) < 1
 }

@@ -86,6 +86,17 @@ func (e *Entity) AllAssociations() []*Association {
 	return associas
 }
 
+func (e *Entity) GetAssociationByName(name string) *Association {
+	associations := e.AllAssociations()
+	for i := range associations {
+		if associations[i].Name() == name {
+			return associations[i]
+		}
+	}
+
+	return nil
+}
+
 func (e *Entity) IsEmperty() bool {
 	return len(e.AllAttributes()) < 1 && len(e.AllAssociations()) < 1
 }
