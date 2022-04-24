@@ -26,6 +26,7 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 		sqls = append(sqls, queryStr)
 		paramsList = append(paramsList, params...)
 	}
+
 	rows, err := con.Dbx.Query(strings.Join(sqls, " UNION "), paramsList...)
 	if err != nil {
 		panic(err.Error())
@@ -282,6 +283,7 @@ func (con *Connection) doBatchAbstractRealAssociations(association *graph.Associ
 		sqls = append(sqls, queryStr)
 	}
 	sql := strings.Join(sqls, " UNION ")
+	fmt.Println("doBatchAbstractRealAssociations SQL:" + sql)
 	rows, err := con.Dbx.Query(sql)
 	if err != nil {
 		panic(err.Error())

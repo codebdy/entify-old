@@ -42,12 +42,12 @@ func (c *Class) Name() string {
 	return c.Domain.Name
 }
 
-func (e *Class) Description() string {
-	return e.Domain.Description
+func (c *Class) Description() string {
+	return c.Domain.Description
 }
 
-func (e *Class) AddAssociation(a *Association) {
-	e.associations = append(e.associations, a)
+func (c *Class) AddAssociation(a *Association) {
+	c.associations = append(c.associations, a)
 }
 
 func (c *Class) TableName() string {
