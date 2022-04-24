@@ -44,11 +44,23 @@ func (con *Connection) NewArgClass(noder graph.Noder) *ArgClass {
 	}
 }
 
-func (a *ArgClass) GetAssociationByName(name string) *graph.Association {
+func (a *ArgClass) GetAssociationByName(name string) *ArgAssociation {
+	for i := range a.associations {
+		if a.associations[i].association.Name() == name {
+			return a.associations[i]
+		}
+	}
 	allAssociations := a.noder.AllAssociations()
 	for i := range allAssociations {
 		if allAssociations[i].Name() == name {
-			return allAssociations[i]
+			asso := &ArgAssociation{
+				association: allAssociations[i],
+				argClass:    a.con.NewArgClass(allAssociations[i].TypeClass()),
+			}
+
+			a.associations = append(a.associations, asso)
+
+			return asso
 		}
 	}
 	panic("Can not find entity association:" + a.noder.Name() + "." + name)
