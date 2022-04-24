@@ -44,7 +44,7 @@ func (con *Connection) NewArgClass(noder graph.Noder) *ArgClass {
 	}
 }
 
-func (a *ArgClass) GetAssociationByName(name string) *ArgAssociation {
+func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
 	for i := range a.associations {
 		if a.associations[i].association.Name() == name {
 			return a.associations[i]
@@ -64,4 +64,10 @@ func (a *ArgClass) GetAssociationByName(name string) *ArgAssociation {
 		}
 	}
 	panic("Can not find entity association:" + a.noder.Name() + "." + name)
+}
+
+func (con *Connection) buildWhereNodes(noder graph.Noder, where QueryArg) *ArgClass {
+	rootClass := con.NewArgClass(noder)
+
+	return rootClass
 }
