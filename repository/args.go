@@ -9,18 +9,38 @@ type ArgAssociation struct {
 	argClass    *ArgClass
 }
 
+type ArgEntity struct {
+	id     int
+	entity *graph.Entity
+}
+
 type ArgClass struct {
-	id           int
 	noder        graph.Noder
 	associations []*ArgAssociation
 	con          *Connection
+	children     []*ArgEntity
 }
 
 func (con *Connection) NewArgClass(noder graph.Noder) *ArgClass {
+	var entities []*ArgEntity
+	if noder.IsInterface() {
+		children := noder.Interface().Children
+		for i := range children {
+			entities = append(entities, &ArgEntity{
+				id:     con.createId(),
+				entity: children[i],
+			})
+		}
+	} else {
+		entities = append(entities, &ArgEntity{
+			id:     con.createId(),
+			entity: noder.Entity(),
+		})
+	}
 	return &ArgClass{
-		id:    con.createId(),
-		noder: noder,
-		con:   con,
+		noder:    noder,
+		con:      con,
+		children: entities,
 	}
 }
 
