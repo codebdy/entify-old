@@ -21,6 +21,7 @@ type SQLBuilder interface {
 	BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom
 	ColumnTypeSQL(column *table.Column) string
 
+	BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*graph.Attribute) string
 	BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{})
 
 	BuildInsertSQL(fields []*data.Field, table *table.Table) string

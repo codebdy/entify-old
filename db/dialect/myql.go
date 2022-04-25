@@ -193,6 +193,49 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
+func buildArgAssociation(association *graph.ArgAssociation, owner *graph.ArgEntity) string {
+	var sql string
+	derivedAssociations := association.Association.DerivedAssociations()
+	for i := range derivedAssociations {
+		derivedAsso := derivedAssociations[i]
+		if owner != nil {
+			typeEntity := association.GetTypeEntity(derivedAsso.TypeEntity().Uuid())
+			povitTableAlias := fmt.Sprintf("%s_%d_%d", graph.PREFIX_T, owner.Id, typeEntity.Id)
+			sql = sql + fmt.Sprintf(
+				" LEFT JOIN %s %s ON %s=%s LEFT JOIN %s %s ON %s=%s ",
+				derivedAsso.Relation.Table.Name,
+				povitTableAlias,
+				owner.Alise()+"."+consts.ID,
+				povitTableAlias+"."+owner.Entity.Table.Name,
+				typeEntity.Entity.TableName(),
+				typeEntity.Alise(),
+				povitTableAlias+"."+typeEntity.Entity.Table.Name,
+				typeEntity.Alise()+"."+consts.ID,
+			)
+
+			for i := range typeEntity.FromClass.Associations {
+				sql = sql + buildArgAssociation(typeEntity.FromClass.Associations[i], typeEntity)
+			}
+		}
+	}
+	return sql
+}
+
+func (b *MySQLBuilder) BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*graph.Attribute) string {
+	names := make([]string, len(fields))
+	for i := range fields {
+		names[i] = fields[i].Name
+	}
+	queryStr := "select %s from %s %s "
+	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), argEntity.Entity.TableName(), argEntity.Alise())
+
+	for i := range argEntity.FromClass.Associations {
+		association := argEntity.FromClass.Associations[i]
+		queryStr = queryStr + " " + buildArgAssociation(association, argEntity)
+	}
+	return queryStr
+}
+
 func (b *MySQLBuilder) BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	names := make([]string, len(fields))

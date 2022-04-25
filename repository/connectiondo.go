@@ -20,6 +20,10 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
+	classArg := graph.NewArgClass(intf, con)
+	for i := range classArg.Children {
+		selectBodySQL := builder.BuildQuerySQLBody(classArg.Children[i], intf.AllAttributes())
+	}
 	for i := range intf.Children {
 		child := intf.Children[i]
 		queryStr, params := builder.BuildQuerySQL(child.TableName(), intf.AllAttributes(), args)

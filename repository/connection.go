@@ -39,7 +39,7 @@ func (c *Connection) ClearTx() {
 }
 
 //use for sql join table
-func (c *Connection) createId() int {
+func (c *Connection) CreateId() int {
 	c.idSeed++
 	return c.idSeed
 }

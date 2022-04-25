@@ -1,73 +1,97 @@
 package graph
 
-import "rxdrag.com/entity-engine/consts"
+import (
+	"fmt"
+
+	"rxdrag.com/entity-engine/consts"
+)
+
+const PREFIX_T string = "t"
 
 type QueryArg = map[string]interface{}
 
 type Ider interface {
-	createId() int
+	CreateId() int
 }
 
 type ArgAssociation struct {
-	association *Association
-	argClass    *ArgClass
+	Association *Association
+	ArgClass    *ArgClass
 }
 
 type ArgEntity struct {
-	id     int
-	entity *Entity
+	FromClass *ArgClass
+	Id        int
+	Entity    *Entity
 }
 
 type ArgClass struct {
-	noder        Noder
-	associations []*ArgAssociation
-	ider         Ider
-	children     []*ArgEntity
+	Noder        Noder
+	Associations []*ArgAssociation
+	Ider         Ider
+	Children     []*ArgEntity
 }
 
 func NewArgClass(noder Noder, ider Ider) *ArgClass {
 	var entities []*ArgEntity
+	argClass := &ArgClass{
+		Noder: noder,
+		Ider:  ider,
+	}
 	if noder.IsInterface() {
 		children := noder.Interface().Children
 		for i := range children {
 			entities = append(entities, &ArgEntity{
-				id:     ider.createId(),
-				entity: children[i],
+				Id:        ider.CreateId(),
+				Entity:    children[i],
+				FromClass: argClass,
 			})
 		}
 	} else {
 		entities = append(entities, &ArgEntity{
-			id:     ider.createId(),
-			entity: noder.Entity(),
+			Id:     ider.CreateId(),
+			Entity: noder.Entity(),
 		})
 	}
-	return &ArgClass{
-		noder:    noder,
-		ider:     ider,
-		children: entities,
-	}
+	argClass.Children = entities
+	return argClass
 }
 
 func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
-	for i := range a.associations {
-		if a.associations[i].association.Name() == name {
-			return a.associations[i]
+	for i := range a.Associations {
+		if a.Associations[i].Association.Name() == name {
+			return a.Associations[i]
 		}
 	}
-	allAssociations := a.noder.AllAssociations()
+	allAssociations := a.Noder.AllAssociations()
 	for i := range allAssociations {
 		if allAssociations[i].Name() == name {
 			asso := &ArgAssociation{
-				association: allAssociations[i],
-				argClass:    NewArgClass(allAssociations[i].TypeClass(), a.ider),
+				Association: allAssociations[i],
+				ArgClass:    NewArgClass(allAssociations[i].TypeClass(), a.Ider),
 			}
 
-			a.associations = append(a.associations, asso)
+			a.Associations = append(a.Associations, asso)
 
 			return asso
 		}
 	}
-	panic("Can not find entity association:" + a.noder.Name() + "." + name)
+	panic("Can not find entity association:" + a.Noder.Name() + "." + name)
+}
+
+func (e *ArgEntity) Alise() string {
+	return fmt.Sprintf("%s%d", PREFIX_T, e.Id)
+}
+
+func (a *ArgAssociation) GetTypeEntity(uuid string) *ArgEntity {
+	entities := a.ArgClass.Children
+	for i := range entities {
+		if entities[i].Entity.Uuid() == uuid {
+			return entities[i]
+		}
+	}
+
+	panic("Can not find association entity by uuid")
 }
 
 func buildWhereNodes(noder Noder, where QueryArg, ider Ider) *ArgClass {
@@ -87,11 +111,11 @@ func buildWhereClass(cls *ArgClass, where QueryArg) {
 			}
 			break
 		default:
-			association := cls.noder.GetAssociationByName(key)
+			association := cls.Noder.GetAssociationByName(key)
 			if association != nil {
 				argAssociation := cls.GetWithMakeAssociation(key)
 				if subWhere, ok := value.(QueryArg); ok {
-					buildWhereClass(argAssociation.argClass, subWhere)
+					buildWhereClass(argAssociation.ArgClass, subWhere)
 				}
 			}
 			break
