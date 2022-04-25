@@ -38,7 +38,7 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 	return "(" + queryStr + ")", params
 }
 
-func (b *MySQLBuilder) BuildBoolExp(where map[string]interface{}) (string, []interface{}) {
+func (b *MySQLBuilder) BuildBoolExp(argClass graph.ArgClass, where map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	queryStr := ""
 	for key, value := range where {
@@ -244,35 +244,43 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	whereStr := ""
 	var params []interface{}
 	if where != nil {
-		boolStr, whereParams := b.BuildBoolExp(where)
+		boolStr, whereParams := b.BuildBoolExp(*argEntity.FromClass, where)
 		whereStr = whereStr + " " + boolStr
 		params = append(params, whereParams...)
 	}
 	return whereStr, params
 }
 
-func (b *MySQLBuilder) BuildOrderBySQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, orderBy map[string]interface{}) string {
+func (b *MySQLBuilder) BuildOrderBySQL(
+	argEntity *graph.ArgEntity,
+	fields []*graph.Attribute,
+	orderBy map[string]interface{},
+) string {
 	return ""
 }
 
-func (b *MySQLBuilder) BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{}) {
-	var params []interface{}
-	names := make([]string, len(fields))
-	for i := range fields {
-		names[i] = fields[i].Name
-	}
-	queryStr := "select %s from %s WHERE true "
-	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), tableName)
-	if args[consts.ARG_WHERE] != nil {
-		whereStr, whereParams := b.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))
-		queryStr = queryStr + " " + whereStr
-		params = append(params, whereParams...)
-	}
+// func (b *MySQLBuilder) BuildQuerySQL(
+// 	tableName string,
+// 	fields []*graph.Attribute,
+// 	args map[string]interface{},
+// ) (string, []interface{}) {
+// 	var params []interface{}
+// 	names := make([]string, len(fields))
+// 	for i := range fields {
+// 		names[i] = fields[i].Name
+// 	}
+// 	queryStr := "select %s from %s WHERE true "
+// 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), tableName)
+// 	if args[consts.ARG_WHERE] != nil {
+// 		whereStr, whereParams := b.BuildBoolExp(args[consts.ARG_WHERE].(map[string]interface{}))
+// 		queryStr = queryStr + " " + whereStr
+// 		params = append(params, whereParams...)
+// 	}
 
-	queryStr = queryStr + " order by id desc"
-	fmt.Println("查询SQL:", queryStr)
-	return queryStr, params
-}
+// 	queryStr = queryStr + " order by id desc"
+// 	fmt.Println("查询SQL:", queryStr)
+// 	return queryStr, params
+// }
 
 func associationFieldSQL(node graph.Noder) string {
 	names := node.AllAttributeNames()
@@ -300,7 +308,8 @@ func (b *MySQLBuilder) BuildQueryByIdsSQL(entity *graph.Entity, idCounts int) st
 	return queryStr
 }
 
-func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
+func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(
+	node graph.Noder,
 	ownerId uint64,
 	povitTableName string,
 	ownerFieldName string,
@@ -319,7 +328,8 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(node graph.Noder,
 	return queryStr
 }
 
-func (b *MySQLBuilder) BuildBatchAssociationSQL(tableName string,
+func (b *MySQLBuilder) BuildBatchAssociationSQL(
+	tableName string,
 	fields []*graph.Attribute,
 	ids []uint64,
 	povitTableName string,

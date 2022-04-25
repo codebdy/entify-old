@@ -94,10 +94,12 @@ func (a *ArgAssociation) GetTypeEntity(uuid string) *ArgEntity {
 	panic("Can not find association entity by uuid")
 }
 
-func buildWhereNodes(noder Noder, where QueryArg, ider Ider) *ArgClass {
+func BuldArgClass(noder Noder, where interface{}, ider Ider) *ArgClass {
 	rootClass := NewArgClass(noder, ider)
-	if where == nil {
-		buildWhereClass(rootClass, where)
+	if where != nil {
+		if whereMap, ok := where.(QueryArg); ok {
+			buildWhereClass(rootClass, whereMap)
+		}
 	}
 	return rootClass
 }

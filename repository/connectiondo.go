@@ -14,24 +14,44 @@ import (
 
 type InsanceData = map[string]interface{}
 
-func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []InsanceData {
+func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[string]interface{}) (string, []interface{}) {
 	var (
 		sqls       []string
 		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
-	classArg := graph.NewArgClass(intf, con)
+	classArg := graph.BuldArgClass(intf, args[consts.ARG_WHERE], con)
 	for i := range classArg.Children {
-		selectBodySQL := builder.BuildQuerySQLBody(classArg.Children[i], intf.AllAttributes())
-	}
-	for i := range intf.Children {
-		child := intf.Children[i]
-		queryStr, params := builder.BuildQuerySQL(child.TableName(), intf.AllAttributes(), args)
+		queryStr := builder.BuildQuerySQLBody(classArg.Children[i], intf.AllAttributes())
+		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+			whereSQL, params := builder.BuildWhereSQL(classArg.Children[i], intf.AllAttributes(), where)
+			queryStr = queryStr + " " + whereSQL
+			paramsList = append(paramsList, params...)
+		}
 		sqls = append(sqls, queryStr)
+	}
+
+	return strings.Join(sqls, " UNION "), paramsList
+}
+
+func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}) (string, []interface{}) {
+	var paramsList []interface{}
+	classArg := graph.BuldArgClass(entity, args[consts.ARG_WHERE], con)
+	builder := dialect.GetSQLBuilder()
+	queryStr := builder.BuildQuerySQLBody(classArg.Children[0], entity.AllAttributes())
+	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+		whereSQL, params := builder.BuildWhereSQL(classArg.Children[0], entity.AllAttributes(), where)
+		queryStr = queryStr + " " + whereSQL
 		paramsList = append(paramsList, params...)
 	}
 
-	rows, err := con.Dbx.Query(strings.Join(sqls, " UNION "), paramsList...)
+	return queryStr, paramsList
+}
+
+func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []InsanceData {
+	sql, params := con.buildQueryInterfaceSQL(intf, args)
+
+	rows, err := con.Dbx.Query(sql, params...)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -60,9 +80,8 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 }
 
 func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
-	builder := dialect.GetSQLBuilder()
-	queryStr, params := builder.BuildQuerySQL(entity.TableName(), entity.AllAttributes(), args)
-	rows, err := con.Dbx.Query(queryStr, params...)
+	sql, params := con.buildQueryEntitySQL(entity, args)
+	rows, err := con.Dbx.Query(sql, params...)
 	if err != nil {
 		panic(err.Error())
 	}

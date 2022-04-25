@@ -12,7 +12,7 @@ const (
 )
 
 type SQLBuilder interface {
-	BuildBoolExp(where map[string]interface{}) (string, []interface{})
+	BuildBoolExp(argClass graph.ArgClass, where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 
 	BuildCreateTableSQL(table *table.Table) string
@@ -24,7 +24,7 @@ type SQLBuilder interface {
 	BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*graph.Attribute) string
 	BuildWhereSQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, where map[string]interface{}) (string, []interface{})
 	BuildOrderBySQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, orderBy map[string]interface{}) string
-	BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{})
+	//BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{})
 
 	BuildInsertSQL(fields []*data.Field, table *table.Table) string
 	BuildUpdateSQL(id uint64, fields []*data.Field, table *table.Table) string
