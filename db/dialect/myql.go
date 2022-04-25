@@ -236,11 +236,22 @@ func (b *MySQLBuilder) BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*g
 	return queryStr
 }
 
-func BuildWhereSQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, where map[string]interface{}) (string, []interface{}) {
-
+func (b *MySQLBuilder) BuildWhereSQL(
+	argEntity *graph.ArgEntity,
+	fields []*graph.Attribute,
+	where map[string]interface{},
+) (string, []interface{}) {
+	whereStr := ""
+	var params []interface{}
+	if where != nil {
+		boolStr, whereParams := b.BuildBoolExp(where)
+		whereStr = whereStr + " " + boolStr
+		params = append(params, whereParams...)
+	}
+	return whereStr, params
 }
 
-func BuildOrderBySQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, orderBy map[string]interface{}) string {
+func (b *MySQLBuilder) BuildOrderBySQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, orderBy map[string]interface{}) string {
 	return ""
 }
 
