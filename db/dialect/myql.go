@@ -236,6 +236,14 @@ func (b *MySQLBuilder) BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*g
 	return queryStr
 }
 
+func BuildWhereSQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, where map[string]interface{}) (string, []interface{}) {
+
+}
+
+func BuildOrderBySQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, orderBy map[string]interface{}) string {
+	return ""
+}
+
 func (b *MySQLBuilder) BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	names := make([]string, len(fields))
