@@ -258,9 +258,12 @@ func (b *MySQLBuilder) BuildWhereSQL(
 
 func (b *MySQLBuilder) BuildOrderBySQL(
 	argEntity *graph.ArgEntity,
-	orderBy map[string]interface{},
+	orderBy interface{},
 ) string {
-	return fmt.Sprintf(" order by %s.id desc", argEntity.Alise())
+	if _, ok := orderBy.(graph.QueryArg); ok {
+
+	}
+	return fmt.Sprintf(" ORDER BY %s.id DESC", argEntity.Alise())
 }
 
 // func (b *MySQLBuilder) BuildQuerySQL(

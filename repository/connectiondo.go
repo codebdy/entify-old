@@ -28,9 +28,8 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 			queryStr = queryStr + " " + whereSQL
 			paramsList = append(paramsList, params...)
 		}
-		if orderBy, ok := args[consts.ARG_ORDERBY].(graph.QueryArg); ok {
-			queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], orderBy)
-		}
+		queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], args[consts.ARG_ORDERBY])
+
 		sqls = append(sqls, queryStr)
 	}
 
@@ -48,9 +47,8 @@ func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string
 		paramsList = append(paramsList, params...)
 	}
 
-	if orderBy, ok := args[consts.ARG_ORDERBY].(graph.QueryArg); ok {
-		queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], orderBy)
-	}
+	queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], args[consts.ARG_ORDERBY])
+
 	return queryStr, paramsList
 }
 

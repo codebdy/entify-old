@@ -23,7 +23,7 @@ type SQLBuilder interface {
 
 	BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*graph.Attribute) string
 	BuildWhereSQL(argEntity *graph.ArgEntity, fields []*graph.Attribute, where map[string]interface{}) (string, []interface{})
-	BuildOrderBySQL(argEntity *graph.ArgEntity, orderBy map[string]interface{}) string
+	BuildOrderBySQL(argEntity *graph.ArgEntity, orderBy interface{}) string
 	//BuildQuerySQL(tableName string, fields []*graph.Attribute, args map[string]interface{}) (string, []interface{})
 
 	BuildInsertSQL(fields []*data.Field, table *table.Table) string
