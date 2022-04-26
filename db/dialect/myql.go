@@ -19,16 +19,16 @@ type MySQLBuilder struct {
 
 func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
-	queryStr := "true "
+	queryStr := ""
 	for key, value := range fieldArgs {
 		switch key {
 		case consts.ARG_EQ:
-			queryStr = queryStr + " AND " + fieldName + "=?"
+			queryStr = fieldName + "=?"
 			params = append(params, value)
 			break
 		case consts.ARG_ISNULL:
 			if value == true {
-				queryStr = queryStr + " AND ISNULL(" + fieldName + ")"
+				queryStr = "ISNULL(" + fieldName + ")"
 			}
 			break
 		default:
@@ -40,7 +40,7 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 
 func (b *MySQLBuilder) BuildBoolExp(argClass graph.ArgClass, where map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
-	queryStr := ""
+	querys := []string{}
 	for key, value := range where {
 		switch key {
 		case consts.ARG_AND:
@@ -50,12 +50,17 @@ func (b *MySQLBuilder) BuildBoolExp(argClass graph.ArgClass, where map[string]in
 		case consts.ARG_OR:
 			break
 		default:
-			fiedleStr, fieldParam := b.BuildFieldExp(key, value.(map[string]interface{}))
-			queryStr = queryStr + " AND " + fiedleStr
-			params = append(params, fieldParam...)
+			sqls := []string{}
+			for i := range argClass.Children {
+				child := argClass.Children[i]
+				fiedleStr, fieldParam := b.BuildFieldExp(child.Alise()+"."+key, value.(map[string]interface{}))
+				sqls = append(sqls, fiedleStr)
+				params = append(params, fieldParam...)
+			}
+			querys = append(querys, fmt.Sprintf("(%s)", strings.Join(sqls, " OR ")))
 		}
 	}
-	return queryStr, params
+	return strings.Join(querys, " AND "), params
 }
 
 func (b *MySQLBuilder) ColumnTypeSQL(column *table.Column) string {
@@ -224,7 +229,7 @@ func buildArgAssociation(association *graph.ArgAssociation, owner *graph.ArgEnti
 func (b *MySQLBuilder) BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*graph.Attribute) string {
 	names := make([]string, len(fields))
 	for i := range fields {
-		names[i] = fields[i].Name
+		names[i] = argEntity.Alise() + "." + fields[i].Name
 	}
 	queryStr := "select %s from %s %s "
 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), argEntity.Entity.TableName(), argEntity.Alise())
@@ -245,7 +250,7 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	var params []interface{}
 	if where != nil {
 		boolStr, whereParams := b.BuildBoolExp(*argEntity.FromClass, where)
-		whereStr = whereStr + " " + boolStr
+		whereStr = " WHERE " + boolStr
 		params = append(params, whereParams...)
 	}
 	return whereStr, params

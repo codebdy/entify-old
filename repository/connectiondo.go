@@ -143,8 +143,8 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 	queryStr, params := con.buildQueryEntitySQL(entity, args)
 
 	values := makeQueryValues(entity)
+	fmt.Println("doQueryOneEntity SQL:", queryStr)
 	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)
-
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
