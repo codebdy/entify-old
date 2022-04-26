@@ -12,7 +12,7 @@ func QueryPublishedMeta() interface{} {
 	publishedMeta := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
-				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
+				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})

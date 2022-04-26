@@ -114,7 +114,7 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) interface{
 	return con.doQueryOneNode(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
-				consts.AEG_EQ: id,
+				consts.ARG_EQ: id,
 			},
 		},
 	})

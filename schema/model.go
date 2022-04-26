@@ -14,7 +14,7 @@ func QueryPublishedMeta() interface{} {
 	publishedMeta := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
-				consts.AEG_EQ: meta.META_STATUS_PUBLISHED,
+				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
 	})
