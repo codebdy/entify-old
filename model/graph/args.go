@@ -49,8 +49,9 @@ func NewArgClass(noder Noder, ider Ider) *ArgClass {
 		}
 	} else {
 		entities = append(entities, &ArgEntity{
-			Id:     ider.CreateId(),
-			Entity: noder.Entity(),
+			Id:        ider.CreateId(),
+			Entity:    noder.Entity(),
+			FromClass: argClass,
 		})
 	}
 	argClass.Children = entities
