@@ -116,20 +116,10 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) InsanceDat
 	})
 }
 func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) InsanceData {
-	var (
-		sqls       []string
-		paramsList []interface{}
-	)
-	builder := dialect.GetSQLBuilder()
-	for i := range intf.Children {
-		child := intf.Children[i]
-		queryStr, params := builder.BuildQuerySQL(child.TableName(), intf.AllAttributes(), args)
-		sqls = append(sqls, queryStr)
-		paramsList = append(paramsList, params...)
-	}
+	querySql, params := con.buildQueryInterfaceSQL(intf, args)
 
 	values := makeQueryValues(intf)
-	err := con.Dbx.QueryRow(strings.Join(sqls, " UNION "), paramsList...).Scan(values...)
+	err := con.Dbx.QueryRow(querySql, params...).Scan(values...)
 
 	switch {
 	case err == sql.ErrNoRows:
@@ -150,9 +140,7 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 }
 
 func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) InsanceData {
-	builder := dialect.GetSQLBuilder()
-
-	queryStr, params := builder.BuildQuerySQL(entity.TableName(), entity.AllAttributes(), args)
+	queryStr, params := con.buildQueryEntitySQL(entity, args)
 
 	values := makeQueryValues(entity)
 	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)
