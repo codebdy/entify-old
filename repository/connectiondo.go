@@ -110,7 +110,7 @@ func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}
 	}
 }
 
-func (con *Connection) QueryOneById(node graph.Noder, id interface{}) InsanceData {
+func (con *Connection) QueryOneById(node graph.Noder, id interface{}) interface{} {
 	return con.doQueryOneNode(node, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -119,7 +119,7 @@ func (con *Connection) QueryOneById(node graph.Noder, id interface{}) InsanceDat
 		},
 	})
 }
-func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) InsanceData {
+func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) interface{} {
 	querySql, params := con.buildQueryInterfaceSQL(intf, args)
 
 	values := makeQueryValues(intf)
@@ -143,7 +143,7 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 	return nil
 }
 
-func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) InsanceData {
+func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) interface{} {
 	queryStr, params := con.buildQueryEntitySQL(entity, args)
 
 	values := makeQueryValues(entity)
@@ -156,11 +156,10 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 		panic(err.Error())
 	}
 
-	fmt.Println("Query one entity:" + entity.Name())
 	return convertValuesToObject(values, entity)
 }
 
-func (con *Connection) doQueryOneNode(node graph.Noder, args map[string]interface{}) InsanceData {
+func (con *Connection) doQueryOneNode(node graph.Noder, args map[string]interface{}) interface{} {
 
 	if node.IsInterface() {
 		return con.doQueryOneInterface(node.Interface(), args)
@@ -169,7 +168,7 @@ func (con *Connection) doQueryOneNode(node graph.Noder, args map[string]interfac
 	}
 }
 
-func (con *Connection) doInsertOne(instance *data.Instance) (InsanceData, error) {
+func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := makeSaveValues(instance.Fields)
@@ -352,7 +351,7 @@ func (con *Connection) doBatchAssociations(association *graph.Association, ids [
 	}
 }
 
-func (con *Connection) doUpdateOne(instance *data.Instance) (InsanceData, error) {
+func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
@@ -384,6 +383,7 @@ func newAssociationPovit(r data.Associationer, ownerId uint64, tarId uint64) *da
 	}
 
 	return data.NewAssociationPovit(r, sourceId, targetId)
+
 }
 
 func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) error {
@@ -402,10 +402,14 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 			return err
 		}
 
-		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationPovit(r, ownerId, tarId)
+		if savedIns, ok := saved.(InsanceData); ok {
+			tarId := savedIns[consts.ID].(uint64)
+			relationInstance := newAssociationPovit(r, ownerId, tarId)
+			con.doSaveAssociationPovit(relationInstance)
+		} else {
+			panic("Save Association error")
+		}
 
-		con.doSaveAssociationPovit(relationInstance)
 	}
 
 	for _, ins := range r.Updated() {
@@ -417,10 +421,14 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 			return err
 		}
 
-		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationPovit(r, ownerId, tarId)
+		if savedIns, ok := saved.(InsanceData); ok {
+			tarId := savedIns[consts.ID].(uint64)
+			relationInstance := newAssociationPovit(r, ownerId, tarId)
 
-		con.doSaveAssociationPovit(relationInstance)
+			con.doSaveAssociationPovit(relationInstance)
+		} else {
+			panic("Save Association error")
+		}
 	}
 
 	synced := r.Synced()
@@ -439,10 +447,14 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 			return err
 		}
 
-		tarId := saved[consts.ID].(uint64)
-		relationInstance := newAssociationPovit(r, ownerId, tarId)
+		if savedIns, ok := saved.(InsanceData); ok {
+			tarId := savedIns[consts.ID].(uint64)
+			relationInstance := newAssociationPovit(r, ownerId, tarId)
 
-		con.doSaveAssociationPovit(relationInstance)
+			con.doSaveAssociationPovit(relationInstance)
+		} else {
+			panic("Save Association error")
+		}
 	}
 
 	return nil
@@ -500,7 +512,7 @@ func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) {
 	}
 }
 
-func (con *Connection) doSaveOne(instance *data.Instance) (InsanceData, error) {
+func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
 	if instance.IsInsert() {
 		return con.doInsertOne(instance)
 	} else {

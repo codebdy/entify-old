@@ -13,7 +13,8 @@ import (
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		return repository.QueryOne(node, p.Args), nil
+		instance := repository.QueryOne(node, p.Args)
+		return instance, nil
 	}
 }
 
