@@ -12,7 +12,7 @@ const (
 )
 
 type SQLBuilder interface {
-	BuildBoolExp(argClass graph.ArgClass, where map[string]interface{}) (string, []interface{})
+	BuildBoolExp(argClass *graph.ArgClass, where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 
 	BuildCreateTableSQL(table *table.Table) string

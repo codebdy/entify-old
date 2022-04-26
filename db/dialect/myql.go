@@ -38,7 +38,7 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 	return "(" + queryStr + ")", params
 }
 
-func (b *MySQLBuilder) BuildBoolExp(argClass graph.ArgClass, where map[string]interface{}) (string, []interface{}) {
+func (b *MySQLBuilder) BuildBoolExp(argClass *graph.ArgClass, where map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	querys := []string{}
 	for key, value := range where {
@@ -50,14 +50,23 @@ func (b *MySQLBuilder) BuildBoolExp(argClass graph.ArgClass, where map[string]in
 		case consts.ARG_OR:
 			break
 		default:
-			sqls := []string{}
-			for i := range argClass.Children {
-				child := argClass.Children[i]
-				fiedleStr, fieldParam := b.BuildFieldExp(child.Alise()+"."+key, value.(map[string]interface{}))
-				sqls = append(sqls, fiedleStr)
-				params = append(params, fieldParam...)
+			asso := argClass.Noder.GetAssociationByName(key)
+			if asso == nil {
+				sqls := []string{}
+				for i := range argClass.Children {
+					child := argClass.Children[i]
+					fiedleStr, fieldParam := b.BuildFieldExp(child.Alise()+"."+key, value.(map[string]interface{}))
+					sqls = append(sqls, fiedleStr)
+					params = append(params, fieldParam...)
+				}
+				querys = append(querys, fmt.Sprintf("(%s)", strings.Join(sqls, " OR ")))
+			} else {
+				argAsso := argClass.GetWithMakeAssociation(key)
+				assoStr, assoParam := b.BuildBoolExp(argAsso.ArgClass, value.(map[string]interface{}))
+				querys = append(querys, assoStr)
+				params = append(params, assoParam...)
 			}
-			querys = append(querys, fmt.Sprintf("(%s)", strings.Join(sqls, " OR ")))
+
 		}
 	}
 	return strings.Join(querys, " AND "), params
@@ -249,7 +258,7 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	whereStr := ""
 	var params []interface{}
 	if where != nil {
-		boolStr, whereParams := b.BuildBoolExp(*argEntity.FromClass, where)
+		boolStr, whereParams := b.BuildBoolExp(argEntity.FromClass, where)
 		whereStr = " WHERE " + boolStr
 		params = append(params, whereParams...)
 	}
