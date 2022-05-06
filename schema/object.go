@@ -17,7 +17,6 @@ func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
 func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 	name := entity.Name()
 	interfaces := c.mapInterfaces(entity.Interfaces)
-	interfaces = append(interfaces, NodeInterfaceType)
 
 	if len(interfaces) > 0 {
 		return graphql.NewObject(

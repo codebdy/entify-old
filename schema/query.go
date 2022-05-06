@@ -10,20 +10,17 @@ import (
 	"rxdrag.com/entity-engine/utils"
 )
 
-var serviceNodeType = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: utils.FirstUpper(consts.SERVICE),
-		Fields: graphql.Fields{
-			consts.ID: &graphql.Field{
-				Type: graphql.Int,
-			},
-		},
-		Description: "Micro service info",
-	},
-)
+func resolveTypeFn(p graphql.ResolveTypeParams) *graphql.Object {
+	if value, ok := p.Value.(map[string]interface{}); ok {
+		if id, ok := value[consts.ID].(uint64); ok {
+			entityInnerId := utils.DecodeEntityInnerId(id)
+			return Cache.GetEntityTypeByInnerId(entityInnerId)
+		}
+	}
+	return nil
+}
 
 func rootQuery() *graphql.Object {
-
 	rootQueryConfig := graphql.ObjectConfig{
 		Name:   consts.ROOT_QUERY_NAME,
 		Fields: queryFields(),
@@ -35,15 +32,16 @@ func rootQuery() *graphql.Object {
 func queryFields() graphql.Fields {
 	queryFields := graphql.Fields{
 		consts.SERVICE: &graphql.Field{
-			Type: serviceNodeType,
+			Type: _ServiceType,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return map[string]interface{}{
-					consts.ID: config.SERVICE_ID,
+					consts.ID:  config.SERVICE_ID,
+					consts.SDL: `query{}`,
 				}, nil
 			},
 		},
-		consts.NODE: &graphql.Field{
-			Type: NodeInterfaceType,
+		consts.ENTITIES: &graphql.Field{
+			Type: _EntityType,
 			Args: graphql.FieldConfigArgument{
 				consts.ID: &graphql.ArgumentConfig{
 					Type: graphql.ID,

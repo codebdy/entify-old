@@ -2,10 +2,8 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/utils"
 )
 
 var Cache TypeCache
@@ -26,18 +24,6 @@ type TypeCache struct {
 	MutationResponseMap  map[string]*graphql.Output
 	AggregateMap         map[string]*graphql.Output
 }
-
-var NodeInterfaceType = graphql.NewInterface(
-	graphql.InterfaceConfig{
-		Name: utils.FirstUpper(consts.NODE),
-		Fields: graphql.Fields{
-			"id": &graphql.Field{
-				Type: graphql.ID,
-			},
-		},
-		Description: "Node interface",
-	},
-)
 
 func (c *TypeCache) MakeCache() {
 	c.clearCache()
@@ -71,6 +57,15 @@ func (c *TypeCache) GetEntityTypeByInnerId(id uint64) *graphql.Object {
 
 func (c *TypeCache) EntityTypes() []graphql.Type {
 	objs := []graphql.Type{}
+	for key := range c.ObjectTypeMap {
+		objs = append(objs, c.ObjectTypeMap[key])
+	}
+
+	return objs
+}
+
+func (c *TypeCache) EntityObjects() []*graphql.Object {
+	objs := []*graphql.Object{}
 	for key := range c.ObjectTypeMap {
 		objs = append(objs, c.ObjectTypeMap[key])
 	}

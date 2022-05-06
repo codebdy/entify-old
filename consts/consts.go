@@ -3,12 +3,18 @@ package consts
 const LOADERS = "loaders"
 
 const (
+	SERVICE_TYPE = "_Service"
+	ENTITY_TYPE  = "_Entity"
+	SERVICE      = "_service"
+	ENTITIES     = "_entities"
+	SDL          = "sdl"
+)
+
+const (
 	ROOT_QUERY_NAME        = "Query"
 	ROOT_MUTATION_NAME     = "Mutation"
 	ROOT_SUBSCRIPTION_NAME = "Subscription"
 
-	SERVICE    = "service"
-	NODE       = "node"
 	LOGIN      = "login"
 	LOGIN_NAME = "loginName"
 	PASSWORD   = "password"

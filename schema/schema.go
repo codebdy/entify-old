@@ -2,9 +2,12 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
 )
+
+var _EntityType *graphql.Union
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 	reslult, err := resolve.PublishMetaResolve(p)
@@ -18,6 +21,14 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 
 func MakeSchema() {
 	Cache.MakeCache()
+
+	_EntityType = graphql.NewUnion(
+		graphql.UnionConfig{
+			Name:        consts.ENTITY_TYPE,
+			Types:       Cache.EntityObjects(),
+			ResolveType: resolveTypeFn,
+		},
+	)
 
 	schemaConfig := graphql.SchemaConfig{
 		Query:        rootQuery(),
