@@ -4,7 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-var _AnyType = graphql.NewScalar(
+var AnyType = graphql.NewScalar(
 	graphql.ScalarConfig{
 		Name:        "_Any",
 		Description: "The `_Any` scalar type represents _Any values as specified by [Federation](https://www.apollographql.com/docs/federation/federation-spec)",
@@ -18,7 +18,7 @@ var _AnyType = graphql.NewScalar(
 	},
 )
 
-var _FieldSetType = graphql.NewScalar(
+var FieldSetType = graphql.NewScalar(
 	graphql.ScalarConfig{
 		Name:        "_FieldSet",
 		Description: "The `_Any` scalar type represents _Any values as specified by [Federation](https://www.apollographql.com/docs/federation/federation-spec)",

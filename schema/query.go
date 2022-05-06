@@ -7,6 +7,7 @@ import (
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/model/graph"
 	"rxdrag.com/entity-engine/resolve"
+	"rxdrag.com/entity-engine/scalars"
 	"rxdrag.com/entity-engine/utils"
 )
 
@@ -41,10 +42,20 @@ func queryFields() graphql.Fields {
 			},
 		},
 		consts.ENTITIES: &graphql.Field{
-			Type: _EntityType,
+			Type: &graphql.NonNull{
+				OfType: &graphql.List{
+					OfType: EntityType,
+				},
+			},
 			Args: graphql.FieldConfigArgument{
-				consts.ID: &graphql.ArgumentConfig{
-					Type: graphql.ID,
+				consts.REPRESENTATIONS: &graphql.ArgumentConfig{
+					Type: &graphql.NonNull{
+						OfType: &graphql.List{
+							OfType: &graphql.NonNull{
+								OfType: scalars.AnyType,
+							},
+						},
+					},
 				},
 			},
 		},

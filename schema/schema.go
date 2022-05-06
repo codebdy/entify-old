@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entity-engine/resolve"
 )
 
-var _EntityType *graphql.Union
+var EntityType *graphql.Union
 
 func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 	reslult, err := resolve.PublishMetaResolve(p)
@@ -22,7 +22,7 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 func MakeSchema() {
 	Cache.MakeCache()
 
-	_EntityType = graphql.NewUnion(
+	EntityType = graphql.NewUnion(
 		graphql.UnionConfig{
 			Name:        consts.ENTITY_TYPE,
 			Types:       Cache.EntityObjects(),
