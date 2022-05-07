@@ -9,6 +9,7 @@ const (
 	ENTITIES        = "_entities"
 	SDL             = "sdl"
 	REPRESENTATIONS = "representations"
+	TYPENAME        = "__typename"
 )
 
 const (
