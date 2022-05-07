@@ -5,6 +5,7 @@ import (
 	"rxdrag.com/entity-engine/consts"
 	"rxdrag.com/entity-engine/model"
 	"rxdrag.com/entity-engine/resolve"
+	"rxdrag.com/entity-engine/scalars"
 )
 
 var EntityType *graphql.Union
@@ -36,8 +37,45 @@ func MakeSchema() {
 		Subscription: RootSubscription(),
 		Directives: []*graphql.Directive{
 			graphql.NewDirective(graphql.DirectiveConfig{
-				Name:      "testDirective",
+				Name:      consts.EXTERNAL,
 				Locations: []string{graphql.DirectiveLocationField},
+			}),
+			graphql.NewDirective(graphql.DirectiveConfig{
+				Name:      consts.REQUIRES,
+				Locations: []string{graphql.DirectiveLocationField},
+				Args: graphql.FieldConfigArgument{
+					consts.ARG_FIELDS: &graphql.ArgumentConfig{
+						Type: &graphql.NonNull{
+							OfType: scalars.FieldSetType,
+						},
+					},
+				},
+			}),
+			graphql.NewDirective(graphql.DirectiveConfig{
+				Name:      consts.PROVIDES,
+				Locations: []string{graphql.DirectiveLocationField},
+				Args: graphql.FieldConfigArgument{
+					consts.ARG_FIELDS: &graphql.ArgumentConfig{
+						Type: &graphql.NonNull{
+							OfType: scalars.FieldSetType,
+						},
+					},
+				},
+			}),
+			graphql.NewDirective(graphql.DirectiveConfig{
+				Name:      consts.KEY,
+				Locations: []string{graphql.DirectiveLocationObject, graphql.DirectiveLocationInterface},
+				Args: graphql.FieldConfigArgument{
+					consts.ARG_FIELDS: &graphql.ArgumentConfig{
+						Type: &graphql.NonNull{
+							OfType: scalars.FieldSetType,
+						},
+					},
+				},
+			}),
+			graphql.NewDirective(graphql.DirectiveConfig{
+				Name:      consts.EXTENDS,
+				Locations: []string{graphql.DirectiveLocationObject, graphql.DirectiveLocationInterface},
 			}),
 		},
 		Types: Cache.EntityTypes(),
