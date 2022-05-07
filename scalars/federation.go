@@ -22,7 +22,7 @@ var AnyType = graphql.NewScalar(
 var FieldSetType = graphql.NewScalar(
 	graphql.ScalarConfig{
 		Name:        consts.SCALAR_FIELDSET,
-		Description: "The `_Any` scalar type represents _Any values as specified by [Federation](https://www.apollographql.com/docs/federation/federation-spec)",
+		Description: "The `_FieldSet` scalar type represents _FieldSet values as specified by [Federation](https://www.apollographql.com/docs/federation/federation-spec)",
 		Serialize: func(value interface{}) interface{} {
 			return value
 		},
