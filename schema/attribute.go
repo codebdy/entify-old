@@ -2,9 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/scalars"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/scalars"
 )
 
 func AttributeType(attr *graph.Attribute) graphql.Output {

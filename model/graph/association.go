@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entify/model/meta"
 )
 
 type Association struct {

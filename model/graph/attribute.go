@@ -1,6 +1,6 @@
 package graph
 
-import "rxdrag.com/entity-engine/model/domain"
+import "rxdrag.com/entify/model/domain"
 
 type Attribute struct {
 	domain.Attribute

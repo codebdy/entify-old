@@ -2,7 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entify/model/graph"
 )
 
 func (c *TypeCache) makeOutputInterfaces(interfaces []*graph.Interface) {

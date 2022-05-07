@@ -2,9 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/resolve"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/resolve"
 )
 
 func (c *TypeCache) makeRelations() {

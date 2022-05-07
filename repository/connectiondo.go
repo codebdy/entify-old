@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/db"
-	"rxdrag.com/entity-engine/db/dialect"
-	"rxdrag.com/entity-engine/model/data"
-	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/db"
+	"rxdrag.com/entify/db/dialect"
+	"rxdrag.com/entify/model/data"
+	"rxdrag.com/entify/model/graph"
 )
 
 type InsanceData = map[string]interface{}

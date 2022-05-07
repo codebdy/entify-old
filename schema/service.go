@@ -2,9 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/utils"
 )
 
 func appendServiceQueryFields(serviceClass *graph.Class, fields *graphql.Fields) {

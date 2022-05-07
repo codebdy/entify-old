@@ -1,6 +1,6 @@
 package data
 
-import "rxdrag.com/entity-engine/model/table"
+import "rxdrag.com/entify/model/table"
 
 type AssociationPovit struct {
 	Source *Field

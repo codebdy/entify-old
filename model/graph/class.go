@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"rxdrag.com/entity-engine/model/domain"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/model/domain"
+	"rxdrag.com/entify/utils"
 )
 
 type Class struct {

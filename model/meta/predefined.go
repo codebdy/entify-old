@@ -1,7 +1,7 @@
 package meta
 
 import (
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 )
 
 const (

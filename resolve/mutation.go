@@ -2,11 +2,11 @@ package resolve
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/data"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/repository"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/data"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/repository"
+	"rxdrag.com/entify/utils"
 )
 
 func PostOneResolveFn(entity *graph.Entity) graphql.FieldResolveFn {

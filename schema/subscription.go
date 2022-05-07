@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 
 	"github.com/graphql-go/graphql"
 )

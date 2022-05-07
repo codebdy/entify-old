@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 )
 
 func LoadersMiddleware(next http.Handler) http.Handler {

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"rxdrag.com/entity-engine/model/data"
-	"rxdrag.com/entity-engine/model/graph"
+	"rxdrag.com/entify/model/data"
+	"rxdrag.com/entify/model/graph"
 )
 
 type QueryArg = map[string]interface{}

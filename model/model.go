@@ -2,9 +2,9 @@ package model
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/model/domain"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entify/model/domain"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 )
 
 type Model struct {

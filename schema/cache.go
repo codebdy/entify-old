@@ -2,10 +2,10 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/utils"
 )
 
 var Cache TypeCache

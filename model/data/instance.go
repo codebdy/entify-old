@@ -1,9 +1,9 @@
 package data
 
 import (
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/table"
 )
 
 type Field struct {

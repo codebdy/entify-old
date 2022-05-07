@@ -6,7 +6,7 @@ package domain
  */
 
 import (
-	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entify/model/meta"
 )
 
 type Model struct {

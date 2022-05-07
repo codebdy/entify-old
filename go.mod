@@ -1,4 +1,4 @@
-module rxdrag.com/entity-engine
+module rxdrag.com/entify
 
 go 1.17
 

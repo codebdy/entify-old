@@ -2,13 +2,13 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/authentication"
-	"rxdrag.com/entity-engine/authentication/jwt"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/resolve"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/authentication"
+	"rxdrag.com/entify/authentication/jwt"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/resolve"
+	"rxdrag.com/entify/utils"
 )
 
 func rootMutation() *graphql.Object {

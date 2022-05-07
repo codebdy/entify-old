@@ -1,10 +1,10 @@
 package graph
 
 import (
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/domain"
-	"rxdrag.com/entity-engine/model/table"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/domain"
+	"rxdrag.com/entify/model/table"
+	"rxdrag.com/entify/utils"
 )
 
 type Entity struct {

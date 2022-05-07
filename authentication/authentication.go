@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"rxdrag.com/entity-engine/repository"
+	"rxdrag.com/entify/repository"
 )
 
 func Login(loginName, pwd string) (string, error) {

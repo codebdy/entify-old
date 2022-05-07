@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"rxdrag.com/entity-engine/config"
-	"rxdrag.com/entity-engine/db"
+	"rxdrag.com/entify/config"
+	"rxdrag.com/entify/db"
 )
 
 type Connection struct {

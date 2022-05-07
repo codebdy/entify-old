@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
-	"rxdrag.com/entity-engine/authentication"
-	"rxdrag.com/entity-engine/handler"
-	"rxdrag.com/entity-engine/resolve"
-	"rxdrag.com/entity-engine/schema"
+	"rxdrag.com/entify/authentication"
+	"rxdrag.com/entify/handler"
+	"rxdrag.com/entify/resolve"
+	"rxdrag.com/entify/schema"
 )
 
 func main() {

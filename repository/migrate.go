@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"rxdrag.com/entity-engine/db"
-	"rxdrag.com/entity-engine/db/dialect"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/db"
+	"rxdrag.com/entify/db/dialect"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/table"
 )
 
 func ExcuteDiff(d *model.Diff) {

@@ -1,6 +1,6 @@
 package utils
 
-import "rxdrag.com/entity-engine/config"
+import "rxdrag.com/entify/config"
 
 const (
 	SERVICE_BITS   = 52

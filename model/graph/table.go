@@ -3,9 +3,9 @@ package graph
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/model/table"
 )
 
 func NewEntityTable(entity *Entity) *table.Table {

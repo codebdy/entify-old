@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"rxdrag.com/entity-engine/db"
-	"rxdrag.com/entity-engine/model/data"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/db"
+	"rxdrag.com/entify/model/data"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/utils"
 )
 
 func makeSaveValues(fields []*data.Field) []interface{} {

@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"rxdrag.com/entity-engine/model/domain"
+	"rxdrag.com/entify/model/domain"
 )
 
 type Enum struct {

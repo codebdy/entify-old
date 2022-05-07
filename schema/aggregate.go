@@ -2,10 +2,10 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/utils"
 )
 
 func AvgFields(node graph.Noder) graphql.Fields {

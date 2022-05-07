@@ -2,7 +2,7 @@ package scalars
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 )
 
 var AnyType = graphql.NewScalar(

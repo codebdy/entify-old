@@ -3,7 +3,7 @@ package resolve
 import (
 	"strconv"
 
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 )
 
 func ConvertId(object map[string]interface{}) map[string]interface{} {

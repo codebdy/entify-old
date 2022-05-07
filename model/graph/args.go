@@ -3,7 +3,7 @@ package graph
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/consts"
+	"rxdrag.com/entify/consts"
 )
 
 const PREFIX_T string = "t"

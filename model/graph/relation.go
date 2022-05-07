@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"rxdrag.com/entity-engine/model/domain"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/model/domain"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/model/table"
 )
 
 type Relation struct {

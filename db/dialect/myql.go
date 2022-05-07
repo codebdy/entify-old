@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/data"
-	"rxdrag.com/entity-engine/model/graph"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/model/table"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/data"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/model/table"
+	"rxdrag.com/entify/utils"
 )
 
 type MySQLBuilder struct {

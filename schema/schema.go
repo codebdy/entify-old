@@ -2,10 +2,10 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/resolve"
-	"rxdrag.com/entity-engine/scalars"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/resolve"
+	"rxdrag.com/entify/scalars"
 )
 
 var EntityType *graphql.Union

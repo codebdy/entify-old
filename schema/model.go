@@ -2,12 +2,12 @@ package schema
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"rxdrag.com/entity-engine/consts"
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/meta"
+	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/meta"
 
-	"rxdrag.com/entity-engine/repository"
-	"rxdrag.com/entity-engine/utils"
+	"rxdrag.com/entify/repository"
+	"rxdrag.com/entify/utils"
 )
 
 func QueryPublishedMeta() interface{} {

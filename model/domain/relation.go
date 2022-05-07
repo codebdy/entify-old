@@ -1,6 +1,6 @@
 package domain
 
-import "rxdrag.com/entity-engine/model/meta"
+import "rxdrag.com/entify/model/meta"
 
 type Relation struct {
 	Uuid                   string

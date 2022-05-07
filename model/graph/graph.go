@@ -3,9 +3,9 @@ package graph
 import (
 	"fmt"
 
-	"rxdrag.com/entity-engine/model/domain"
-	"rxdrag.com/entity-engine/model/meta"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/model/domain"
+	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/model/table"
 )
 
 type Model struct {

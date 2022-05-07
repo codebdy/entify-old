@@ -3,8 +3,8 @@ package dialect
 import (
 	"testing"
 
-	"rxdrag.com/entity-engine/model"
-	"rxdrag.com/entity-engine/model/table"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/table"
 )
 
 func TestModifyTableName(t *testing.T) {
