@@ -11,18 +11,9 @@ import (
 	"rxdrag.com/entify/schema"
 )
 
+const PORT = 4000
+
 func main() {
-	// go func() {
-	// 	var i int
-
-	// 	for {
-	// 		i++
-	// 		time.Sleep(250 * time.Millisecond)
-	// 		schema.SubcriptionCache <- i
-	// 	}
-
-	// }()
-
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,
 		Pretty:          true,
@@ -36,9 +27,9 @@ func main() {
 		),
 	)
 	http.HandleFunc("/subscriptions", handler.NewFunc(schema.ResolveSchema))
-	fmt.Println("Running a GraphQL API server at http://localhost:8080/graphql")
-	fmt.Println("Subscriptions endpoint is http://localhost:8080/subscriptions")
-	err2 := http.ListenAndServe(":8080", nil)
+	fmt.Println(fmt.Sprintf("Running a GraphQL API server at http://localhost:%d/graphql", PORT))
+	fmt.Println(fmt.Sprintf("Subscriptions endpoint is http://localhost:%d/subscriptions", PORT))
+	err2 := http.ListenAndServe(fmt.Sprintf(":%d", PORT), nil)
 	if err2 != nil {
 		fmt.Printf("启动失败:%s", err2)
 	}
