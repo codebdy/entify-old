@@ -15,13 +15,14 @@ type config struct {
 }
 
 type DbConfig struct {
-	Driver   string `json:"driver"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Database string `json:"database"`
-	ID       int    `json:"id"`
+	Installed bool   `json:"installed"`
+	Driver    string `json:"driver"`
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	Host      string `json:"host"`
+	Port      string `json:"port"`
+	Database  string `json:"database"`
+	ID        int    `json:"id"`
 }
 
 const (
@@ -82,6 +83,7 @@ func WriteConfig() {
 }
 
 func SetDbConfig(cfg DbConfig) {
+	SetBool(consts.INSTALLED, cfg.Installed)
 	SetString(consts.DB_DRIVER, cfg.Driver)
 	SetString(consts.DB_DATABASE, cfg.Database)
 	SetString(consts.DB_HOST, cfg.Host)
@@ -92,8 +94,8 @@ func SetDbConfig(cfg DbConfig) {
 }
 
 func GetDbConfig() DbConfig {
-	fmt.Println("吼吼", c.v)
 	var cfg DbConfig
+	cfg.Installed = GetBool(consts.INSTALLED)
 	cfg.Driver = GetString(consts.DB_DRIVER)
 	cfg.Database = GetString(consts.DB_DATABASE)
 	cfg.Host = GetString(consts.DB_HOST)

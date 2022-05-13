@@ -10,3 +10,9 @@ const (
 	INSTALLED   = "installed"
 	SERVICE_ID  = "id"
 )
+
+const (
+	ADMIN         = "admin"
+	ADMINPASSWORD = "adminPassword"
+	WITHDEMO      = "withDemo"
+)
