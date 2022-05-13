@@ -2,8 +2,10 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/scalars"
 )
@@ -94,6 +96,11 @@ func ResolveSchema() *graphql.Schema {
 }
 
 func init() {
-	LoadModel()
+	repository.InitGlobalModel()
+	installed := config.GetBool(consts.INSTALLED)
+	if installed {
+		repository.LoadModel()
+		LoadModel()
+	}
 	MakeSchema()
 }

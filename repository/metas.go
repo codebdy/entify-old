@@ -42,7 +42,7 @@ func DecodeContent(obj interface{}) *meta.MetaContent {
 	return &content
 }
 
-func LoadModel() {
+func InitGlobalModel() {
 	//初始值，用户取meta信息，取完后，换掉该部分内容
 	initMeta := meta.MetaContent{
 		Classes: []meta.ClassMeta{
@@ -51,6 +51,9 @@ func LoadModel() {
 		},
 	}
 	model.GlobalModel = model.New(&initMeta)
+}
+
+func LoadModel() {
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
 	publishedContent.Classes = append(publishedContent.Classes, meta.MetaStatusEnum)
@@ -59,6 +62,6 @@ func LoadModel() {
 	model.GlobalModel = model.New(publishedContent)
 }
 
-func init() {
-	LoadModel()
-}
+// func init() {
+// 	LoadModel()
+// }

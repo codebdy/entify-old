@@ -68,6 +68,7 @@ func queryFields() graphql.Fields {
 			},
 		},
 	}
+
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		appendToQueryFields(intf, &queryFields)
 	}

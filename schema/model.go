@@ -62,6 +62,6 @@ func LoadModel() {
 	model.GlobalModel = model.New(publishedContent)
 }
 
-func init() {
-	LoadModel()
-}
+// func init() {
+// 	LoadModel()
+// }
