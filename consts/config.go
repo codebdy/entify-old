@@ -16,3 +16,9 @@ const (
 	ADMINPASSWORD = "adminPassword"
 	WITHDEMO      = "withDemo"
 )
+
+const (
+	SERVICE_NODE_TYPE = "serviceType"
+	NORMAL_SERVICE    = "normal"
+	AUTH_SERVICE      = "auth"
+)

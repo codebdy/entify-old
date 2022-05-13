@@ -2,26 +2,17 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/authentication/jwt"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/utils"
 )
 
 const INPUT = "input"
-
-type InstallArg struct {
-	DbConfig      config.DbConfig
-	Admin         string `json:"admin"`
-	AdminPassword string `json:"adminPassword"`
-	WithDemo      string `json:"withDemo"`
-}
 
 var installInputType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
@@ -113,16 +104,7 @@ func rootMutation() *graphql.Object {
 					},
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				input := InstallArg{}
-				mapstructure.Decode(p.Args[INPUT], &input)
-				repository.Install(input.DbConfig)
-
-				config.SetDbConfig(input.DbConfig)
-				config.SetBool(consts.INSTALLED, true)
-				config.WriteConfig()
-				return config.GetBool(consts.INSTALLED), nil
-			},
+			Resolve: resolve.InstallResolve,
 		}
 	}
 
