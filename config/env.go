@@ -21,6 +21,7 @@ type DbConfig struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	Database string `json:"database"`
+	ID       int    `json:"id"`
 }
 
 const (
@@ -53,7 +54,15 @@ func GetBool(key string) bool {
 	return c.v.GetBool(key)
 }
 
+func GetInt(key string) int {
+	return c.v.GetInt(key)
+}
+
 func SetString(key string, value string) {
+	c.v.Set(key, value)
+}
+
+func SetInt(key string, value int) {
 	c.v.Set(key, value)
 }
 
@@ -78,6 +87,7 @@ func SetDbConfig(cfg DbConfig) {
 	SetString(consts.DB_PORT, cfg.Port)
 	SetString(consts.DB_USER, cfg.User)
 	SetString(consts.DB_PASSWORD, cfg.Password)
+	SetInt(consts.ID, cfg.ID)
 }
 
 func GetDbConfig() DbConfig {
@@ -88,5 +98,6 @@ func GetDbConfig() DbConfig {
 	cfg.Port = GetString(consts.DB_PORT)
 	cfg.User = GetString(consts.DB_USER)
 	cfg.Password = GetString(consts.DB_PASSWORD)
+	cfg.ID = GetInt(consts.ID)
 	return cfg
 }
