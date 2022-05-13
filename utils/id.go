@@ -8,9 +8,9 @@ const (
 )
 
 func EncodeBaseId(entityInnerId uint64) uint64 {
-	return config.SERVICE_ID<<SERVICE_BITS + entityInnerId<<ENTITY_ID_BITS
+	return uint64(config.ServiceId())<<SERVICE_BITS + entityInnerId<<ENTITY_ID_BITS
 }
 
 func DecodeEntityInnerId(id uint64) uint64 {
-	return (id - config.SERVICE_ID<<SERVICE_BITS) >> ENTITY_ID_BITS
+	return (id - uint64(config.ServiceId())<<SERVICE_BITS) >> ENTITY_ID_BITS
 }

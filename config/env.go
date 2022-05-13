@@ -101,3 +101,7 @@ func GetDbConfig() DbConfig {
 	cfg.ID = GetInt(consts.ID)
 	return cfg
 }
+
+func ServiceId() int {
+	return GetInt(consts.ID)
+}

@@ -36,7 +36,7 @@ func queryFields() graphql.Fields {
 			Type: _ServiceType,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				return map[string]interface{}{
-					consts.ID:  config.SERVICE_ID,
+					consts.ID:  config.ServiceId(),
 					consts.SDL: `query{}`,
 				}, nil
 			},
