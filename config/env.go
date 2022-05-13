@@ -103,5 +103,8 @@ func GetDbConfig() DbConfig {
 }
 
 func ServiceId() int {
-	return GetInt(consts.ID)
+	if GetBool(consts.INSTALLED) {
+		return GetInt(consts.ID)
+	}
+	return 0
 }
