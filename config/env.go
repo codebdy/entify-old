@@ -35,11 +35,12 @@ const (
 	CONFIG_NAME = "config"
 )
 
-func Init() {
+func init() {
 	c.v = viper.New()
 	c.v.SetConfigName(CONFIG_NAME) // name of config file (without extension)
 	c.v.SetConfigType(CONFIG_TYPE) // REQUIRED if the config file does not have the extension in the name
 	c.v.AddConfigPath(PATH)
+
 	err := c.v.ReadInConfig() // Find and read the config file
 	if err != nil {           // Handle errors reading the config file
 		WriteConfig()
@@ -91,6 +92,7 @@ func SetDbConfig(cfg DbConfig) {
 }
 
 func GetDbConfig() DbConfig {
+	fmt.Println("吼吼", c.v)
 	var cfg DbConfig
 	cfg.Driver = GetString(consts.DB_DRIVER)
 	cfg.Database = GetString(consts.DB_DATABASE)

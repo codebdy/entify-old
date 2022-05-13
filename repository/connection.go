@@ -10,8 +10,8 @@ type Connection struct {
 	Dbx    *db.Dbx
 }
 
-func Open() (*Connection, error) {
-	dbx, err := db.Open(config.DRIVER_NAME, config.MYSQL_CONFIG)
+func Open(cfg config.DbConfig) (*Connection, error) {
+	dbx, err := db.Open(cfg.Driver, DbString(cfg))
 	if err != nil {
 		return nil, err
 	}
