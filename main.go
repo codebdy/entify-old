@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	config.Init()
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,
 		Pretty:          true,
