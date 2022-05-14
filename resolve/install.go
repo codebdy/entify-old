@@ -11,6 +11,7 @@ import (
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/repository"
+	"rxdrag.com/entify/utils"
 )
 
 type InstallArg struct {
@@ -139,34 +140,46 @@ func demoInstance() map[string]interface{} {
 }
 
 func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
+	defer utils.PrintErrorStack()
 	input := InstallArg{}
 	mapstructure.Decode(p.Args[INPUT], &input)
+
+	config.SetDbConfig(input.DbConfig)
 
 	//创建通过 Install 创建Meta表
 	repository.Install(input.DbConfig)
 
 	//创建User实体
 	instance := data.NewInstance(userEntity(), model.GlobalModel.Graph.GetMetaEntity())
-	repository.SaveOne(instance)
-	doPublish()
+	_, err := repository.SaveOne(instance)
 
+	if err != nil {
+		return nil, err
+	}
+	err = doPublish()
+	if err != nil {
+		return nil, err
+	}
 	if input.Admin != "" {
 		instance = data.NewInstance(
 			adminInstance(input.Admin, input.AdminPassword),
 			model.GlobalModel.Graph.GetEntityByName("User"),
 		)
-		repository.SaveOne(instance)
-
+		_, err = repository.SaveOne(instance)
+		if err != nil {
+			return nil, err
+		}
 		if input.WithDemo {
 			instance = data.NewInstance(
 				demoInstance(),
 				model.GlobalModel.Graph.GetEntityByName("User"),
 			)
-			repository.SaveOne(instance)
+			_, err = repository.SaveOne(instance)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
-
-	config.SetDbConfig(input.DbConfig)
 	config.SetBool(consts.INSTALLED, true)
 	config.SetInt(consts.SERVICE_ID, input.ID)
 	config.WriteConfig()

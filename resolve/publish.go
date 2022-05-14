@@ -13,7 +13,7 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func doPublish() {
+func doPublish() error {
 	publishedMeta := repository.QueryPublishedMeta()
 	nextMeta := repository.QueryNextMeta()
 	fmt.Println("Start to publish")
@@ -32,8 +32,13 @@ func doPublish() {
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
-	repository.SaveOne(data.NewInstance(metaObj, model.GlobalModel.Graph.GetMetaEntity()))
+	_, err := repository.SaveOne(data.NewInstance(metaObj, model.GlobalModel.Graph.GetMetaEntity()))
+	if err != nil {
+		return err
+	}
 	repository.LoadModel()
+
+	return nil
 }
 
 func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {

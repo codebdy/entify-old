@@ -32,21 +32,25 @@ func SaveOne(instance *data.Instance) (interface{}, error) {
 	con, err := Open(config.GetDbConfig())
 	defer con.Close()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	err = con.BeginTx()
 	defer con.ClearTx()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 
 	obj, err := con.doSaveOne(instance)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	err = con.Commit()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	return obj, nil
 }
@@ -55,21 +59,25 @@ func InsertOne(instance *data.Instance) (interface{}, error) {
 	con, err := Open(config.GetDbConfig())
 	defer con.Close()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	err = con.Close()
 	defer con.ClearTx()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 
 	obj, err := con.doInsertOne(instance)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	err = con.Commit()
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return nil, err
 	}
 	return obj, nil
 }
@@ -83,17 +91,17 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 	return con.doBatchAssociations(association, ids)
 }
 
-func Install(cfg config.DbConfig) {
+func Install(cfg config.DbConfig) error {
 	con, err := Open(cfg)
 	defer con.Close()
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
+		fmt.Println(err.Error())
+		return err
 	}
 	err = con.BeginTx()
 	if err != nil {
-		fmt.Println(err)
-		panic(err)
+		fmt.Println(err.Error())
+		return err
 	}
 
 	sql := `CREATE TABLE meta (
@@ -108,12 +116,16 @@ func Install(cfg config.DbConfig) {
 	`
 	_, err = con.Dbx.Exec(sql)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return err
 	}
 
 	err = con.Commit()
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
+		return err
 	}
+
+	return nil
 }

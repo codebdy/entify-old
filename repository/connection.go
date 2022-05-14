@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/db"
 )
@@ -11,6 +13,7 @@ type Connection struct {
 }
 
 func Open(cfg config.DbConfig) (*Connection, error) {
+	fmt.Println("呵呵", DbString(cfg), cfg.Driver)
 	dbx, err := db.Open(cfg.Driver, DbString(cfg))
 	if err != nil {
 		return nil, err
