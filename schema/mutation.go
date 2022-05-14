@@ -37,7 +37,19 @@ var installInputType = graphql.NewInputObject(
 				Type: graphql.String,
 			},
 			consts.SERVICE_ID: &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			consts.ADMIN: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			consts.ADMINPASSWORD: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			consts.WITHDEMO: &graphql.InputObjectFieldConfig{
 				Type: graphql.Boolean,
+			},
+			consts.URL: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
 			},
 		},
 	},

@@ -12,6 +12,7 @@ const (
 )
 
 const (
+	URL           = "url"
 	ADMIN         = "admin"
 	ADMINPASSWORD = "adminPassword"
 	WITHDEMO      = "withDemo"
