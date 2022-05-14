@@ -53,60 +53,60 @@ func userEntity() map[string]interface{} {
 		"content": map[string]interface{}{
 			"classes": []map[string]interface{}{
 				{
-					"name":    "User",
-					"uuid":    "META_USER_UUID",
-					"innerId": 2,
+					consts.NAME: "User",
+					consts.UUID: "META_USER_UUID",
+					"innerId":   2,
 					"attributes": []map[string]interface{}{
 						{
-							"name":      "id",
-							"type":      "ID",
-							"uuid":      "RX_USER_ID_UUID",
+							consts.NAME: "id",
+							consts.TYPE: "ID",
+							consts.UUID: "RX_USER_ID_UUID",
 							"primary":   true,
 							"typeLabel": "ID",
 						},
 						{
-							"name":      "name",
-							"type":      "String",
-							"uuid":      "RX_USER_NAME_UUID",
+							consts.NAME: "name",
+							consts.TYPE: "String",
+							consts.UUID: "RX_USER_NAME_UUID",
 							"typeLabel": "String",
 							"nullable":  true,
 						},
 						{
-							"name":      "loginName",
-							"type":      "String",
-							"uuid":      "RX_USER_LOGINNAME_UUID",
+							consts.NAME: "loginName",
+							consts.TYPE: "String",
+							consts.UUID: "RX_USER_LOGINNAME_UUID",
 							"typeLabel": "String",
 						},
 						{
-							"name":      "password",
-							"type":      "String",
-							"uuid":      "RX_USER_PASSWORD_UUID",
+							consts.NAME: "password",
+							consts.TYPE: "String",
+							consts.UUID: "RX_USER_PASSWORD_UUID",
 							"typeLabel": "String",
 						},
 						{
-							"name":      "isSupper",
-							"type":      "Boolean",
-							"uuid":      "RX_USER_ISSUPPER_UUID",
+							consts.NAME: "isSupper",
+							consts.TYPE: "Boolean",
+							consts.UUID: "RX_USER_ISSUPPER_UUID",
 							"typeLabel": "Boolean",
 							"nullable":  true,
 						},
 						{
-							"name":      "isDemo",
-							"type":      "Boolean",
-							"uuid":      "RX_USER_ISDEMO_UUID",
+							consts.NAME: "isDemo",
+							consts.TYPE: "Boolean",
+							consts.UUID: "RX_USER_ISDEMO_UUID",
 							"typeLabel": "Boolean",
 							"nullable":  true,
 						},
 						{
-							"name":      consts.META_CREATEDAT,
-							"type":      "Date",
-							"uuid":      "RX_USER_CREATEDAT_UUID",
+							consts.NAME: consts.META_CREATEDAT,
+							consts.TYPE: "Date",
+							consts.UUID: "RX_USER_CREATEDAT_UUID",
 							"typeLabel": "Date",
 						},
 						{
-							"name":      consts.META_UPDATEDAT,
-							"type":      "Date",
-							"uuid":      "RX_USER_META_UPDATEDAT_UUID",
+							consts.NAME: consts.META_UPDATEDAT,
+							consts.TYPE: "Date",
+							consts.UUID: "RX_USER_META_UPDATEDAT_UUID",
 							"typeLabel": "Date",
 						},
 					},
@@ -114,8 +114,6 @@ func userEntity() map[string]interface{} {
 				},
 			},
 		},
-		//consts.META_STATUS:      meta.META_STATUS_PUBLISHED,
-		//consts.META_PUBLISHEDAT: time.Now(),
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}
@@ -123,9 +121,9 @@ func userEntity() map[string]interface{} {
 
 func adminInstance(name string, password string) map[string]interface{} {
 	return map[string]interface{}{
-		"name":                "Admin",
-		"loginName":           name,
-		"password":            bcryptEncode(password),
+		consts.NAME:           "Admin",
+		consts.LOGIN_NAME:     name,
+		consts.PASSWORD:       bcryptEncode(password),
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}
@@ -133,9 +131,9 @@ func adminInstance(name string, password string) map[string]interface{} {
 
 func demoInstance() map[string]interface{} {
 	return map[string]interface{}{
-		"name":                "Demo",
-		"loginName":           "demo",
-		"password":            bcryptEncode("demo"),
+		consts.NAME:           "Demo",
+		consts.LOGIN_NAME:     "demo",
+		consts.PASSWORD:       bcryptEncode("demo"),
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}

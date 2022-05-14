@@ -14,6 +14,7 @@ const (
 	PUBLISH                = "publish"
 	ROLLBACK               = "rollback"
 	SYNC_META              = "syncMeta"
+	NAME                   = "name"
 
 	ONE          = "one"
 	QUERY        = "query"
@@ -76,6 +77,12 @@ const (
 	ARG_OBJECTS           string = "objects"
 	RESPONSE_RETURNING    string = "returning"
 	RESPONSE_AFFECTEDROWS string = "affectedRows"
+)
+
+const (
+	UUID    string = "uuid"
+	INNERID string = "innerId"
+	TYPE    string = "type"
 )
 
 /**
