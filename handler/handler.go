@@ -130,7 +130,6 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 func (h *Handler) ContextHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	// get query
 	opts := NewRequestOptions(r)
-
 	// execute graphql query
 	params := graphql.Params{
 		Schema:         *h.SchemaResolveFn(),
