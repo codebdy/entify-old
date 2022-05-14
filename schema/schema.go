@@ -6,21 +6,10 @@ import (
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/repository"
-	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/scalars"
 )
 
 var EntityType *graphql.Union
-
-func publishResolve(p graphql.ResolveParams) (interface{}, error) {
-	reslult, err := resolve.PublishMetaResolve(p)
-	if err != nil {
-		return reslult, err
-	}
-
-	MakeSchema()
-	return reslult, nil
-}
 
 func MakeSchema() {
 	Cache.MakeCache()

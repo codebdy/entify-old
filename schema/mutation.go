@@ -83,12 +83,8 @@ func rootMutation() *graphql.Object {
 			},
 		},
 		consts.PUBLISH: &graphql.Field{
-			Type: Cache.OutputType(metaEntity.Name()),
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				result, err := publishResolve(p)
-				MakeSchema()
-				return result, err
-			},
+			Type:    Cache.OutputType(metaEntity.Name()),
+			Resolve: publishResolve,
 		},
 		consts.ROLLBACK: &graphql.Field{
 			Type:    Cache.OutputType(metaEntity.Name()),
@@ -120,11 +116,7 @@ func rootMutation() *graphql.Object {
 					},
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				result, err := resolve.InstallResolve(p)
-				MakeSchema()
-				return result, err
-			},
+			Resolve: installResolve,
 		}
 	}
 
