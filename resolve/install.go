@@ -15,7 +15,6 @@ import (
 )
 
 type InstallArg struct {
-	DbConfig      config.DbConfig
 	ID            int    `json:"id"`
 	Admin         string `json:"admin"`
 	AdminPassword string `json:"adminPassword"`
@@ -141,13 +140,14 @@ func demoInstance() map[string]interface{} {
 
 func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
+	dbConfig := config.DbConfig{}
 	input := InstallArg{}
+	mapstructure.Decode(p.Args[INPUT], &dbConfig)
 	mapstructure.Decode(p.Args[INPUT], &input)
-
-	config.SetDbConfig(input.DbConfig)
+	config.SetDbConfig(dbConfig)
 
 	//创建通过 Install 创建Meta表
-	repository.Install(input.DbConfig)
+	repository.Install(dbConfig)
 
 	//创建User实体
 	instance := data.NewInstance(userEntity(), model.GlobalModel.Graph.GetMetaEntity())
