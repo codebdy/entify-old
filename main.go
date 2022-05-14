@@ -17,6 +17,7 @@ func main() {
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,
 		Pretty:          true,
+		GraphiQLConfig:  &handler.GraphiQLConfig{},
 	})
 
 	http.Handle("/graphql",
