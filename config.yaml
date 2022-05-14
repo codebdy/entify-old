@@ -1,1 +1,8 @@
-{}
+database: entify
+driver: mysql
+host: localhost
+id: 1
+installed: true
+password: RxDragDb
+port: "3306"
+user: root

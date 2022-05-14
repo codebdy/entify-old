@@ -69,6 +69,7 @@ func userEntity() map[string]interface{} {
 							"type":      "String",
 							"uuid":      "RX_USER_NAME_UUID",
 							"typeLabel": "String",
+							"nullable":  true,
 						},
 						{
 							"name":      "loginName",
@@ -87,12 +88,14 @@ func userEntity() map[string]interface{} {
 							"type":      "Boolean",
 							"uuid":      "RX_USER_ISSUPPER_UUID",
 							"typeLabel": "Boolean",
+							"nullable":  true,
 						},
 						{
 							"name":      "isDemo",
 							"type":      "Boolean",
 							"uuid":      "RX_USER_ISDEMO_UUID",
 							"typeLabel": "Boolean",
+							"nullable":  true,
 						},
 						{
 							"name":      consts.META_CREATEDAT,
