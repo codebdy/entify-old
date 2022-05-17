@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/model"
@@ -13,9 +12,8 @@ import (
 
 func ExcuteDiff(d *model.Diff) {
 	var undoList []string
-	con, err := Open(config.GetDbConfig())
+	con, err := Open()
 	dbx := con.Dbx
-	defer dbx.Close()
 	if err != nil {
 		panic("Open db error:" + err.Error())
 	}

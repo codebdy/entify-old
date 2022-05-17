@@ -4,13 +4,11 @@ import (
 	"errors"
 	"fmt"
 
-	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/repository"
 )
 
 func Login(loginName, pwd string) (string, error) {
-	con, err := repository.Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := repository.Open()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)

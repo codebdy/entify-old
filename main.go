@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"rxdrag.com/entify/authentication"
+	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/handler"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/schema"
@@ -14,6 +15,7 @@ import (
 const PORT = 4000
 
 func main() {
+	defer db.Close()
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,
 		Pretty:          true,

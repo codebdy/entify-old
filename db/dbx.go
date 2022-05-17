@@ -5,75 +5,77 @@ import (
 	"log"
 )
 
+var openedDB *sql.DB
+
 type Dbx struct {
 	db *sql.DB
 	tx *sql.Tx
 }
 
-func (c *Dbx) BeginTx() error {
-	tx, err := c.db.Begin()
+func (d *Dbx) BeginTx() error {
+	tx, err := d.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	c.tx = tx
+	d.tx = tx
 	return nil
 }
 
-func (c *Dbx) ClearTx() {
-	c.validateTx()
-	err := c.Rollback()
+func (d *Dbx) ClearTx() {
+	d.validateTx()
+	err := d.Rollback()
 	if err != sql.ErrTxDone && err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func (c *Dbx) validateDb() {
-	if c.db == nil {
+func (d *Dbx) validateDb() {
+	if d.db == nil {
 		panic("Not init connection with db")
 	}
 }
 
-func (c *Dbx) validateTx() {
-	if c.tx == nil {
+func (d *Dbx) validateTx() {
+	if d.tx == nil {
 		panic("Not init connection with tx")
 	}
 }
 
-func (c *Dbx) Exec(sql string, args ...interface{}) (sql.Result, error) {
-	c.validateDb()
-	if c.tx != nil {
-		return c.tx.Exec(sql, args...)
+func (d *Dbx) Exec(sql string, args ...interface{}) (sql.Result, error) {
+	d.validateDb()
+	if d.tx != nil {
+		return d.tx.Exec(sql, args...)
 	}
-	return c.db.Exec(sql, args...)
+	return d.db.Exec(sql, args...)
 }
 
-func (c *Dbx) Query(query string, args ...interface{}) (*sql.Rows, error) {
-	c.validateDb()
-	if c.tx != nil {
-		return c.tx.Query(query, args...)
+func (d *Dbx) Query(query string, args ...interface{}) (*sql.Rows, error) {
+	d.validateDb()
+	if d.tx != nil {
+		return d.tx.Query(query, args...)
 	} else {
-		return c.db.Query(query, args...)
+		return d.db.Query(query, args...)
 	}
 }
 
-func (c *Dbx) QueryRow(query string, args ...interface{}) *sql.Row {
-	c.validateDb()
-	if c.tx != nil {
-		return c.tx.QueryRow(query, args...)
+func (d *Dbx) QueryRow(query string, args ...interface{}) *sql.Row {
+	d.validateDb()
+	if d.tx != nil {
+		return d.tx.QueryRow(query, args...)
 	} else {
-		return c.db.QueryRow(query, args...)
+		return d.db.QueryRow(query, args...)
 	}
 }
 
-func (c *Dbx) Close() error {
-	c.validateDb()
-	return c.db.Close()
-}
+// func (c *Dbx) Close() error {
+// 	c.validateDb()
+// 	return c.db.Close()
+// }
 
-func (c *Dbx) Commit() error {
-	c.validateTx()
-	return c.tx.Commit()
+func (d *Dbx) Commit() error {
+	d.validateTx()
+	return d.tx.Commit()
 }
 func (c *Dbx) Rollback() error {
 	c.validateTx()
@@ -81,12 +83,25 @@ func (c *Dbx) Rollback() error {
 }
 
 func Open(driver string, config string) (*Dbx, error) {
-	db, err := sql.Open(driver, config)
-	if err != nil {
-		return nil, err
+	if openedDB == nil {
+		db, err := sql.Open(driver, config)
+		openedDB = db
+		if err != nil {
+			return nil, err
+		}
 	}
 	con := Dbx{
-		db: db,
+		db: openedDB,
 	}
-	return &con, err
+	return &con, nil
+}
+
+func Close() error {
+	if openedDB != nil {
+		err := openedDB.Close()
+		openedDB = nil
+		return err
+	}
+
+	return nil
 }

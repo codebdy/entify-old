@@ -11,8 +11,7 @@ import (
 type QueryArg = map[string]interface{}
 
 func Query(node graph.Noder, args QueryArg) []InsanceData {
-	con, err := Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -20,8 +19,7 @@ func Query(node graph.Noder, args QueryArg) []InsanceData {
 }
 
 func QueryOne(node graph.Noder, args QueryArg) interface{} {
-	con, err := Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -29,8 +27,7 @@ func QueryOne(node graph.Noder, args QueryArg) interface{} {
 }
 
 func SaveOne(instance *data.Instance) (interface{}, error) {
-	con, err := Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := Open()
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -56,13 +53,11 @@ func SaveOne(instance *data.Instance) (interface{}, error) {
 }
 
 func InsertOne(instance *data.Instance) (interface{}, error) {
-	con, err := Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := Open()
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
 	}
-	err = con.Close()
 	defer con.ClearTx()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -83,8 +78,7 @@ func InsertOne(instance *data.Instance) (interface{}, error) {
 }
 
 func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
-	con, err := Open(config.GetDbConfig())
-	defer con.Close()
+	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -92,8 +86,7 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 }
 
 func Install(cfg config.DbConfig) error {
-	con, err := Open(cfg)
-	defer con.Close()
+	con, err := OpenWithConfig(cfg)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
