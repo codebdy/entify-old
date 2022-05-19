@@ -6,6 +6,7 @@ import (
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/scalars"
+	"rxdrag.com/entify/utils"
 )
 
 var EntityType *graphql.Union
@@ -117,7 +118,13 @@ func InitAuthInstallSchema() {
 			graphql.ObjectConfig{
 				Name: consts.ROOT_QUERY_NAME,
 				Fields: graphql.Fields{
-					consts.SERVICE: serviceField(),
+					consts.INSTALLED: &graphql.Field{
+						Type: graphql.Boolean,
+						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+							defer utils.PrintErrorStack()
+							return false, nil
+						},
+					},
 				},
 			},
 		),
