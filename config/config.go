@@ -1,6 +1,10 @@
 package config
 
-import "rxdrag.com/entify/consts"
+import (
+	"fmt"
+
+	"rxdrag.com/entify/consts"
+)
 
 const TABLE_NAME_MAX_LENGTH = 64
 
@@ -19,7 +23,6 @@ type Config interface {
 	getString(key string) string
 	getBool(key string) bool
 	getInt(key string) int
-	getDbConfig() DbConfig
 }
 
 func GetString(key string) string {
@@ -32,16 +35,31 @@ func GetInt(key string) int {
 	return c.getInt(key)
 }
 func GetDbConfig() DbConfig {
-	return c.getDbConfig()
+	var cfg DbConfig
+	cfg.Driver = GetString(consts.DB_DRIVER)
+	cfg.Database = GetString(consts.DB_DATABASE)
+	cfg.Host = GetString(consts.DB_HOST)
+	cfg.Port = GetString(consts.DB_PORT)
+	cfg.User = GetString(consts.DB_USER)
+	cfg.Password = GetString(consts.DB_PASSWORD)
+	if cfg.Driver == "" {
+		cfg.Driver = "mysql"
+	}
+	return cfg
 }
 
 func ServiceId() int {
-	return c.getInt(consts.SERVICE_ID)
+	serviceId := c.getInt(consts.SERVICE_ID)
+	if serviceId == 0 {
+		return 1
+	}
+	return serviceId
 }
 
 func init() {
 	c = newEnvConfig()
-	if c.getString(consts.DB_HOST) == "" {
-		c = newFileConfig()
-	}
+	fmt.Println("哈哈", c.getString(consts.DB_HOST))
+	//if c.getString(consts.DB_HOST) == "" {
+	//	c = newFileConfig()
+	//}
 }

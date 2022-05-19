@@ -2,13 +2,15 @@ package config
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/spf13/viper"
 	"rxdrag.com/entify/consts"
 )
 
 type EnvConfig struct {
-	v *viper.Viper
+	v      *viper.Viper
+	values map[string]interface{}
 }
 
 const (
@@ -19,22 +21,38 @@ const (
 func newEnvConfig() *EnvConfig {
 	var e EnvConfig
 	e.v = viper.New()
-	e.v.SetEnvPrefix(consts.CONFIG_PREFIX)
-	e.v.BindEnv(consts.DB_DRIVER)
+	e.v.BindEnv(consts.PARAMS)
 	e.v.BindEnv(consts.DB_USER)
 	e.v.BindEnv(consts.DB_PASSWORD)
 	e.v.BindEnv(consts.DB_HOST)
 	e.v.BindEnv(consts.DB_PORT)
 	e.v.BindEnv(consts.DB_DATABASE)
-	e.v.BindEnv(consts.ID)
+	e.v.BindEnv(consts.SERVICE_ID)
 
-	e.v.SetDefault(consts.SERVICE_ID, "1")
-	e.v.SetDefault(consts.DB_DRIVER, "mysql")
+	params := e.v.Get(consts.PARAMS)
+
+	if params != nil {
+		e.parseParams(params.(string))
+	}
 	return &e
 }
 
+func (e *EnvConfig) parseParams(paramsStr string) {
+	items := strings.Split(paramsStr, "&")
+	for _, item := range items {
+		elements := strings.Split(item, "=")
+		if len(elements) > 1 {
+			e.values[strings.Trim(elements[0], " ")] = strings.Trim(elements[1], " ")
+		}
+	}
+}
+
 func (e *EnvConfig) getString(key string) string {
-	str := e.v.Get(key)
+	str := e.values[key]
+	if str == nil {
+		str = e.v.Get(key)
+	}
+
 	if str != nil {
 		return str.(string)
 	}
@@ -42,7 +60,12 @@ func (e *EnvConfig) getString(key string) string {
 }
 
 func (e *EnvConfig) getBool(key string) bool {
-	return e.v.Get(key) == TRUE
+	bl := e.values[key]
+	if bl == nil {
+		return e.v.Get(key) == TRUE
+	}
+
+	return bl == TRUE
 }
 
 func (e *EnvConfig) getInt(key string) int {
@@ -55,15 +78,4 @@ func (e *EnvConfig) getInt(key string) int {
 		return int(i)
 	}
 	return 0
-}
-
-func (e *EnvConfig) getDbConfig() DbConfig {
-	var cfg DbConfig
-	cfg.Driver = e.getString(consts.DB_DRIVER)
-	cfg.Database = e.getString(consts.DB_DATABASE)
-	cfg.Host = e.getString(consts.DB_HOST)
-	cfg.Port = e.getString(consts.DB_PORT)
-	cfg.User = e.getString(consts.DB_USER)
-	cfg.Password = e.getString(consts.DB_PASSWORD)
-	return cfg
 }

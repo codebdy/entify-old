@@ -1,6 +1,7 @@
 package consts
 
 const (
+	PARAMS        = "params"
 	CONFIG_PREFIX = "entify"
 	DB_DRIVER     = "driver"
 	DB_USER       = "user"

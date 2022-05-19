@@ -43,14 +43,3 @@ func (f *FileConfig) getBool(key string) bool {
 func (f *FileConfig) getInt(key string) int {
 	return f.v.GetInt(key)
 }
-
-func (f *FileConfig) getDbConfig() DbConfig {
-	var cfg DbConfig
-	cfg.Driver = f.getString(consts.DB_DRIVER)
-	cfg.Database = f.getString(consts.DB_DATABASE)
-	cfg.Host = f.getString(consts.DB_HOST)
-	cfg.Port = f.getString(consts.DB_PORT)
-	cfg.User = f.getString(consts.DB_USER)
-	cfg.Password = f.getString(consts.DB_PASSWORD)
-	return cfg
-}
