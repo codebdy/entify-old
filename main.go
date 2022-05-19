@@ -17,9 +17,7 @@ import (
 
 const PORT = 4000
 
-func main() {
-	defer db.Close()
-
+func checkParams() {
 	dbConfig := config.GetDbConfig()
 	if dbConfig.Driver == "" ||
 		dbConfig.Host == "" ||
@@ -29,11 +27,18 @@ func main() {
 		dbConfig.Password == "" {
 		panic("Params is not enough, please set")
 	}
+}
 
+func checkMetaInstall() {
 	if !repository.IsEntityExists(consts.META_ENTITY_NAME) {
 		repository.Install()
 	}
+}
 
+func main() {
+	defer db.Close()
+	checkParams()
+	checkMetaInstall()
 	schema.InitSchema()
 
 	h := handler.New(&handler.Config{
