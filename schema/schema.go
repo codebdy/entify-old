@@ -14,16 +14,17 @@ var installInputType = graphql.NewInputObject(
 		Name: "InstallInput",
 		Fields: graphql.InputObjectConfigFieldMap{
 			consts.ADMIN: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+				Type: &graphql.NonNull{
+					OfType: graphql.String,
+				},
 			},
 			consts.ADMINPASSWORD: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+				Type: &graphql.NonNull{
+					OfType: graphql.String,
+				},
 			},
 			consts.WITHDEMO: &graphql.InputObjectFieldConfig{
 				Type: graphql.Boolean,
-			},
-			consts.URL: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
 			},
 		},
 	},

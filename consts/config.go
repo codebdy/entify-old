@@ -16,7 +16,7 @@ const (
 const (
 	URL           = "url"
 	ADMIN         = "admin"
-	ADMINPASSWORD = "adminPassword"
+	ADMINPASSWORD = "password"
 	WITHDEMO      = "withDemo"
 )
 
