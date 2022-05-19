@@ -54,6 +54,7 @@ func userEntity() map[string]interface{} {
 					consts.NAME: "User",
 					consts.UUID: "META_USER_UUID",
 					"innerId":   2,
+					"root":      true,
 					"attributes": []map[string]interface{}{
 						{
 							consts.NAME: "id",
