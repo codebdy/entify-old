@@ -6,7 +6,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/bcrypt"
-	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/data"
@@ -15,7 +14,6 @@ import (
 )
 
 type InstallArg struct {
-	ID            int    `json:"id"`
 	Admin         string `json:"admin"`
 	AdminPassword string `json:"adminPassword"`
 	WithDemo      bool   `json:"withDemo"`
@@ -141,14 +139,8 @@ func demoInstance() map[string]interface{} {
 
 func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
-	dbConfig := config.DbConfig{}
 	input := InstallArg{}
-	mapstructure.Decode(p.Args[INPUT], &dbConfig)
 	mapstructure.Decode(p.Args[INPUT], &input)
-	//config.SetDbConfig(dbConfig)
-
-	//创建通过 Install 创建Meta表
-	//repository.Install()
 
 	//创建User实体
 	instance := data.NewInstance(userEntity(), model.GlobalModel.Graph.GetMetaEntity())
@@ -164,7 +156,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	if input.Admin != "" {
 		instance = data.NewInstance(
 			adminInstance(input.Admin, input.AdminPassword),
-			model.GlobalModel.Graph.GetEntityByName("User"),
+			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 		)
 		_, err = repository.SaveOne(instance)
 		if err != nil {
@@ -173,7 +165,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 		if input.WithDemo {
 			instance = data.NewInstance(
 				demoInstance(),
-				model.GlobalModel.Graph.GetEntityByName("User"),
+				model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 			)
 			_, err = repository.SaveOne(instance)
 			if err != nil {
@@ -181,8 +173,5 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 			}
 		}
 	}
-	//config.SetBool(consts.INSTALLED, true)
-	//config.SetInt(consts.SERVICE_ID, input.ID)
-	//config.WriteConfig()
-	return repository.IsEntityExists(consts.META_ENTITY_NAME), nil
+	return repository.IsEntityExists(consts.META_USER), nil
 }

@@ -39,7 +39,12 @@ func main() {
 	defer db.Close()
 	checkParams()
 	checkMetaInstall()
-	schema.InitSchema()
+
+	if config.AuthUrl() == "" && !repository.IsEntityExists(consts.META_USER) {
+		schema.InitAuthInstallSchema()
+	} else {
+		schema.InitSchema()
+	}
 
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,

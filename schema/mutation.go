@@ -13,47 +13,6 @@ import (
 
 const INPUT = "input"
 
-var installInputType = graphql.NewInputObject(
-	graphql.InputObjectConfig{
-		Name: "InstallInput",
-		Fields: graphql.InputObjectConfigFieldMap{
-			consts.DB_DRIVER: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.DB_HOST: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.DB_PORT: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.DB_DATABASE: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.DB_USER: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.DB_PASSWORD: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.SERVICE_ID: &graphql.InputObjectFieldConfig{
-				Type: graphql.Int,
-			},
-			consts.ADMIN: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.ADMINPASSWORD: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			consts.WITHDEMO: &graphql.InputObjectFieldConfig{
-				Type: graphql.Boolean,
-			},
-			consts.URL: &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-		},
-	},
-)
-
 func rootMutation() *graphql.Object {
 	metaEntity := model.GlobalModel.Graph.GetMetaEntity()
 	mutationFields := graphql.Fields{

@@ -11,6 +11,18 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
+func serviceField() *graphql.Field {
+	return &graphql.Field{
+		Type: _ServiceType,
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			return map[string]interface{}{
+				consts.ID:  config.ServiceId(),
+				consts.SDL: `query{}`,
+			}, nil
+		},
+	}
+}
+
 func resolveTypeFn(p graphql.ResolveTypeParams) *graphql.Object {
 	if value, ok := p.Value.(map[string]interface{}); ok {
 		if id, ok := value[consts.ID].(uint64); ok {
@@ -32,15 +44,7 @@ func rootQuery() *graphql.Object {
 
 func queryFields() graphql.Fields {
 	queryFields := graphql.Fields{
-		consts.SERVICE: &graphql.Field{
-			Type: _ServiceType,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return map[string]interface{}{
-					consts.ID:  config.ServiceId(),
-					consts.SDL: `query{}`,
-				}, nil
-			},
-		},
+		consts.SERVICE: serviceField(),
 		consts.ENTITIES: &graphql.Field{
 			Type: &graphql.NonNull{
 				OfType: &graphql.List{

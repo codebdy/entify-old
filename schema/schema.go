@@ -9,6 +9,25 @@ import (
 )
 
 var EntityType *graphql.Union
+var installInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "InstallInput",
+		Fields: graphql.InputObjectConfigFieldMap{
+			consts.ADMIN: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			consts.ADMINPASSWORD: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			consts.WITHDEMO: &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+			consts.URL: &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+		},
+	},
+)
 
 func MakeSchema() {
 	Cache.MakeCache()
@@ -88,4 +107,42 @@ func InitSchema() {
 	repository.LoadModel()
 	LoadModel()
 	MakeSchema()
+}
+
+func InitAuthInstallSchema() {
+	LoadModel()
+	schemaConfig := graphql.SchemaConfig{
+		Query: graphql.NewObject(
+			graphql.ObjectConfig{
+				Name: consts.ROOT_QUERY_NAME,
+				Fields: graphql.Fields{
+					consts.SERVICE: serviceField(),
+				},
+			},
+		),
+		Mutation: graphql.NewObject(graphql.ObjectConfig{
+			Name: consts.ROOT_MUTATION_NAME,
+			Fields: graphql.Fields{
+				"installAuth": &graphql.Field{
+					Type: graphql.Boolean,
+					Args: graphql.FieldConfigArgument{
+						INPUT: &graphql.ArgumentConfig{
+							Type: &graphql.NonNull{
+								OfType: installInputType,
+							},
+						},
+					},
+					Resolve: installResolve,
+				},
+			},
+			Description: "Root mutation of entity engine. For install auth entify",
+		}),
+	}
+	theSchema, err := graphql.NewSchema(schemaConfig)
+
+	if err != nil {
+		panic(err)
+		//log.Fatalf("failed to create new schema, error: %v", err)
+	}
+	model.GlobalModel.Schema = &theSchema
 }
