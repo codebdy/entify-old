@@ -11,9 +11,9 @@ var _ServiceType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: consts.SERVICE_TYPE,
 		Fields: graphql.Fields{
-			consts.ID: &graphql.Field{ //扩展一个id字段
-				Type: graphql.Int,
-			},
+			// consts.ID: &graphql.Field{ //扩展一个id字段
+			// 	Type: graphql.Int,
+			// },
 			consts.SDL: &graphql.Field{
 				Type:        graphql.String,
 				Description: "Service SDL",
