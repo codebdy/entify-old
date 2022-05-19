@@ -77,10 +77,6 @@ func AuthUrl() string {
 	return GetString(consts.AUTH_URL)
 }
 
-func Authentication() bool {
-	return GetBool(consts.AUTHENTICATION)
-}
-
 func init() {
 	fileCfg = newFileConfig()
 	envCfg = newEnvConfig()

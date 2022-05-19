@@ -27,7 +27,6 @@ func newEnvConfig() *EnvConfig {
 	e.v.BindEnv(consts.DB_DATABASE)
 	e.v.BindEnv(consts.SERVICE_ID)
 	e.v.BindEnv(consts.AUTH_URL)
-	e.v.BindEnv(consts.AUTHENTICATION)
 	return &e
 }
 
