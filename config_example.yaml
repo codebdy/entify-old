@@ -1,0 +1,8 @@
+id: 1
+driver: mysql
+database: database_ name
+host: host_name
+user: usename
+password: your_password
+port: "3306"
+
