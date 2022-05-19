@@ -145,7 +145,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	input := InstallArg{}
 	mapstructure.Decode(p.Args[INPUT], &dbConfig)
 	mapstructure.Decode(p.Args[INPUT], &input)
-	config.SetDbConfig(dbConfig)
+	//config.SetDbConfig(dbConfig)
 
 	//创建通过 Install 创建Meta表
 	repository.Install(dbConfig)
@@ -181,8 +181,8 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 			}
 		}
 	}
-	config.SetBool(consts.INSTALLED, true)
-	config.SetInt(consts.SERVICE_ID, input.ID)
-	config.WriteConfig()
-	return config.GetBool(consts.INSTALLED), nil
+	//config.SetBool(consts.INSTALLED, true)
+	//config.SetInt(consts.SERVICE_ID, input.ID)
+	//config.WriteConfig()
+	return repository.Installed(), nil
 }

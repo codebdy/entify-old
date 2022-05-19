@@ -85,6 +85,10 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 	return con.doBatchAssociations(association, ids)
 }
 
+func Installed() bool {
+	return false
+}
+
 func Install(cfg config.DbConfig) error {
 	con, err := OpenWithConfig(cfg)
 	if err != nil {

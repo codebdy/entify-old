@@ -1,14 +1,15 @@
 package consts
 
 const (
-	DB_DRIVER   = "driver"
-	DB_USER     = "user"
-	DB_PASSWORD = "password"
-	DB_HOST     = "host"
-	DB_PORT     = "port"
-	DB_DATABASE = "database"
-	INSTALLED   = "installed"
-	SERVICE_ID  = "id"
+	CONFIG_PREFIX = "entify"
+	DB_DRIVER     = "driver"
+	DB_USER       = "user"
+	DB_PASSWORD   = "password"
+	DB_HOST       = "host"
+	DB_PORT       = "port"
+	DB_DATABASE   = "database"
+	SERVICE_ID    = "id"
+	AUTH_URL      = "authUrl"
 )
 
 const (

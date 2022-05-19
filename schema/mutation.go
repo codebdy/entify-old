@@ -4,7 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/authentication/jwt"
-	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
@@ -106,19 +105,19 @@ func rootMutation() *graphql.Object {
 		appendServiceMutationFields(service, &mutationFields)
 	}
 
-	if !config.GetBool(consts.INSTALLED) {
-		mutationFields["install"] = &graphql.Field{
-			Type: graphql.Boolean,
-			Args: graphql.FieldConfigArgument{
-				INPUT: &graphql.ArgumentConfig{
-					Type: &graphql.NonNull{
-						OfType: installInputType,
-					},
-				},
-			},
-			Resolve: installResolve,
-		}
-	}
+	// if !config.GetBool(consts.INSTALLED) {
+	// 	mutationFields["install"] = &graphql.Field{
+	// 		Type: graphql.Boolean,
+	// 		Args: graphql.FieldConfigArgument{
+	// 			INPUT: &graphql.ArgumentConfig{
+	// 				Type: &graphql.NonNull{
+	// 					OfType: installInputType,
+	// 				},
+	// 			},
+	// 		},
+	// 		Resolve: installResolve,
+	// 	}
+	// }
 
 	rootMutation := graphql.ObjectConfig{
 		Name:        consts.ROOT_MUTATION_NAME,
