@@ -14,5 +14,5 @@ RUN go get ./...
 RUN go mod vendor
 RUN go build -o entify
 
-EXPOSE 8010
+EXPOSE 4000
 CMD ["./entify"]
