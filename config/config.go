@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"rxdrag.com/entify/consts"
 )
 
@@ -65,6 +67,7 @@ func GetDbConfig() DbConfig {
 func ServiceId() int {
 	serviceId := GetInt(consts.SERVICE_ID)
 	if serviceId == 0 {
+		fmt.Println("Not set service id, use 1 as service id")
 		return 1
 	}
 	return serviceId

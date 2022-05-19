@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"rxdrag.com/entify/authentication"
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/handler"
 	"rxdrag.com/entify/resolve"
@@ -16,6 +17,17 @@ const PORT = 4000
 
 func main() {
 	defer db.Close()
+
+	dbConfig := config.GetDbConfig()
+	if dbConfig.Driver == "" ||
+		dbConfig.Host == "" ||
+		dbConfig.Database == "" ||
+		dbConfig.User == "" ||
+		dbConfig.Port == "" ||
+		dbConfig.Password == "" {
+		panic("Params is not enough, please set")
+	}
+
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,
 		Pretty:          true,
