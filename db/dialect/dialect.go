@@ -51,6 +51,8 @@ type SQLBuilder interface {
 	BuildQueryPovitSQL(povit *data.AssociationPovit) string
 	BuildInsertPovitSQL(povit *data.AssociationPovit) string
 	BuildDeletePovitSQL(povit *data.AssociationPovit) string
+
+	BuildTableCheckSQL(name string, database string) string
 }
 
 func GetSQLBuilder() SQLBuilder {

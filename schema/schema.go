@@ -83,12 +83,9 @@ func ResolveSchema() *graphql.Schema {
 	return model.GlobalModel.Schema
 }
 
-func init() {
+func InitSchema() {
 	repository.InitGlobalModel()
-	installed := repository.Installed()
-	if installed {
-		repository.LoadModel()
-		LoadModel()
-	}
+	repository.LoadModel()
+	LoadModel()
 	MakeSchema()
 }

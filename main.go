@@ -7,8 +7,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/config"
+	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/handler"
+	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/schema"
 )
@@ -27,6 +29,12 @@ func main() {
 		dbConfig.Password == "" {
 		panic("Params is not enough, please set")
 	}
+
+	if !repository.IsEntityExists(consts.META_ENTITY_NAME) {
+		repository.Install()
+	}
+
+	schema.InitSchema()
 
 	h := handler.New(&handler.Config{
 		SchemaResolveFn: schema.ResolveSchema,

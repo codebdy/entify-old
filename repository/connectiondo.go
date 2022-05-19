@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/db/dialect"
@@ -545,4 +546,17 @@ func (con *Connection) doDeleteInstance(instance *data.Instance) {
 			con.deleteAssociatedInstances(asso, instance.Id)
 		}
 	}
+}
+
+func (con *Connection) doCheckEntity(name string) bool {
+	sqlBuilder := dialect.GetSQLBuilder()
+	var count int
+	err := con.Dbx.QueryRow(sqlBuilder.BuildTableCheckSQL(name, config.GetDbConfig().Database)).Scan(&count)
+	switch {
+	case err == sql.ErrNoRows:
+		return false
+	case err != nil:
+		panic(err.Error())
+	}
+	return count > 0
 }

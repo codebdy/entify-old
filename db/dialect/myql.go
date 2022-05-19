@@ -456,6 +456,14 @@ func (b *MySQLBuilder) BuildDeletePovitSQL(povit *data.AssociationPovit) string 
 	)
 }
 
+func (b *MySQLBuilder) BuildTableCheckSQL(name string, database string) string {
+	return fmt.Sprintf(
+		"SELECT COUNT(*) FROM information_schema.TABLES WHERE table_name ='%s' AND table_schema ='%s'",
+		name,
+		database,
+	)
+}
+
 func updateSetFields(fields []*data.Field) string {
 	if len(fields) == 0 {
 		panic("No update fields")

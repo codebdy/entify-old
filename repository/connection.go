@@ -10,7 +10,7 @@ type Connection struct {
 	Dbx    *db.Dbx
 }
 
-func OpenWithConfig(cfg config.DbConfig) (*Connection, error) {
+func openWithConfig(cfg config.DbConfig) (*Connection, error) {
 	dbx, err := db.Open(cfg.Driver, DbString(cfg))
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func OpenWithConfig(cfg config.DbConfig) (*Connection, error) {
 
 func Open() (*Connection, error) {
 	cfg := config.GetDbConfig()
-	return OpenWithConfig(cfg)
+	return openWithConfig(cfg)
 }
 
 func (c *Connection) BeginTx() error {

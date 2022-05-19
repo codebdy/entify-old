@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 
-	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
 )
@@ -85,12 +84,16 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 	return con.doBatchAssociations(association, ids)
 }
 
-func Installed() bool {
-	return false
+func IsEntityExists(name string) bool {
+	con, err := Open()
+	if err != nil {
+		panic(err.Error())
+	}
+	return con.doCheckEntity(name)
 }
 
-func Install(cfg config.DbConfig) error {
-	con, err := OpenWithConfig(cfg)
+func Install() error {
+	con, err := Open()
 	if err != nil {
 		fmt.Println(err.Error())
 		return err

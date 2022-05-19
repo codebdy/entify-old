@@ -148,7 +148,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	//config.SetDbConfig(dbConfig)
 
 	//创建通过 Install 创建Meta表
-	repository.Install(dbConfig)
+	//repository.Install()
 
 	//创建User实体
 	instance := data.NewInstance(userEntity(), model.GlobalModel.Graph.GetMetaEntity())
@@ -184,5 +184,5 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	//config.SetBool(consts.INSTALLED, true)
 	//config.SetInt(consts.SERVICE_ID, input.ID)
 	//config.WriteConfig()
-	return repository.Installed(), nil
+	return repository.IsEntityExists(consts.META_ENTITY_NAME), nil
 }
