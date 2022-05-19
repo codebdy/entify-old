@@ -1,7 +1,6 @@
 package consts
 
 const (
-	PARAMS        = "params"
 	CONFIG_PREFIX = "entify"
 	DB_DRIVER     = "driver"
 	DB_USER       = "user"
@@ -9,8 +8,8 @@ const (
 	DB_HOST       = "host"
 	DB_PORT       = "port"
 	DB_DATABASE   = "database"
-	SERVICE_ID    = "id"
-	AUTH_URL      = "authUrl"
+	SERVICE_ID    = "service_id"
+	AUTH_URL      = "auth_url"
 )
 
 const (

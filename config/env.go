@@ -2,15 +2,13 @@ package config
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/spf13/viper"
 	"rxdrag.com/entify/consts"
 )
 
 type EnvConfig struct {
-	v      *viper.Viper
-	values map[string]interface{}
+	v *viper.Viper
 }
 
 const (
@@ -21,38 +19,19 @@ const (
 func newEnvConfig() *EnvConfig {
 	var e EnvConfig
 	e.v = viper.New()
-	e.v.BindEnv(consts.PARAMS)
 	e.v.BindEnv(consts.DB_USER)
+	e.v.BindEnv(consts.DB_DRIVER)
 	e.v.BindEnv(consts.DB_PASSWORD)
 	e.v.BindEnv(consts.DB_HOST)
 	e.v.BindEnv(consts.DB_PORT)
 	e.v.BindEnv(consts.DB_DATABASE)
 	e.v.BindEnv(consts.SERVICE_ID)
-
-	params := e.v.Get(consts.PARAMS)
-
-	if params != nil {
-		e.parseParams(params.(string))
-	}
+	e.v.BindEnv(consts.AUTH_URL)
 	return &e
 }
 
-func (e *EnvConfig) parseParams(paramsStr string) {
-	items := strings.Split(paramsStr, "&")
-	for _, item := range items {
-		elements := strings.Split(item, "=")
-		if len(elements) > 1 {
-			e.values[strings.Trim(elements[0], " ")] = strings.Trim(elements[1], " ")
-		}
-	}
-}
-
 func (e *EnvConfig) getString(key string) string {
-	str := e.values[key]
-	if str == nil {
-		str = e.v.Get(key)
-	}
-
+	str := e.v.Get(key)
 	if str != nil {
 		return str.(string)
 	}
@@ -60,12 +39,7 @@ func (e *EnvConfig) getString(key string) string {
 }
 
 func (e *EnvConfig) getBool(key string) bool {
-	bl := e.values[key]
-	if bl == nil {
-		return e.v.Get(key) == TRUE
-	}
-
-	return bl == TRUE
+	return e.v.Get(key) == TRUE
 }
 
 func (e *EnvConfig) getInt(key string) int {

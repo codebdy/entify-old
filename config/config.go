@@ -73,6 +73,10 @@ func ServiceId() int {
 	return serviceId
 }
 
+func AuthUrl() string {
+	return GetString(consts.AUTH_URL)
+}
+
 func init() {
 	fileCfg = newFileConfig()
 	envCfg = newEnvConfig()
