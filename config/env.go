@@ -34,7 +34,11 @@ func newEnvConfig() *EnvConfig {
 }
 
 func (e *EnvConfig) getString(key string) string {
-	return e.v.Get(key).(string)
+	str := e.v.Get(key)
+	if str != nil {
+		return str.(string)
+	}
+	return ""
 }
 
 func (e *EnvConfig) getBool(key string) bool {
@@ -43,6 +47,9 @@ func (e *EnvConfig) getBool(key string) bool {
 
 func (e *EnvConfig) getInt(key string) int {
 	value := e.getString(key)
+	if value == "" {
+		return 0
+	}
 	i, err := strconv.ParseInt(value, 0, 32)
 	if err != nil {
 		return int(i)
