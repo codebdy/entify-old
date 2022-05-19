@@ -1,14 +1,13 @@
 package config
 
 import (
-	"fmt"
-
 	"rxdrag.com/entify/consts"
 )
 
 const TABLE_NAME_MAX_LENGTH = 64
 
-var c Config
+var fileCfg Config
+var envCfg Config
 
 type DbConfig struct {
 	Driver   string `json:"driver"`
@@ -26,14 +25,29 @@ type Config interface {
 }
 
 func GetString(key string) string {
-	return c.getString(key)
+	str := envCfg.getString(key)
+	if str == "" {
+		str = fileCfg.getString(key)
+	}
+	return str
 }
+
 func GetBool(key string) bool {
-	return c.getBool(key)
+	boolValue := envCfg.getBool(key)
+	if !boolValue {
+		boolValue = fileCfg.getBool(key)
+	}
+	return boolValue
 }
+
 func GetInt(key string) int {
-	return c.getInt(key)
+	intValue := envCfg.getInt(key)
+	if intValue == 0 {
+		intValue = fileCfg.getInt(key)
+	}
+	return intValue
 }
+
 func GetDbConfig() DbConfig {
 	var cfg DbConfig
 	cfg.Driver = GetString(consts.DB_DRIVER)
@@ -49,7 +63,7 @@ func GetDbConfig() DbConfig {
 }
 
 func ServiceId() int {
-	serviceId := c.getInt(consts.SERVICE_ID)
+	serviceId := GetInt(consts.SERVICE_ID)
 	if serviceId == 0 {
 		return 1
 	}
@@ -57,9 +71,6 @@ func ServiceId() int {
 }
 
 func init() {
-	c = newEnvConfig()
-	fmt.Println("哈哈", c.getString(consts.DB_HOST))
-	//if c.getString(consts.DB_HOST) == "" {
-	//	c = newFileConfig()
-	//}
+	fileCfg = newFileConfig()
+	envCfg = newEnvConfig()
 }
