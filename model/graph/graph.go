@@ -63,7 +63,7 @@ func New(m *domain.Model) *Model {
 			}
 		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
-		} else if cls.StereoType == meta.CLASS_SERVICE {
+		} else if cls.StereoType == meta.CLASS_EXTERNAL {
 			model.Services = append(model.Services, NewClass(cls))
 		}
 	}
