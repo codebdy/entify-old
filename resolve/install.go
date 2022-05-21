@@ -46,67 +46,123 @@ func bcryptEncode(value string) string {
 //     fmt.Println("pw ok")
 // }
 
-func userEntity() map[string]interface{} {
+func predefinedEntities() map[string]interface{} {
 	return map[string]interface{}{
 		"content": map[string]interface{}{
 			"classes": []map[string]interface{}{
 				{
-					consts.NAME: "User",
-					consts.UUID: "META_USER_UUID",
-					"innerId":   2,
-					"root":      true,
+					consts.NAME:   consts.META_USER,
+					consts.UUID:   "META_USER_UUID",
+					"innerId":     2,
+					"root":        true,
+					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
 						{
-							consts.NAME: "id",
-							consts.TYPE: "ID",
-							consts.UUID: "RX_USER_ID_UUID",
-							"primary":   true,
-							"typeLabel": "ID",
+							consts.NAME:   "id",
+							consts.TYPE:   "ID",
+							consts.UUID:   "RX_USER_ID_UUID",
+							"primary":     true,
+							"typeLabel":   "ID",
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: "name",
-							consts.TYPE: "String",
-							consts.UUID: "RX_USER_NAME_UUID",
-							"typeLabel": "String",
-							"nullable":  true,
+							consts.NAME:   "name",
+							consts.TYPE:   "String",
+							consts.UUID:   "RX_USER_NAME_UUID",
+							"typeLabel":   "String",
+							"nullable":    true,
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: "loginName",
-							consts.TYPE: "String",
-							consts.UUID: "RX_USER_LOGINNAME_UUID",
-							"typeLabel": "String",
+							consts.NAME:   "loginName",
+							consts.TYPE:   "String",
+							consts.UUID:   "RX_USER_LOGINNAME_UUID",
+							"typeLabel":   "String",
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: "password",
-							consts.TYPE: "String",
-							consts.UUID: "RX_USER_PASSWORD_UUID",
-							"typeLabel": "String",
+							consts.NAME:   "password",
+							consts.TYPE:   "String",
+							consts.UUID:   "RX_USER_PASSWORD_UUID",
+							"typeLabel":   "String",
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: "isSupper",
-							consts.TYPE: "Boolean",
-							consts.UUID: "RX_USER_ISSUPPER_UUID",
-							"typeLabel": "Boolean",
-							"nullable":  true,
+							consts.NAME:   "isSupper",
+							consts.TYPE:   "Boolean",
+							consts.UUID:   "RX_USER_ISSUPPER_UUID",
+							"typeLabel":   "Boolean",
+							"nullable":    true,
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: "isDemo",
-							consts.TYPE: "Boolean",
-							consts.UUID: "RX_USER_ISDEMO_UUID",
-							"typeLabel": "Boolean",
-							"nullable":  true,
+							consts.NAME:   "isDemo",
+							consts.TYPE:   "Boolean",
+							consts.UUID:   "RX_USER_ISDEMO_UUID",
+							"typeLabel":   "Boolean",
+							"nullable":    true,
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: consts.META_CREATEDAT,
-							consts.TYPE: "Date",
-							consts.UUID: "RX_USER_CREATEDAT_UUID",
-							"typeLabel": "Date",
+							consts.NAME:   consts.META_CREATEDAT,
+							consts.TYPE:   "Date",
+							consts.UUID:   "RX_USER_CREATEDAT_UUID",
+							"typeLabel":   "Date",
+							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME: consts.META_UPDATEDAT,
-							consts.TYPE: "Date",
-							consts.UUID: "RX_USER_META_UPDATEDAT_UUID",
-							"typeLabel": "Date",
+							consts.NAME:   consts.META_UPDATEDAT,
+							consts.TYPE:   "Date",
+							consts.UUID:   "RX_USER_META_UPDATEDAT_UUID",
+							"typeLabel":   "Date",
+							consts.SYSTEM: true,
+						},
+					},
+					"stereoType": "Entity",
+				},
+				{
+					consts.NAME:   consts.META_ROLE,
+					consts.UUID:   "META_ROLE_UUID",
+					"innerId":     3,
+					"root":        true,
+					consts.SYSTEM: true,
+					"attributes": []map[string]interface{}{
+						{
+							consts.NAME:   "id",
+							consts.TYPE:   "ID",
+							consts.UUID:   "RX_ROLE_ID_UUID",
+							"primary":     true,
+							"typeLabel":   "ID",
+							consts.SYSTEM: true,
+						},
+						{
+							consts.NAME:   "name",
+							consts.TYPE:   "String",
+							consts.UUID:   "RX_ROLE_NAME_UUID",
+							"typeLabel":   "String",
+							"nullable":    true,
+							consts.SYSTEM: true,
+						},
+						{
+							consts.NAME:   "description",
+							consts.TYPE:   "String",
+							consts.UUID:   "RX_ROLE_DESCRIPTION_UUID",
+							"typeLabel":   "String",
+							consts.SYSTEM: true,
+						},
+						{
+							consts.NAME:   consts.META_CREATEDAT,
+							consts.TYPE:   "Date",
+							consts.UUID:   "RX_ROLE_CREATEDAT_UUID",
+							"typeLabel":   "Date",
+							consts.SYSTEM: true,
+						},
+						{
+							consts.NAME:   consts.META_UPDATEDAT,
+							consts.TYPE:   "Date",
+							consts.UUID:   "RX_ROLE_META_UPDATEDAT_UUID",
+							"typeLabel":   "Date",
+							consts.SYSTEM: true,
 						},
 					},
 					"stereoType": "Entity",
@@ -144,7 +200,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	mapstructure.Decode(p.Args[INPUT], &input)
 
 	//创建User实体
-	instance := data.NewInstance(userEntity(), model.GlobalModel.Graph.GetMetaEntity())
+	instance := data.NewInstance(predefinedEntities(), model.GlobalModel.Graph.GetMetaEntity())
 	_, err := repository.SaveOne(instance)
 
 	if err != nil {

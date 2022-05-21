@@ -21,4 +21,5 @@ type AttributeMeta struct {
 	Readonly    bool   `json:"readonly"`
 	Description string `json:"description"`
 	TypeLabel   string `json:"typeLabel"`
+	System      bool   `json:"system"`
 }

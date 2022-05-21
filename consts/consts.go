@@ -130,3 +130,5 @@ const (
 const ASSOCIATION_OWNER_ID = "owner__rx__id"
 
 const META_USER = "User"
+const META_ROLE = "Role"
+const SYSTEM = "System"

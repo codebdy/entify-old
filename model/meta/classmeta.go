@@ -18,4 +18,5 @@ type ClassMeta struct {
 	Root        bool            `json:"root"`
 	Description string          `json:"description"`
 	SoftDelete  bool            `json:"softDelete"`
+	System      bool            `json:"system"`
 }
