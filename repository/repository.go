@@ -120,6 +120,36 @@ func Install() error {
 		return err
 	}
 
+	sql = `CREATE TABLE ability (
+		id bigint NOT NULL AUTO_INCREMENT,
+		entityUuid text NOT NULL,
+		columnUuid text DEFAULT NULL,
+		can tinyint(1) NOT NULL,
+		expression text NOT NULL,
+		abilityType tinyint(1) NOT NULL,
+		roleId bigint NOT NULL,
+		PRIMARY KEY (id)
+	) ENGINE=InnoDB AUTO_INCREMENT=4503621102206976 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+	`
+	_, err = con.Dbx.Exec(sql)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
+	sql = `CREATE TABLE entity_auth_settings (
+		id bigint NOT NULL AUTO_INCREMENT,
+		entityUuid text NOT NULL,
+		expand tinyint(1) NOT NULL,
+		PRIMARY KEY (id)
+	) ENGINE=InnoDB AUTO_INCREMENT=4503616807239680 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+	`
+	_, err = con.Dbx.Exec(sql)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err
+	}
+
 	err = con.Commit()
 
 	if err != nil {

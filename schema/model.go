@@ -51,13 +51,19 @@ func LoadModel() {
 		Classes: []meta.ClassMeta{
 			meta.MetaStatusEnum,
 			meta.MetaClass,
+			meta.EntityAuthSettingsClass,
+			meta.AbilityClass,
 		},
 	}
 	model.GlobalModel = model.New(&initMeta)
 	publishedMeta := QueryPublishedMeta()
 	publishedContent := DecodeContent(publishedMeta)
-	publishedContent.Classes = append(publishedContent.Classes, meta.MetaStatusEnum)
-	publishedContent.Classes = append(publishedContent.Classes, meta.MetaClass)
+	publishedContent.Classes = append(publishedContent.Classes,
+		meta.MetaStatusEnum,
+		meta.MetaClass,
+		meta.EntityAuthSettingsClass,
+		meta.AbilityClass,
+	)
 
 	model.GlobalModel = model.New(publishedContent)
 }

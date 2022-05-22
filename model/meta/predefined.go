@@ -73,3 +73,97 @@ var MetaClass = ClassMeta{
 		},
 	},
 }
+
+var EntityAuthSettingsClass = ClassMeta{
+	Name:    "EntityAuthSettings",
+	Uuid:    "META_ENTITY_AUTH_SETTINGS_UUID",
+	InnerId: 2,
+	Root:    true,
+	System:  true,
+	Attributes: []AttributeMeta{
+		{
+			Name:      consts.ID,
+			Type:      consts.ID,
+			Uuid:      "RX_ENTITY_AUTH_SETTINGS_ID_UUID",
+			Primary:   true,
+			TypeLabel: consts.ID,
+			System:    true,
+		},
+		{
+			Name:      "entityUuid",
+			Type:      "String",
+			Uuid:      "RX_ENTITY_AUTH_SETTINGS_ENTITY_UUID_UUID",
+			TypeLabel: "String",
+			System:    true,
+		},
+		{
+			Name:      "expand",
+			Type:      "Boolean",
+			Uuid:      "RX_ENTITY_AUTH_SETTINGS_EXPAND_UUID",
+			TypeLabel: "Boolean",
+			System:    true,
+		},
+	},
+	StereoType: "Entity",
+}
+
+var AbilityClass = ClassMeta{
+	Name:    "Ability",
+	Uuid:    "META_ABILITY_UUID",
+	InnerId: 3,
+	System:  true,
+	Attributes: []AttributeMeta{
+		{
+			Name:      consts.ID,
+			Type:      consts.ID,
+			Uuid:      "RX_ABILITY_ID_UUID",
+			Primary:   true,
+			TypeLabel: consts.ID,
+			System:    true,
+		},
+		{
+			Name:      "entityUuid",
+			Type:      "String",
+			Uuid:      "RX_ABILITY_ENTITY_UUID_UUID",
+			TypeLabel: "String",
+			System:    true,
+		},
+		{
+			Name:      "columnUuid",
+			Type:      "String",
+			Uuid:      "RX_ABILITY_COLUMN_UUID_UUID",
+			TypeLabel: "String",
+			System:    true,
+		},
+		{
+			Name:      "can",
+			Type:      "Boolean",
+			Uuid:      "RX_ABILITY_CAN_UUID",
+			TypeLabel: "Boolean",
+			System:    true,
+		},
+		{
+			Name:      "expression",
+			Type:      "String",
+			Uuid:      "RX_ABILITY_EXPRESSION_UUID",
+			TypeLabel: "String",
+			Length:    2000,
+			System:    true,
+		},
+		{
+			Name:      "abilityType",
+			Type:      "Boolean",
+			Uuid:      "RX_ABILITY_ABILITYTYPE_UUID",
+			TypeLabel: "Boolean",
+			System:    true,
+		},
+		{
+			Name:      "roleId",
+			Type:      consts.ID,
+			Uuid:      "RX_ABILITY_ROLE_ID_UUID",
+			TypeLabel: consts.ID,
+			System:    true,
+		},
+	},
+	StereoType: "Entity",
+}
