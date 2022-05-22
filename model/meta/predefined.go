@@ -83,10 +83,10 @@ var EntityAuthSettingsClass = ClassMeta{
 	Attributes: []AttributeMeta{
 		{
 			Name:      consts.ID,
-			Type:      consts.ID,
+			Type:      ID,
 			Uuid:      "RX_ENTITY_AUTH_SETTINGS_ID_UUID",
 			Primary:   true,
-			TypeLabel: consts.ID,
+			TypeLabel: ID,
 			System:    true,
 		},
 		{
@@ -115,10 +115,10 @@ var AbilityClass = ClassMeta{
 	Attributes: []AttributeMeta{
 		{
 			Name:      consts.ID,
-			Type:      consts.ID,
+			Type:      ID,
 			Uuid:      "RX_ABILITY_ID_UUID",
 			Primary:   true,
-			TypeLabel: consts.ID,
+			TypeLabel: ID,
 			System:    true,
 		},
 		{
@@ -159,9 +159,9 @@ var AbilityClass = ClassMeta{
 		},
 		{
 			Name:      "roleId",
-			Type:      consts.ID,
+			Type:      ID,
 			Uuid:      "RX_ABILITY_ROLE_ID_UUID",
-			TypeLabel: consts.ID,
+			TypeLabel: ID,
 			System:    true,
 		},
 	},

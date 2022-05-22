@@ -58,11 +58,11 @@ func predefinedEntities() map[string]interface{} {
 					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
 						{
-							consts.NAME:   consts.ID,
-							consts.TYPE:   consts.ID,
+							consts.NAME:   "id",
+							consts.TYPE:   "ID",
 							consts.UUID:   "RX_USER_ID_UUID",
 							"primary":     true,
-							"typeLabel":   consts.ID,
+							"typeLabel":   "ID",
 							consts.SYSTEM: true,
 						},
 						{
@@ -130,11 +130,11 @@ func predefinedEntities() map[string]interface{} {
 					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
 						{
-							consts.NAME:   consts.ID,
-							consts.TYPE:   consts.ID,
+							consts.NAME:   "id",
+							consts.TYPE:   "ID",
 							consts.UUID:   "RX_ROLE_ID_UUID",
 							"primary":     true,
-							"typeLabel":   consts.ID,
+							"typeLabel":   "ID",
 							consts.SYSTEM: true,
 						},
 						{
