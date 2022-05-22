@@ -207,7 +207,6 @@ func predefinedEntities() map[string]interface{} {
 					consts.NAME:   "Ability",
 					consts.UUID:   "META_ABILITY_UUID",
 					"innerId":     5,
-					"root":        true,
 					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
 						{
@@ -248,13 +247,6 @@ func predefinedEntities() map[string]interface{} {
 							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME:   "roleId",
-							consts.TYPE:   "ID",
-							consts.UUID:   "RX_ABILITY_ROLEID_UUID",
-							"typeLabel":   "ID",
-							consts.SYSTEM: true,
-						},
-						{
 							consts.NAME:   "abilityType",
 							consts.TYPE:   "Boolean",
 							consts.UUID:   "RX_ABILITY_ABILITYTYPE_UUID",
@@ -274,6 +266,17 @@ func predefinedEntities() map[string]interface{} {
 					"relationType":       "twoWayAssociation",
 					"roleOfSource":       "roles",
 					"roleOfTarget":       "users",
+					"sourceMutiplicity":  "0..*",
+					"targetMultiplicity": "0..*",
+				},
+				{
+					"uuid":               "META_RELATION_ROLE_ABILITY_UUID",
+					"innerId":            102,
+					"sourceId":           "META_ROLE_UUID",
+					"targetId":           "META_ABILITY_UUID",
+					"relationType":       "oneWayAssociation",
+					"roleOfSource":       "abilities",
+					"roleOfTarget":       "belongsToRole",
 					"sourceMutiplicity":  "0..1",
 					"targetMultiplicity": "0..*",
 				},
