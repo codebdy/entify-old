@@ -11,7 +11,7 @@ func publishResolve(p graphql.ResolveParams) (interface{}, error) {
 		return result, err
 	}
 
-	MakeSchema()
+	InitSchema()
 	return result, nil
 }
 
@@ -20,6 +20,6 @@ func installResolve(p graphql.ResolveParams) (interface{}, error) {
 	if err != nil {
 		return result, err
 	}
-	MakeSchema()
+	InitSchema()
 	return result, err
 }
