@@ -126,7 +126,7 @@ func Install() error {
 		columnUuid varchar(255) DEFAULT NULL,
 		can tinyint(1) NOT NULL,
 		expression text NOT NULL,
-		abilityType tinyint(1) NOT NULL,
+		abilityType varchar(128) NOT NULL,
 		roleId bigint NOT NULL,
 		PRIMARY KEY (id)
 	) ENGINE=InnoDB AUTO_INCREMENT=4503621102206976 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
