@@ -52,6 +52,7 @@ func LoadModel() {
 			meta.MetaStatusEnum,
 			meta.MetaClass,
 			meta.EntityAuthSettingsClass,
+			meta.AbilityTypeEnum,
 			meta.AbilityClass,
 		},
 	}
@@ -62,6 +63,7 @@ func LoadModel() {
 		meta.MetaStatusEnum,
 		meta.MetaClass,
 		meta.EntityAuthSettingsClass,
+		meta.AbilityTypeEnum,
 		meta.AbilityClass,
 	)
 

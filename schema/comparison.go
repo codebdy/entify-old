@@ -267,7 +267,7 @@ func EnumComparisonExp(attr *graph.Attribute) *graphql.InputObjectFieldConfig {
 	enumxp := graphql.InputObjectFieldConfig{
 		Type: graphql.NewInputObject(
 			graphql.InputObjectConfig{
-				Name: "EnumComparisonExp",
+				Name: enumEntity.Name + "EnumComparisonExp",
 				Fields: graphql.InputObjectConfigFieldMap{
 					consts.ARG_EQ: &graphql.InputObjectFieldConfig{
 						Type: enumType,
