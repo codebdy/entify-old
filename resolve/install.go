@@ -30,14 +30,6 @@ func bcryptEncode(value string) string {
 	return encodeValue
 }
 
-// // 正确密码验证
-// err = bcrypt.CompareHashAndPassword([]byte(encodePW), []byte(passwordOK))
-// if err != nil {
-//     fmt.Println("pw wrong")
-// } else {
-//     fmt.Println("pw ok")
-// }
-
 func predefinedEntities() map[string]interface{} {
 	return map[string]interface{}{
 		"content": map[string]interface{}{

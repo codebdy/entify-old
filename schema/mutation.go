@@ -2,18 +2,21 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/authentication/jwt"
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/entity"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/utils"
 )
 
 const INPUT = "input"
 
-var TokenCache = map[string]string{}
+var TokenCache = map[string]*entity.User{}
 
 func rootMutation() *graphql.Object {
 	metaEntity := model.GlobalModel.Graph.GetMetaEntity()
@@ -37,7 +40,23 @@ func rootMutation() *graphql.Object {
 				if err != nil {
 					panic(err.Error())
 				}
-				TokenCache[token] = loginName
+
+				userMap := repository.QueryOne(model.GlobalModel.Graph.GetEntityByName(consts.META_USER), repository.QueryArg{
+					consts.ARG_WHERE: repository.QueryArg{
+						"loginName": repository.QueryArg{
+							consts.ARG_EQ: loginName,
+						},
+					},
+				})
+
+				var user entity.User
+
+				err = mapstructure.Decode(userMap, user)
+				if err != nil {
+					panic(err.Error())
+				}
+
+				TokenCache[token] = &user
 				return token, nil
 			},
 		},
@@ -70,20 +89,6 @@ func rootMutation() *graphql.Object {
 	for _, service := range model.GlobalModel.Graph.RootServices() {
 		appendServiceMutationFields(service, &mutationFields)
 	}
-
-	// if !config.GetBool(consts.INSTALLED) {
-	// 	mutationFields["install"] = &graphql.Field{
-	// 		Type: graphql.Boolean,
-	// 		Args: graphql.FieldConfigArgument{
-	// 			INPUT: &graphql.ArgumentConfig{
-	// 				Type: &graphql.NonNull{
-	// 					OfType: installInputType,
-	// 				},
-	// 			},
-	// 		},
-	// 		Resolve: installResolve,
-	// 	}
-	// }
 
 	rootMutation := graphql.ObjectConfig{
 		Name:        consts.ROOT_MUTATION_NAME,
