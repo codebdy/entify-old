@@ -12,6 +12,10 @@ const (
 )
 
 type SQLBuilder interface {
+	BuildLoginSQL() string
+	BuildCreateMetaSQL() string
+	BuildCreateAbilitySQL() string
+	BuildCreateEntityAuthSettingsSQL() string
 	BuildBoolExp(argClass *graph.ArgClass, where map[string]interface{}) (string, []interface{})
 	BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{})
 

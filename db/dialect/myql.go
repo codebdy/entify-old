@@ -17,6 +17,46 @@ import (
 type MySQLBuilder struct {
 }
 
+func (*MySQLBuilder) BuildLoginSQL() string {
+	return "select password from rx_user where UPPER(loginName) = ?"
+}
+
+func (*MySQLBuilder) BuildCreateMetaSQL() string {
+	return `CREATE TABLE meta (
+		id bigint NOT NULL AUTO_INCREMENT,
+		content json DEFAULT NULL,
+		publishedAt datetime DEFAULT NULL,
+		createdAt datetime DEFAULT NULL,
+		updatedAt datetime DEFAULT NULL,
+		status varchar(45) DEFAULT NULL,
+		PRIMARY KEY (id)
+	) ENGINE=InnoDB AUTO_INCREMENT=1507236403010867251 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+	`
+}
+func (*MySQLBuilder) BuildCreateAbilitySQL() string {
+	return `CREATE TABLE ability (
+	id bigint NOT NULL AUTO_INCREMENT,
+	entityUuid varchar(255) NOT NULL,
+	columnUuid varchar(255) DEFAULT NULL,
+	can tinyint(1) NOT NULL,
+	expression text NOT NULL,
+	abilityType varchar(128) NOT NULL,
+	roleId bigint NOT NULL,
+	PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=4503621102206976 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+`
+}
+func (*MySQLBuilder) BuildCreateEntityAuthSettingsSQL() string {
+	return `CREATE TABLE entity_auth_settings (
+	id bigint NOT NULL AUTO_INCREMENT,
+	entityUuid varchar(255) NOT NULL,
+	expand tinyint(1) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE KEY entityUuid_UNIQUE (entityUuid)
+) ENGINE=InnoDB AUTO_INCREMENT=4503616807239680 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+`
+}
+
 func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	queryStr := ""
