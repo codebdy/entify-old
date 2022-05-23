@@ -16,6 +16,7 @@ func (c *TypeCache) makeInputs() {
 		c.SaveInputMap[entity.Name()] = makeSaveInput(entity)
 		c.MutationResponseMap[entity.Name()] = makeMutationResponseType(entity)
 	}
+
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
@@ -91,6 +92,10 @@ func (c *TypeCache) makeInputRelations() {
 				}
 
 				arrayType := c.getAssociationType(assoc)
+				//如果是虚类，并且没有子类
+				if assoc.TypeClass().Interface() != nil && len(assoc.TypeClass().Interface().Children) == 0 {
+					continue
+				}
 				if arrayType == nil {
 					panic("Can not get association type:" + assoc.Owner().Name() + "." + assoc.Name())
 				}
