@@ -98,6 +98,7 @@ var EntityAuthSettingsClass = ClassMeta{
 			Type:   "String",
 			Uuid:   "RX_ENTITY_AUTH_SETTINGS_ENTITY_UUID_UUID",
 			System: true,
+			Unique: true,
 		},
 		{
 			Name:   "expand",

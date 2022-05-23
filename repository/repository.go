@@ -122,8 +122,8 @@ func Install() error {
 
 	sql = `CREATE TABLE ability (
 		id bigint NOT NULL AUTO_INCREMENT,
-		entityUuid text NOT NULL,
-		columnUuid text DEFAULT NULL,
+		entityUuid varchar(255) NOT NULL,
+		columnUuid varchar(255) DEFAULT NULL,
 		can tinyint(1) NOT NULL,
 		expression text NOT NULL,
 		abilityType tinyint(1) NOT NULL,
@@ -139,9 +139,10 @@ func Install() error {
 
 	sql = `CREATE TABLE entity_auth_settings (
 		id bigint NOT NULL AUTO_INCREMENT,
-		entityUuid text NOT NULL,
+		entityUuid varchar(255) NOT NULL,
 		expand tinyint(1) NOT NULL,
-		PRIMARY KEY (id)
+		PRIMARY KEY (id),
+		UNIQUE KEY entityUuid_UNIQUE (entityUuid)
 	) ENGINE=InnoDB AUTO_INCREMENT=4503616807239680 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 	`
 	_, err = con.Dbx.Exec(sql)
