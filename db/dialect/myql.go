@@ -18,7 +18,7 @@ type MySQLBuilder struct {
 }
 
 func (*MySQLBuilder) BuildLoginSQL() string {
-	return "select password from rx_user where UPPER(loginName) = ?"
+	return "select password from user where UPPER(loginName) = ?"
 }
 
 func (*MySQLBuilder) BuildCreateMetaSQL() string {

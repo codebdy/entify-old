@@ -70,6 +70,7 @@ func predefinedEntities() map[string]interface{} {
 							consts.TYPE:   "String",
 							consts.UUID:   "RX_USER_NAME_UUID",
 							"typeLabel":   "String",
+							"length":      128,
 							"nullable":    true,
 							consts.SYSTEM: true,
 						},
@@ -78,6 +79,7 @@ func predefinedEntities() map[string]interface{} {
 							consts.TYPE:   "String",
 							consts.UUID:   "RX_USER_LOGINNAME_UUID",
 							"typeLabel":   "String",
+							"length":      128,
 							consts.SYSTEM: true,
 						},
 						{
@@ -85,6 +87,7 @@ func predefinedEntities() map[string]interface{} {
 							consts.TYPE:   "String",
 							consts.UUID:   "RX_USER_PASSWORD_UUID",
 							"typeLabel":   "String",
+							"length":      256,
 							consts.SYSTEM: true,
 						},
 						{

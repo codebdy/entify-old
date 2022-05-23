@@ -24,9 +24,9 @@ func Login(loginName, pwd string) (string, error) {
 		return "", errors.New("Login failed!")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(pwd), []byte(password)) //验证（对比）
+	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(pwd)) //验证（对比）
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, pwd, password)
 		return "", errors.New("Password error!")
 	}
 	return loginName, err
