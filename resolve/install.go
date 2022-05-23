@@ -14,9 +14,9 @@ import (
 )
 
 type InstallArg struct {
-	Admin         string `json:"admin"`
-	AdminPassword string `json:"adminPassword"`
-	WithDemo      bool   `json:"withDemo"`
+	Admin    string `json:"admin"`
+	Password string `json:"password"`
+	WithDemo bool   `json:"withDemo"`
 }
 
 const INPUT = "input"
@@ -32,14 +32,6 @@ func bcryptEncode(value string) string {
 
 // // 正确密码验证
 // err = bcrypt.CompareHashAndPassword([]byte(encodePW), []byte(passwordOK))
-// if err != nil {
-//     fmt.Println("pw wrong")
-// } else {
-//     fmt.Println("pw ok")
-// }
-
-// // 错误密码验证
-// err = bcrypt.CompareHashAndPassword([]byte(encodePW), []byte(passwordERR))
 // if err != nil {
 //     fmt.Println("pw wrong")
 // } else {
@@ -219,7 +211,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	input := InstallArg{}
 	mapstructure.Decode(p.Args[INPUT], &input)
 
-	//创建User实体
+	//创建实体
 	instance := data.NewInstance(predefinedEntities(), model.GlobalModel.Graph.GetMetaEntity())
 	_, err := repository.SaveOne(instance)
 
@@ -232,7 +224,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	}
 	if input.Admin != "" {
 		instance = data.NewInstance(
-			adminInstance(input.Admin, input.AdminPassword),
+			adminInstance(input.Admin, input.Password),
 			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 		)
 		_, err = repository.SaveOne(instance)
