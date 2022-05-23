@@ -13,6 +13,8 @@ import (
 
 const INPUT = "input"
 
+var TokenCache = map[string]string{}
+
 func rootMutation() *graphql.Object {
 	metaEntity := model.GlobalModel.Graph.GetMetaEntity()
 	mutationFields := graphql.Fields{
@@ -31,7 +33,12 @@ func rootMutation() *graphql.Object {
 				if err != nil {
 					return "", err
 				}
-				return jwt.GenerateToken(loginName)
+				token, err := jwt.GenerateToken(loginName)
+				if err != nil {
+					panic(err.Error())
+				}
+				TokenCache[token] = loginName
+				return token, nil
 			},
 		},
 		consts.LOGOUT: &graphql.Field{
