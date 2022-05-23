@@ -31,7 +31,3 @@ func Login(loginName, pwd string) (string, error) {
 	}
 	return loginName, err
 }
-
-func Logout() {
-
-}
