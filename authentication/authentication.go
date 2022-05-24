@@ -75,7 +75,6 @@ func Login(loginName, pwd string) (string, error) {
 	user := loadUser(loginName)
 	TokenCache[token] = user
 
-	fmt.Println("哈哈", *user)
 	return token, err
 }
 
