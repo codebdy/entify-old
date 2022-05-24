@@ -64,15 +64,14 @@ var baseRoleTye = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "BaseRole",
 		Fields: graphql.Fields{
-			// consts.ID: &graphql.Field{ //扩展一个id字段
-			// 	Type: graphql.Int,
-			// },
-			consts.SDL: &graphql.Field{
-				Type:        graphql.String,
-				Description: "Service SDL",
+			consts.ID: &graphql.Field{
+				Type: graphql.Int,
+			},
+			consts.NAME: &graphql.Field{
+				Type: graphql.String,
 			},
 		},
-		Description: "_Service type of federation schema specification",
+		Description: "Base role for auth",
 	},
 )
 
@@ -80,14 +79,21 @@ var baseUserType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "BaseUser",
 		Fields: graphql.Fields{
-			// consts.ID: &graphql.Field{ //扩展一个id字段
-			// 	Type: graphql.Int,
-			// },
-			consts.SDL: &graphql.Field{
-				Type:        graphql.String,
-				Description: "Service SDL",
+			consts.ID: &graphql.Field{
+				Type: graphql.Int,
+			},
+			consts.NAME: &graphql.Field{
+				Type: graphql.String,
+			},
+			consts.LOGIN_NAME: &graphql.Field{
+				Type: graphql.String,
+			},
+			"roles": &graphql.Field{
+				Type: &graphql.List{
+					OfType: baseRoleTye,
+				},
 			},
 		},
-		Description: "_Service type of federation schema specification",
+		Description: "Base user for auth",
 	},
 )

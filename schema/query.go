@@ -153,7 +153,7 @@ func appendToQueryFields(node graph.Noder, fields graphql.Fields) {
 
 func appendAuthToQuery(fields graphql.Fields) {
 	fields[consts.ME] = &graphql.Field{
-		Type: &graphql.NonNull{OfType: baseUserType},
+		Type: baseUserType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			defer utils.PrintErrorStack()
 			// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
