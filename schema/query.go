@@ -81,15 +81,15 @@ func queryFields() graphql.Fields {
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
-		appendToQueryFields(intf, &queryFields)
+		appendToQueryFields(intf, queryFields)
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		appendToQueryFields(entity, &queryFields)
+		appendToQueryFields(entity, queryFields)
 	}
 
 	for _, service := range model.GlobalModel.Graph.RootServices() {
-		appendServiceQueryFields(service, &queryFields)
+		appendServiceQueryFields(service, queryFields)
 	}
 
 	return queryFields
@@ -128,19 +128,19 @@ func quryeArgs(node graph.Noder) graphql.FieldConfigArgument {
 	return config
 }
 
-func appendToQueryFields(node graph.Noder, fields *graphql.Fields) {
-	(*fields)[utils.FirstLower(node.Name())] = &graphql.Field{
+func appendToQueryFields(node graph.Noder, fields graphql.Fields) {
+	(fields)[utils.FirstLower(node.Name())] = &graphql.Field{
 		Type:    queryResponseType(node),
 		Args:    quryeArgs(node),
 		Resolve: resolve.QueryResolveFn(node),
 	}
-	(*fields)[consts.ONE+node.Name()] = &graphql.Field{
+	(fields)[consts.ONE+node.Name()] = &graphql.Field{
 		Type:    Cache.OutputType(node.Name()),
 		Args:    quryeArgs(node),
 		Resolve: resolve.QueryOneResolveFn(node),
 	}
 
-	(*fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+	(fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
 		Type:    *AggregateType(node),
 		Args:    quryeArgs(node),
 		Resolve: resolve.QueryResolveFn(node),

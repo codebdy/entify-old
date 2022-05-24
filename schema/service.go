@@ -7,10 +7,10 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func appendServiceQueryFields(serviceClass *graph.Class, fields *graphql.Fields) {
+func appendServiceQueryFields(serviceClass *graph.Class, fields graphql.Fields) {
 	methods := serviceClass.MethodsByType(meta.QUERY)
 	if len(methods) > 0 {
-		(*fields)[utils.FirstLower(serviceClass.Name())] = &graphql.Field{
+		(fields)[utils.FirstLower(serviceClass.Name())] = &graphql.Field{
 			Type: graphql.String,
 			//Resolve: resolve.QueryResolveFn(node),
 		}
@@ -18,10 +18,10 @@ func appendServiceQueryFields(serviceClass *graph.Class, fields *graphql.Fields)
 
 }
 
-func appendServiceMutationFields(serviceClass *graph.Class, fields *graphql.Fields) {
+func appendServiceMutationFields(serviceClass *graph.Class, fields graphql.Fields) {
 	methods := serviceClass.MethodsByType(meta.MUTATION)
 	if len(methods) > 0 {
-		(*fields)[utils.FirstLower(serviceClass.Name())] = &graphql.Field{
+		(fields)[utils.FirstLower(serviceClass.Name())] = &graphql.Field{
 			Type: graphql.String,
 			//Resolve: resolve.QueryResolveFn(node),
 		}

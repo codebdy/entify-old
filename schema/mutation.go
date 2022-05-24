@@ -5,6 +5,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/authentication/jwt"
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/entity"
 	"rxdrag.com/entify/model"
@@ -18,54 +19,58 @@ const INPUT = "input"
 
 var TokenCache = map[string]*entity.User{}
 
+func appendAuthMutation(fields graphql.Fields) {
+	fields[consts.LOGIN] = &graphql.Field{
+		Type: graphql.String,
+		Args: graphql.FieldConfigArgument{
+			consts.LOGIN_NAME: &graphql.ArgumentConfig{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+			consts.PASSWORD: &graphql.ArgumentConfig{
+				Type: &graphql.NonNull{OfType: graphql.String},
+			},
+		},
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			loginName, err := authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
+			if err != nil {
+				return "", err
+			}
+			token, err := jwt.GenerateToken(loginName)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			userMap := repository.QueryOne(model.GlobalModel.Graph.GetEntityByName(consts.META_USER), repository.QueryArg{
+				consts.ARG_WHERE: repository.QueryArg{
+					consts.LOGIN_NAME: repository.QueryArg{
+						consts.ARG_EQ: loginName,
+					},
+				},
+			})
+
+			var user entity.User
+
+			err = mapstructure.Decode(userMap, user)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			TokenCache[token] = &user
+			return token, nil
+		},
+	}
+
+	fields[consts.LOGOUT] = &graphql.Field{
+		Type: graphql.String,
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			return "world2", nil
+		},
+	}
+}
+
 func rootMutation() *graphql.Object {
 	metaEntity := model.GlobalModel.Graph.GetMetaEntity()
 	mutationFields := graphql.Fields{
-		consts.LOGIN: &graphql.Field{
-			Type: graphql.String,
-			Args: graphql.FieldConfigArgument{
-				consts.LOGIN_NAME: &graphql.ArgumentConfig{
-					Type: &graphql.NonNull{OfType: graphql.String},
-				},
-				consts.PASSWORD: &graphql.ArgumentConfig{
-					Type: &graphql.NonNull{OfType: graphql.String},
-				},
-			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				loginName, err := authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
-				if err != nil {
-					return "", err
-				}
-				token, err := jwt.GenerateToken(loginName)
-				if err != nil {
-					panic(err.Error())
-				}
-
-				userMap := repository.QueryOne(model.GlobalModel.Graph.GetEntityByName(consts.META_USER), repository.QueryArg{
-					consts.ARG_WHERE: repository.QueryArg{
-						"loginName": repository.QueryArg{
-							consts.ARG_EQ: loginName,
-						},
-					},
-				})
-
-				var user entity.User
-
-				err = mapstructure.Decode(userMap, user)
-				if err != nil {
-					panic(err.Error())
-				}
-
-				TokenCache[token] = &user
-				return token, nil
-			},
-		},
-		consts.LOGOUT: &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world2", nil
-			},
-		},
 		consts.PUBLISH: &graphql.Field{
 			Type:    Cache.OutputType(metaEntity.Name()),
 			Resolve: publishResolve,
@@ -82,12 +87,16 @@ func rootMutation() *graphql.Object {
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		if entity.Domain.Root {
-			appendToMutationFields(entity, &mutationFields)
+			appendToMutationFields(entity, mutationFields)
 		}
 	}
 
 	for _, service := range model.GlobalModel.Graph.RootServices() {
-		appendServiceMutationFields(service, &mutationFields)
+		appendServiceMutationFields(service, mutationFields)
+	}
+
+	if config.AuthUrl() == "" {
+		appendAuthMutation(mutationFields)
 	}
 
 	rootMutation := graphql.ObjectConfig{
@@ -99,10 +108,10 @@ func rootMutation() *graphql.Object {
 	return graphql.NewObject(rootMutation)
 }
 
-func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
+func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
 	name := utils.FirstUpper(entity.Name())
 
-	(*feilds)[consts.DELETE+name] = &graphql.Field{
+	(feilds)[consts.DELETE+name] = &graphql.Field{
 		Type: *Cache.MutationResponse(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
@@ -111,7 +120,7 @@ func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
+	(feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
 		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ID: &graphql.ArgumentConfig{
@@ -120,7 +129,7 @@ func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
 		},
 		//Resolve: entity.QueryResolve(),
 	}
-	(*feilds)[consts.UPSERT+name] = &graphql.Field{
+	(feilds)[consts.UPSERT+name] = &graphql.Field{
 		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
@@ -135,7 +144,7 @@ func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
 		},
 	}
 	//Resolve: entity.QueryResolve(),
-	(*feilds)[consts.UPSERT_ONE+name] = &graphql.Field{
+	(feilds)[consts.UPSERT_ONE+name] = &graphql.Field{
 		Type: Cache.OutputType(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_OBJECT: &graphql.ArgumentConfig{
@@ -149,7 +158,7 @@ func appendToMutationFields(entity *graph.Entity, feilds *graphql.Fields) {
 
 	updateInput := Cache.UpdateInput(entity.Name())
 	if len(updateInput.Fields()) > 0 {
-		(*feilds)[consts.UPDATE+name] = &graphql.Field{
+		(feilds)[consts.UPDATE+name] = &graphql.Field{
 			Type: *Cache.MutationResponse(entity.Name()),
 			Args: graphql.FieldConfigArgument{
 				consts.ARG_OBJECTS: &graphql.ArgumentConfig{
