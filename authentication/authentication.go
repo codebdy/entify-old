@@ -8,6 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/bcrypt"
 	"rxdrag.com/entify/authentication/jwt"
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/entity"
@@ -63,5 +64,10 @@ func Login(loginName, pwd string) (string, error) {
 }
 
 func GetUserByToken(token string) *entity.User {
-	return TokenCache[token]
+	authUrl := config.AuthUrl()
+	if authUrl == "" {
+		return TokenCache[token]
+	} else {
+		return meFromRemote()
+	}
 }
