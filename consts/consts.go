@@ -138,9 +138,10 @@ const CREATEDATE = "createDate"
 const UPDATEDATE = "updateDate"
 
 const (
-	TOKEN         = "token"
-	AUTHORIZATION = "Authorization"
-	BEARER        = "Bearer "
+	TOKEN          = "token"
+	AUTHORIZATION  = "Authorization"
+	BEARER         = "Bearer "
+	CONTEXT_VALUES = "values"
 )
 
 const (

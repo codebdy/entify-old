@@ -74,7 +74,6 @@ func Login(loginName, pwd string) (string, error) {
 
 	user := loadUser(loginName)
 	TokenCache[token] = user
-
 	return token, err
 }
 

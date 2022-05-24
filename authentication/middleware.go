@@ -7,10 +7,8 @@ import (
 	"time"
 
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/entity"
 )
-
-// ContextValue is a context key
-type ContextValue map[string]interface{}
 
 // AuthMiddleware 传递公共参数中间件
 func AuthMiddleware(next http.Handler) http.Handler {
@@ -20,14 +18,16 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		reqToken := r.Header.Get(consts.AUTHORIZATION)
 		splitToken := strings.Split(reqToken, consts.BEARER)
+		v := entity.ContextValues{}
 		if len(splitToken) == 2 {
 			reqToken = splitToken[1]
-			// 附加token
-			ctx := context.WithValue(r.Context(), consts.TOKEN, reqToken)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		} else {
-			next.ServeHTTP(w, r)
+			if reqToken != "" {
+				v.Token = reqToken
+				v.Me = GetUserByToken(reqToken)
+			}
 		}
+		ctx := context.WithValue(r.Context(), consts.CONTEXT_VALUES, v)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 

@@ -86,6 +86,7 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 
 func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
 	sql, params := con.buildQueryEntitySQL(entity, args)
+	fmt.Println("doQueryEntity SQL:", sql)
 	rows, err := con.Dbx.Query(sql, params...)
 	if err != nil {
 		panic(err.Error())
