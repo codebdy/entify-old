@@ -77,6 +77,10 @@ func Login(loginName, pwd string) (string, error) {
 	return token, err
 }
 
+func Logout(token string) {
+	TokenCache[token] = nil
+}
+
 func GetUserByToken(token string) *entity.User {
 	authUrl := config.AuthUrl()
 	if authUrl == "" {

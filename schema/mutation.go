@@ -34,7 +34,11 @@ func appendAuthMutation(fields graphql.Fields) {
 		Type: graphql.String,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			defer utils.PrintErrorStack()
-			return "world2", nil
+			token := contextValues(p).Token
+			if token != "" {
+				authentication.Logout(token)
+			}
+			return true, nil
 		},
 	}
 }
