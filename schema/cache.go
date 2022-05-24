@@ -2,24 +2,8 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/utils"
-)
-
-var Cache TypeCache
-
-var NodeInterfaceType = graphql.NewInterface(
-	graphql.InterfaceConfig{
-		Name: utils.FirstUpper(consts.NODE),
-		Fields: graphql.Fields{
-			"id": &graphql.Field{
-				Type: graphql.ID,
-			},
-		},
-		Description: "Node interface",
-	},
 )
 
 type TypeCache struct {

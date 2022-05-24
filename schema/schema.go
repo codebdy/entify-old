@@ -9,28 +9,6 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-var EntityType *graphql.Union
-var installInputType = graphql.NewInputObject(
-	graphql.InputObjectConfig{
-		Name: "InstallInput",
-		Fields: graphql.InputObjectConfigFieldMap{
-			consts.ADMIN: &graphql.InputObjectFieldConfig{
-				Type: &graphql.NonNull{
-					OfType: graphql.String,
-				},
-			},
-			consts.ADMINPASSWORD: &graphql.InputObjectFieldConfig{
-				Type: &graphql.NonNull{
-					OfType: graphql.String,
-				},
-			},
-			consts.WITHDEMO: &graphql.InputObjectFieldConfig{
-				Type: graphql.Boolean,
-			},
-		},
-	},
-)
-
 func MakeSchema() {
 	Cache.MakeCache()
 

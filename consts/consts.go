@@ -11,6 +11,7 @@ const (
 	LOGIN_NAME             = "loginName"
 	PASSWORD               = "password"
 	LOGOUT                 = "logout"
+	ME                     = "me"
 	PUBLISH                = "publish"
 	ROLLBACK               = "rollback"
 	SYNC_META              = "syncMeta"

@@ -17,8 +17,6 @@ import (
 
 const INPUT = "input"
 
-var TokenCache = map[string]*entity.User{}
-
 func appendAuthMutation(fields graphql.Fields) {
 	fields[consts.LOGIN] = &graphql.Field{
 		Type: graphql.String,

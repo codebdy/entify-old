@@ -92,6 +92,10 @@ func queryFields() graphql.Fields {
 		appendServiceQueryFields(service, queryFields)
 	}
 
+	if config.AuthUrl() == "" {
+		appendAuthToQuery(queryFields)
+	}
+
 	return queryFields
 }
 
@@ -144,5 +148,26 @@ func appendToQueryFields(node graph.Noder, fields graphql.Fields) {
 		Type:    *AggregateType(node),
 		Args:    quryeArgs(node),
 		Resolve: resolve.QueryResolveFn(node),
+	}
+}
+
+func appendAuthToQuery(fields graphql.Fields) {
+	fields[consts.ME] = &graphql.Field{
+		Type: &graphql.NonNull{OfType: baseUserType},
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			defer utils.PrintErrorStack()
+			// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
+			// 	switch selection := iSelection.(type) {
+			// 	case *ast.Field:
+			// 		//fmt.Println(selection.Directives[len(selection.Directives)-1].Name.Value)
+			// 	case *ast.InlineFragment:
+			// 	case *ast.FragmentSpread:
+			// 	}
+			// }
+
+			//err = db.Select(&instances, queryStr)
+			//return repository.Query(node, p.Args), nil
+			return nil, nil
+		},
 	}
 }
