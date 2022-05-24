@@ -68,6 +68,6 @@ func GetUserByToken(token string) *entity.User {
 	if authUrl == "" {
 		return TokenCache[token]
 	} else {
-		return meFromRemote()
+		return meFromRemote(token)
 	}
 }

@@ -9,10 +9,11 @@ import (
 	"time"
 
 	"rxdrag.com/entify/config"
+	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/entity"
 )
 
-func meFromRemote() *entity.User {
+func meFromRemote(token string) *entity.User {
 	authUrl := config.AuthUrl()
 	jsonData := map[string]string{
 		"query": `
@@ -31,6 +32,7 @@ func meFromRemote() *entity.User {
 	}
 	jsonValue, _ := json.Marshal(jsonData)
 	request, err := http.NewRequest("POST", authUrl, bytes.NewBuffer(jsonValue))
+	request.Header.Set(consts.AUTHORIZATION, consts.BEARER+token)
 	client := &http.Client{Timeout: time.Second * 10}
 	response, err := client.Do(request)
 	if err != nil {

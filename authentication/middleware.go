@@ -18,8 +18,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		//为了测试loading状态，生产版需要删掉
 		time.Sleep(time.Duration(300) * time.Millisecond)
 
-		reqToken := r.Header.Get("Authorization")
-		splitToken := strings.Split(reqToken, "Bearer ")
+		reqToken := r.Header.Get(consts.AUTHORIZATION)
+		splitToken := strings.Split(reqToken, consts.BEARER)
 		if len(splitToken) == 2 {
 			reqToken = splitToken[1]
 			// 附加token

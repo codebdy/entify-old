@@ -136,4 +136,8 @@ const SYSTEM = "System"
 const CREATEDATE = "createDate"
 const UPDATEDATE = "updateDate"
 
-const TOKEN = "token"
+const (
+	TOKEN         = "token"
+	AUTHORIZATION = "Authorization"
+	BEARER        = "Bearer "
+)
