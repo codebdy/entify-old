@@ -134,3 +134,5 @@ const META_ROLE = "Role"
 const SYSTEM = "System"
 const CREATEDATE = "createDate"
 const UPDATEDATE = "updateDate"
+
+const TOKEN = "token"

@@ -3,7 +3,10 @@ package authentication
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
+
+	"rxdrag.com/entify/consts"
 )
 
 // ContextValue is a context key
@@ -14,13 +17,17 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//为了测试loading状态，生产版需要删掉
 		time.Sleep(time.Duration(300) * time.Millisecond)
-		data := ContextValue{
-			"1": "one",
-			"2": "two",
+
+		reqToken := r.Header.Get("Authorization")
+		splitToken := strings.Split(reqToken, "Bearer ")
+		if len(splitToken) == 2 {
+			reqToken = splitToken[1]
+			// 附加token
+			ctx := context.WithValue(r.Context(), consts.TOKEN, reqToken)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		} else {
+			next.ServeHTTP(w, r)
 		}
-		// 赋值
-		ctx := context.WithValue(r.Context(), "data", data)
-		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
