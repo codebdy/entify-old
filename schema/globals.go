@@ -63,7 +63,7 @@ var baseRoleTye = graphql.NewObject(
 		Name: "BaseRole",
 		Fields: graphql.Fields{
 			consts.ID: &graphql.Field{
-				Type: graphql.Int,
+				Type: graphql.ID,
 			},
 			consts.NAME: &graphql.Field{
 				Type: graphql.String,
@@ -78,7 +78,7 @@ var baseUserType = graphql.NewObject(
 		Name: "BaseUser",
 		Fields: graphql.Fields{
 			consts.ID: &graphql.Field{
-				Type: graphql.Int,
+				Type: graphql.ID,
 			},
 			consts.NAME: &graphql.Field{
 				Type: graphql.String,
