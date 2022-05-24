@@ -54,13 +54,14 @@ func Login(loginName, pwd string) (string, error) {
 	var user entity.User
 
 	err = mapstructure.Decode(userMap, user)
+
 	if err != nil {
 		panic(err.Error())
 	}
 
 	TokenCache[token] = &user
 
-	return loginName, err
+	return token, err
 }
 
 func GetUserByToken(token string) *entity.User {
