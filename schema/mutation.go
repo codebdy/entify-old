@@ -25,6 +25,7 @@ func appendAuthMutation(fields graphql.Fields) {
 			},
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			defer utils.PrintErrorStack()
 			return authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
 		},
 	}
@@ -32,6 +33,7 @@ func appendAuthMutation(fields graphql.Fields) {
 	fields[consts.LOGOUT] = &graphql.Field{
 		Type: graphql.String,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			defer utils.PrintErrorStack()
 			return "world2", nil
 		},
 	}

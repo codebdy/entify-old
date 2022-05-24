@@ -37,7 +37,7 @@ func predefinedEntities() map[string]interface{} {
 				{
 					consts.NAME:   consts.META_USER,
 					consts.UUID:   "META_USER_UUID",
-					"innerId":     4,
+					"innerId":     consts.USER_INNER_ID,
 					"root":        true,
 					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
@@ -112,7 +112,7 @@ func predefinedEntities() map[string]interface{} {
 				{
 					consts.NAME:   consts.META_ROLE,
 					consts.UUID:   "META_ROLE_UUID",
-					"innerId":     5,
+					"innerId":     consts.ROLE_INNER_ID,
 					"root":        true,
 					consts.SYSTEM: true,
 					"attributes": []map[string]interface{}{
@@ -162,7 +162,7 @@ func predefinedEntities() map[string]interface{} {
 			"relations": []map[string]interface{}{
 				{
 					"uuid":               "META_RELATION_USER_ROLE_UUID",
-					"innerId":            101,
+					"innerId":            consts.ROLE_USER_RELATION_INNER_ID,
 					"sourceId":           "META_ROLE_UUID",
 					"targetId":           "META_USER_UUID",
 					"relationType":       "twoWayAssociation",

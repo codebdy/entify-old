@@ -64,10 +64,10 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	for rows.Next() {
 		values := makeQueryValues(intf)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instances = append(instances, convertValuesToObject(values, intf))
-	}
-	if err != nil {
-		panic(err.Error())
 	}
 
 	instancesIds := make([]interface{}, len(instances))
@@ -94,10 +94,10 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	for rows.Next() {
 		values := makeQueryValues(entity)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instances = append(instances, convertValuesToObject(values, entity))
-	}
-	if err != nil {
-		panic(err.Error())
 	}
 
 	return instances
@@ -216,10 +216,10 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	for rows.Next() {
 		values := makeQueryValues(entity)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instances = append(instances, convertValuesToObject(values, entity))
-	}
-	if err != nil {
-		panic(err.Error())
 	}
 
 	return instances
@@ -247,12 +247,12 @@ func (con *Connection) doBatchRealAssociations(association *graph.Association, i
 		var idValue db.NullUint64
 		values = append(values, &idValue)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instance := convertValuesToObject(values, typeClass)
 		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
 		instances = append(instances, instance)
-	}
-	if err != nil {
-		panic(err.Error())
 	}
 
 	return instances
@@ -269,11 +269,12 @@ func (con *Connection) doQueryByIds(entity *graph.Entity, ids []interface{}) []I
 	for rows.Next() {
 		values := makeQueryValues(entity)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instances = append(instances, convertValuesToObject(values, entity))
 	}
-	if err != nil {
-		panic(err.Error())
-	}
+
 	return instances
 }
 
@@ -309,12 +310,12 @@ func (con *Connection) doBatchAbstractRealAssociations(association *graph.Associ
 		var idValue db.NullUint64
 		values = append(values, &idValue)
 		err = rows.Scan(values...)
+		if err != nil {
+			panic(err.Error())
+		}
 		instance := convertValuesToObject(values, abstractTypeClass)
 		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
 		instances = append(instances, instance)
-	}
-	if err != nil {
-		panic(err.Error())
 	}
 
 	instancesIds := make([]interface{}, len(instances))

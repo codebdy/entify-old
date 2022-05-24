@@ -132,6 +132,7 @@ const ASSOCIATION_OWNER_ID = "owner__rx__id"
 
 const META_USER = "User"
 const META_ROLE = "Role"
+
 const SYSTEM = "System"
 const CREATEDATE = "createDate"
 const UPDATEDATE = "updateDate"
@@ -140,4 +141,13 @@ const (
 	TOKEN         = "token"
 	AUTHORIZATION = "Authorization"
 	BEARER        = "Bearer "
+)
+
+const (
+	META_INNER_ID                 = 1
+	ENTITY_AUTH_SETTINGS_INNER_ID = 2
+	Ability_INNER_ID              = 3
+	USER_INNER_ID                 = 4
+	ROLE_INNER_ID                 = 5
+	ROLE_USER_RELATION_INNER_ID   = 101
 )

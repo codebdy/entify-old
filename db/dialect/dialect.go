@@ -12,6 +12,8 @@ const (
 )
 
 type SQLBuilder interface {
+	BuildMeSQL() string
+	BuildRolesSQL() string
 	BuildLoginSQL() string
 	BuildCreateMetaSQL() string
 	BuildCreateAbilitySQL() string

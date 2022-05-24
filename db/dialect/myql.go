@@ -17,8 +17,23 @@ import (
 type MySQLBuilder struct {
 }
 
+func (*MySQLBuilder) BuildMeSQL() string {
+	return "select id, name, loginName from user where loginName = ?"
+}
+
+func (*MySQLBuilder) BuildRolesSQL() string {
+	povit := fmt.Sprintf(
+		"%s_%d_%d_%d",
+		consts.PIVOT,
+		consts.ROLE_INNER_ID,
+		consts.ROLE_USER_RELATION_INNER_ID,
+		consts.USER_INNER_ID,
+	)
+	return fmt.Sprintf("select a.id, a.name  from role a left join %s b on a.id = b.role where b.user = ?", povit)
+}
+
 func (*MySQLBuilder) BuildLoginSQL() string {
-	return "select password from user where UPPER(loginName) = ?"
+	return "select password from user where loginName = ?"
 }
 
 func (*MySQLBuilder) BuildCreateMetaSQL() string {

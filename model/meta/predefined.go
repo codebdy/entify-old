@@ -41,7 +41,7 @@ var MetaStatusEnum = ClassMeta{
 var MetaClass = ClassMeta{
 	Uuid:       "META_ENTITY_UUID",
 	Name:       consts.META_ENTITY_NAME,
-	InnerId:    1,
+	InnerId:    consts.META_INNER_ID,
 	StereoType: CLASSS_ENTITY,
 	Root:       true,
 	Attributes: []AttributeMeta{
@@ -82,7 +82,7 @@ var MetaClass = ClassMeta{
 var EntityAuthSettingsClass = ClassMeta{
 	Name:    "EntityAuthSettings",
 	Uuid:    "META_ENTITY_AUTH_SETTINGS_UUID",
-	InnerId: 2,
+	InnerId: consts.ENTITY_AUTH_SETTINGS_INNER_ID,
 	Root:    true,
 	System:  true,
 	Attributes: []AttributeMeta{
@@ -133,7 +133,7 @@ var AbilityTypeEnum = ClassMeta{
 var AbilityClass = ClassMeta{
 	Name:    "Ability",
 	Uuid:    "META_ABILITY_UUID",
-	InnerId: 3,
+	InnerId: consts.Ability_INNER_ID,
 	Root:    true,
 	System:  true,
 	Attributes: []AttributeMeta{

@@ -1,22 +1,51 @@
 package authentication
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 
-	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/bcrypt"
 	"rxdrag.com/entify/authentication/jwt"
 	"rxdrag.com/entify/config"
-	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/entity"
-	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/repository"
 )
 
 var TokenCache = map[string]*entity.User{}
+
+func loadUser(loginName string) *entity.User {
+	con, err := repository.Open()
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	var user entity.User
+
+	sqlBuilder := dialect.GetSQLBuilder()
+	err = con.Dbx.QueryRow(sqlBuilder.BuildMeSQL(), loginName).Scan(&user.Id, &user.Name, &user.LoginName)
+	switch {
+	case err == sql.ErrNoRows:
+		return nil
+	case err != nil:
+		panic(err.Error())
+	}
+
+	rows, err := con.Dbx.Query(sqlBuilder.BuildRolesSQL(), user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var role entity.Role
+		err = rows.Scan(&role.Id, &role.Name)
+		if err != nil {
+			panic(err.Error())
+		}
+		user.Roles = append(user.Roles, role)
+	}
+	return &user
+}
 
 func Login(loginName, pwd string) (string, error) {
 	con, err := repository.Open()
@@ -26,7 +55,7 @@ func Login(loginName, pwd string) (string, error) {
 	}
 	sqlBuilder := dialect.GetSQLBuilder()
 	var password string
-	err = con.Dbx.QueryRow(sqlBuilder.BuildLoginSQL(), strings.ToUpper(loginName)).Scan(&password)
+	err = con.Dbx.QueryRow(sqlBuilder.BuildLoginSQL(), loginName).Scan(&password)
 	if err != nil {
 		fmt.Println(err)
 		return "", errors.New("Login failed!")
@@ -43,24 +72,10 @@ func Login(loginName, pwd string) (string, error) {
 		panic(err.Error())
 	}
 
-	userMap := repository.QueryOne(model.GlobalModel.Graph.GetEntityByName(consts.META_USER), repository.QueryArg{
-		consts.ARG_WHERE: repository.QueryArg{
-			consts.LOGIN_NAME: repository.QueryArg{
-				consts.ARG_EQ: loginName,
-			},
-		},
-	})
+	user := loadUser(loginName)
+	TokenCache[token] = user
 
-	var user entity.User
-
-	err = mapstructure.Decode(userMap, user)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	TokenCache[token] = &user
-
+	fmt.Println("哈哈", *user)
 	return token, err
 }
 
