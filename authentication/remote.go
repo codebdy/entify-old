@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/entity"
@@ -41,7 +42,19 @@ func meFromRemote(token string) *entity.User {
 	defer response.Body.Close()
 
 	data, _ := ioutil.ReadAll(response.Body)
-	fmt.Println(string(data))
-
+	var user entity.User
+	var userJson map[string]interface{}
+	json.Unmarshal(data, &userJson)
+	fmt.Println(userJson)
+	if userJson["data"] != nil {
+		meJson := userJson["data"].(map[string]interface{})["me"]
+		if meJson != nil {
+			err = mapstructure.Decode(meJson, &user)
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		return &user
+	}
 	return nil
 }
