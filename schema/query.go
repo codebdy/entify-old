@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/authentication"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
@@ -156,18 +157,11 @@ func appendAuthToQuery(fields graphql.Fields) {
 		Type: baseUserType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			defer utils.PrintErrorStack()
-			// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
-			// 	switch selection := iSelection.(type) {
-			// 	case *ast.Field:
-			// 		//fmt.Println(selection.Directives[len(selection.Directives)-1].Name.Value)
-			// 	case *ast.InlineFragment:
-			// 	case *ast.FragmentSpread:
-			// 	}
-			// }
-
-			//err = db.Select(&instances, queryStr)
-			//return repository.Query(node, p.Args), nil
-			return nil, nil
+			token := p.Context.Value(consts.TOKEN)
+			if token == nil {
+				panic("Not set token in context")
+			}
+			return authentication.GetUserByToken(p.Context.Value(consts.TOKEN).(string)), nil
 		},
 	}
 }

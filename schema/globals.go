@@ -3,11 +3,9 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/consts"
-	"rxdrag.com/entify/entity"
 	"rxdrag.com/entify/utils"
 )
 
-var TokenCache = map[string]*entity.User{}
 var Cache TypeCache
 
 var NodeInterfaceType = graphql.NewInterface(

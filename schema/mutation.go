@@ -2,15 +2,11 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/authentication"
-	"rxdrag.com/entify/authentication/jwt"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
-	"rxdrag.com/entify/entity"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/utils"
 )
@@ -29,32 +25,7 @@ func appendAuthMutation(fields graphql.Fields) {
 			},
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			loginName, err := authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
-			if err != nil {
-				return "", err
-			}
-			token, err := jwt.GenerateToken(loginName)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			userMap := repository.QueryOne(model.GlobalModel.Graph.GetEntityByName(consts.META_USER), repository.QueryArg{
-				consts.ARG_WHERE: repository.QueryArg{
-					consts.LOGIN_NAME: repository.QueryArg{
-						consts.ARG_EQ: loginName,
-					},
-				},
-			})
-
-			var user entity.User
-
-			err = mapstructure.Decode(userMap, user)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			TokenCache[token] = &user
-			return token, nil
+			return authentication.Login(p.Args[consts.LOGIN_NAME].(string), p.Args[consts.PASSWORD].(string))
 		},
 	}
 
