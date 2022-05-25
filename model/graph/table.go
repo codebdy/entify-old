@@ -62,6 +62,7 @@ func NewRelationTables(relation *Relation) []*table.Table {
 					},
 				},
 			},
+			PKString: fmt.Sprintf("%s,%s", relation.Source.TableName(), relation.Target.TableName()),
 		}
 		if relation.EnableAssociaitonClass {
 			for i := range relation.AssociationClass.Attributes {
@@ -111,6 +112,7 @@ func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 				},
 			},
 		},
+		PKString: fmt.Sprintf("%s,%s", derived.Source.TableName(), derived.Target.TableName()),
 	}
 	if derived.Parent.EnableAssociaitonClass {
 		for i := range derived.Parent.AssociationClass.Attributes {

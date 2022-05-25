@@ -5,4 +5,5 @@ type Table struct {
 	Name          string
 	EntityInnerId uint64
 	Columns       []*Column
+	PKString      string
 }

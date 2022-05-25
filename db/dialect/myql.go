@@ -222,8 +222,12 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *table.Table) string {
 	}
 	for _, column := range table.Columns {
 		if column.Primary {
-			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (`%s`)", column.Name))
+			fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (%s)", column.Name))
 		}
+	}
+
+	if table.PKString != "" {
+		fieldSqls = append(fieldSqls, fmt.Sprintf("PRIMARY KEY (%s)", table.PKString))
 	}
 
 	//建索引
@@ -249,6 +253,12 @@ func (b *MySQLBuilder) BuildDeleteTableSQL(table *table.Table) string {
 
 func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom {
 	var atoms []model.ModifyAtom
+	//主键
+	atoms = append(atoms, model.ModifyAtom{
+		ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY, ADD PRIMARY KEY (%s)", diff.OldTable.Name, diff.OldTable.PKString),
+		UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY,ADD PRIMARY KEY (%s) ", diff.NewTable.Name, diff.NewTable.PKString),
+	})
+
 	if diff.OldTable.Name != diff.NewTable.Name {
 		//修改表名
 		atoms = append(atoms, model.ModifyAtom{
@@ -259,6 +269,7 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	b.appendDeleteColumnAtoms(diff, &atoms)
 	b.appendAddColumnAtoms(diff, &atoms)
 	b.appendModifyColumnAtoms(diff, &atoms)
+
 	return atoms
 }
 
