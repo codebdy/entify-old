@@ -262,13 +262,32 @@ func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.Modi
 	return atoms
 }
 
-func buildArgAssociation(association *graph.ArgAssociation, owner *graph.ArgEntity) string {
+func buildArgAssociation(argAssociation *graph.ArgAssociation, owner *graph.ArgEntity) string {
 	var sql string
-	derivedAssociations := association.Association.DerivedAssociations()
+
+	if !argAssociation.Association.IsAbstract() {
+		if owner != nil {
+			typeEntity := argAssociation.GetTypeEntity(argAssociation.Association.TypeClass().Uuid())
+			povitTableAlias := fmt.Sprintf("%s_%d_%d", graph.PREFIX_T, owner.Id, typeEntity.Id)
+			sql = sql + fmt.Sprintf(
+				" LEFT JOIN %s %s ON %s=%s LEFT JOIN %s %s ON %s=%s ",
+				argAssociation.Association.Relation.Table.Name,
+				povitTableAlias,
+				owner.Alise()+"."+consts.ID,
+				povitTableAlias+"."+owner.Entity.Table.Name,
+				typeEntity.Entity.TableName(),
+				typeEntity.Alise(),
+				povitTableAlias+"."+typeEntity.Entity.Table.Name,
+				typeEntity.Alise()+"."+consts.ID,
+			)
+		}
+		return sql
+	}
+	derivedAssociations := argAssociation.Association.DerivedAssociations()
 	for i := range derivedAssociations {
 		derivedAsso := derivedAssociations[i]
 		if owner != nil {
-			typeEntity := association.GetTypeEntity(derivedAsso.TypeEntity().Uuid())
+			typeEntity := argAssociation.GetTypeEntity(derivedAsso.TypeEntity().Uuid())
 			povitTableAlias := fmt.Sprintf("%s_%d_%d", graph.PREFIX_T, owner.Id, typeEntity.Id)
 			sql = sql + fmt.Sprintf(
 				" LEFT JOIN %s %s ON %s=%s LEFT JOIN %s %s ON %s=%s ",
