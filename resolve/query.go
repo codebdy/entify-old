@@ -46,14 +46,7 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 			}
 		)
 		defer utils.PrintErrorStack()
-		// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
-		// 	switch selection := iSelection.(type) {
-		// 	case *ast.Field:
-		// 		fmt.Println(selection.Directives[len(selection.Directives)-1].Name.Value)
-		// 	case *ast.InlineFragment:
-		// 	case *ast.FragmentSpread:
-		// 	}
-		// }
+
 		if loaders == nil {
 			panic("Data loaders is nil")
 		}

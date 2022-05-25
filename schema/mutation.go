@@ -31,7 +31,7 @@ func appendAuthMutation(fields graphql.Fields) {
 	}
 
 	fields[consts.LOGOUT] = &graphql.Field{
-		Type: graphql.String,
+		Type: graphql.Boolean,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			defer utils.PrintErrorStack()
 			token := contextValues(p).Token
