@@ -81,10 +81,10 @@ func Logout(token string) {
 	TokenCache[token] = nil
 }
 
-func GetUserByToken(token string) *entity.User {
+func GetUserByToken(token string) (*entity.User, error) {
 	authUrl := config.AuthUrl()
 	if authUrl == "" {
-		return TokenCache[token]
+		return TokenCache[token], nil
 	} else {
 		return meFromRemote(token)
 	}

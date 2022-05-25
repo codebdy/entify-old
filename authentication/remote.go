@@ -3,6 +3,7 @@ package authentication
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,7 +15,7 @@ import (
 	"rxdrag.com/entify/entity"
 )
 
-func meFromRemote(token string) *entity.User {
+func meFromRemote(token string) (*entity.User, error) {
 	authUrl := config.AuthUrl()
 	jsonData := map[string]string{
 		"query": `
@@ -38,6 +39,7 @@ func meFromRemote(token string) *entity.User {
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
+		return nil, errors.New("Can't access authentication service")
 	}
 	defer response.Body.Close()
 
@@ -54,7 +56,7 @@ func meFromRemote(token string) *entity.User {
 				panic(err.Error())
 			}
 		}
-		return &user
+		return &user, nil
 	}
-	return nil
+	return nil, nil
 }

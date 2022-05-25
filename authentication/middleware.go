@@ -23,7 +23,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			reqToken = splitToken[1]
 			if reqToken != "" {
 				v.Token = reqToken
-				v.Me = GetUserByToken(reqToken)
+				me, err := GetUserByToken(reqToken)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+				v.Me = me
 			}
 		}
 		ctx := context.WithValue(r.Context(), consts.CONTEXT_VALUES, v)
