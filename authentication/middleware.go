@@ -26,6 +26,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				me, err := GetUserByToken(reqToken)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
 				}
 				v.Me = me
 			}

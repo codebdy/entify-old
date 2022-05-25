@@ -39,7 +39,7 @@ func meFromRemote(token string) (*entity.User, error) {
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
-		return nil, errors.New("Can't access authentication service")
+		return nil, errors.New("Can't access authentication service: " + authUrl)
 	}
 	defer response.Body.Close()
 
