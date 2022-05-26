@@ -152,3 +152,6 @@ const (
 	ROLE_INNER_ID                 = 5
 	ROLE_USER_RELATION_INNER_ID   = 101
 )
+
+//普通角色的ID永远不会是1
+const GUEST_ROLE_ID = 1
