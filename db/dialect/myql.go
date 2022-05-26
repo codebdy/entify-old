@@ -291,6 +291,10 @@ func buildArgAssociation(argAssociation *graph.ArgAssociation, owner *graph.ArgE
 				povitTableAlias+"."+typeEntity.Entity.Table.Name,
 				typeEntity.Alise()+"."+consts.ID,
 			)
+
+			for i := range typeEntity.FromClass.Associations {
+				sql = sql + buildArgAssociation(typeEntity.FromClass.Associations[i], typeEntity)
+			}
 		}
 		return sql
 	}
