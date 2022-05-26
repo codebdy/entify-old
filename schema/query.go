@@ -153,10 +153,7 @@ func appendToQueryFields(node graph.Noder, fields graphql.Fields) {
 
 func appendAuthToQuery(fields graphql.Fields) {
 	fields[consts.ME] = &graphql.Field{
-		Type: baseUserType,
-		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			defer utils.PrintErrorStack()
-			return contextValues(p).Me, nil
-		},
+		Type:    baseUserType,
+		Resolve: resolve.Me,
 	}
 }
