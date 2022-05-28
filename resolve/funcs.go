@@ -9,7 +9,7 @@ import (
 func ContextValues(p graphql.ResolveParams) entity.ContextValues {
 	values := p.Context.Value(consts.CONTEXT_VALUES)
 	if values == nil {
-		panic("Not set token and me values in context")
+		panic("Not set CONTEXT_VALUES in context")
 	}
 
 	return values.(entity.ContextValues)

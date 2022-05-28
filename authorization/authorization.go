@@ -1,13 +1,17 @@
 package authorization
 
-func GetUserAbilities(userId uint64, entityUuid string) {
+func getUserAbilities(userId uint64, entityUuid string) {
 
 }
 
-func GetGuestAbilities(entityUuid string) {
+func getGuestAbilities(entityUuid string) {
 
 }
 
-func IsExpand(entityUuid string) {
+func isExpand(entityUuid string) {
 
+}
+
+func canReadEntity(entityUuid string, roleId uint64) (bool, string) {
+	return false, ""
 }
