@@ -7,21 +7,21 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	"rxdrag.com/entify/authentication/jwt"
+	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/db/dialect"
-	"rxdrag.com/entify/entity"
 	"rxdrag.com/entify/repository"
 )
 
-var TokenCache = map[string]*entity.User{}
+var TokenCache = map[string]*common.User{}
 
-func loadUser(loginName string) *entity.User {
+func loadUser(loginName string) *common.User {
 	con, err := repository.Open()
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	var user entity.User
+	var user common.User
 
 	sqlBuilder := dialect.GetSQLBuilder()
 	err = con.Dbx.QueryRow(sqlBuilder.BuildMeSQL(), loginName).Scan(&user.Id, &user.Name, &user.LoginName)
@@ -37,7 +37,7 @@ func loadUser(loginName string) *entity.User {
 		panic(err.Error())
 	}
 	for rows.Next() {
-		var role entity.Role
+		var role common.Role
 		err = rows.Scan(&role.Id, &role.Name)
 		if err != nil {
 			panic(err.Error())
@@ -81,7 +81,7 @@ func Logout(token string) {
 	TokenCache[token] = nil
 }
 
-func GetUserByToken(token string) (*entity.User, error) {
+func GetUserByToken(token string) (*common.User, error) {
 	authUrl := config.AuthUrl()
 	if authUrl == "" {
 		return TokenCache[token], nil

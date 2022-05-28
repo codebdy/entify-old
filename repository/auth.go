@@ -1,13 +1,14 @@
-package resolve
+package repository
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
 )
 
-func weaveAuthInArgs(p graphql.ResolveParams) {
+func weaveAuthInArgs(p graphql.ResolveParams, classUuid string) {
 	var roleIds []string
-	me := ContextValues(p).Me
+	me := common.ParseContextValues(p).Me
 	if me != nil {
 		for i := range me.Roles {
 			roleIds = append(roleIds, me.Roles[i].Id)
@@ -15,4 +16,5 @@ func weaveAuthInArgs(p graphql.ResolveParams) {
 	} else {
 		roleIds = append(roleIds, consts.GUEST_ROLE_ID)
 	}
+
 }

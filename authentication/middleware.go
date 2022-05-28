@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
-	"rxdrag.com/entify/entity"
 )
 
 // AuthMiddleware 传递公共参数中间件
@@ -18,7 +18,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		reqToken := r.Header.Get(consts.AUTHORIZATION)
 		splitToken := strings.Split(reqToken, consts.BEARER)
-		v := entity.ContextValues{}
+		v := common.ContextValues{}
 		if len(splitToken) == 2 {
 			reqToken = splitToken[1]
 			if reqToken != "" {

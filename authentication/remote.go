@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
+	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
-	"rxdrag.com/entify/entity"
 )
 
-func meFromRemote(token string) (*entity.User, error) {
+func meFromRemote(token string) (*common.User, error) {
 	authUrl := config.AuthUrl()
 	jsonData := map[string]string{
 		"query": `
@@ -44,7 +44,7 @@ func meFromRemote(token string) (*entity.User, error) {
 	defer response.Body.Close()
 
 	data, _ := ioutil.ReadAll(response.Body)
-	var user entity.User
+	var user common.User
 	var userJson map[string]interface{}
 	json.Unmarshal(data, &userJson)
 	fmt.Println(userJson)

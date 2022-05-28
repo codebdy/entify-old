@@ -13,7 +13,6 @@ import (
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		weaveAuthInArgs(p)
 		instance := repository.QueryOne(node, p.Args)
 		return instance, nil
 	}
