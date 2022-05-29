@@ -6,7 +6,7 @@ import (
 	"rxdrag.com/entify/consts"
 )
 
-func WeaveAuthInArgs(p graphql.ResolveParams, classUuid string) {
+func WeaveAuthInArgs(p graphql.ResolveParams, entityUuid string) {
 	var roleIds []string
 	me := common.ParseContextValues(p).Me
 	if me != nil {
