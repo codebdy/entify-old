@@ -17,23 +17,26 @@ type AbilityVerifier struct {
 	queryUserCache map[string][]common.User
 }
 
-func New(p graphql.ResolveParams, entityUuid string, abilityType string) *AbilityVerifier {
+func New() *AbilityVerifier {
 	verifier := AbilityVerifier{}
-	me := common.ParseContextValues(p).Me
-	if me != nil {
-		for i := range me.Roles {
-			verifier.roleIds = append(verifier.roleIds, me.Roles[i].Id)
-		}
-	} else {
-		verifier.roleIds = append(verifier.roleIds, consts.GUEST_ROLE_ID)
-	}
-
-	verifier.abilityType = abilityType
-
-	verifier.queryRolesAbilities()
-	verifier.parseQueryUserMap()
 
 	return &verifier
+}
+
+func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abilityType string) {
+	me := ParseContextValues(p).Me
+	if me != nil {
+		for i := range me.Roles {
+			v.roleIds = append(v.roleIds, me.Roles[i].Id)
+		}
+	} else {
+		v.roleIds = append(v.roleIds, consts.GUEST_ROLE_ID)
+	}
+
+	v.abilityType = abilityType
+
+	v.queryRolesAbilities()
+	v.parseQueryUserMap()
 }
 
 func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) {

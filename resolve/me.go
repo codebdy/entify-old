@@ -2,11 +2,11 @@ package resolve
 
 import (
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entify/common"
+	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/utils"
 )
 
 func Me(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
-	return common.ParseContextValues(p).Me, nil
+	return authorization.ParseContextValues(p).Me, nil
 }

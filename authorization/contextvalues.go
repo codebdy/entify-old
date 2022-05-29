@@ -1,13 +1,15 @@
-package common
+package authorization
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
 )
 
 type ContextValues struct {
-	Token string
-	Me    *User
+	Token           string
+	Me              *common.User
+	AbilityVerifier *AbilityVerifier
 }
 
 func ParseContextValues(p graphql.ResolveParams) ContextValues {
