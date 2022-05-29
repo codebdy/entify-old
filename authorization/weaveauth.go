@@ -1,4 +1,4 @@
-package repository
+package authorization
 
 import (
 	"github.com/graphql-go/graphql"
@@ -6,7 +6,7 @@ import (
 	"rxdrag.com/entify/consts"
 )
 
-func weaveAuthInArgs(p graphql.ResolveParams, classUuid string) {
+func WeaveAuthInArgs(p graphql.ResolveParams, classUuid string) {
 	var roleIds []string
 	me := common.ParseContextValues(p).Me
 	if me != nil {
