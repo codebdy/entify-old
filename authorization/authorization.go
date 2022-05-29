@@ -2,19 +2,24 @@ package authorization
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/repository"
 )
 
 type Expression = map[string]interface{}
 
 type AbilityVerifier struct {
-	roleIds []string
+	roleIds     []string
+	abilityType string
+	abilities   []*common.Ability
 	// path: Expression
 	queryUserMap map[string]Expression
 }
 
-func New(p graphql.ResolveParams, entityUuid string) *AbilityVerifier {
+func New(p graphql.ResolveParams, entityUuid string, abilityType string) *AbilityVerifier {
 	verifier := AbilityVerifier{}
 	me := common.ParseContextValues(p).Me
 	if me != nil {
@@ -25,21 +30,36 @@ func New(p graphql.ResolveParams, entityUuid string) *AbilityVerifier {
 		verifier.roleIds = append(verifier.roleIds, consts.GUEST_ROLE_ID)
 	}
 
+	verifier.abilityType = abilityType
+
+	verifier.queryRolesAbilities()
+	verifier.parseQueryUserMap()
+
 	return &verifier
 }
 
-func getUserAbilities(userId uint64, entityUuid string) {
+func (v *AbilityVerifier) queryRolesAbilities() {
+	abilities := repository.Query(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), repository.QueryArg{
+		consts.ARG_WHERE: repository.QueryArg{
+			"roleId": repository.QueryArg{
+				consts.ARG_IN: v.roleIds,
+			},
+			"abilityType": repository.QueryArg{
+				consts.ARG_EQ: v.abilityType,
+			},
+		},
+	})
 
+	for _, abilityMap := range abilities {
+		var ability common.Ability
+		err := mapstructure.Decode(abilityMap, &ability)
+		if err != nil {
+			panic(err.Error())
+		}
+		v.abilities = append(v.abilities, &ability)
+	}
 }
 
-func getGuestAbilities(entityUuid string) {
+func (v *AbilityVerifier) parseQueryUserMap() {
 
-}
-
-func isExpand(entityUuid string) {
-
-}
-
-func canReadEntity(entityUuid string, roleId uint64) (bool, string) {
-	return false, ""
 }

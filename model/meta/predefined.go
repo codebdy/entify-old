@@ -132,7 +132,7 @@ var AbilityTypeEnum = ClassMeta{
 
 var AbilityClass = ClassMeta{
 	Name:    "Ability",
-	Uuid:    "META_ABILITY_UUID",
+	Uuid:    consts.ABILITY_UUID,
 	InnerId: consts.Ability_INNER_ID,
 	Root:    true,
 	System:  true,

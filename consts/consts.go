@@ -144,6 +144,8 @@ const (
 	CONTEXT_VALUES = "values"
 )
 
+const ABILITY_UUID = "META_ABILITY_UUID"
+
 const (
 	META_INNER_ID                 = 1
 	ENTITY_AUTH_SETTINGS_INNER_ID = 2
