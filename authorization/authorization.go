@@ -9,14 +9,12 @@ import (
 	"rxdrag.com/entify/repository"
 )
 
-type Expression = map[string]interface{}
-
 type AbilityVerifier struct {
 	roleIds     []string
 	abilityType string
 	abilities   []*common.Ability
-	// path: Expression
-	queryUserMap map[string]Expression
+	// expression Key : 从Auth模块返回的结果
+	queryUserCache map[string][]common.User
 }
 
 func New(p graphql.ResolveParams, entityUuid string, abilityType string) *AbilityVerifier {
@@ -36,6 +34,18 @@ func New(p graphql.ResolveParams, entityUuid string, abilityType string) *Abilit
 	verifier.parseQueryUserMap()
 
 	return &verifier
+}
+
+func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) {
+
+}
+
+func (v *AbilityVerifier) EntityMutationCan(entityData map[string]interface{}) bool {
+	return false
+}
+
+func (v *AbilityVerifier) FieldCan(entityData map[string]interface{}) bool {
+	return false
 }
 
 func (v *AbilityVerifier) queryRolesAbilities() {
