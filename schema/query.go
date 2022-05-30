@@ -45,13 +45,6 @@ func rootQuery() *graphql.Object {
 func queryFields() graphql.Fields {
 	queryFields := graphql.Fields{
 		consts.SERVICE: serviceField(),
-		consts.INSTALLED: &graphql.Field{
-			Type: graphql.Boolean,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				defer utils.PrintErrorStack()
-				return true, nil
-			},
-		},
 		consts.ENTITIES: &graphql.Field{
 			Type: &graphql.NonNull{
 				OfType: &graphql.List{

@@ -20,3 +20,7 @@ func ParseContextValues(p graphql.ResolveParams) ContextValues {
 
 	return values.(ContextValues)
 }
+
+func ParseAbilityVerifier(p graphql.ResolveParams) *AbilityVerifier {
+	return ParseContextValues(p).AbilityVerifier
+}

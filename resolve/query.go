@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/repository"
@@ -13,7 +14,7 @@ import (
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOne(node, p.Args)
+		instance := repository.QueryOne(node, extractArgs(p))
 		return instance, nil
 	}
 }
@@ -30,8 +31,7 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// 	}
 		// }
 
-		//err = db.Select(&instances, queryStr)
-		return repository.Query(node, p.Args), nil
+		return repository.Query(node, extractArgs(p)), nil
 	}
 }
 
@@ -71,4 +71,20 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 			return retValue, nil
 		}, nil
 	}
+}
+
+func extractArgs(p graphql.ResolveParams) map[string]interface{} {
+	verifier := authorization.ParseAbilityVerifier(p)
+
+	if verifier == nil {
+		panic("Can not finde Ability Verifier")
+	}
+
+	inputArgs := map[string]interface{}{}
+	if p.Args != nil {
+		inputArgs = p.Args
+	}
+	args := verifier.WeaveAuthInArgs(inputArgs)
+
+	return args
 }

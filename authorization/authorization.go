@@ -39,8 +39,8 @@ func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abili
 	v.parseQueryUserMap()
 }
 
-func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) {
-
+func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[string]interface{} {
+	return args
 }
 
 func (v *AbilityVerifier) EntityMutationCan(entityData map[string]interface{}) bool {
