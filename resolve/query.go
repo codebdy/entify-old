@@ -7,6 +7,7 @@ import (
 	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/utils"
 )
@@ -14,7 +15,7 @@ import (
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOne(node, extractArgs(p))
+		instance := repository.QueryOne(node, extractQueryArgsAndInitVerifier(p, node.Uuid()))
 		return instance, nil
 	}
 }
@@ -31,7 +32,7 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// 	}
 		// }
 
-		return repository.Query(node, extractArgs(p)), nil
+		return repository.Query(node, extractQueryArgsAndInitVerifier(p, node.Uuid())), nil
 	}
 }
 
@@ -73,12 +74,14 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 	}
 }
 
-func extractArgs(p graphql.ResolveParams) map[string]interface{} {
+func extractQueryArgsAndInitVerifier(p graphql.ResolveParams, entityUuid string) map[string]interface{} {
 	verifier := authorization.ParseAbilityVerifier(p)
 
 	if verifier == nil {
 		panic("Can not finde Ability Verifier")
 	}
+
+	verifier.Init(p, entityUuid, meta.META_ABILITY_TYPE_READ)
 
 	inputArgs := map[string]interface{}{}
 	if p.Args != nil {
