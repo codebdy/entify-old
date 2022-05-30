@@ -15,7 +15,7 @@ import (
 func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOne(node, extractQueryArgsAndInitVerifier(p, node.Uuid()))
+		instance := repository.QueryOne(node, p.Args)
 		return instance, nil
 	}
 }
@@ -32,7 +32,8 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// 	}
 		// }
 
-		return repository.Query(node, extractQueryArgsAndInitVerifier(p, node.Uuid())), nil
+		initQueryVerifier(p, node)
+		return repository.Query(node, p.Args), nil
 	}
 }
 
@@ -74,20 +75,19 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 	}
 }
 
-func extractQueryArgsAndInitVerifier(p graphql.ResolveParams, entityUuid string) map[string]interface{} {
+func initQueryVerifier(p graphql.ResolveParams, node graph.Noder) *authorization.AbilityVerifier {
 	verifier := authorization.ParseAbilityVerifier(p)
 
 	if verifier == nil {
-		panic("Can not finde Ability Verifier")
+		panic("Can not find Ability Verifier")
 	}
 
-	verifier.Init(p, entityUuid, meta.META_ABILITY_TYPE_READ)
+	verifier.Init(p, node.Uuid(), meta.META_ABILITY_TYPE_READ)
 
-	inputArgs := map[string]interface{}{}
-	if p.Args != nil {
-		inputArgs = p.Args
-	}
-	args := verifier.WeaveAuthInArgs(inputArgs)
+	// if !verifier.CanReadEntity() && !node.IsInterface() {
+	// 	panic("No permission to read: " + node.Name())
+	// }
 
-	return args
+	// args := verifier.WeaveAuthInArgs(inputArgs)
+	return verifier
 }
