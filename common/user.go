@@ -7,6 +7,8 @@ type User struct {
 	Name      string `json:"name"`
 	LoginName string `json:"loginName"`
 	Roles     []Role `json:"roles"`
+	IsSupper  bool   `json:"isSupper"`
+	IsDemo    bool   `json:"isDemo"`
 }
 
 func (u User) Uint64Id() uint64 {

@@ -13,6 +13,7 @@ import (
 )
 
 type AbilityVerifier struct {
+	Me          *common.User
 	roleIds     []string
 	abilityType string
 	abilities   []*common.Ability
@@ -28,6 +29,7 @@ func New() *AbilityVerifier {
 
 func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abilityType string) {
 	me := ParseContextValues(p).Me
+	v.Me = me
 	if me != nil {
 		for i := range me.Roles {
 			v.roleIds = append(v.roleIds, me.Roles[i].Id)
@@ -39,7 +41,6 @@ func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abili
 	v.abilityType = abilityType
 
 	v.queryRolesAbilities()
-	v.parseQueryUserMap()
 }
 
 func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[string]interface{} {
@@ -60,6 +61,9 @@ func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[strin
 }
 
 func (v *AbilityVerifier) CanReadEntity() bool {
+	if v.Me != nil && (v.Me.IsDemo || v.Me.IsSupper) {
+		return true
+	}
 	for _, ability := range v.abilities {
 		if ability.ColumnUuid == "" &&
 			ability.Can &&
@@ -115,10 +119,6 @@ func (v *AbilityVerifier) queryRolesAbilities() {
 		}
 		v.abilities = append(v.abilities, &ability)
 	}
-}
-
-func (v *AbilityVerifier) parseQueryUserMap() {
-
 }
 
 func expressionToKey(expression string) string {
