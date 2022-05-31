@@ -10,20 +10,36 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func Query(node graph.Noder, args QueryArg) []InsanceData {
+func QueryInterface(intf *graph.Interface, args QueryArg) []InsanceData {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryNode(node, args)
+	return con.doQueryNode(intf, args)
 }
 
-func QueryOne(node graph.Noder, args QueryArg) interface{} {
+func QueryOneInterface(intf *graph.Interface, args QueryArg) interface{} {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneNode(node, args)
+	return con.doQueryOneNode(intf, args)
+}
+
+func QueryEntity(entity *graph.Entity, args QueryArg) []InsanceData {
+	con, err := Open()
+	if err != nil {
+		panic(err.Error())
+	}
+	return con.doQueryNode(entity, args)
+}
+
+func QueryOneEntity(entity *graph.Entity, args QueryArg) interface{} {
+	con, err := Open()
+	if err != nil {
+		panic(err.Error())
+	}
+	return con.doQueryOneNode(entity, args)
 }
 
 func SaveOne(instance *data.Instance) (interface{}, error) {

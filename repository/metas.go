@@ -9,7 +9,7 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
+	publishedMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
@@ -21,7 +21,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta := QueryOne(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
+	nextMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.META_STATUS: QueryArg{
 				consts.ARG_ISNULL: true,

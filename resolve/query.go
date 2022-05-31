@@ -12,15 +12,31 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func QueryOneResolveFn(node graph.Noder) graphql.FieldResolveFn {
+func QueryOneInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOne(node, p.Args)
+		instance := repository.QueryOneInterface(intf, p.Args)
 		return instance, nil
 	}
 }
 
-func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
+func QueryInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		defer utils.PrintErrorStack()
+		makeQueryVerifier(p, intf)
+		return repository.QueryInterface(intf, p.Args), nil
+	}
+}
+
+func QueryOneEntityResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
+	return func(p graphql.ResolveParams) (interface{}, error) {
+		defer utils.PrintErrorStack()
+		instance := repository.QueryOneEntity(entity, p.Args)
+		return instance, nil
+	}
+}
+
+func QueryEntityResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
 		// for _, iSelection := range p.Info.Operation.GetSelectionSet().Selections {
@@ -31,8 +47,8 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
-		makeQueryVerifier(p, node)
-		return repository.Query(node, p.Args), nil
+		makeQueryVerifier(p, entity)
+		return repository.QueryEntity(entity, p.Args), nil
 	}
 }
 

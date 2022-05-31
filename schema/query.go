@@ -71,7 +71,7 @@ func queryFields() graphql.Fields {
 		appendEntityToQueryFields(entity, queryFields)
 	}
 
-	for _, service := range model.GlobalModel.Graph.RootServices() {
+	for _, service := range model.GlobalModel.Graph.RootExternals() {
 		appendServiceQueryFields(service, queryFields)
 	}
 
@@ -119,18 +119,18 @@ func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) 
 	(fields)[utils.FirstLower(intf.Name())] = &graphql.Field{
 		Type:    queryResponseType(intf),
 		Args:    quryeArgs(intf.Name()),
-		Resolve: resolve.QueryResolveFn(intf),
+		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
 	(fields)[consts.ONE+intf.Name()] = &graphql.Field{
 		Type:    Cache.OutputType(intf.Name()),
 		Args:    quryeArgs(intf.Name()),
-		Resolve: resolve.QueryOneResolveFn(intf),
+		Resolve: resolve.QueryOneInterfaceResolveFn(intf),
 	}
 
 	(fields)[utils.FirstLower(intf.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
 		Type:    *AggregateType(intf),
 		Args:    quryeArgs(intf.Name()),
-		Resolve: resolve.QueryResolveFn(intf),
+		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
 }
 
@@ -138,18 +138,18 @@ func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 	(fields)[utils.FirstLower(entity.Name())] = &graphql.Field{
 		Type:    queryResponseType(entity),
 		Args:    quryeArgs(entity.Name()),
-		Resolve: resolve.QueryResolveFn(entity),
+		Resolve: resolve.QueryEntityResolveFn(entity),
 	}
 	(fields)[consts.ONE+entity.Name()] = &graphql.Field{
 		Type:    Cache.OutputType(entity.Name()),
 		Args:    quryeArgs(entity.Name()),
-		Resolve: resolve.QueryOneResolveFn(entity),
+		Resolve: resolve.QueryOneEntityResolveFn(entity),
 	}
 
 	(fields)[utils.FirstLower(entity.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
 		Type:    *AggregateType(entity),
 		Args:    quryeArgs(entity.Name()),
-		Resolve: resolve.QueryResolveFn(entity),
+		Resolve: resolve.QueryEntityResolveFn(entity),
 	}
 }
 

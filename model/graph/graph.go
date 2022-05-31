@@ -13,7 +13,7 @@ type Model struct {
 	Interfaces   []*Interface
 	Entities     []*Entity
 	ValueObjects []*Class
-	Services     []*Class
+	Externals    []*Class
 	Relations    []*Relation
 	Tables       []*table.Table
 }
@@ -64,7 +64,7 @@ func New(m *domain.Model) *Model {
 		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
 		} else if cls.StereoType == meta.CLASS_EXTERNAL {
-			model.Services = append(model.Services, NewClass(cls))
+			model.Externals = append(model.Externals, NewClass(cls))
 		}
 	}
 
@@ -231,10 +231,10 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
-func (m *Model) RootServices() []*Class {
+func (m *Model) RootExternals() []*Class {
 	classes := []*Class{}
-	for i := range m.Services {
-		serc := m.Services[i]
+	for i := range m.Externals {
+		serc := m.Externals[i]
 		if serc.Domain.Root {
 			classes = append(classes, serc)
 		}

@@ -100,7 +100,7 @@ func (v *AbilityVerifier) queryEntityArgsMap() map[string]interface{} {
 }
 
 func (v *AbilityVerifier) queryRolesAbilities() {
-	abilities := repository.Query(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), repository.QueryArg{
+	abilities := repository.QueryEntity(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			"roleId": repository.QueryArg{
 				consts.ARG_IN: v.roleIds,

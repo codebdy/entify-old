@@ -11,7 +11,7 @@ import (
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
+	publishedMeta := repository.QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
@@ -23,7 +23,7 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta := repository.QueryOne(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
+	nextMeta := repository.QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			consts.META_STATUS: repository.QueryArg{
 				consts.ARG_ISNULL: true,
