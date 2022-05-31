@@ -23,16 +23,6 @@ func serviceField() *graphql.Field {
 	}
 }
 
-func resolveTypeFn(p graphql.ResolveTypeParams) *graphql.Object {
-	if value, ok := p.Value.(map[string]interface{}); ok {
-		if id, ok := value[consts.ID].(uint64); ok {
-			entityInnerId := utils.DecodeEntityInnerId(id)
-			return Cache.GetEntityTypeByInnerId(entityInnerId)
-		}
-	}
-	return nil
-}
-
 func rootQuery() *graphql.Object {
 	rootQueryConfig := graphql.ObjectConfig{
 		Name:   consts.ROOT_QUERY_NAME,
@@ -74,11 +64,11 @@ func queryFields() graphql.Fields {
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
-		appendToQueryFields(intf, queryFields)
+		appendInterfaceToQueryFields(intf, queryFields)
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		appendToQueryFields(entity, queryFields)
+		appendEntityToQueryFields(entity, queryFields)
 	}
 
 	for _, service := range model.GlobalModel.Graph.RootServices() {
@@ -100,10 +90,10 @@ func queryResponseType(node graph.Noder) graphql.Output {
 	}
 }
 
-func quryeArgs(node graph.Noder) graphql.FieldConfigArgument {
+func quryeArgs(name string) graphql.FieldConfigArgument {
 	config := graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
-			Type: Cache.DistinctOnEnum(node.Name()),
+			Type: Cache.DistinctOnEnum(name),
 		},
 		consts.ARG_LIMIT: &graphql.ArgumentConfig{
 			Type: graphql.Int,
@@ -112,10 +102,10 @@ func quryeArgs(node graph.Noder) graphql.FieldConfigArgument {
 			Type: graphql.Int,
 		},
 		consts.ARG_WHERE: &graphql.ArgumentConfig{
-			Type: Cache.WhereExp(node.Name()),
+			Type: Cache.WhereExp(name),
 		},
 	}
-	orderByExp := Cache.OrderByExp(node.Name())
+	orderByExp := Cache.OrderByExp(name)
 
 	if orderByExp != nil {
 		config[consts.ARG_ORDERBY] = &graphql.ArgumentConfig{
@@ -125,22 +115,41 @@ func quryeArgs(node graph.Noder) graphql.FieldConfigArgument {
 	return config
 }
 
-func appendToQueryFields(node graph.Noder, fields graphql.Fields) {
-	(fields)[utils.FirstLower(node.Name())] = &graphql.Field{
-		Type:    queryResponseType(node),
-		Args:    quryeArgs(node),
-		Resolve: resolve.QueryResolveFn(node),
+func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) {
+	(fields)[utils.FirstLower(intf.Name())] = &graphql.Field{
+		Type:    queryResponseType(intf),
+		Args:    quryeArgs(intf.Name()),
+		Resolve: resolve.QueryResolveFn(intf),
 	}
-	(fields)[consts.ONE+node.Name()] = &graphql.Field{
-		Type:    Cache.OutputType(node.Name()),
-		Args:    quryeArgs(node),
-		Resolve: resolve.QueryOneResolveFn(node),
+	(fields)[consts.ONE+intf.Name()] = &graphql.Field{
+		Type:    Cache.OutputType(intf.Name()),
+		Args:    quryeArgs(intf.Name()),
+		Resolve: resolve.QueryOneResolveFn(intf),
 	}
 
-	(fields)[utils.FirstLower(node.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
-		Type:    *AggregateType(node),
-		Args:    quryeArgs(node),
-		Resolve: resolve.QueryResolveFn(node),
+	(fields)[utils.FirstLower(intf.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+		Type:    *AggregateType(intf),
+		Args:    quryeArgs(intf.Name()),
+		Resolve: resolve.QueryResolveFn(intf),
+	}
+}
+
+func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
+	(fields)[utils.FirstLower(entity.Name())] = &graphql.Field{
+		Type:    queryResponseType(entity),
+		Args:    quryeArgs(entity.Name()),
+		Resolve: resolve.QueryResolveFn(entity),
+	}
+	(fields)[consts.ONE+entity.Name()] = &graphql.Field{
+		Type:    Cache.OutputType(entity.Name()),
+		Args:    quryeArgs(entity.Name()),
+		Resolve: resolve.QueryOneResolveFn(entity),
+	}
+
+	(fields)[utils.FirstLower(entity.Name())+utils.FirstUpper(consts.AGGREGATE)] = &graphql.Field{
+		Type:    *AggregateType(entity),
+		Args:    quryeArgs(entity.Name()),
+		Resolve: resolve.QueryResolveFn(entity),
 	}
 }
 

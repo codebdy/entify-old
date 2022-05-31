@@ -21,7 +21,7 @@ type AbilityVerifier struct {
 	queryUserCache map[string][]common.User
 }
 
-func New() *AbilityVerifier {
+func NewVerifier() *AbilityVerifier {
 	verifier := AbilityVerifier{}
 
 	return &verifier

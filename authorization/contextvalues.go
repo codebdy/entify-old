@@ -7,9 +7,9 @@ import (
 )
 
 type ContextValues struct {
-	Token           string
-	Me              *common.User
-	AbilityVerifier *AbilityVerifier
+	Token          string
+	Me             *common.User
+	QueryUserCache map[string][]string
 }
 
 func ParseContextValues(p graphql.ResolveParams) ContextValues {
@@ -19,8 +19,4 @@ func ParseContextValues(p graphql.ResolveParams) ContextValues {
 	}
 
 	return values.(ContextValues)
-}
-
-func ParseAbilityVerifier(p graphql.ResolveParams) *AbilityVerifier {
-	return ParseContextValues(p).AbilityVerifier
 }

@@ -31,8 +31,7 @@ func QueryResolveFn(node graph.Noder) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
-
-		initQueryVerifier(p, node)
+		makeQueryVerifier(p, node)
 		return repository.Query(node, p.Args), nil
 	}
 }
@@ -75,8 +74,8 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 	}
 }
 
-func initQueryVerifier(p graphql.ResolveParams, node graph.Noder) *authorization.AbilityVerifier {
-	verifier := authorization.ParseAbilityVerifier(p)
+func makeQueryVerifier(p graphql.ResolveParams, node graph.Noder) *authorization.AbilityVerifier {
+	verifier := authorization.NewVerifier()
 
 	if verifier == nil {
 		panic("Can not find Ability Verifier")

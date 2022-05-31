@@ -31,7 +31,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				v.Me = me
 			}
 		}
-		v.AbilityVerifier = authorization.New()
 		ctx := context.WithValue(r.Context(), consts.CONTEXT_VALUES, v)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
