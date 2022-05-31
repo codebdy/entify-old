@@ -112,8 +112,8 @@ func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}
 	}
 }
 
-func (con *Connection) QueryOneById(node graph.Noder, id interface{}) interface{} {
-	return con.doQueryOneNode(node, QueryArg{
+func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}) interface{} {
+	return con.doQueryOneEntity(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
 				consts.ARG_EQ: id,
@@ -161,15 +161,6 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 	return convertValuesToObject(values, entity)
 }
 
-func (con *Connection) doQueryOneNode(node graph.Noder, args map[string]interface{}) interface{} {
-
-	if node.IsInterface() {
-		return con.doQueryOneInterface(node.Interface(), args)
-	} else {
-		return con.doQueryOneEntity(node.Entity(), args)
-	}
-}
-
 func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
@@ -193,7 +184,7 @@ func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error)
 		}
 	}
 
-	savedObject := con.QueryOneById(instance.Entity, id)
+	savedObject := con.QueryOneEntityById(instance.Entity, id)
 
 	//affectedRows, err := result.RowsAffected()
 	if err != nil {
@@ -371,7 +362,7 @@ func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error)
 		con.doSaveAssociation(ref, instance.Id)
 	}
 
-	savedObject := con.QueryOneById(instance.Entity, instance.Id)
+	savedObject := con.QueryOneEntityById(instance.Entity, instance.Id)
 
 	return savedObject, nil
 }

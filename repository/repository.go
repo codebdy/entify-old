@@ -23,7 +23,7 @@ func QueryOneInterface(intf *graph.Interface, args QueryArg) interface{} {
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneNode(intf, args)
+	return con.doQueryOneInterface(intf, args)
 }
 
 func QueryEntity(entity *graph.Entity, args QueryArg) []InsanceData {
@@ -39,7 +39,7 @@ func QueryOneEntity(entity *graph.Entity, args QueryArg) interface{} {
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneNode(entity, args)
+	return con.doQueryOneEntity(entity, args)
 }
 
 func SaveOne(instance *data.Instance) (interface{}, error) {
