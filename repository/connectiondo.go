@@ -57,6 +57,7 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	sql, params := con.buildQueryInterfaceSQL(intf, args)
 
 	rows, err := con.Dbx.Query(sql, params...)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -88,6 +89,7 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	sql, params := con.buildQueryEntitySQL(entity, args)
 	fmt.Println("doQueryEntity SQL:", sql)
 	rows, err := con.Dbx.Query(sql, params...)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -193,6 +195,7 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	entity := r.TypeEntity()
 	queryStr := builder.BuildQueryAssociatedInstancesSQL(entity, ownerId, r.Table().Name, r.OwnerColumn().Name, r.TypeColumn().Name)
 	rows, err := con.Dbx.Query(queryStr)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -222,6 +225,7 @@ func (con *Connection) doBatchRealAssociations(association *graph.Association, i
 		association.TypeClass().TableName(),
 	)
 	rows, err := con.Dbx.Query(queryStr)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -247,6 +251,7 @@ func (con *Connection) doQueryByIds(entity *graph.Entity, ids []interface{}) []I
 	builder := dialect.GetSQLBuilder()
 	sql := builder.BuildQueryByIdsSQL(entity, len(ids))
 	rows, err := con.Dbx.Query(sql, ids...)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -285,6 +290,7 @@ func (con *Connection) doBatchAbstractRealAssociations(association *graph.Associ
 	sql := strings.Join(sqls, " UNION ")
 	fmt.Println("doBatchAbstractRealAssociations SQL:" + sql)
 	rows, err := con.Dbx.Query(sql)
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
