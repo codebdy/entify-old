@@ -104,14 +104,6 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	return instances
 }
 
-func (con *Connection) doQueryNode(node graph.Noder, args map[string]interface{}) []InsanceData {
-	if node.IsInterface() {
-		return con.doQueryInterface(node.Interface(), args)
-	} else {
-		return con.doQueryEntity(node.Entity(), args)
-	}
-}
-
 func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}) interface{} {
 	return con.doQueryOneEntity(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
