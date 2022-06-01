@@ -21,15 +21,15 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
-	classArg := graph.BuildArgClass(intf, args[consts.ARG_WHERE], con)
-	for i := range classArg.Children {
-		queryStr := builder.BuildQuerySQLBody(classArg.Children[i], intf.AllAttributes())
+	for i := range intf.Children {
+		argEntity := graph.BuildArgEntity(intf.Children[i], args[consts.ARG_WHERE], con)
+		queryStr := builder.BuildQuerySQLBody(argEntity, intf.AllAttributes())
 		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
-			whereSQL, params := builder.BuildWhereSQL(classArg.Children[i], intf.AllAttributes(), where)
+			whereSQL, params := builder.BuildWhereSQL(argEntity, intf.AllAttributes(), where)
 			queryStr = queryStr + " " + whereSQL
 			paramsList = append(paramsList, params...)
 		}
-		queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], args[consts.ARG_ORDERBY])
+		queryStr = queryStr + builder.BuildOrderBySQL(argEntity, args[consts.ARG_ORDERBY])
 
 		sqls = append(sqls, queryStr)
 	}
@@ -39,16 +39,16 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 
 func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}) (string, []interface{}) {
 	var paramsList []interface{}
-	classArg := graph.BuildArgClass(entity, args[consts.ARG_WHERE], con)
+	argEntity := graph.BuildArgEntity(entity, args[consts.ARG_WHERE], con)
 	builder := dialect.GetSQLBuilder()
-	queryStr := builder.BuildQuerySQLBody(classArg.Children[0], entity.AllAttributes())
+	queryStr := builder.BuildQuerySQLBody(argEntity, entity.AllAttributes())
 	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
-		whereSQL, params := builder.BuildWhereSQL(classArg.Children[0], entity.AllAttributes(), where)
+		whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
 		queryStr = queryStr + " " + whereSQL
 		paramsList = append(paramsList, params...)
 	}
 
-	queryStr = queryStr + builder.BuildOrderBySQL(classArg.Children[0], args[consts.ARG_ORDERBY])
+	queryStr = queryStr + builder.BuildOrderBySQL(argEntity, args[consts.ARG_ORDERBY])
 
 	return queryStr, paramsList
 }

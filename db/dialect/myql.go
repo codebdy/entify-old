@@ -332,8 +332,8 @@ func (b *MySQLBuilder) BuildQuerySQLBody(argEntity *graph.ArgEntity, fields []*g
 	queryStr := "select %s from %s %s "
 	queryStr = fmt.Sprintf(queryStr, strings.Join(names, ","), argEntity.Entity.TableName(), argEntity.Alise())
 
-	for i := range argEntity.FromClass.Associations {
-		association := argEntity.FromClass.Associations[i]
+	for i := range argEntity.Associations {
+		association := argEntity.Associations[i]
 		queryStr = queryStr + " " + buildArgAssociation(association, argEntity)
 	}
 	return queryStr
