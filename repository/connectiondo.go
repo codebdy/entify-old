@@ -21,7 +21,7 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
-	classArg := graph.BuldArgClass(intf, args[consts.ARG_WHERE], con)
+	classArg := graph.BuildArgClass(intf, args[consts.ARG_WHERE], con)
 	for i := range classArg.Children {
 		queryStr := builder.BuildQuerySQLBody(classArg.Children[i], intf.AllAttributes())
 		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
@@ -39,7 +39,7 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 
 func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}) (string, []interface{}) {
 	var paramsList []interface{}
-	classArg := graph.BuldArgClass(entity, args[consts.ARG_WHERE], con)
+	classArg := graph.BuildArgClass(entity, args[consts.ARG_WHERE], con)
 	builder := dialect.GetSQLBuilder()
 	queryStr := builder.BuildQuerySQLBody(classArg.Children[0], entity.AllAttributes())
 	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {

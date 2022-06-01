@@ -16,60 +16,92 @@ type Ider interface {
 
 type ArgAssociation struct {
 	Association *Association
-	ArgClass    *ArgClass
+	ArgEntities []*ArgEntity
 }
 
 type ArgEntity struct {
-	FromClass *ArgClass
-	Id        int
-	Entity    *Entity
+	//FromClass      *ArgClass
+	Id             int
+	Entity         *Entity
+	Associations   []*ArgAssociation
+	ExpressionArgs map[string]interface{}
+	Ider           Ider
 }
 
-type ArgClass struct {
-	Noder        Noder
-	Associations []*ArgAssociation
-	Ider         Ider
-	Children     []*ArgEntity
-}
+// type ArgClass struct {
+// 	Noder        Noder
+// 	Associations []*ArgAssociation
+// 	Ider         Ider
+// 	Children     []*ArgEntity
+// }
 
-func NewArgClass(noder Noder, ider Ider) *ArgClass {
-	var entities []*ArgEntity
-	argClass := &ArgClass{
-		Noder: noder,
-		Ider:  ider,
+func NewArgEntity(entity *Entity, ider Ider) *ArgEntity {
+	return &ArgEntity{
+		Id:     ider.CreateId(),
+		Entity: entity,
+		Ider:   ider,
 	}
+}
+
+// func NewArgClass(noder Noder, ider Ider) *ArgClass {
+// 	var entities []*ArgEntity
+// 	argClass := &ArgClass{
+// 		Noder: noder,
+// 		Ider:  ider,
+// 	}
+// 	if noder.IsInterface() {
+// 		children := noder.Interface().Children
+// 		for i := range children {
+// 			entities = append(entities, &ArgEntity{
+// 				Id:        ider.CreateId(),
+// 				Entity:    children[i],
+// 				FromClass: argClass,
+// 			})
+// 		}
+// 	} else {
+// 		entities = append(entities, &ArgEntity{
+// 			Id:        ider.CreateId(),
+// 			Entity:    noder.Entity(),
+// 			FromClass: argClass,
+// 		})
+// 	}
+// 	argClass.Children = entities
+// 	return argClass
+// }
+
+func argEntitiesFromAssociation(associ *Association, ider Ider) []*ArgEntity {
+	var entities []*ArgEntity
+	noder := associ.TypeClass()
+
 	if noder.IsInterface() {
 		children := noder.Interface().Children
 		for i := range children {
 			entities = append(entities, &ArgEntity{
-				Id:        ider.CreateId(),
-				Entity:    children[i],
-				FromClass: argClass,
+				Id:     ider.CreateId(),
+				Entity: children[i],
 			})
 		}
 	} else {
 		entities = append(entities, &ArgEntity{
-			Id:        ider.CreateId(),
-			Entity:    noder.Entity(),
-			FromClass: argClass,
+			Id:     ider.CreateId(),
+			Entity: noder.Entity(),
 		})
 	}
-	argClass.Children = entities
-	return argClass
+	return entities
 }
 
-func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
+func (a *ArgEntity) GetWithMakeAssociation(name string) *ArgAssociation {
 	for i := range a.Associations {
 		if a.Associations[i].Association.Name() == name {
 			return a.Associations[i]
 		}
 	}
-	allAssociations := a.Noder.AllAssociations()
+	allAssociations := a.Entity.AllAssociations()
 	for i := range allAssociations {
 		if allAssociations[i].Name() == name {
 			asso := &ArgAssociation{
 				Association: allAssociations[i],
-				ArgClass:    NewArgClass(allAssociations[i].TypeClass(), a.Ider),
+				ArgEntities: argEntitiesFromAssociation(allAssociations[i], a.Ider),
 			}
 
 			a.Associations = append(a.Associations, asso)
@@ -77,7 +109,7 @@ func (a *ArgClass) GetWithMakeAssociation(name string) *ArgAssociation {
 			return asso
 		}
 	}
-	panic("Can not find entity association:" + a.Noder.Name() + "." + name)
+	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
 }
 
 func (e *ArgEntity) Alise() string {
@@ -85,7 +117,7 @@ func (e *ArgEntity) Alise() string {
 }
 
 func (a *ArgAssociation) GetTypeEntity(uuid string) *ArgEntity {
-	entities := a.ArgClass.Children
+	entities := a.ArgEntities
 	for i := range entities {
 		if entities[i].Entity.Uuid() == uuid {
 			return entities[i]
@@ -95,30 +127,32 @@ func (a *ArgAssociation) GetTypeEntity(uuid string) *ArgEntity {
 	panic("Can not find association entity by uuid")
 }
 
-func BuldArgClass(noder Noder, where interface{}, ider Ider) *ArgClass {
-	rootClass := NewArgClass(noder, ider)
+func BuildArgEntity(entity *Entity, where interface{}, ider Ider) *ArgEntity {
+	rootEntity := NewArgEntity(entity, ider)
 	if where != nil {
 		if whereMap, ok := where.(QueryArg); ok {
-			buildWhereClass(rootClass, whereMap)
+			buildWhereEntity(rootEntity, whereMap)
 		}
 	}
-	return rootClass
+	return rootEntity
 }
 
-func buildWhereClass(cls *ArgClass, where QueryArg) {
+func buildWhereEntity(argEntity *ArgEntity, where QueryArg) {
 	for key, value := range where {
 		switch key {
 		case consts.ARG_AND, consts.ARG_NOT, consts.ARG_OR:
 			if subWhere, ok := value.(QueryArg); ok {
-				buildWhereClass(cls, subWhere)
+				buildWhereEntity(argEntity, subWhere)
 			}
 			break
 		default:
-			association := cls.Noder.GetAssociationByName(key)
+			association := argEntity.Entity.GetAssociationByName(key)
 			if association != nil {
-				argAssociation := cls.GetWithMakeAssociation(key)
+				argAssociation := argEntity.GetWithMakeAssociation(key)
 				if subWhere, ok := value.(QueryArg); ok {
-					buildWhereClass(argAssociation.ArgClass, subWhere)
+					for i := range argAssociation.ArgEntities {
+						buildWhereEntity(argAssociation.ArgEntities[i], subWhere)
+					}
 				}
 			}
 			break
