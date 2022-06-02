@@ -96,12 +96,12 @@ func Open(driver string, config string) (*Dbx, error) {
 	return &con, nil
 }
 
-// func Close() error {
-// 	if openedDB != nil {
-// 		err := openedDB.Close()
-// 		openedDB = nil
-// 		return err
-// 	}
+func Close() error {
+	if openedDB != nil {
+		err := openedDB.Close()
+		openedDB = nil
+		return err
+	}
 
-// 	return nil
-// }
+	return nil
+}

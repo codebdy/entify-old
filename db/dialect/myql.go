@@ -93,7 +93,7 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 	return "(" + queryStr + ")", params
 }
 
-func (b *MySQLBuilder) BuildBoolExp(argClass *graph.ArgClass, where map[string]interface{}) (string, []interface{}) {
+func (b *MySQLBuilder) BuildBoolExp(argEntity *graph.ArgEntity, where map[string]interface{}) (string, []interface{}) {
 	var params []interface{}
 	querys := []string{}
 	for key, value := range where {
@@ -105,23 +105,26 @@ func (b *MySQLBuilder) BuildBoolExp(argClass *graph.ArgClass, where map[string]i
 		case consts.ARG_OR:
 			break
 		default:
-			asso := argClass.Noder.GetAssociationByName(key)
+			asso := argEntity.Entity.GetAssociationByName(key)
 			if asso == nil {
-				sqls := []string{}
-				for i := range argClass.Children {
-					child := argClass.Children[i]
-					fiedleStr, fieldParam := b.BuildFieldExp(child.Alise()+"."+key, value.(map[string]interface{}))
-					sqls = append(sqls, fiedleStr)
-					params = append(params, fieldParam...)
-				}
-				querys = append(querys, fmt.Sprintf("(%s)", strings.Join(sqls, " OR ")))
+				fieldStr, fieldParam := b.BuildFieldExp(argEntity.Alise()+"."+key, value.(map[string]interface{}))
+				params = append(params, fieldParam...)
+				querys = append(querys, fmt.Sprintf("(%s)", fieldStr))
 			} else {
-				argAsso := argClass.GetWithMakeAssociation(key)
-				assoStr, assoParam := b.BuildBoolExp(argAsso.ArgClass, value.(map[string]interface{}))
-				querys = append(querys, assoStr)
-				params = append(params, assoParam...)
+				argAsso := argEntity.GetWithMakeAssociation(key)
+				var associStrs []string
+				var associParams []interface{}
+				for i := range argAsso.ArgEntities {
+					assoStr, assoParam := b.BuildBoolExp(argAsso.ArgEntities[i], value.(map[string]interface{}))
+					if assoStr != "" {
+						assoStr = fmt.Sprintf("(%s)", assoStr)
+						associStrs = append(associStrs, assoStr)
+						associParams = append(associParams, assoParam...)
+					}
+				}
+				querys = append(querys, strings.Join(associStrs, " OR "))
+				params = append(params, associParams...)
 			}
-
 		}
 	}
 	return strings.Join(querys, " AND "), params
@@ -292,8 +295,8 @@ func buildArgAssociation(argAssociation *graph.ArgAssociation, owner *graph.ArgE
 				typeEntity.Alise()+"."+consts.ID,
 			)
 
-			for i := range typeEntity.FromClass.Associations {
-				sql = sql + buildArgAssociation(typeEntity.FromClass.Associations[i], typeEntity)
+			for i := range typeEntity.Associations {
+				sql = sql + buildArgAssociation(typeEntity.Associations[i], typeEntity)
 			}
 		}
 		return sql
@@ -316,8 +319,8 @@ func buildArgAssociation(argAssociation *graph.ArgAssociation, owner *graph.ArgE
 				typeEntity.Alise()+"."+consts.ID,
 			)
 
-			for i := range typeEntity.FromClass.Associations {
-				sql = sql + buildArgAssociation(typeEntity.FromClass.Associations[i], typeEntity)
+			for i := range typeEntity.Associations {
+				sql = sql + buildArgAssociation(typeEntity.Associations[i], typeEntity)
 			}
 		}
 	}
@@ -347,7 +350,7 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	whereStr := ""
 	var params []interface{}
 	if where != nil {
-		boolStr, whereParams := b.BuildBoolExp(argEntity.FromClass, where)
+		boolStr, whereParams := b.BuildBoolExp(argEntity, where)
 		whereStr = " WHERE " + boolStr
 		params = append(params, whereParams...)
 	}
