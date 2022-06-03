@@ -20,59 +20,15 @@ type ArgAssociation struct {
 }
 
 type ArgEntity struct {
-	//FromClass      *ArgClass
 	Id             int
 	Entity         *Entity
 	Associations   []*ArgAssociation
 	ExpressionArgs map[string]interface{}
-	Ider           Ider
 }
-
-// type ArgClass struct {
-// 	Noder        Noder
-// 	Associations []*ArgAssociation
-// 	Ider         Ider
-// 	Children     []*ArgEntity
-// }
-
-func NewArgEntity(entity *Entity, ider Ider) *ArgEntity {
-	return &ArgEntity{
-		Id:     ider.CreateId(),
-		Entity: entity,
-		Ider:   ider,
-	}
-}
-
-// func NewArgClass(noder Noder, ider Ider) *ArgClass {
-// 	var entities []*ArgEntity
-// 	argClass := &ArgClass{
-// 		Noder: noder,
-// 		Ider:  ider,
-// 	}
-// 	if noder.IsInterface() {
-// 		children := noder.Interface().Children
-// 		for i := range children {
-// 			entities = append(entities, &ArgEntity{
-// 				Id:        ider.CreateId(),
-// 				Entity:    children[i],
-// 				FromClass: argClass,
-// 			})
-// 		}
-// 	} else {
-// 		entities = append(entities, &ArgEntity{
-// 			Id:        ider.CreateId(),
-// 			Entity:    noder.Entity(),
-// 			FromClass: argClass,
-// 		})
-// 	}
-// 	argClass.Children = entities
-// 	return argClass
-// }
 
 func argEntitiesFromAssociation(associ *Association, ider Ider) []*ArgEntity {
 	var entities []*ArgEntity
 	noder := associ.TypeClass()
-
 	if noder.IsInterface() {
 		children := noder.Interface().Children
 		for i := range children {
@@ -90,7 +46,16 @@ func argEntitiesFromAssociation(associ *Association, ider Ider) []*ArgEntity {
 	return entities
 }
 
-func (a *ArgEntity) GetWithMakeAssociation(name string) *ArgAssociation {
+func (a *ArgEntity) GetAssociation(name string) *ArgAssociation {
+	for i := range a.Associations {
+		if a.Associations[i].Association.Name() == name {
+			return a.Associations[i]
+		}
+	}
+	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
+}
+
+func (a *ArgEntity) GetWithMakeAssociation(name string, ider Ider) *ArgAssociation {
 	for i := range a.Associations {
 		if a.Associations[i].Association.Name() == name {
 			return a.Associations[i]
@@ -101,7 +66,7 @@ func (a *ArgEntity) GetWithMakeAssociation(name string) *ArgAssociation {
 		if allAssociations[i].Name() == name {
 			asso := &ArgAssociation{
 				Association: allAssociations[i],
-				ArgEntities: argEntitiesFromAssociation(allAssociations[i], a.Ider),
+				ArgEntities: argEntitiesFromAssociation(allAssociations[i], ider),
 			}
 
 			a.Associations = append(a.Associations, asso)
@@ -128,30 +93,33 @@ func (a *ArgAssociation) GetTypeEntity(uuid string) *ArgEntity {
 }
 
 func BuildArgEntity(entity *Entity, where interface{}, ider Ider) *ArgEntity {
-	rootEntity := NewArgEntity(entity, ider)
+	rootEntity := &ArgEntity{
+		Id:     ider.CreateId(),
+		Entity: entity,
+	}
 	if where != nil {
 		if whereMap, ok := where.(QueryArg); ok {
-			buildWhereEntity(rootEntity, whereMap)
+			buildWhereEntity(rootEntity, whereMap, ider)
 		}
 	}
 	return rootEntity
 }
 
-func buildWhereEntity(argEntity *ArgEntity, where QueryArg) {
+func buildWhereEntity(argEntity *ArgEntity, where QueryArg, ider Ider) {
 	for key, value := range where {
 		switch key {
 		case consts.ARG_AND, consts.ARG_NOT, consts.ARG_OR:
 			if subWhere, ok := value.(QueryArg); ok {
-				buildWhereEntity(argEntity, subWhere)
+				buildWhereEntity(argEntity, subWhere, ider)
 			}
 			break
 		default:
 			association := argEntity.Entity.GetAssociationByName(key)
 			if association != nil {
-				argAssociation := argEntity.GetWithMakeAssociation(key)
+				argAssociation := argEntity.GetWithMakeAssociation(key, ider)
 				if subWhere, ok := value.(QueryArg); ok {
 					for i := range argAssociation.ArgEntities {
-						buildWhereEntity(argAssociation.ArgEntities[i], subWhere)
+						buildWhereEntity(argAssociation.ArgEntities[i], subWhere, ider)
 					}
 				}
 			}

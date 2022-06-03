@@ -111,7 +111,7 @@ func (b *MySQLBuilder) BuildBoolExp(argEntity *graph.ArgEntity, where map[string
 				params = append(params, fieldParam...)
 				querys = append(querys, fmt.Sprintf("(%s)", fieldStr))
 			} else {
-				argAsso := argEntity.GetWithMakeAssociation(key)
+				argAsso := argEntity.GetAssociation(key)
 				var associStrs []string
 				var associParams []interface{}
 				for i := range argAsso.ArgEntities {

@@ -7,7 +7,6 @@ import (
 	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/utils"
 )
@@ -97,7 +96,7 @@ func makeQueryVerifier(p graphql.ResolveParams, node graph.Noder) *authorization
 		panic("Can not find Ability Verifier")
 	}
 
-	verifier.Init(p, node.Uuid(), meta.META_ABILITY_TYPE_READ)
+	//verifier.Init(p, node.Uuid(), meta.META_ABILITY_TYPE_READ)
 
 	// if !verifier.CanReadEntity() && !node.IsInterface() {
 	// 	panic("No permission to read: " + node.Name())
