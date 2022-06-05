@@ -27,7 +27,7 @@ func NewVerifier() *AbilityVerifier {
 	return &verifier
 }
 
-func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abilityType string) {
+func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string, abilityType string) {
 	me := ParseContextValues(p).Me
 	v.Me = me
 	if me != nil {
@@ -40,7 +40,7 @@ func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuid string, abili
 
 	v.abilityType = abilityType
 
-	v.queryRolesAbilities()
+	v.queryRolesAbilities(entityUuids)
 }
 
 func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[string]interface{} {
@@ -60,12 +60,13 @@ func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[strin
 	return args
 }
 
-func (v *AbilityVerifier) CanReadEntity() bool {
+func (v *AbilityVerifier) CanReadEntity(entityUuid string) bool {
 	if v.Me != nil && (v.Me.IsDemo || v.Me.IsSupper) {
 		return true
 	}
 	for _, ability := range v.abilities {
-		if ability.ColumnUuid == "" &&
+		if ability.EntityUuid == entityUuid &&
+			ability.ColumnUuid == "" &&
 			ability.Can &&
 			ability.AbilityType == meta.META_ABILITY_TYPE_READ {
 			return true
@@ -99,7 +100,7 @@ func (v *AbilityVerifier) queryEntityArgsMap() map[string]interface{} {
 	return expMap
 }
 
-func (v *AbilityVerifier) queryRolesAbilities() {
+func (v *AbilityVerifier) queryRolesAbilities(entityUuids []string) {
 	abilities := repository.QueryEntity(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), repository.QueryArg{
 		consts.ARG_WHERE: repository.QueryArg{
 			"roleId": repository.QueryArg{
@@ -107,6 +108,9 @@ func (v *AbilityVerifier) queryRolesAbilities() {
 			},
 			"abilityType": repository.QueryArg{
 				consts.ARG_EQ: v.abilityType,
+			},
+			"entityUuid": repository.QueryArg{
+				consts.ARG_IN: entityUuids,
 			},
 		},
 	})

@@ -7,6 +7,7 @@ import (
 	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/utils"
 )
@@ -20,9 +21,13 @@ func QueryOneInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
 }
 
 func QueryInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
+	var uuids []string
+	for i := range intf.Children {
+		uuids = append(uuids, intf.Children[i].Uuid())
+	}
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		makeQueryVerifier(p, intf)
+		makeQueryVerifier(p, uuids)
 		return repository.QueryInterface(intf, p.Args), nil
 	}
 }
@@ -46,7 +51,7 @@ func QueryEntityResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
-		makeQueryVerifier(p, entity)
+		makeQueryVerifier(p, []string{entity.Uuid()})
 		return repository.QueryEntity(entity, p.Args), nil
 	}
 }
@@ -89,14 +94,14 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 	}
 }
 
-func makeQueryVerifier(p graphql.ResolveParams, node graph.Noder) *authorization.AbilityVerifier {
+func makeQueryVerifier(p graphql.ResolveParams, entityUuids []string) *authorization.AbilityVerifier {
 	verifier := authorization.NewVerifier()
 
 	if verifier == nil {
 		panic("Can not find Ability Verifier")
 	}
 
-	//verifier.Init(p, node.Uuid(), meta.META_ABILITY_TYPE_READ)
+	verifier.Init(p, entityUuids, meta.META_ABILITY_TYPE_READ)
 
 	// if !verifier.CanReadEntity() && !node.IsInterface() {
 	// 	panic("No permission to read: " + node.Name())
