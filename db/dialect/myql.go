@@ -82,8 +82,15 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 			params = append(params, value)
 			break
 		case consts.ARG_IN:
-			queryStr = fieldName + "in(?)"
-			params = append(params, value)
+			values := value.([]string)
+			placeHolders := []string{}
+			for i := range values {
+				placeHolders = append(placeHolders, "?")
+				params = append(params, values[i])
+			}
+			if len(placeHolders) > 0 {
+				queryStr = fieldName + fmt.Sprintf(" in(%s)", strings.Join(placeHolders, ","))
+			}
 			break
 		case consts.ARG_ISNULL:
 			if value == true {
