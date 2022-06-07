@@ -8,9 +8,10 @@ import (
 type Connection struct {
 	idSeed int //use for sql join table
 	Dbx    *db.Dbx
+	v      *AbilityVerifier
 }
 
-func openWithConfig(cfg config.DbConfig) (*Connection, error) {
+func openWithConfig(cfg config.DbConfig, v *AbilityVerifier) (*Connection, error) {
 	dbx, err := db.Open(cfg.Driver, DbString(cfg))
 	if err != nil {
 		return nil, err
@@ -18,13 +19,14 @@ func openWithConfig(cfg config.DbConfig) (*Connection, error) {
 	con := Connection{
 		idSeed: 1,
 		Dbx:    dbx,
+		v:      v,
 	}
 	return &con, err
 }
 
-func Open() (*Connection, error) {
+func Open(v *AbilityVerifier) (*Connection, error) {
 	cfg := config.GetDbConfig()
-	return openWithConfig(cfg)
+	return openWithConfig(cfg, v)
 }
 
 func (c *Connection) BeginTx() error {

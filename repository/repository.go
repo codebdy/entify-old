@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 
+	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
@@ -10,39 +11,39 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func QueryInterface(intf *graph.Interface, args QueryArg) []InsanceData {
+func QueryInterface(intf *graph.Interface, args QueryArg, v *authorization.AbilityVerifier) []InsanceData {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryInterface(intf, args)
+	return con.doQueryInterface(intf, args, v)
 }
 
-func QueryOneInterface(intf *graph.Interface, args QueryArg) interface{} {
+func QueryOneInterface(intf *graph.Interface, args QueryArg, v *authorization.AbilityVerifier) interface{} {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneInterface(intf, args)
+	return con.doQueryOneInterface(intf, args, v)
 }
 
-func QueryEntity(entity *graph.Entity, args QueryArg) []InsanceData {
+func QueryEntity(entity *graph.Entity, args QueryArg, v *authorization.AbilityVerifier) []InsanceData {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryEntity(entity, args)
+	return con.doQueryEntity(entity, args, v)
 }
 
-func QueryOneEntity(entity *graph.Entity, args QueryArg) interface{} {
+func QueryOneEntity(entity *graph.Entity, args QueryArg, v *authorization.AbilityVerifier) interface{} {
 	con, err := Open()
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneEntity(entity, args)
+	return con.doQueryOneEntity(entity, args, v)
 }
 
-func SaveOne(instance *data.Instance) (interface{}, error) {
+func SaveOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
 	con, err := Open()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -55,7 +56,7 @@ func SaveOne(instance *data.Instance) (interface{}, error) {
 		return nil, err
 	}
 
-	obj, err := con.doSaveOne(instance)
+	obj, err := con.doSaveOne(instance, v)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -68,7 +69,7 @@ func SaveOne(instance *data.Instance) (interface{}, error) {
 	return obj, nil
 }
 
-func InsertOne(instance *data.Instance) (interface{}, error) {
+func InsertOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
 	con, err := Open()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -80,7 +81,7 @@ func InsertOne(instance *data.Instance) (interface{}, error) {
 		return nil, err
 	}
 
-	obj, err := con.doInsertOne(instance)
+	obj, err := con.doInsertOne(instance, v)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err

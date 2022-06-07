@@ -16,7 +16,7 @@ import (
 
 type InsanceData = map[string]interface{}
 
-func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[string]interface{}, v *authorization.AbilityVerifier) (string, []interface{}) {
+func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[string]interface{}) (string, []interface{}) {
 	var (
 		sqls       []string
 		paramsList []interface{}
@@ -26,7 +26,7 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 		entity := intf.Children[i]
 		argEntity := graph.BuildArgEntity(
 			entity,
-			v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
+			con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
 			con,
 		)
 		queryStr := builder.BuildQuerySQLBody(argEntity, intf.AllAttributes())
@@ -43,11 +43,11 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 	return strings.Join(sqls, " UNION "), paramsList
 }
 
-func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}, v *authorization.AbilityVerifier) (string, []interface{}) {
+func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}) (string, []interface{}) {
 	var paramsList []interface{}
 	argEntity := graph.BuildArgEntity(
 		entity,
-		v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
+		con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
 		con,
 	)
 	builder := dialect.GetSQLBuilder()
@@ -95,7 +95,7 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	return instances
 }
 
-func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}, v *authorization.AbilityVerifier) []InsanceData {
+func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}, v *AbilityVerifier) []InsanceData {
 	sql, params := con.buildQueryEntitySQL(entity, args, v)
 	fmt.Println("doQueryEntity SQL:", sql, params)
 	rows, err := con.Dbx.Query(sql, params...)
@@ -116,7 +116,7 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	return instances
 }
 
-func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}, v *authorization.AbilityVerifier) interface{} {
+func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}, v *AbilityVerifier) interface{} {
 	return con.doQueryOneEntity(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
@@ -125,7 +125,7 @@ func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}, 
 		},
 	}, v)
 }
-func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}, v *authorization.AbilityVerifier) interface{} {
+func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}, v *AbilityVerifier) interface{} {
 	querySql, params := con.buildQueryInterfaceSQL(intf, args, v)
 
 	values := makeQueryValues(intf)
@@ -149,7 +149,7 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 	return nil
 }
 
-func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}, v *authorization.AbilityVerifier) interface{} {
+func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}, v *AbilityVerifier) interface{} {
 	queryStr, params := con.buildQueryEntitySQL(entity, args, v)
 
 	values := makeQueryValues(entity)
@@ -165,7 +165,7 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 	return convertValuesToObject(values, entity)
 }
 
-func (con *Connection) doInsertOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
+func (con *Connection) doInsertOne(instance *data.Instance, v *AbilityVerifier) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := makeSaveValues(instance.Fields)
