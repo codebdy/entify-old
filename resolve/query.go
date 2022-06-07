@@ -101,7 +101,7 @@ func makeQueryVerifier(p graphql.ResolveParams, entityUuids []string) *authoriza
 		panic("Can not find Ability Verifier")
 	}
 
-	verifier.Init(p, entityUuids, meta.META_ABILITY_TYPE_READ)
+	InitAbilityVerifier(verifier, p, entityUuids, meta.META_ABILITY_TYPE_READ)
 
 	// if !verifier.CanReadEntity() && !node.IsInterface() {
 	// 	panic("No permission to read: " + node.Name())

@@ -3,22 +3,18 @@ package authorization
 import (
 	"encoding/json"
 
-	"github.com/graphql-go/graphql"
-	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
-	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/meta"
-	"rxdrag.com/entify/repository"
 )
 
 type AbilityVerifier struct {
 	Me          *common.User
-	roleIds     []string
-	abilityType string
-	abilities   []*common.Ability
+	RoleIds     []string
+	AbilityType string
+	Abilities   []*common.Ability
 	// expression Key : 从Auth模块返回的结果
-	queryUserCache map[string][]common.User
+	QueryUserCache map[string][]common.User
 }
 
 func NewVerifier() *AbilityVerifier {
@@ -27,23 +23,7 @@ func NewVerifier() *AbilityVerifier {
 	return &verifier
 }
 
-func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string, abilityType string) {
-	me := ParseContextValues(p).Me
-	v.Me = me
-	if me != nil {
-		for i := range me.Roles {
-			v.roleIds = append(v.roleIds, me.Roles[i].Id)
-		}
-	} else {
-		v.roleIds = append(v.roleIds, consts.GUEST_ROLE_ID)
-	}
-
-	v.abilityType = abilityType
-
-	v.queryRolesAbilities(entityUuids)
-}
-
-func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[string]interface{} {
+func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args map[string]interface{}) map[string]interface{} {
 	var rootAnd []map[string]interface{}
 	if args[consts.ARG_ADD] == nil {
 		rootAnd = []map[string]interface{}{}
@@ -51,7 +31,7 @@ func (v *AbilityVerifier) WeaveAuthInArgs(args map[string]interface{}) map[strin
 		rootAnd = args[consts.ARG_ADD].([]map[string]interface{})
 	}
 
-	expArg := v.queryEntityArgsMap()
+	expArg := v.queryEntityArgsMap(entityUuid)
 	if len(expArg) > 0 {
 		rootAnd = append(rootAnd, expArg)
 	}
@@ -64,7 +44,7 @@ func (v *AbilityVerifier) CanReadEntity(entityUuid string) bool {
 	if v.Me != nil && (v.Me.IsDemo || v.Me.IsSupper) {
 		return true
 	}
-	for _, ability := range v.abilities {
+	for _, ability := range v.Abilities {
 		if ability.EntityUuid == entityUuid &&
 			ability.ColumnUuid == "" &&
 			ability.Can &&
@@ -83,11 +63,12 @@ func (v *AbilityVerifier) FieldCan(entityData map[string]interface{}) bool {
 	return false
 }
 
-func (v *AbilityVerifier) queryEntityArgsMap() map[string]interface{} {
+func (v *AbilityVerifier) queryEntityArgsMap(entityUuid string) map[string]interface{} {
 	expMap := map[string]interface{}{}
 	queryEntityExpressions := []string{}
-	for _, ability := range v.abilities {
-		if ability.ColumnUuid == "" &&
+	for _, ability := range v.Abilities {
+		if ability.EntityUuid == entityUuid &&
+			ability.ColumnUuid == "" &&
 			ability.Can &&
 			ability.AbilityType == meta.META_ABILITY_TYPE_READ &&
 			ability.Expression != "" {
@@ -98,31 +79,6 @@ func (v *AbilityVerifier) queryEntityArgsMap() map[string]interface{} {
 		expMap[consts.ARG_OR] = expressionArrayToArgs(queryEntityExpressions)
 	}
 	return expMap
-}
-
-func (v *AbilityVerifier) queryRolesAbilities(entityUuids []string) {
-	abilities := repository.QueryEntity(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), repository.QueryArg{
-		consts.ARG_WHERE: repository.QueryArg{
-			"roleId": repository.QueryArg{
-				consts.ARG_IN: v.roleIds,
-			},
-			"abilityType": repository.QueryArg{
-				consts.ARG_EQ: v.abilityType,
-			},
-			"entityUuid": repository.QueryArg{
-				consts.ARG_IN: entityUuids,
-			},
-		},
-	})
-
-	for _, abilityMap := range abilities {
-		var ability common.Ability
-		err := mapstructure.Decode(abilityMap, &ability)
-		if err != nil {
-			panic(err.Error())
-		}
-		v.abilities = append(v.abilities, &ability)
-	}
 }
 
 func expressionToKey(expression string) string {
