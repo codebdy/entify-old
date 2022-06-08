@@ -4,10 +4,8 @@ import (
 	"fmt"
 
 	"github.com/graphql-go/graphql"
-	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/utils"
 )
@@ -15,27 +13,25 @@ import (
 func QueryOneInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOneInterface(intf, p.Args)
+		v := makeInterfaceAbilityVerifier(p, intf)
+		instance := repository.QueryOneInterface(intf, p.Args, v)
 		return instance, nil
 	}
 }
 
 func QueryInterfaceResolveFn(intf *graph.Interface) graphql.FieldResolveFn {
-	var uuids []string
-	for i := range intf.Children {
-		uuids = append(uuids, intf.Children[i].Uuid())
-	}
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		makeQueryVerifier(p, uuids)
-		return repository.QueryInterface(intf, p.Args), nil
+		v := makeInterfaceAbilityVerifier(p, intf)
+		return repository.QueryInterface(intf, p.Args, v), nil
 	}
 }
 
 func QueryOneEntityResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
 	return func(p graphql.ResolveParams) (interface{}, error) {
 		defer utils.PrintErrorStack()
-		instance := repository.QueryOneEntity(entity, p.Args)
+		v := makeEntityAbilityVerifier(p, entity.Uuid())
+		instance := repository.QueryOneEntity(entity, p.Args, v)
 		return instance, nil
 	}
 }
@@ -51,8 +47,8 @@ func QueryEntityResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
 		// 	case *ast.FragmentSpread:
 		// 	}
 		// }
-		makeQueryVerifier(p, []string{entity.Uuid()})
-		return repository.QueryEntity(entity, p.Args), nil
+		v := makeEntityAbilityVerifier(p, entity.Uuid())
+		return repository.QueryEntity(entity, p.Args, v), nil
 	}
 }
 
@@ -71,7 +67,7 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 		if loaders == nil {
 			panic("Data loaders is nil")
 		}
-		loader := loaders.GetLoader(asso)
+		loader := loaders.GetLoader(p, asso)
 		thunk := loader.Load(p.Context, NewKey(source[consts.ID].(uint64)))
 		return func() (interface{}, error) {
 			data, err := thunk()
@@ -92,21 +88,4 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 			return retValue, nil
 		}, nil
 	}
-}
-
-func makeQueryVerifier(p graphql.ResolveParams, entityUuids []string) *authorization.AbilityVerifier {
-	verifier := authorization.NewVerifier()
-
-	if verifier == nil {
-		panic("Can not find Ability Verifier")
-	}
-
-	InitAbilityVerifier(verifier, p, entityUuids, meta.META_ABILITY_TYPE_READ)
-
-	// if !verifier.CanReadEntity() && !node.IsInterface() {
-	// 	panic("No permission to read: " + node.Name())
-	// }
-
-	// args := verifier.WeaveAuthInArgs(inputArgs)
-	return verifier
 }

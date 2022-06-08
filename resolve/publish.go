@@ -13,7 +13,7 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func doPublish() error {
+func doPublish(v *repository.AbilityVerifier) error {
 	publishedMeta := repository.QueryPublishedMeta()
 	nextMeta := repository.QueryNextMeta()
 	fmt.Println("Start to publish")
@@ -32,7 +32,7 @@ func doPublish() error {
 	metaObj := nextMeta.(utils.Object)
 	metaObj[consts.META_STATUS] = meta.META_STATUS_PUBLISHED
 	metaObj[consts.META_PUBLISHEDAT] = time.Now()
-	_, err := repository.SaveOne(data.NewInstance(metaObj, model.GlobalModel.Graph.GetMetaEntity()))
+	_, err := repository.SaveOne(data.NewInstance(metaObj, model.GlobalModel.Graph.GetMetaEntity()), v)
 	if err != nil {
 		return err
 	}
@@ -43,11 +43,13 @@ func doPublish() error {
 
 func PublishMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
-	doPublish()
+	v := makeEntityAbilityVerifier(p, meta.META_ENTITY_UUID)
+	doPublish(v)
 	return "success", nil
 }
 
 func SyncMetaResolve(p graphql.ResolveParams) (interface{}, error) {
 	object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
-	return repository.InsertOne(data.NewInstance(object, model.GlobalModel.Graph.GetMetaEntity()))
+	v := makeEntityAbilityVerifier(p, meta.META_ENTITY_UUID)
+	return repository.InsertOne(data.NewInstance(object, model.GlobalModel.Graph.GetMetaEntity()), v)
 }

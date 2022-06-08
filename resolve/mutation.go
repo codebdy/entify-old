@@ -14,7 +14,8 @@ func PostOneResolveFn(entity *graph.Entity) graphql.FieldResolveFn {
 		defer utils.PrintErrorStack()
 		object := p.Args[consts.ARG_OBJECT].(map[string]interface{})
 		ConvertId(object)
+		v := makeEntityAbilityVerifier(p, entity.Uuid())
 		instance := data.NewInstance(object, entity)
-		return repository.SaveOne(instance)
+		return repository.SaveOne(instance, v)
 	}
 }

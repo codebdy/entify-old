@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/db"
@@ -63,8 +62,8 @@ func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string
 	return queryStr, paramsList
 }
 
-func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}, v *authorization.AbilityVerifier) []InsanceData {
-	sql, params := con.buildQueryInterfaceSQL(intf, args, v)
+func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]interface{}) []InsanceData {
+	sql, params := con.buildQueryInterfaceSQL(intf, args)
 
 	rows, err := con.Dbx.Query(sql, params...)
 	defer rows.Close()
@@ -95,8 +94,8 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	return instances
 }
 
-func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}, v *AbilityVerifier) []InsanceData {
-	sql, params := con.buildQueryEntitySQL(entity, args, v)
+func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
+	sql, params := con.buildQueryEntitySQL(entity, args)
 	fmt.Println("doQueryEntity SQL:", sql, params)
 	rows, err := con.Dbx.Query(sql, params...)
 	defer rows.Close()
@@ -116,17 +115,17 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	return instances
 }
 
-func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}, v *AbilityVerifier) interface{} {
+func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}) interface{} {
 	return con.doQueryOneEntity(entity, QueryArg{
 		consts.ARG_WHERE: QueryArg{
 			consts.ID: QueryArg{
 				consts.ARG_EQ: id,
 			},
 		},
-	}, v)
+	})
 }
-func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}, v *AbilityVerifier) interface{} {
-	querySql, params := con.buildQueryInterfaceSQL(intf, args, v)
+func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) interface{} {
+	querySql, params := con.buildQueryInterfaceSQL(intf, args)
 
 	values := makeQueryValues(intf)
 	err := con.Dbx.QueryRow(querySql, params...).Scan(values...)
@@ -149,8 +148,8 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 	return nil
 }
 
-func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}, v *AbilityVerifier) interface{} {
-	queryStr, params := con.buildQueryEntitySQL(entity, args, v)
+func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) interface{} {
+	queryStr, params := con.buildQueryEntitySQL(entity, args)
 
 	values := makeQueryValues(entity)
 	fmt.Println("doQueryOneEntity SQL:", queryStr)
@@ -165,7 +164,7 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 	return convertValuesToObject(values, entity)
 }
 
-func (con *Connection) doInsertOne(instance *data.Instance, v *AbilityVerifier) (interface{}, error) {
+func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
 	sqlBuilder := dialect.GetSQLBuilder()
 	saveStr := sqlBuilder.BuildInsertSQL(instance.Fields, instance.Table())
 	values := makeSaveValues(instance.Fields)
@@ -181,14 +180,14 @@ func (con *Connection) doInsertOne(instance *data.Instance, v *AbilityVerifier) 
 		return nil, err
 	}
 	for _, asso := range instance.Associations {
-		err = con.doSaveAssociation(asso, uint64(id), v)
+		err = con.doSaveAssociation(asso, uint64(id))
 		if err != nil {
 			fmt.Println("Save reference failed:", err.Error())
 			return nil, err
 		}
 	}
 
-	savedObject := con.QueryOneEntityById(instance.Entity, id, v)
+	savedObject := con.QueryOneEntityById(instance.Entity, id)
 
 	//affectedRows, err := result.RowsAffected()
 	if err != nil {
@@ -353,7 +352,7 @@ func (con *Connection) doBatchAssociations(association *graph.Association, ids [
 	}
 }
 
-func (con *Connection) doUpdateOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
+func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
 
@@ -367,10 +366,10 @@ func (con *Connection) doUpdateOne(instance *data.Instance, v *authorization.Abi
 	}
 
 	for _, ref := range instance.Associations {
-		con.doSaveAssociation(ref, instance.Id, v)
+		con.doSaveAssociation(ref, instance.Id)
 	}
 
-	savedObject := con.QueryOneEntityById(instance.Entity, instance.Id, v)
+	savedObject := con.QueryOneEntityById(instance.Entity, instance.Id)
 
 	return savedObject, nil
 }
@@ -388,7 +387,7 @@ func newAssociationPovit(r data.Associationer, ownerId uint64, tarId uint64) *da
 
 }
 
-func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64, v *authorization.AbilityVerifier) error {
+func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) error {
 	for _, ins := range r.Deleted() {
 		if r.Cascade() {
 			con.doDeleteInstance(ins)
@@ -399,7 +398,7 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64, v
 	}
 
 	for _, ins := range r.Added() {
-		saved, err := con.doSaveOne(ins, v)
+		saved, err := con.doSaveOne(ins)
 		if err != nil {
 			return err
 		}
@@ -418,7 +417,7 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64, v
 		if ins.Id == 0 {
 			panic("Can not add new instance when update")
 		}
-		saved, err := con.doSaveOne(ins, v)
+		saved, err := con.doSaveOne(ins)
 		if err != nil {
 			return err
 		}
@@ -444,7 +443,7 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64, v
 		if ins.Id == 0 {
 			panic("Can not add new instance when update")
 		}
-		saved, err := con.doSaveOne(ins, v)
+		saved, err := con.doSaveOne(ins)
 		if err != nil {
 			return err
 		}
@@ -514,11 +513,11 @@ func (con *Connection) doDeleteAssociationPovit(povit *data.AssociationPovit) {
 	}
 }
 
-func (con *Connection) doSaveOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
+func (con *Connection) doSaveOne(instance *data.Instance) (interface{}, error) {
 	if instance.IsInsert() {
-		return con.doInsertOne(instance, v)
+		return con.doInsertOne(instance)
 	} else {
-		return con.doUpdateOne(instance, v)
+		return con.doUpdateOne(instance)
 	}
 }
 

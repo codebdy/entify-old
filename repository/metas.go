@@ -15,7 +15,7 @@ func QueryPublishedMeta() interface{} {
 				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
-	})
+	}, NewSupperVerifier())
 
 	return publishedMeta
 }
@@ -27,7 +27,7 @@ func QueryNextMeta() interface{} {
 				consts.ARG_ISNULL: true,
 			},
 		},
-	})
+	}, NewSupperVerifier())
 	return nextMeta
 }
 

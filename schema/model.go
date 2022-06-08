@@ -17,7 +17,7 @@ func QueryPublishedMeta() interface{} {
 				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
-	})
+	}, repository.NewSupperVerifier())
 
 	return publishedMeta
 }
@@ -29,7 +29,7 @@ func QueryNextMeta() interface{} {
 				consts.ARG_ISNULL: true,
 			},
 		},
-	})
+	}, repository.NewSupperVerifier())
 
 	return nextMeta
 }

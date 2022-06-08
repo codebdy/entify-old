@@ -12,7 +12,7 @@ import (
 
 func ExcuteDiff(d *model.Diff) {
 	var undoList []string
-	con, err := Open()
+	con, err := Open(NewSupperVerifier())
 	dbx := con.Dbx
 	if err != nil {
 		panic("Open db error:" + err.Error())

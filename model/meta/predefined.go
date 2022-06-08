@@ -16,6 +16,8 @@ const (
 	META_ABILITY_TYPE_UPDATE    string = "update"
 	META_ABILITY_TYPE_DELETE    string = "delete"
 	META_ABILITY_TYPE_ENUM_UUID string = "META_ABILITY_TYPE_ENUM_UUID"
+
+	META_ENTITY_UUID string = "META_ENTITY_UUID"
 )
 
 var MetaStatusEnum = ClassMeta{
@@ -39,7 +41,7 @@ var MetaStatusEnum = ClassMeta{
 }
 
 var MetaClass = ClassMeta{
-	Uuid:       "META_ENTITY_UUID",
+	Uuid:       META_ENTITY_UUID,
 	Name:       consts.META_ENTITY_NAME,
 	InnerId:    consts.META_INNER_ID,
 	StereoType: CLASSS_ENTITY,

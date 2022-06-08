@@ -202,15 +202,15 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
 	input := InstallArg{}
 	mapstructure.Decode(p.Args[INPUT], &input)
-
+	verifier := repository.NewSupperVerifier()
 	//创建实体
 	instance := data.NewInstance(predefinedEntities(), model.GlobalModel.Graph.GetMetaEntity())
-	_, err := repository.SaveOne(instance)
+	_, err := repository.SaveOne(instance, verifier)
 
 	if err != nil {
 		return nil, err
 	}
-	err = doPublish()
+	err = doPublish(verifier)
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +219,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 			adminInstance(input.Admin, input.Password),
 			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 		)
-		_, err = repository.SaveOne(instance)
+		_, err = repository.SaveOne(instance, verifier)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +228,7 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 				demoInstance(),
 				model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 			)
-			_, err = repository.SaveOne(instance)
+			_, err = repository.SaveOne(instance, verifier)
 			if err != nil {
 				return nil, err
 			}

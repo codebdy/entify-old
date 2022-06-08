@@ -5,7 +5,7 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
-	"rxdrag.com/entify/authorization"
+	"rxdrag.com/entify/authcontext"
 	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
@@ -13,12 +13,12 @@ import (
 )
 
 type AbilityVerifier struct {
-	Me          *common.User
-	RoleIds     []string
-	AbilityType string
-	Abilities   []*common.Ability
+	Me        *common.User
+	RoleIds   []string
+	Abilities []*common.Ability
 	// expression Key : 从Auth模块返回的结果
 	QueryUserCache map[string][]common.User
+	isSupper       bool
 }
 
 func NewVerifier() *AbilityVerifier {
@@ -27,8 +27,14 @@ func NewVerifier() *AbilityVerifier {
 	return &verifier
 }
 
-func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string, abilityType string) {
-	me := authorization.ParseContextValues(p).Me
+func NewSupperVerifier() *AbilityVerifier {
+	verifier := AbilityVerifier{isSupper: true}
+
+	return &verifier
+}
+
+func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string) {
+	me := authcontext.ParseContextValues(p).Me
 	v.Me = me
 	if me != nil {
 		for i := range me.Roles {
@@ -38,9 +44,19 @@ func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string, ab
 		v.RoleIds = append(v.RoleIds, consts.GUEST_ROLE_ID)
 	}
 
-	v.AbilityType = abilityType
-
 	v.queryRolesAbilities(entityUuids)
+}
+
+func (v *AbilityVerifier) IsSupper() bool {
+	if v.isSupper {
+		return true
+	}
+
+	if v.Me != nil {
+		return v.Me.IsSupper
+	}
+
+	return false
 }
 
 func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args map[string]interface{}) map[string]interface{} {
@@ -128,14 +144,14 @@ func (v *AbilityVerifier) queryRolesAbilities(entityUuids []string) {
 			"roleId": QueryArg{
 				consts.ARG_IN: v.RoleIds,
 			},
-			"abilityType": QueryArg{
-				consts.ARG_EQ: v.AbilityType,
-			},
+			// "abilityType": QueryArg{
+			// 	consts.ARG_EQ: v.AbilityType,
+			// },
 			"entityUuid": QueryArg{
 				consts.ARG_IN: entityUuids,
 			},
 		},
-	})
+	}, NewSupperVerifier())
 
 	for _, abilityMap := range abilities {
 		var ability common.Ability

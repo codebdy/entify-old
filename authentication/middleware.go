@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"rxdrag.com/entify/authorization"
+	"rxdrag.com/entify/authcontext"
 	"rxdrag.com/entify/consts"
 )
 
@@ -18,7 +18,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		reqToken := r.Header.Get(consts.AUTHORIZATION)
 		splitToken := strings.Split(reqToken, consts.BEARER)
-		v := authorization.ContextValues{}
+		v := authcontext.ContextValues{}
 		if len(splitToken) == 2 {
 			reqToken = splitToken[1]
 			if reqToken != "" {

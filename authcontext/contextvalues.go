@@ -1,4 +1,4 @@
-package authorization
+package authcontext
 
 import (
 	"github.com/graphql-go/graphql"

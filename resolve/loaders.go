@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/graph-gophers/dataloader"
+	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/repository"
@@ -39,22 +40,23 @@ func CreateDataLoaders() *Loaders {
 	}
 }
 
-func (l *Loaders) GetLoader(association *graph.Association) *dataloader.Loader {
+func (l *Loaders) GetLoader(p graphql.ResolveParams, association *graph.Association) *dataloader.Loader {
 	if l.loaders[association.Path()] == nil {
-		l.loaders[association.Path()] = dataloader.NewBatchedLoader(QueryBatchFn(association))
+		l.loaders[association.Path()] = dataloader.NewBatchedLoader(QueryBatchFn(p, association))
 	}
 	return l.loaders[association.Path()]
 }
 
-func QueryBatchFn(association *graph.Association) dataloader.BatchFunc {
+func QueryBatchFn(p graphql.ResolveParams, association *graph.Association) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		defer utils.PrintErrorStack()
+		v := makeAssociAbilityVerifier(p, association)
 		results := make([]*dataloader.Result, len(keys))
 		ids := make([]uint64, len(keys))
 		for i := range ids {
 			ids[i] = keys[i].Raw().(uint64)
 		}
-		instances := repository.BatchQueryAssociations(association, ids)
+		instances := repository.BatchQueryAssociations(association, ids, v)
 
 		for i := range results {
 			var data interface{}

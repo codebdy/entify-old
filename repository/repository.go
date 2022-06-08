@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 
-	"rxdrag.com/entify/authorization"
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
@@ -11,40 +10,40 @@ import (
 
 type QueryArg = map[string]interface{}
 
-func QueryInterface(intf *graph.Interface, args QueryArg, v *authorization.AbilityVerifier) []InsanceData {
-	con, err := Open()
+func QueryInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier) []InsanceData {
+	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryInterface(intf, args, v)
+	return con.doQueryInterface(intf, args)
 }
 
-func QueryOneInterface(intf *graph.Interface, args QueryArg, v *authorization.AbilityVerifier) interface{} {
-	con, err := Open()
+func QueryOneInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier) interface{} {
+	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneInterface(intf, args, v)
+	return con.doQueryOneInterface(intf, args)
 }
 
-func QueryEntity(entity *graph.Entity, args QueryArg, v *authorization.AbilityVerifier) []InsanceData {
-	con, err := Open()
+func QueryEntity(entity *graph.Entity, args QueryArg, v *AbilityVerifier) []InsanceData {
+	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryEntity(entity, args, v)
+	return con.doQueryEntity(entity, args)
 }
 
-func QueryOneEntity(entity *graph.Entity, args QueryArg, v *authorization.AbilityVerifier) interface{} {
-	con, err := Open()
+func QueryOneEntity(entity *graph.Entity, args QueryArg, v *AbilityVerifier) interface{} {
+	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doQueryOneEntity(entity, args, v)
+	return con.doQueryOneEntity(entity, args)
 }
 
-func SaveOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
-	con, err := Open()
+func SaveOne(instance *data.Instance, v *AbilityVerifier) (interface{}, error) {
+	con, err := Open(v)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -56,7 +55,7 @@ func SaveOne(instance *data.Instance, v *authorization.AbilityVerifier) (interfa
 		return nil, err
 	}
 
-	obj, err := con.doSaveOne(instance, v)
+	obj, err := con.doSaveOne(instance)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -69,8 +68,8 @@ func SaveOne(instance *data.Instance, v *authorization.AbilityVerifier) (interfa
 	return obj, nil
 }
 
-func InsertOne(instance *data.Instance, v *authorization.AbilityVerifier) (interface{}, error) {
-	con, err := Open()
+func InsertOne(instance *data.Instance, v *AbilityVerifier) (interface{}, error) {
+	con, err := Open(v)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -81,7 +80,7 @@ func InsertOne(instance *data.Instance, v *authorization.AbilityVerifier) (inter
 		return nil, err
 	}
 
-	obj, err := con.doInsertOne(instance, v)
+	obj, err := con.doInsertOne(instance)
 	if err != nil {
 		fmt.Println(err.Error())
 		return nil, err
@@ -94,8 +93,8 @@ func InsertOne(instance *data.Instance, v *authorization.AbilityVerifier) (inter
 	return obj, nil
 }
 
-func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[string]interface{} {
-	con, err := Open()
+func BatchQueryAssociations(association *graph.Association, ids []uint64, v *AbilityVerifier) []map[string]interface{} {
+	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -103,7 +102,7 @@ func BatchQueryAssociations(association *graph.Association, ids []uint64) []map[
 }
 
 func IsEntityExists(name string) bool {
-	con, err := Open()
+	con, err := Open(NewSupperVerifier())
 	if err != nil {
 		panic(err.Error())
 	}
@@ -112,7 +111,7 @@ func IsEntityExists(name string) bool {
 
 func Install() error {
 	sqlBuilder := dialect.GetSQLBuilder()
-	con, err := Open()
+	con, err := Open(NewSupperVerifier())
 	if err != nil {
 		fmt.Println(err.Error())
 		return err

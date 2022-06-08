@@ -16,7 +16,7 @@ import (
 var TokenCache = map[string]*common.User{}
 
 func loadUser(loginName string) *common.User {
-	con, err := repository.Open()
+	con, err := repository.Open(repository.NewSupperVerifier())
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
@@ -48,7 +48,7 @@ func loadUser(loginName string) *common.User {
 }
 
 func Login(loginName, pwd string) (string, error) {
-	con, err := repository.Open()
+	con, err := repository.Open(repository.NewSupperVerifier())
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
