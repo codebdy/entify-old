@@ -25,7 +25,7 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 		entity := intf.Children[i]
 		argEntity := graph.BuildArgEntity(
 			entity,
-			con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
+			con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
 			con,
 		)
 		queryStr := builder.BuildQuerySQLBody(argEntity, intf.AllAttributes())
@@ -46,7 +46,7 @@ func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string
 	var paramsList []interface{}
 	argEntity := graph.BuildArgEntity(
 		entity,
-		con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE].(map[string]interface{})),
+		con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
 		con,
 	)
 	builder := dialect.GetSQLBuilder()

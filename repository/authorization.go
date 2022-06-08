@@ -59,12 +59,18 @@ func (v *AbilityVerifier) IsSupper() bool {
 	return false
 }
 
-func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args map[string]interface{}) map[string]interface{} {
+func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) map[string]interface{} {
 	var rootAnd []map[string]interface{}
-	if args[consts.ARG_AND] == nil {
+
+	if args == nil {
 		rootAnd = []map[string]interface{}{}
 	} else {
-		rootAnd = args[consts.ARG_AND].([]map[string]interface{})
+		argsMap := args.(map[string]interface{})
+		if argsMap[consts.ARG_AND] == nil {
+			rootAnd = []map[string]interface{}{}
+		} else {
+			rootAnd = argsMap[consts.ARG_AND].([]map[string]interface{})
+		}
 	}
 
 	expArg := v.queryEntityArgsMap(entityUuid)
@@ -72,8 +78,15 @@ func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args map[string]int
 		rootAnd = append(rootAnd, expArg)
 	}
 
-	args[consts.ARG_AND] = rootAnd
-	return args
+	if args == nil {
+		return map[string]interface{}{
+			consts.ARG_AND: rootAnd,
+		}
+	} else {
+		argsMap := args.(map[string]interface{})
+		argsMap[consts.ARG_AND] = rootAnd
+		return argsMap
+	}
 }
 
 func (v *AbilityVerifier) CanReadEntity(entityUuid string) bool {
