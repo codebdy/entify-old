@@ -59,7 +59,19 @@ func (v *AbilityVerifier) IsSupper() bool {
 	return false
 }
 
-func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) map[string]interface{} {
+func (v *AbilityVerifier) IsDemo() bool {
+	if v.Me != nil {
+		return v.Me.IsDemo
+	}
+
+	return false
+}
+
+func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) interface{} {
+	if v.IsSupper() || v.IsDemo() {
+		return args
+	}
+
 	var rootAnd []map[string]interface{}
 
 	if args == nil {
