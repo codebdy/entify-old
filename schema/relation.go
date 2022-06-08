@@ -23,6 +23,7 @@ func (c *TypeCache) makeRelations() {
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
 				Resolve:     resolve.QueryAssociationFn(association),
+				Args:        quryeArgs(association.TypeClass().Name()),
 			})
 		}
 	}
@@ -38,6 +39,7 @@ func (c *TypeCache) makeRelations() {
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
 				Resolve:     resolve.QueryAssociationFn(association),
+				Args:        quryeArgs(association.TypeClass().Name()),
 			})
 		}
 	}
