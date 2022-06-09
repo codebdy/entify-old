@@ -91,12 +91,21 @@ func InsertOne(instance *data.Instance, v *AbilityVerifier) (interface{}, error)
 	return obj, nil
 }
 
-func BatchQueryAssociations(association *graph.Association, ids []uint64, v *AbilityVerifier) []map[string]interface{} {
+func BatchQueryAssociations(
+	association *graph.Association,
+	ids []uint64,
+	args graph.QueryArg,
+	v *AbilityVerifier,
+) []map[string]interface{} {
 	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
 	}
-	return con.doBatchAssociations(association, ids)
+	if association.IsAbstract() {
+		return con.doBatchAbstractRealAssociations(association, ids)
+	} else {
+		return con.doBatchRealAssociations(association, ids)
+	}
 }
 
 func IsEntityExists(name string) bool {

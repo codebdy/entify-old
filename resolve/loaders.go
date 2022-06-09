@@ -56,7 +56,7 @@ func QueryBatchFn(p graphql.ResolveParams, association *graph.Association, args 
 		for i := range ids {
 			ids[i] = keys[i].Raw().(uint64)
 		}
-		instances := repository.BatchQueryAssociations(association, ids, v)
+		instances := repository.BatchQueryAssociations(association, ids, args, v)
 
 		for i := range results {
 			var data interface{}

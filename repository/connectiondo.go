@@ -344,14 +344,6 @@ func merageInstances(source []InsanceData, target []InsanceData) {
 	}
 }
 
-func (con *Connection) doBatchAssociations(association *graph.Association, ids []uint64) []InsanceData {
-	if association.IsAbstract() {
-		return con.doBatchAbstractRealAssociations(association, ids)
-	} else {
-		return con.doBatchRealAssociations(association, ids)
-	}
-}
-
 func (con *Connection) doUpdateOne(instance *data.Instance) (interface{}, error) {
 
 	sqlBuilder := dialect.GetSQLBuilder()
