@@ -7,8 +7,6 @@ import (
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
-	"rxdrag.com/entify/model/meta"
-	"rxdrag.com/entify/model/table"
 )
 
 type MySQLBuilder struct {
@@ -81,91 +79,6 @@ func (b *MySQLBuilder) BuildBoolExp(argEntity *graph.ArgEntity, where map[string
 		}
 	}
 	return strings.Join(querys, " AND "), params
-}
-
-func (b *MySQLBuilder) ColumnTypeSQL(column *table.Column) string {
-	typeStr := "text"
-	switch column.Type {
-	case meta.ID:
-		typeStr = "bigint(64)"
-		break
-	case meta.INT:
-		typeStr = "int"
-		if column.Length == 1 {
-			typeStr = "tinyint"
-		} else if column.Length == 2 {
-			typeStr = "smallint"
-		} else if column.Length == 3 {
-			typeStr = "mediumint"
-		} else if column.Length == 4 {
-			typeStr = "int"
-		} else if column.Length > 4 {
-			length := column.Length
-			if length > 64 {
-				length = 64
-			}
-			typeStr = fmt.Sprintf("bigint(%d)", length)
-		}
-		if column.Unsigned {
-			typeStr = typeStr + " UNSIGNED"
-		}
-		break
-	case meta.FLOAT:
-		if column.Length > 4 {
-			typeStr = "double"
-		} else {
-			typeStr = "float"
-		}
-		if column.FloatM > 0 && column.FloatD > 0 && column.FloatM >= column.FloatD {
-			typeStr = fmt.Sprint(typeStr+"(%d,%d)", column.FloatM, column.FloatD)
-		}
-		if column.Unsigned {
-			typeStr = typeStr + " UNSIGNED"
-		}
-		break
-	case meta.BOOLEAN:
-		typeStr = "tinyint(1)"
-		break
-	case meta.STRING:
-		typeStr = "text"
-		if column.Length > 0 {
-			if column.Length <= 255 {
-				typeStr = fmt.Sprintf("varchar(%d)", column.Length)
-			} else if column.Length <= 65535 {
-				typeStr = "text"
-			} else if column.Length <= 16777215 {
-				typeStr = "mediumtext"
-			} else {
-				typeStr = "longtext"
-			}
-		}
-		break
-	case meta.DATE:
-		typeStr = "datetime"
-		break
-	case meta.ENUM:
-		typeStr = "tinytext"
-		break
-	case meta.VALUE_OBJECT,
-		meta.ID_ARRAY,
-		meta.INT_ARRAY,
-		meta.FLOAT_ARRAY,
-		meta.STRING_ARRAY,
-		meta.DATE_ARRAY,
-		meta.ENUM_ARRAY,
-		meta.VALUE_OBJECT_ARRAY:
-		typeStr = "json"
-		break
-	}
-	return typeStr
-}
-
-func (b *MySQLBuilder) BuildColumnSQL(column *table.Column) string {
-	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
-	if column.Name == consts.ID {
-		sql = fmt.Sprintf(sql + " AUTO_INCREMENT")
-	}
-	return sql
 }
 
 func buildArgAssociation(argAssociation *graph.ArgAssociation, owner *graph.ArgEntity) string {
