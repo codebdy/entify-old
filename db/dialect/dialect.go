@@ -1,6 +1,7 @@
 package dialect
 
 import (
+	"rxdrag.com/entify/db/dialect/mysql"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
@@ -62,6 +63,6 @@ type SQLBuilder interface {
 }
 
 func GetSQLBuilder() SQLBuilder {
-	var builder MySQLBuilder
+	var builder mysql.MySQLBuilder
 	return &builder
 }
