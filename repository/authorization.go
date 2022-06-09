@@ -9,6 +9,7 @@ import (
 	"rxdrag.com/entify/common"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/meta"
 )
 
@@ -164,15 +165,15 @@ func expressionToArg(expression string) map[string]interface{} {
 }
 
 func (v *AbilityVerifier) queryRolesAbilities(entityUuids []string) {
-	abilities := QueryEntity(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), QueryArg{
-		consts.ARG_WHERE: QueryArg{
-			"roleId": QueryArg{
+	abilities := QueryEntity(model.GlobalModel.Graph.GetEntityByUuid(consts.ABILITY_UUID), graph.QueryArg{
+		consts.ARG_WHERE: graph.QueryArg{
+			"roleId": graph.QueryArg{
 				consts.ARG_IN: v.RoleIds,
 			},
 			// "abilityType": QueryArg{
 			// 	consts.ARG_EQ: v.AbilityType,
 			// },
-			"entityUuid": QueryArg{
+			"entityUuid": graph.QueryArg{
 				consts.ARG_IN: entityUuids,
 			},
 		},

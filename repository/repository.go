@@ -8,9 +8,7 @@ import (
 	"rxdrag.com/entify/model/graph"
 )
 
-type QueryArg = map[string]interface{}
-
-func QueryInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier) []InsanceData {
+func QueryInterface(intf *graph.Interface, args graph.QueryArg, v *AbilityVerifier) []InsanceData {
 	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
@@ -18,7 +16,7 @@ func QueryInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier) []
 	return con.doQueryInterface(intf, args)
 }
 
-func QueryOneInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier) interface{} {
+func QueryOneInterface(intf *graph.Interface, args graph.QueryArg, v *AbilityVerifier) interface{} {
 	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
@@ -26,7 +24,7 @@ func QueryOneInterface(intf *graph.Interface, args QueryArg, v *AbilityVerifier)
 	return con.doQueryOneInterface(intf, args)
 }
 
-func QueryEntity(entity *graph.Entity, args QueryArg, v *AbilityVerifier) []InsanceData {
+func QueryEntity(entity *graph.Entity, args graph.QueryArg, v *AbilityVerifier) []InsanceData {
 	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())
@@ -34,7 +32,7 @@ func QueryEntity(entity *graph.Entity, args QueryArg, v *AbilityVerifier) []Insa
 	return con.doQueryEntity(entity, args)
 }
 
-func QueryOneEntity(entity *graph.Entity, args QueryArg, v *AbilityVerifier) interface{} {
+func QueryOneEntity(entity *graph.Entity, args graph.QueryArg, v *AbilityVerifier) interface{} {
 	con, err := Open(v)
 	if err != nil {
 		panic(err.Error())

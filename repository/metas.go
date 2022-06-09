@@ -4,14 +4,15 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/utils"
 )
 
 func QueryPublishedMeta() interface{} {
-	publishedMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
-		consts.ARG_WHERE: QueryArg{
-			consts.META_STATUS: QueryArg{
+	publishedMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), graph.QueryArg{
+		consts.ARG_WHERE: graph.QueryArg{
+			consts.META_STATUS: graph.QueryArg{
 				consts.ARG_EQ: meta.META_STATUS_PUBLISHED,
 			},
 		},
@@ -21,9 +22,9 @@ func QueryPublishedMeta() interface{} {
 }
 
 func QueryNextMeta() interface{} {
-	nextMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), QueryArg{
-		consts.ARG_WHERE: QueryArg{
-			consts.META_STATUS: QueryArg{
+	nextMeta := QueryOneEntity(model.GlobalModel.Graph.GetMetaEntity(), graph.QueryArg{
+		consts.ARG_WHERE: graph.QueryArg{
+			consts.META_STATUS: graph.QueryArg{
 				consts.ARG_ISNULL: true,
 			},
 		},

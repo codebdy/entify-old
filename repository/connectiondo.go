@@ -116,9 +116,9 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 }
 
 func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}) interface{} {
-	return con.doQueryOneEntity(entity, QueryArg{
-		consts.ARG_WHERE: QueryArg{
-			consts.ID: QueryArg{
+	return con.doQueryOneEntity(entity, graph.QueryArg{
+		consts.ARG_WHERE: graph.QueryArg{
+			consts.ID: graph.QueryArg{
 				consts.ARG_EQ: id,
 			},
 		},

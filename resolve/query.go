@@ -67,7 +67,7 @@ func QueryAssociationFn(asso *graph.Association) graphql.FieldResolveFn {
 		if loaders == nil {
 			panic("Data loaders is nil")
 		}
-		loader := loaders.GetLoader(p, asso)
+		loader := loaders.GetLoader(p, asso, p.Args)
 		thunk := loader.Load(p.Context, NewKey(source[consts.ID].(uint64)))
 		return func() (interface{}, error) {
 			data, err := thunk()

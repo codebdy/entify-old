@@ -40,14 +40,14 @@ func CreateDataLoaders() *Loaders {
 	}
 }
 
-func (l *Loaders) GetLoader(p graphql.ResolveParams, association *graph.Association) *dataloader.Loader {
+func (l *Loaders) GetLoader(p graphql.ResolveParams, association *graph.Association, args graph.QueryArg) *dataloader.Loader {
 	if l.loaders[association.Path()] == nil {
-		l.loaders[association.Path()] = dataloader.NewBatchedLoader(QueryBatchFn(p, association))
+		l.loaders[association.Path()] = dataloader.NewBatchedLoader(QueryBatchFn(p, association, args))
 	}
 	return l.loaders[association.Path()]
 }
 
-func QueryBatchFn(p graphql.ResolveParams, association *graph.Association) dataloader.BatchFunc {
+func QueryBatchFn(p graphql.ResolveParams, association *graph.Association, args graph.QueryArg) dataloader.BatchFunc {
 	return func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		defer utils.PrintErrorStack()
 		v := makeAssociAbilityVerifier(p, association)
