@@ -40,3 +40,13 @@ func (b *MySQLBuilder) BuildDeletePovitSQL(povit *data.AssociationPovit) string 
 		povit.Target.Value,
 	)
 }
+
+func (b *MySQLBuilder) BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string {
+	sql := fmt.Sprintf(
+		"DELETE FROM `%s` WHERE (`%s` = '%d')",
+		tableName,
+		ownerFieldName,
+		ownerId,
+	)
+	return sql
+}
