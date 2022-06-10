@@ -102,9 +102,9 @@ func BatchQueryAssociations(
 		panic(err.Error())
 	}
 	if association.IsAbstract() {
-		return con.doBatchAbstractRealAssociations(association, ids)
+		return con.doBatchAbstractRealAssociations(association, ids, args, v)
 	} else {
-		return con.doBatchRealAssociations(association, ids)
+		return con.doBatchRealAssociations(association, ids, args, v)
 	}
 }
 

@@ -156,7 +156,7 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	var params []interface{}
 	if where != nil {
 		boolStr, whereParams := b.BuildBoolExp(argEntity, where)
-		whereStr = " WHERE " + boolStr
+		whereStr = boolStr
 		params = append(params, whereParams...)
 	}
 	return whereStr, params
@@ -218,37 +218,78 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(
 	return queryStr
 }
 
-func (b *MySQLBuilder) BuildBatchAssociationSQL(
-	tableName string,
+func (b *MySQLBuilder) BuildBatchAssociationBodySQL(
+	argEntity *graph.ArgEntity,
 	fields []*graph.Attribute,
-	ids []uint64,
 	povitTableName string,
 	ownerFieldName string,
 	typeFieldName string,
+	ids []uint64,
 ) string {
-	queryStr := "select %s, b.%s as %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s in (%s) "
-	parms := make([]string, len(ids))
+	queryStr := "select %s, povit.%s as %s from %s " + argEntity.Alise() + " INNER JOIN %s povit ON " + argEntity.Alise() + ".id = povit.%s "
 	names := make([]string, len(fields))
+	parms := make([]string, len(ids))
+	for i := range fields {
+		names[i] = argEntity.Alise() + "." + fields[i].Name
+	}
+
 	for i := range parms {
 		parms[i] = fmt.Sprintf("%d", ids[i])
-	}
-	for i := range fields {
-		names[i] = "a." + fields[i].Name
 	}
 
 	queryStr = fmt.Sprintf(queryStr,
 		strings.Join(names, ","),
 		ownerFieldName,
 		consts.ASSOCIATION_OWNER_ID,
-		tableName,
+		argEntity.Entity.TableName(),
 		povitTableName,
 		typeFieldName,
 		ownerFieldName,
 		strings.Join(parms, ","),
 	)
 
+	for i := range argEntity.Associations {
+		association := argEntity.Associations[i]
+		queryStr = queryStr + " " + buildArgAssociation(association, argEntity)
+	}
+
+	queryStr = queryStr + fmt.Sprintf("WHERE povit.%s in (%s)",
+		ownerFieldName,
+		strings.Join(parms, ","))
 	return queryStr
 }
+
+// func (b *MySQLBuilder) BuildBatchAssociationSQL(
+// 	tableName string,
+// 	fields []*graph.Attribute,
+// 	ids []uint64,
+// 	povitTableName string,
+// 	ownerFieldName string,
+// 	typeFieldName string,
+// ) string {
+// 	queryStr := "select %s, povit.%s as %s from %s entity INNER JOIN %s povit ON entity.id = povit.%s WHERE povit.%s in (%s) "
+// 	parms := make([]string, len(ids))
+// 	names := make([]string, len(fields))
+// 	for i := range parms {
+// 		parms[i] = fmt.Sprintf("%d", ids[i])
+// 	}
+// 	for i := range fields {
+// 		names[i] = "entity." + fields[i].Name
+// 	}
+
+// 	queryStr = fmt.Sprintf(queryStr,
+// 		strings.Join(names, ","),
+// 		ownerFieldName,
+// 		consts.ASSOCIATION_OWNER_ID,
+// 		tableName,
+// 		povitTableName,
+// 		typeFieldName,
+// 		ownerFieldName,
+// 		strings.Join(parms, ","),
+// 	)
+
+// 	return queryStr
+// }
 
 func (b *MySQLBuilder) BuildQueryPovitSQL(povit *data.AssociationPovit) string {
 	return fmt.Sprintf(

@@ -44,13 +44,13 @@ type SQLBuilder interface {
 		ownerFieldName string,
 		typeFieldName string,
 	) string
-	BuildBatchAssociationSQL(
-		tableName string,
+	BuildBatchAssociationBodySQL(
+		argEntity *graph.ArgEntity,
 		fields []*graph.Attribute,
-		ids []uint64,
 		povitTableName string,
 		ownerFieldName string,
 		typeFieldName string,
+		ids []uint64,
 	) string
 	BuildDeleteSQL(id uint64, tableName string) string
 	BuildSoftDeleteSQL(id uint64, tableName string) string
