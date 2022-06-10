@@ -226,7 +226,10 @@ func (b *MySQLBuilder) BuildBatchAssociationBodySQL(
 	typeFieldName string,
 	ids []uint64,
 ) string {
-	queryStr := "select %s, povit.%s as %s from %s " + argEntity.Alise() + " INNER JOIN %s povit ON " + argEntity.Alise() + ".id = povit.%s "
+	queryStr := "select %s, povit.%s as %s from %s " +
+		argEntity.Alise() +
+		" INNER JOIN %s povit ON " + argEntity.Alise() +
+		".id = povit.%s "
 	names := make([]string, len(fields))
 	parms := make([]string, len(ids))
 	for i := range fields {
@@ -244,8 +247,6 @@ func (b *MySQLBuilder) BuildBatchAssociationBodySQL(
 		argEntity.Entity.TableName(),
 		povitTableName,
 		typeFieldName,
-		ownerFieldName,
-		strings.Join(parms, ","),
 	)
 
 	for i := range argEntity.Associations {
@@ -253,9 +254,10 @@ func (b *MySQLBuilder) BuildBatchAssociationBodySQL(
 		queryStr = queryStr + " " + buildArgAssociation(association, argEntity)
 	}
 
-	queryStr = queryStr + fmt.Sprintf("WHERE povit.%s in (%s)",
+	queryStr = queryStr + fmt.Sprintf(" WHERE povit.%s in (%s)",
 		ownerFieldName,
-		strings.Join(parms, ","))
+		strings.Join(parms, ","),
+	)
 	return queryStr
 }
 
