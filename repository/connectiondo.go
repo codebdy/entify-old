@@ -337,6 +337,7 @@ func (con *Connection) doBatchRealAssociations(
 		association.TypeClass().TableName(),
 		ids,
 	)
+	fmt.Println("doBatchRealAssociations SQL:	", queryStr)
 	rows, err := con.Dbx.Query(queryStr)
 	defer rows.Close()
 	if err != nil {
