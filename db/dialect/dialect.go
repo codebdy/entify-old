@@ -38,7 +38,7 @@ type SQLBuilder interface {
 
 	BuildQueryByIdsSQL(entity *graph.Entity, idCounts int) string
 	BuildClearAssociationSQL(ownerId uint64, tableName string, ownerFieldName string) string
-	BuildQueryAssociatedInstancesSQL(node graph.Noder,
+	BuildQueryAssociatedInstancesSQL(entity *graph.Entity,
 		ownerId uint64,
 		povitTableName string,
 		ownerFieldName string,

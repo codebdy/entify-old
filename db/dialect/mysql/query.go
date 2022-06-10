@@ -172,8 +172,8 @@ func (b *MySQLBuilder) BuildOrderBySQL(
 	return fmt.Sprintf(" ORDER BY %s.id DESC", argEntity.Alise())
 }
 
-func associationFieldSQL(node graph.Noder) string {
-	names := node.AllAttributeNames()
+func associationFieldSQL(entity *graph.Entity) string {
+	names := entity.AllAttributeNames()
 	for i := range names {
 		names[i] = "a." + names[i]
 	}
@@ -199,7 +199,7 @@ func (b *MySQLBuilder) BuildQueryByIdsSQL(entity *graph.Entity, idCounts int) st
 }
 
 func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(
-	node graph.Noder,
+	entity *graph.Entity,
 	ownerId uint64,
 	povitTableName string,
 	ownerFieldName string,
@@ -207,8 +207,8 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(
 ) string {
 	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s=%d "
 	queryStr = fmt.Sprintf(queryStr,
-		associationFieldSQL(node),
-		node.Entity().TableName(),
+		associationFieldSQL(entity),
+		entity.Entity().TableName(),
 		povitTableName,
 		typeFieldName,
 		ownerFieldName,
