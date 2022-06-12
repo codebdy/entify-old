@@ -254,8 +254,9 @@ func (con *Connection) doBatchAbstractRealAssociations(
 	v *AbilityVerifier,
 ) []InsanceData {
 	var (
-		instances []InsanceData
-		sqls      []string
+		instances  []InsanceData
+		sqls       []string
+		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
 	abstractTypeClass := association.TypeClass()
@@ -276,11 +277,20 @@ func (con *Connection) doBatchAbstractRealAssociations(
 			derivedAsso.TypeEntity().TableName(),
 			ids,
 		)
+		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+			whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
+			if whereSQL != "" {
+				queryStr = queryStr + " AND " + whereSQL
+			}
+
+			paramsList = append(paramsList, params...)
+		}
+		queryStr = queryStr + builder.BuildOrderBySQL(argEntity, args[consts.ARG_ORDERBY])
 		sqls = append(sqls, queryStr)
 	}
 	sql := strings.Join(sqls, " UNION ")
 	fmt.Println("doBatchAbstractRealAssociations SQL:" + sql)
-	rows, err := con.Dbx.Query(sql)
+	rows, err := con.Dbx.Query(sql, paramsList...)
 	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
@@ -320,6 +330,7 @@ func (con *Connection) doBatchRealAssociations(
 	v *AbilityVerifier,
 ) []InsanceData {
 	var instances []map[string]interface{}
+	var paramsList []interface{}
 
 	builder := dialect.GetSQLBuilder()
 	typeClass := association.TypeClass()
@@ -337,8 +348,18 @@ func (con *Connection) doBatchRealAssociations(
 		association.TypeClass().TableName(),
 		ids,
 	)
+
+	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+		whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
+		if whereSQL != "" {
+			queryStr = queryStr + " AND " + whereSQL
+		}
+		paramsList = append(paramsList, params...)
+	}
+
+	queryStr = queryStr + builder.BuildOrderBySQL(argEntity, args[consts.ARG_ORDERBY])
 	fmt.Println("doBatchRealAssociations SQL:	", queryStr)
-	rows, err := con.Dbx.Query(queryStr)
+	rows, err := con.Dbx.Query(queryStr, paramsList...)
 	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
