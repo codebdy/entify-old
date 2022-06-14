@@ -11,18 +11,6 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func serviceField() *graphql.Field {
-	return &graphql.Field{
-		Type: _ServiceType,
-		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			return map[string]interface{}{
-				consts.ID:  config.ServiceId(),
-				consts.SDL: `query{}`,
-			}, nil
-		},
-	}
-}
-
 func rootQuery() *graphql.Object {
 	rootQueryConfig := graphql.ObjectConfig{
 		Name:   consts.ROOT_QUERY_NAME,
