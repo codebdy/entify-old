@@ -21,7 +21,6 @@ func makeFederationSDL() string {
 		extend type Mutation {
 			%s
 		}
-
 		%s
 	`
 

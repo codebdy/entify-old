@@ -30,6 +30,8 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 			}
 			if len(placeHolders) > 0 {
 				queryStr = fieldName + fmt.Sprintf(" in(%s)", strings.Join(placeHolders, ","))
+			} else {
+				queryStr = " false "
 			}
 			break
 		case consts.ARG_ISNULL:
@@ -59,8 +61,11 @@ func (b *MySQLBuilder) BuildBoolExp(argEntity *graph.ArgEntity, where map[string
 			asso := argEntity.Entity.GetAssociationByName(key)
 			if asso == nil {
 				fieldStr, fieldParam := b.BuildFieldExp(argEntity.Alise()+"."+key, value.(map[string]interface{}))
-				params = append(params, fieldParam...)
-				querys = append(querys, fmt.Sprintf("(%s)", fieldStr))
+				if fieldStr != "" {
+					params = append(params, fieldParam...)
+					querys = append(querys, fmt.Sprintf("(%s)", fieldStr))
+				}
+
 			} else {
 				argAsso := argEntity.GetAssociation(key)
 				var associStrs []string
@@ -156,8 +161,10 @@ func (b *MySQLBuilder) BuildWhereSQL(
 	var params []interface{}
 	if where != nil {
 		boolStr, whereParams := b.BuildBoolExp(argEntity, where)
-		whereStr = boolStr
-		params = append(params, whereParams...)
+		if boolStr != "" {
+			whereStr = boolStr
+			params = append(params, whereParams...)
+		}
 	}
 	return whereStr, params
 }
