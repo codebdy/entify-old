@@ -41,6 +41,13 @@ func queryFields() graphql.Fields {
 				},
 			},
 		},
+		consts.INSTALLED: &graphql.Field{
+			Type: graphql.Boolean,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				defer utils.PrintErrorStack()
+				return true, nil
+			},
+		},
 		consts.NODE: &graphql.Field{
 			Type: NodeInterfaceType,
 			Args: graphql.FieldConfigArgument{
