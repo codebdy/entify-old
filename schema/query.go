@@ -48,14 +48,6 @@ func queryFields() graphql.Fields {
 				return true, nil
 			},
 		},
-		consts.NODE: &graphql.Field{
-			Type: NodeInterfaceType,
-			Args: graphql.FieldConfigArgument{
-				consts.ID: &graphql.ArgumentConfig{
-					Type: graphql.ID,
-				},
-			},
-		},
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {

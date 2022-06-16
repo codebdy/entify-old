@@ -159,17 +159,27 @@ func serviceField() *graphql.Field {
 }
 
 func objectToSDL(obj *graphql.Object) string {
+	var intfNames []string
+	implString := ""
+
+	for _, intf := range obj.Interfaces() {
+		intfNames = append(intfNames, intf.Name())
+	}
+	if len(intfNames) > 0 {
+		implString = " implements " + strings.Join(intfNames, " & ")
+	}
+
 	sdl := `
-		type %s{
+		type %s%s{
 			%s
 		}
 	`
-	return fmt.Sprintf(sdl, obj.Name(), fieldsToSDL(obj.Fields()))
+	return fmt.Sprintf(sdl, obj.Name(), implString, fieldsToSDL(obj.Fields()))
 }
 
 func interfaceToSDL(intf *graphql.Interface) string {
 	sdl := `
-		type %s{
+	  interface %s{
 			%s
 		}
 	`

@@ -6,7 +6,6 @@ const (
 	ROOT_QUERY_NAME        = "Query"
 	ROOT_MUTATION_NAME     = "Mutation"
 	ROOT_SUBSCRIPTION_NAME = "Subscription"
-	NODE                   = "node"
 	LOGIN                  = "login"
 	LOGIN_NAME             = "loginName"
 	PASSWORD               = "password"
