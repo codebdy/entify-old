@@ -6,6 +6,9 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model"
+	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/utils"
 )
 
 func makeFederationSDL() string {
@@ -24,7 +27,22 @@ func makeFederationSDL() string {
 		%s
 	`
 
-	queryFields := "me: User"
+	queryFields := ""
+	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
+		queryFields = queryFields + makeInterfaceSDL(intf)
+	}
+
+	for _, entity := range model.GlobalModel.Graph.RootEnities() {
+		appendEntityToQueryFields(entity, queryFields)
+	}
+
+	for _, service := range model.GlobalModel.Graph.RootExternals() {
+		appendServiceQueryFields(service, queryFields)
+	}
+
+	if config.AuthUrl() == "" {
+		appendAuthToQuery(queryFields)
+	}
 	mutationFields := "review(date: String review: String): Result"
 	types := `
 	type User {
@@ -38,6 +56,33 @@ func makeFederationSDL() string {
 	`
 
 	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
+}
+
+func makeInterfaceSDL(intf *graph.Interface) string {
+	sdl := ""
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+		utils.FirstLower(intf.Name()),
+		makeArgsSDL(quryeArgs(intf.Name())),
+		fmt.Sprintf("![%s]\n", queryResponseType(intf).Name()),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		consts.ONE+intf.Name(),
+		makeArgsSDL(quryeArgs(intf.Name())),
+		Cache.OutputType(intf.Name()).Name(),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		intf.Name()+utils.FirstUpper(consts.AGGREGATE),
+		makeArgsSDL(quryeArgs(intf.Name())),
+		(*AggregateType(intf)).Name(),
+	)
+
+	return sdl
+}
+
+func makeArgsSDL(args graphql.FieldConfigArgument) string {
+	return ""
 }
 
 func serviceField() *graphql.Field {
