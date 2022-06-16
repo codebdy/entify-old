@@ -103,6 +103,10 @@ func (c *TypeCache) DistinctOnEnum(name string) *graphql.Enum {
 	return c.DistinctOnEnumMap[name]
 }
 
+func (c *TypeCache) DistinctOnEnums() map[string]*graphql.Enum {
+	return c.DistinctOnEnumMap
+}
+
 func (c *TypeCache) SaveInput(name string) *graphql.InputObject {
 	return c.SaveInputMap[name]
 }

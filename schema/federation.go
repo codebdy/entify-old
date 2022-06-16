@@ -41,6 +41,10 @@ func makeFederationSDL() string {
 		types = types + enumToSDL(Cache.EnumType(enum.Name))
 	}
 
+	for _, enum := range Cache.DistinctOnEnums() {
+		types = types + enumToSDL(enum)
+	}
+
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		queryFields = queryFields + makeInterfaceSDL(intf)
 
