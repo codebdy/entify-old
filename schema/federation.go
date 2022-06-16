@@ -47,6 +47,18 @@ interface %s{
 }
 `
 
+var inputSDL = `
+input %s{
+	%s
+}
+`
+
+var comparisonSDL = `
+input %s{
+	%s
+}
+`
+
 func makeFederationSDL() string {
 	sdl := allSDL
 
@@ -65,6 +77,25 @@ func makeFederationSDL() string {
 
 	for _, enum := range Cache.DistinctOnEnums() {
 		types = types + enumToSDL(enum)
+	}
+
+	for _, orderBy := range Cache.OrderByMap {
+		types = types + inputToSDL(orderBy)
+	}
+
+	types = types + comparisonToSDL(&BooleanComparisonExp)
+	types = types + comparisonToSDL(&DateTimeComparisonExp)
+	types = types + comparisonToSDL(&FloatComparisonExp)
+	types = types + comparisonToSDL(&IntComparisonExp)
+	types = types + comparisonToSDL(&IdComparisonExp)
+	types = types + comparisonToSDL(&StringComparisonExp)
+
+	for _, comparision := range Cache.EnumComparisonExpMap {
+		types = types + comparisonToSDL(comparision)
+	}
+
+	for _, where := range Cache.WhereExpMap {
+		types = types + inputToSDL(where)
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
@@ -216,6 +247,28 @@ func enumToSDL(enum *graphql.Enum) string {
 func interfaceToSDL(intf *graphql.Interface) string {
 	sdl := interfaceSDL
 	return fmt.Sprintf(sdl, intf.Name(), fieldsToSDL(intf.Fields()))
+}
+
+func inputToSDL(input *graphql.InputObject) string {
+	sdl := inputSDL
+	return fmt.Sprintf(sdl, input.Name(), inputFieldsToSDL(input.Fields()))
+}
+
+func inputFieldsToSDL(fields graphql.InputObjectFieldMap) string {
+	var fieldsStrings []string
+	for key := range fields {
+		field := fields[key]
+		fieldsStrings = append(fieldsStrings, key+":"+field.Type.String())
+	}
+
+	return strings.Join(fieldsStrings, "\n\t")
+}
+
+func comparisonToSDL(comarison *graphql.InputObjectFieldConfig) string {
+	sdl := comparisonSDL
+	var comType *graphql.InputObject
+	comType = comarison.Type.(*graphql.InputObject)
+	return fmt.Sprintf(sdl, comType.Name(), inputFieldsToSDL(comType.Fields()))
 }
 
 func fieldsToSDL(fields graphql.FieldDefinitionMap) string {
