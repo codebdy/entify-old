@@ -31,6 +31,11 @@ func makeFederationSDL() string {
 	queryFields := ""
 	mutationFields := "review(date: String review: String): Result"
 	types := ""
+	if config.AuthUrl() == "" {
+		queryFields = queryFields + makeAuthSDL()
+		types = types + objectToSDL(baseRoleTye)
+		types = types + objectToSDL(baseUserType)
+	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		queryFields = queryFields + makeInterfaceSDL(intf)
@@ -47,11 +52,6 @@ func makeFederationSDL() string {
 	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
 		queryFields = queryFields + makeExteneralSDL(exteneral)
 		//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
-	}
-
-	if config.AuthUrl() == "" {
-		queryFields = queryFields + makeAuthSDL()
-		types = types + objectToSDL(baseUserType)
 	}
 
 	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
