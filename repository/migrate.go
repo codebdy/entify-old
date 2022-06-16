@@ -76,7 +76,7 @@ func ModifyTable(tableDiff *model.TableDiff, undoList *[]string, dbx *db.Dbx) er
 	for _, atom := range atoms {
 		_, err := dbx.Exec(atom.ExcuteSQL)
 		if err != nil {
-			fmt.Println("出错atom", atom.ExcuteSQL, err.Error())
+			fmt.Println("Error atom", atom.ExcuteSQL, err.Error())
 			return err
 		}
 		*undoList = append(*undoList, atom.UndoSQL)

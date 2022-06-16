@@ -53,10 +53,12 @@ func (b *MySQLBuilder) BuildDeleteTableSQL(table *table.Table) string {
 func (b *MySQLBuilder) BuildModifyTableAtoms(diff *model.TableDiff) []model.ModifyAtom {
 	var atoms []model.ModifyAtom
 	//主键
-	atoms = append(atoms, model.ModifyAtom{
-		ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY, ADD PRIMARY KEY (%s)", diff.OldTable.Name, diff.OldTable.PKString),
-		UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY,ADD PRIMARY KEY (%s) ", diff.NewTable.Name, diff.NewTable.PKString),
-	})
+	if diff.OldTable.PKString != "" && diff.NewTable.PKString != "" {
+		atoms = append(atoms, model.ModifyAtom{
+			ExcuteSQL: fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY, ADD PRIMARY KEY (%s)", diff.OldTable.Name, diff.OldTable.PKString),
+			UndoSQL:   fmt.Sprintf("ALTER TABLE %s DROP  PRIMARY  KEY,ADD PRIMARY KEY (%s) ", diff.NewTable.Name, diff.NewTable.PKString),
+		})
+	}
 
 	if diff.OldTable.Name != diff.NewTable.Name {
 		//修改表名

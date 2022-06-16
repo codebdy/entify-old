@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/domain"
 	"rxdrag.com/entify/utils"
 )
@@ -76,4 +77,16 @@ func (c *Class) MethodsByType(operateType string) []*Method {
 
 func (c *Class) IsSoftDelete() bool {
 	return c.Domain.SoftDelete
+}
+
+func (c *Class) QueryName() string {
+	return utils.FirstLower(c.Name())
+}
+
+func (c *Class) QueryOneName() string {
+	return consts.ONE + c.Name()
+}
+
+func (c *Class) QueryAggregateName() string {
+	return utils.FirstLower(c.Name()) + utils.FirstUpper(consts.AGGREGATE)
 }
