@@ -60,10 +60,10 @@ func makeFederationSDL() string {
 
 func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(intf.Name()),
 		makeArgsSDL(quryeArgs(intf.Name())),
-		fmt.Sprintf("![%s]\n", queryResponseType(intf).Name()),
+		queryResponseType(intf).Name(),
 	)
 
 	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
@@ -83,10 +83,10 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 
 func makeEntitySDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		fmt.Sprintf("![%s]\n", queryResponseType(entity).Name()),
+		queryResponseType(entity).Name(),
 	)
 
 	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
@@ -106,10 +106,10 @@ func makeEntitySDL(entity *graph.Entity) string {
 
 func makeExteneralSDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		fmt.Sprintf("![%s]\n", queryResponseType(entity).Name()),
+		queryResponseType(entity).Name(),
 	)
 
 	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
