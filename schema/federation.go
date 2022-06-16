@@ -32,17 +32,17 @@ func makeFederationSDL() string {
 		queryFields = queryFields + makeInterfaceSDL(intf)
 	}
 
-	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		appendEntityToQueryFields(entity, queryFields)
-	}
+	// for _, entity := range model.GlobalModel.Graph.RootEnities() {
+	// 	appendEntityToQueryFields(entity, queryFields)
+	// }
 
-	for _, service := range model.GlobalModel.Graph.RootExternals() {
-		appendServiceQueryFields(service, queryFields)
-	}
+	// for _, service := range model.GlobalModel.Graph.RootExternals() {
+	// 	appendServiceQueryFields(service, queryFields)
+	// }
 
-	if config.AuthUrl() == "" {
-		appendAuthToQuery(queryFields)
-	}
+	// if config.AuthUrl() == "" {
+	// 	appendAuthToQuery(queryFields)
+	// }
 	mutationFields := "review(date: String review: String): Result"
 	types := `
 	type User {
