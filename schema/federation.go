@@ -12,21 +12,40 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
+var allSDL = `
+extend schema
+@link(url: "https://specs.apollo.dev/federation/v2.0",
+	import: ["@key", "@shareable"])
+extend type Query {
+%s
+}
+
+extend type Mutation {
+%s
+}
+%s
+`
+
+var objectSDL = `
+type %s%s{
+	%s
+}
+`
+
+var enumSDL = `
+enum %s{
+	%s
+}
+`
+
+var interfaceSDL = `
+interface %s{
+	%s
+}
+`
+
 func makeFederationSDL() string {
-	sdl := `
-		extend schema
-		@link(url: "https://specs.apollo.dev/federation/v2.0",
-			import: ["@key", "@shareable"])
-
-		extend type Query {
-%s
-		}
-
-		extend type Mutation {
-%s
-		}
-		%s
-	`
+	sdl := allSDL
 
 	queryFields := ""
 	mutationFields := "review(date: String review: String): Result"
@@ -67,19 +86,19 @@ func makeFederationSDL() string {
 
 func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		intf.QueryName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		queryResponseType(intf).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s\n",
 		intf.QueryOneName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		Cache.OutputType(intf.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s\n",
 		intf.QueryAggregateName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		(*AggregateType(intf)).String(),
@@ -90,19 +109,19 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 
 func makeEntitySDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		entity.QueryName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		entity.QueryOneName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		entity.QueryAggregateName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
@@ -113,19 +132,19 @@ func makeEntitySDL(entity *graph.Entity) string {
 
 func makeExteneralSDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		entity.QueryName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
@@ -151,7 +170,7 @@ func makeArgArraySDL(args []*graphql.Argument) string {
 }
 
 func makeAuthSDL() string {
-	return fmt.Sprintf("\t\t\tme %s \n", baseUserType.Name())
+	return fmt.Sprintf("\tme %s \n", baseUserType.Name())
 }
 
 func serviceField() *graphql.Field {
@@ -177,34 +196,22 @@ func objectToSDL(obj *graphql.Object) string {
 		implString = " implements " + strings.Join(intfNames, " & ")
 	}
 
-	sdl := `
-		type %s%s{
-			%s
-		}
-	`
+	sdl := objectSDL
 	return fmt.Sprintf(sdl, obj.Name(), implString, fieldsToSDL(obj.Fields()))
 }
 
 func enumToSDL(enum *graphql.Enum) string {
 	var values []string
 
-	sdl := `
-	  enum %s{
-			%s
-		}
-	`
+	sdl := enumSDL
 	for _, value := range enum.Values() {
 		values = append(values, value.Name)
 	}
-	return fmt.Sprintf(sdl, enum.Name(), strings.Join(values, "\n\t\t\t"))
+	return fmt.Sprintf(sdl, enum.Name(), strings.Join(values, "\n\t"))
 }
 
 func interfaceToSDL(intf *graphql.Interface) string {
-	sdl := `
-	  interface %s{
-			%s
-		}
-	`
+	sdl := interfaceSDL
 	return fmt.Sprintf(sdl, intf.Name(), fieldsToSDL(intf.Fields()))
 }
 
@@ -219,5 +226,5 @@ func fieldsToSDL(fields graphql.FieldDefinitionMap) string {
 		}
 	}
 
-	return strings.Join(fieldsStrings, "\n\t\t\t")
+	return strings.Join(fieldsStrings, "\n\t")
 }
