@@ -33,15 +33,15 @@ func makeFederationSDL() string {
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		appendEntityToQueryFields(entity, queryFields)
+		queryFields = queryFields + makeEntitySDL(entity)
 	}
 
-	for _, service := range model.GlobalModel.Graph.RootExternals() {
-		appendServiceQueryFields(service, queryFields)
+	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
+		queryFields = queryFields + makeExteneralSDL(exteneral)
 	}
 
 	if config.AuthUrl() == "" {
-		appendAuthToQuery(queryFields)
+		queryFields = queryFields + makeAuthSDL()
 	}
 	mutationFields := "review(date: String review: String): Result"
 	types := `
@@ -81,8 +81,62 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	return sdl
 }
 
+func makeEntitySDL(entity *graph.Entity) string {
+	sdl := ""
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+		utils.FirstLower(entity.Name()),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		fmt.Sprintf("![%s]\n", queryResponseType(entity).Name()),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		consts.ONE+entity.Name(),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		Cache.OutputType(entity.Name()).Name(),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		(*AggregateType(entity)).Name(),
+	)
+
+	return sdl
+}
+
+func makeExteneralSDL(entity *graph.Entity) string {
+	sdl := ""
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+		utils.FirstLower(entity.Name()),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		fmt.Sprintf("![%s]\n", queryResponseType(entity).Name()),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		consts.ONE+entity.Name(),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		Cache.OutputType(entity.Name()).Name(),
+	)
+
+	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
+		makeArgsSDL(quryeArgs(entity.Name())),
+		(*AggregateType(entity)).Name(),
+	)
+
+	return sdl
+}
+
 func makeArgsSDL(args graphql.FieldConfigArgument) string {
-	return ""
+	sdl := ""
+	for key := range args {
+		sdl = key + " " + args[key].Type.Name()
+	}
+	return sdl
+}
+
+func makeAuthSDL() string {
+	return fmt.Sprintf("\n me %s \n", baseUserType.Name())
 }
 
 func serviceField() *graphql.Field {
