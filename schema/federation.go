@@ -66,13 +66,13 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 		queryResponseType(intf).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		consts.ONE+intf.Name(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		Cache.OutputType(intf.Name()).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		intf.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		(*AggregateType(intf)).Name(),
@@ -89,13 +89,13 @@ func makeEntitySDL(entity *graph.Entity) string {
 		queryResponseType(entity).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).Name(),
@@ -112,13 +112,13 @@ func makeExteneralSDL(entity *graph.Entity) string {
 		queryResponseType(entity).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).Name(),
 	)
 
-	sdl = sdl + sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).Name(),
