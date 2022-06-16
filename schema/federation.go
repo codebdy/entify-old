@@ -89,13 +89,13 @@ func makeEntitySDL(entity *graph.Entity) string {
 		queryResponseType(entity).Name(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).Name(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).Name(),
@@ -112,13 +112,13 @@ func makeExteneralSDL(entity *graph.Entity) string {
 		queryResponseType(entity).Name(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).Name(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).Name(),
@@ -130,7 +130,7 @@ func makeExteneralSDL(entity *graph.Entity) string {
 func makeArgsSDL(args graphql.FieldConfigArgument) string {
 	sdl := ""
 	for key := range args {
-		sdl = key + " " + args[key].Type.Name()
+		sdl = sdl + key + " " + args[key].Type.Name() + " "
 	}
 	return sdl
 }
