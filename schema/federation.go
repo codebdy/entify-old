@@ -19,11 +19,11 @@ func makeFederationSDL() string {
 			import: ["@key", "@shareable"])
 
 		extend type Query {
-			%s
+%s
 		}
 
 		extend type Mutation {
-			%s
+%s
 		}
 		%s
 	`
@@ -59,19 +59,19 @@ func makeFederationSDL() string {
 
 func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		utils.FirstLower(intf.Name()),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		queryResponseType(intf).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
 		consts.ONE+intf.Name(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		Cache.OutputType(intf.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
 		intf.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		(*AggregateType(intf)).String(),
@@ -82,19 +82,19 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 
 func makeEntitySDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
@@ -105,19 +105,19 @@ func makeEntitySDL(entity *graph.Entity) string {
 
 func makeExteneralSDL(entity *graph.Entity) string {
 	sdl := ""
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
-	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
+	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
@@ -143,7 +143,7 @@ func makeArgArraySDL(args []*graphql.Argument) string {
 }
 
 func makeAuthSDL() string {
-	return fmt.Sprintf("\n me %s \n", baseUserType.Name())
+	return fmt.Sprintf("\n\t\t\t me %s \n", baseUserType.Name())
 }
 
 func serviceField() *graphql.Field {
@@ -187,5 +187,5 @@ func fieldsToSDL(fields graphql.FieldDefinitionMap) string {
 		}
 	}
 
-	return strings.Join(fieldsStrings, "\n")
+	return strings.Join(fieldsStrings, "\n\t\t\t")
 }
