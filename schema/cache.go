@@ -37,6 +37,22 @@ func (c *TypeCache) MakeCache() {
 // 	return c.InterfaceTypeMap[entity.Name]
 // }
 
+func (c *TypeCache) InterfaceOutputType(name string) *graphql.Interface {
+	intf := c.InterfaceTypeMap[name]
+	if intf != nil {
+		return intf
+	}
+	panic("Can not find interface output type of " + name)
+}
+
+func (c *TypeCache) EntityeOutputType(name string) *graphql.Object {
+	obj := c.ObjectTypeMap[name]
+	if obj == nil {
+		panic("Can not find output type of " + name)
+	}
+	return obj
+}
+
 func (c *TypeCache) OutputType(name string) graphql.Type {
 	intf := c.InterfaceTypeMap[name]
 	if intf != nil {

@@ -29,32 +29,30 @@ func makeFederationSDL() string {
 	`
 
 	queryFields := ""
+	mutationFields := "review(date: String review: String): Result"
+	types := ""
+
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		queryFields = queryFields + makeInterfaceSDL(intf)
+
+		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Name()))
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		queryFields = queryFields + makeEntitySDL(entity)
+
+		types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
 		queryFields = queryFields + makeExteneralSDL(exteneral)
+		//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
 	}
 
 	if config.AuthUrl() == "" {
 		queryFields = queryFields + makeAuthSDL()
+		types = types + objectToSDL(baseUserType)
 	}
-	mutationFields := "review(date: String review: String): Result"
-	types := `
-	type User {
-		id: ID!
-		username: String
-	}
-
-	type Result {
-		success: Boolean
-	}
-	`
 
 	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
 }
@@ -64,19 +62,19 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(intf.Name()),
 		makeArgsSDL(quryeArgs(intf.Name())),
-		queryResponseType(intf).Name(),
+		queryResponseType(intf).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		consts.ONE+intf.Name(),
 		makeArgsSDL(quryeArgs(intf.Name())),
-		Cache.OutputType(intf.Name()).Name(),
+		Cache.OutputType(intf.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(`%s(%s) %s`,
 		intf.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(intf.Name())),
-		(*AggregateType(intf)).Name(),
+		(*AggregateType(intf)).String(),
 	)
 
 	return sdl
@@ -87,19 +85,19 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		queryResponseType(entity).Name(),
+		queryResponseType(entity).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		Cache.OutputType(entity.Name()).Name(),
+		Cache.OutputType(entity.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		(*AggregateType(entity)).Name(),
+		(*AggregateType(entity)).String(),
 	)
 
 	return sdl
@@ -110,19 +108,19 @@ func makeExteneralSDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		utils.FirstLower(entity.Name()),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		queryResponseType(entity).Name(),
+		queryResponseType(entity).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		consts.ONE+entity.Name(),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		Cache.OutputType(entity.Name()).Name(),
+		Cache.OutputType(entity.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("%s(%s) %s \n",
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(quryeArgs(entity.Name())),
-		(*AggregateType(entity)).Name(),
+		(*AggregateType(entity)).String(),
 	)
 
 	return sdl
@@ -132,6 +130,14 @@ func makeArgsSDL(args graphql.FieldConfigArgument) string {
 	var sdls []string
 	for key := range args {
 		sdls = append(sdls, key+":"+args[key].Type.Name())
+	}
+	return strings.Join(sdls, ",")
+}
+
+func makeArgArraySDL(args []*graphql.Argument) string {
+	var sdls []string
+	for _, arg := range args {
+		sdls = append(sdls, arg.Name()+":"+arg.Type.Name())
 	}
 	return strings.Join(sdls, ",")
 }
@@ -150,4 +156,36 @@ func serviceField() *graphql.Field {
 			}, nil
 		},
 	}
+}
+
+func objectToSDL(obj *graphql.Object) string {
+	sdl := `
+		type %s{
+			%s
+		}
+	`
+	return fmt.Sprintf(sdl, obj.Name(), fieldsToSDL(obj.Fields()))
+}
+
+func interfaceToSDL(intf *graphql.Interface) string {
+	sdl := `
+		type %s{
+			%s
+		}
+	`
+	return fmt.Sprintf(sdl, intf.Name(), fieldsToSDL(intf.Fields()))
+}
+
+func fieldsToSDL(fields graphql.FieldDefinitionMap) string {
+	var fieldsStrings []string
+	for i := range fields {
+		field := fields[i]
+		if len(field.Args) > 0 {
+			fieldsStrings = append(fieldsStrings, fmt.Sprintf("%s(%s):%s", field.Name, makeArgArraySDL(field.Args), field.Type.String()))
+		} else {
+			fieldsStrings = append(fieldsStrings, field.Name+":"+field.Type.String())
+		}
+	}
+
+	return strings.Join(fieldsStrings, "\n")
 }
