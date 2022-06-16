@@ -7,10 +7,10 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-func appendServiceQueryFields(serviceClass *graph.Entity, fields graphql.Fields) {
-	methods := serviceClass.MethodsByType(meta.QUERY)
+func appendServiceQueryFields(exClass *graph.Entity, fields graphql.Fields) {
+	methods := exClass.MethodsByType(meta.QUERY)
 	if len(methods) > 0 {
-		(fields)[utils.FirstLower(serviceClass.Name())] = &graphql.Field{
+		(fields)[exClass.QueryName()] = &graphql.Field{
 			Type: graphql.String,
 			//Resolve: resolve.QueryResolveFn(node),
 		}

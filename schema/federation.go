@@ -60,19 +60,19 @@ func makeFederationSDL() string {
 func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
-		utils.FirstLower(intf.Name()),
+		intf.QueryName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		queryResponseType(intf).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
-		consts.ONE+intf.Name(),
+		intf.QueryOneName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		Cache.OutputType(intf.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s\n",
-		intf.Name()+utils.FirstUpper(consts.AGGREGATE),
+		intf.QueryAggregateName(),
 		makeArgsSDL(quryeArgs(intf.Name())),
 		(*AggregateType(intf)).String(),
 	)
@@ -83,19 +83,19 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 func makeEntitySDL(entity *graph.Entity) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
-		utils.FirstLower(entity.Name()),
+		entity.QueryName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
-		consts.ONE+entity.Name(),
+		entity.QueryOneName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
-		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
+		entity.QueryAggregateName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
 	)
@@ -106,7 +106,7 @@ func makeEntitySDL(entity *graph.Entity) string {
 func makeExteneralSDL(entity *graph.Entity) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf("\t\t\t%s(%s) %s \n",
-		utils.FirstLower(entity.Name()),
+		entity.QueryName(),
 		makeArgsSDL(quryeArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
@@ -143,7 +143,7 @@ func makeArgArraySDL(args []*graphql.Argument) string {
 }
 
 func makeAuthSDL() string {
-	return fmt.Sprintf("\n\t\t\t me %s \n", baseUserType.Name())
+	return fmt.Sprintf("\t\t\tme %s \n", baseUserType.Name())
 }
 
 func serviceField() *graphql.Field {
