@@ -37,6 +37,10 @@ func makeFederationSDL() string {
 		types = types + objectToSDL(baseUserType)
 	}
 
+	for _, enum := range model.GlobalModel.Graph.Enums {
+		types = types + enumToSDL(Cache.EnumType(enum.Name))
+	}
+
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
 		queryFields = queryFields + makeInterfaceSDL(intf)
 
@@ -175,6 +179,20 @@ func objectToSDL(obj *graphql.Object) string {
 		}
 	`
 	return fmt.Sprintf(sdl, obj.Name(), implString, fieldsToSDL(obj.Fields()))
+}
+
+func enumToSDL(enum *graphql.Enum) string {
+	var values []string
+
+	sdl := `
+	  enum %s{
+			%s
+		}
+	`
+	for _, value := range enum.Values() {
+		values = append(values, value.Name)
+	}
+	return fmt.Sprintf(sdl, enum.Name(), strings.Join(values, "\n\t\t\t"))
 }
 
 func interfaceToSDL(intf *graphql.Interface) string {

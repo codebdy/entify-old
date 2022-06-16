@@ -87,7 +87,7 @@ func (c *TypeCache) EntityObjects() []*graphql.Object {
 	return objs
 }
 
-func (c *TypeCache) EnumType(name string) graphql.Type {
+func (c *TypeCache) EnumType(name string) *graphql.Enum {
 	return c.EnumTypeMap[name]
 }
 
