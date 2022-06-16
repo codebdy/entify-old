@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/config"
@@ -128,11 +129,11 @@ func makeExteneralSDL(entity *graph.Entity) string {
 }
 
 func makeArgsSDL(args graphql.FieldConfigArgument) string {
-	sdl := ""
+	var sdls []string
 	for key := range args {
-		sdl = sdl + key + " " + args[key].Type.Name() + " "
+		sdls = append(sdls, key+":"+args[key].Type.Name())
 	}
-	return sdl
+	return strings.Join(sdls, ",")
 }
 
 func makeAuthSDL() string {
