@@ -6,8 +6,8 @@ import (
 
 var allSDL = `
 extend schema
-@link(url: "https://specs.apollo.dev/federation/v2.0",
-	import: ["@key", "@shareable"])
+	@link(url: "https://specs.apollo.dev/federation/v2.0",
+		import: ["@key", "@shareable"])
 
 scalar JSON
 scalar DateTime

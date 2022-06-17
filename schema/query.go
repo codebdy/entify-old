@@ -77,7 +77,7 @@ func queryResponseType(node graph.Noder) graphql.Output {
 	}
 }
 
-func quryeArgs(name string) graphql.FieldConfigArgument {
+func queryArgs(name string) graphql.FieldConfigArgument {
 	config := graphql.FieldConfigArgument{
 		consts.ARG_DISTINCTON: &graphql.ArgumentConfig{
 			Type: Cache.DistinctOnEnum(name),
@@ -105,18 +105,18 @@ func quryeArgs(name string) graphql.FieldConfigArgument {
 func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) {
 	(fields)[intf.QueryName()] = &graphql.Field{
 		Type:    queryResponseType(intf),
-		Args:    quryeArgs(intf.Name()),
+		Args:    queryArgs(intf.Name()),
 		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
 	(fields)[intf.QueryOneName()] = &graphql.Field{
 		Type:    Cache.OutputType(intf.Name()),
-		Args:    quryeArgs(intf.Name()),
+		Args:    queryArgs(intf.Name()),
 		Resolve: resolve.QueryOneInterfaceResolveFn(intf),
 	}
 
 	(fields)[intf.QueryAggregateName()] = &graphql.Field{
 		Type:    AggregateType(intf),
-		Args:    quryeArgs(intf.Name()),
+		Args:    queryArgs(intf.Name()),
 		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
 }
@@ -124,18 +124,18 @@ func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) 
 func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 	(fields)[entity.QueryName()] = &graphql.Field{
 		Type:    queryResponseType(entity),
-		Args:    quryeArgs(entity.Name()),
+		Args:    queryArgs(entity.Name()),
 		Resolve: resolve.QueryEntityResolveFn(entity),
 	}
 	(fields)[entity.QueryOneName()] = &graphql.Field{
 		Type:    Cache.OutputType(entity.Name()),
-		Args:    quryeArgs(entity.Name()),
+		Args:    queryArgs(entity.Name()),
 		Resolve: resolve.QueryOneEntityResolveFn(entity),
 	}
 
 	(fields)[entity.QueryAggregateName()] = &graphql.Field{
 		Type:    AggregateType(entity),
-		Args:    quryeArgs(entity.Name()),
+		Args:    queryArgs(entity.Name()),
 		Resolve: resolve.QueryEntityResolveFn(entity),
 	}
 }

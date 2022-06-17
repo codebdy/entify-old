@@ -76,51 +76,85 @@ func rootMutation() *graphql.Object {
 	return graphql.NewObject(rootMutation)
 }
 
-func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
-	name := utils.FirstUpper(entity.Name())
+func deleteArgs(entity *graph.Entity) graphql.FieldConfigArgument {
+	return graphql.FieldConfigArgument{
+		consts.ARG_WHERE: &graphql.ArgumentConfig{
+			Type: Cache.WhereExp(entity.Name()),
+		},
+	}
+}
 
-	(feilds)[consts.DELETE+name] = &graphql.Field{
-		Type: Cache.MutationResponse(entity.Name()),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_WHERE: &graphql.ArgumentConfig{
-				Type: Cache.WhereExp(entity.Name()),
-			},
+func deleteByIdArgs() graphql.FieldConfigArgument {
+	return graphql.FieldConfigArgument{
+		consts.ID: &graphql.ArgumentConfig{
+			Type: graphql.Int,
 		},
-		//Resolve: entity.QueryResolve(),
 	}
-	(feilds)[consts.DELETE+name+consts.BY_ID] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name()),
-		Args: graphql.FieldConfigArgument{
-			consts.ID: &graphql.ArgumentConfig{
-				Type: graphql.Int,
-			},
-		},
-		//Resolve: entity.QueryResolve(),
-	}
-	(feilds)[consts.UPSERT+name] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name()),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_OBJECTS: &graphql.ArgumentConfig{
-				Type: &graphql.NonNull{
-					OfType: &graphql.List{
-						OfType: &graphql.NonNull{
-							OfType: Cache.SaveInput(entity.Name()),
-						},
+}
+
+func upsertArgs(entity *graph.Entity) graphql.FieldConfigArgument {
+	return graphql.FieldConfigArgument{
+		consts.ARG_OBJECTS: &graphql.ArgumentConfig{
+			Type: &graphql.NonNull{
+				OfType: &graphql.List{
+					OfType: &graphql.NonNull{
+						OfType: Cache.SaveInput(entity.Name()),
 					},
 				},
 			},
 		},
 	}
-	//Resolve: entity.QueryResolve(),
-	(feilds)[consts.UPSERT_ONE+name] = &graphql.Field{
-		Type: Cache.OutputType(entity.Name()),
-		Args: graphql.FieldConfigArgument{
-			consts.ARG_OBJECT: &graphql.ArgumentConfig{
-				Type: &graphql.NonNull{
-					OfType: Cache.SaveInput(entity.Name()),
+}
+
+func upsertOneArgs(entity *graph.Entity) graphql.FieldConfigArgument {
+	return graphql.FieldConfigArgument{
+		consts.ARG_OBJECT: &graphql.ArgumentConfig{
+			Type: &graphql.NonNull{
+				OfType: Cache.SaveInput(entity.Name()),
+			},
+		},
+	}
+}
+
+func updateArgs(entity *graph.Entity) graphql.FieldConfigArgument {
+	updateInput := Cache.UpdateInput(entity.Name())
+	return graphql.FieldConfigArgument{
+		consts.ARG_OBJECTS: &graphql.ArgumentConfig{
+			Type: &graphql.NonNull{
+				OfType: &graphql.List{
+					OfType: &graphql.NonNull{
+						OfType: updateInput,
+					},
 				},
 			},
 		},
+		consts.ARG_WHERE: &graphql.ArgumentConfig{
+			Type: Cache.WhereExp(entity.Name()),
+		},
+	}
+}
+
+func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
+	name := utils.FirstUpper(entity.Name())
+
+	(feilds)[entity.DeleteName()] = &graphql.Field{
+		Type: Cache.MutationResponse(entity.Name()),
+		Args: deleteArgs(entity),
+		//Resolve: entity.QueryResolve(),
+	}
+	(feilds)[entity.DeleteByIdName()] = &graphql.Field{
+		Type: Cache.OutputType(entity.Name()),
+		Args: deleteByIdArgs(),
+		//Resolve: entity.QueryResolve(),
+	}
+	(feilds)[entity.UpsertName()] = &graphql.Field{
+		Type: &graphql.List{OfType: Cache.OutputType(entity.Name())},
+		Args: upsertArgs(entity),
+	}
+	//Resolve: entity.QueryResolve(),
+	(feilds)[entity.UpsertOneName()] = &graphql.Field{
+		Type:    Cache.OutputType(entity.Name()),
+		Args:    upsertOneArgs(entity),
 		Resolve: resolve.PostOneResolveFn(entity),
 	}
 
@@ -128,20 +162,7 @@ func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
 	if len(updateInput.Fields()) > 0 {
 		(feilds)[consts.UPDATE+name] = &graphql.Field{
 			Type: Cache.MutationResponse(entity.Name()),
-			Args: graphql.FieldConfigArgument{
-				consts.ARG_OBJECTS: &graphql.ArgumentConfig{
-					Type: &graphql.NonNull{
-						OfType: &graphql.List{
-							OfType: &graphql.NonNull{
-								OfType: updateInput,
-							},
-						},
-					},
-				},
-				consts.ARG_WHERE: &graphql.ArgumentConfig{
-					Type: Cache.WhereExp(entity.Name()),
-				},
-			},
+			Args: updateArgs(entity),
 			//Resolve: entity.QueryResolve(),
 		}
 	}
