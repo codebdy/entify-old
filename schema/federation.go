@@ -66,7 +66,7 @@ func makeFederationSDL() string {
 	sdl := allSDL
 
 	queryFields := ""
-	mutationFields := "review(date: String review: String): Result"
+	mutationFields := "review(date: String review: String): String"
 	types := ""
 	if config.AuthUrl() == "" {
 		queryFields = queryFields + makeAuthSDL()
@@ -102,16 +102,19 @@ func makeFederationSDL() string {
 		types = types + inputToSDL(where)
 	}
 
-	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
-		queryFields = queryFields + makeInterfaceSDL(intf)
-
+	for _, intf := range model.GlobalModel.Graph.Interfaces {
 		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Name()))
 	}
 
+	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
+		queryFields = queryFields + makeInterfaceSDL(intf)
+	}
+
+	for _, entity := range model.GlobalModel.Graph.Entities {
+		types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
+	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		queryFields = queryFields + makeEntitySDL(entity)
-
-		types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
