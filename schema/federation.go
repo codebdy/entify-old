@@ -24,7 +24,7 @@ extend type Mutation {
 
 func makeFederationSDL() string {
 	sdl := allSDL
-	mutationFields := "review(date: String review: String): String"
 	queryFields, queryTypes := querySDL()
-	return fmt.Sprintf(sdl, queryFields, mutationFields, queryTypes)
+	mutationFields, mutationTypes := mutationSDL()
+	return fmt.Sprintf(sdl, queryFields, mutationFields, queryTypes+mutationTypes)
 }
