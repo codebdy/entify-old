@@ -18,6 +18,7 @@ extend schema
 	import: ["@key", "@shareable"])
 
 scalar JSON
+scalar DateTime
 
 extend type Query {
 %s
@@ -81,6 +82,7 @@ func makeFederationSDL() string {
 		types = types + enumToSDL(enum)
 	}
 
+	types = types + enumToSDL(EnumOrderBy)
 	for _, orderBy := range Cache.OrderByMap {
 		types = types + inputToSDL(orderBy)
 	}
