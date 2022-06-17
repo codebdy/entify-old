@@ -133,10 +133,12 @@ func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 		Resolve: resolve.QueryOneEntityResolveFn(entity),
 	}
 
-	(fields)[entity.QueryAggregateName()] = &graphql.Field{
-		Type:    AggregateType(entity),
-		Args:    queryArgs(entity.Name()),
-		Resolve: resolve.QueryEntityResolveFn(entity),
+	if notSystemEntity(entity) {
+		(fields)[entity.QueryAggregateName()] = &graphql.Field{
+			Type:    AggregateType(entity),
+			Args:    queryArgs(entity.Name()),
+			Resolve: resolve.QueryEntityResolveFn(entity),
+		}
 	}
 }
 
