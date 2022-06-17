@@ -9,6 +9,7 @@ import (
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/utils"
 )
 
@@ -43,6 +44,12 @@ input %s{
 	%s
 }
 `
+
+func notSystemEntity(entity *graph.Entity) bool {
+	return entity.Uuid() != meta.META_ENTITY_UUID &&
+		entity.Uuid() != meta.EntityAuthSettingsClass.Uuid &&
+		entity.Uuid() != meta.AbilityClass.Uuid
+}
 
 func querySDL() (string, string) {
 	queryFields := ""
@@ -90,10 +97,14 @@ func querySDL() (string, string) {
 	}
 
 	for _, entity := range model.GlobalModel.Graph.Entities {
-		types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
+		if notSystemEntity(entity) {
+			types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
+		}
 	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		queryFields = queryFields + makeEntitySDL(entity)
+		if notSystemEntity(entity) {
+			queryFields = queryFields + makeEntitySDL(entity)
+		}
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {

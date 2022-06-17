@@ -19,7 +19,10 @@ func mutationSDL() (string, string) {
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
-		queryFields = queryFields + makeEntityMutationSDL(entity)
+		if notSystemEntity(entity) {
+			queryFields = queryFields + makeEntityMutationSDL(entity)
+			types = types + objectToSDL(Cache.MutationResponse(entity.Name()))
+		}
 	}
 
 	// for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
@@ -37,10 +40,6 @@ func mutationSDL() (string, string) {
 	}
 	for _, input := range Cache.HasOneInputMap {
 		types = types + inputToSDL(input)
-	}
-
-	for _, responseType := range Cache.MutationResponseMap {
-		types = types + objectToSDL(responseType)
 	}
 
 	return queryFields, types
