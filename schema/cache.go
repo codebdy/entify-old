@@ -19,8 +19,8 @@ type TypeCache struct {
 	DistinctOnEnumMap    map[string]*graphql.Enum
 	OrderByMap           map[string]*graphql.InputObject
 	EnumComparisonExpMap map[string]*graphql.InputObjectFieldConfig
-	MutationResponseMap  map[string]*graphql.Output
-	AggregateMap         map[string]*graphql.Output
+	MutationResponseMap  map[string]*graphql.Object
+	AggregateMap         map[string]*graphql.Object
 }
 
 func (c *TypeCache) MakeCache() {
@@ -121,7 +121,7 @@ func (c *TypeCache) HasOneInput(name string) *graphql.InputObject {
 	return c.HasOneInputMap[name]
 }
 
-func (c *TypeCache) MutationResponse(name string) *graphql.Output {
+func (c *TypeCache) MutationResponse(name string) *graphql.Object {
 	return c.MutationResponseMap[name]
 }
 
@@ -147,6 +147,6 @@ func (c *TypeCache) clearCache() {
 	c.DistinctOnEnumMap = make(map[string]*graphql.Enum)
 	c.OrderByMap = make(map[string]*graphql.InputObject)
 	c.EnumComparisonExpMap = make(map[string]*graphql.InputObjectFieldConfig)
-	c.MutationResponseMap = make(map[string]*graphql.Output)
-	c.AggregateMap = make(map[string]*graphql.Output)
+	c.MutationResponseMap = make(map[string]*graphql.Object)
+	c.AggregateMap = make(map[string]*graphql.Object)
 }

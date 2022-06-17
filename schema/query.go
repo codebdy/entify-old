@@ -115,7 +115,7 @@ func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) 
 	}
 
 	(fields)[intf.QueryAggregateName()] = &graphql.Field{
-		Type:    *AggregateType(intf),
+		Type:    AggregateType(intf),
 		Args:    quryeArgs(intf.Name()),
 		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
@@ -134,7 +134,7 @@ func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 	}
 
 	(fields)[entity.QueryAggregateName()] = &graphql.Field{
-		Type:    *AggregateType(entity),
+		Type:    AggregateType(entity),
 		Args:    quryeArgs(entity.Name()),
 		Resolve: resolve.QueryEntityResolveFn(entity),
 	}

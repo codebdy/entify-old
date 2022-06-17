@@ -329,13 +329,13 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func AggregateType(node graph.Noder) *graphql.Output {
+func AggregateType(node graph.Noder) *graphql.Object {
 	name := node.Name() + utils.FirstUpper(consts.AGGREGATE)
 	if Cache.AggregateMap[name] != nil {
 		return Cache.AggregateMap[name]
 	}
 
-	var returnValue graphql.Output
+	var returnValue *graphql.Object
 
 	fields := graphql.Fields{
 		consts.NODES: &graphql.Field{
@@ -365,6 +365,6 @@ func AggregateType(node graph.Noder) *graphql.Output {
 		},
 	)
 
-	Cache.AggregateMap[name] = &returnValue
-	return &returnValue
+	Cache.AggregateMap[name] = returnValue
+	return returnValue
 }

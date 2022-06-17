@@ -117,6 +117,10 @@ func makeFederationSDL() string {
 		//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
 	}
 
+	for _, aggregate := range Cache.AggregateMap {
+		types = types + objectToSDL(aggregate)
+	}
+
 	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
 }
 

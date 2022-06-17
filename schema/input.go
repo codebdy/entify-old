@@ -185,8 +185,8 @@ func makeUpdateInput(entity *graph.Entity) *graphql.InputObject {
 	)
 }
 
-func makeMutationResponseType(entity *graph.Entity) *graphql.Output {
-	var returnValue graphql.Output
+func makeMutationResponseType(entity *graph.Entity) *graphql.Object {
+	var returnValue *graphql.Object
 
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
@@ -206,5 +206,5 @@ func makeMutationResponseType(entity *graph.Entity) *graphql.Output {
 		},
 	)
 
-	return &returnValue
+	return returnValue
 }
