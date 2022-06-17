@@ -228,17 +228,20 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 
 	countFields := SelectFields(node)
 	if len(countFields) > 0 {
-		fields["count"] = &graphql.Field{
+		selectColumnName := node.Name() + "SelectColumn"
+		selectColumn := graphql.NewInputObject(
+			graphql.InputObjectConfig{
+				Name:   selectColumnName,
+				Fields: countFields,
+			},
+		)
+		Cache.SelectColumnsMap[selectColumnName] = selectColumn
+		fields[consts.ARG_COUNT] = &graphql.Field{
 			Args: graphql.FieldConfigArgument{
-				"columns": &graphql.ArgumentConfig{
-					Type: graphql.NewInputObject(
-						graphql.InputObjectConfig{
-							Name:   node.Name() + "SelectColumn",
-							Fields: countFields,
-						},
-					),
+				consts.ARG_COLUMNS: &graphql.ArgumentConfig{
+					Type: selectColumn,
 				},
-				"distinct": &graphql.ArgumentConfig{
+				consts.ARG_DISTINCT: &graphql.ArgumentConfig{
 					Type: graphql.Boolean,
 				},
 			},
@@ -329,13 +332,13 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func AggregateType(node graph.Noder) *graphql.Output {
+func AggregateType(node graph.Noder) *graphql.Object {
 	name := node.Name() + utils.FirstUpper(consts.AGGREGATE)
 	if Cache.AggregateMap[name] != nil {
 		return Cache.AggregateMap[name]
 	}
 
-	var returnValue graphql.Output
+	var returnValue *graphql.Object
 
 	fields := graphql.Fields{
 		consts.NODES: &graphql.Field{
@@ -365,6 +368,6 @@ func AggregateType(node graph.Noder) *graphql.Output {
 		},
 	)
 
-	Cache.AggregateMap[name] = &returnValue
-	return &returnValue
+	Cache.AggregateMap[name] = returnValue
+	return returnValue
 }

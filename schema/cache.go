@@ -19,8 +19,9 @@ type TypeCache struct {
 	DistinctOnEnumMap    map[string]*graphql.Enum
 	OrderByMap           map[string]*graphql.InputObject
 	EnumComparisonExpMap map[string]*graphql.InputObjectFieldConfig
-	MutationResponseMap  map[string]*graphql.Output
-	AggregateMap         map[string]*graphql.Output
+	MutationResponseMap  map[string]*graphql.Object
+	AggregateMap         map[string]*graphql.Object
+	SelectColumnsMap     map[string]*graphql.InputObject
 }
 
 func (c *TypeCache) MakeCache() {
@@ -87,7 +88,7 @@ func (c *TypeCache) EntityObjects() []*graphql.Object {
 	return objs
 }
 
-func (c *TypeCache) EnumType(name string) graphql.Type {
+func (c *TypeCache) EnumType(name string) *graphql.Enum {
 	return c.EnumTypeMap[name]
 }
 
@@ -101,6 +102,10 @@ func (c *TypeCache) OrderByExp(name string) *graphql.InputObject {
 
 func (c *TypeCache) DistinctOnEnum(name string) *graphql.Enum {
 	return c.DistinctOnEnumMap[name]
+}
+
+func (c *TypeCache) DistinctOnEnums() map[string]*graphql.Enum {
+	return c.DistinctOnEnumMap
 }
 
 func (c *TypeCache) SaveInput(name string) *graphql.InputObject {
@@ -117,7 +122,7 @@ func (c *TypeCache) HasOneInput(name string) *graphql.InputObject {
 	return c.HasOneInputMap[name]
 }
 
-func (c *TypeCache) MutationResponse(name string) *graphql.Output {
+func (c *TypeCache) MutationResponse(name string) *graphql.Object {
 	return c.MutationResponseMap[name]
 }
 
@@ -143,6 +148,7 @@ func (c *TypeCache) clearCache() {
 	c.DistinctOnEnumMap = make(map[string]*graphql.Enum)
 	c.OrderByMap = make(map[string]*graphql.InputObject)
 	c.EnumComparisonExpMap = make(map[string]*graphql.InputObjectFieldConfig)
-	c.MutationResponseMap = make(map[string]*graphql.Output)
-	c.AggregateMap = make(map[string]*graphql.Output)
+	c.MutationResponseMap = make(map[string]*graphql.Object)
+	c.AggregateMap = make(map[string]*graphql.Object)
+	c.SelectColumnsMap = make(map[string]*graphql.InputObject)
 }

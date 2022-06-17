@@ -74,6 +74,12 @@ const (
 )
 
 const (
+	ARG_COUNT    string = "count"
+	ARG_COLUMNS  string = "columns"
+	ARG_DISTINCT string = "distinct"
+)
+
+const (
 	ARG_OBJECT            string = "object"
 	ARG_OBJECTS           string = "objects"
 	RESPONSE_RETURNING    string = "returning"

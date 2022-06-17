@@ -80,7 +80,7 @@ func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
 	name := utils.FirstUpper(entity.Name())
 
 	(feilds)[consts.DELETE+name] = &graphql.Field{
-		Type: *Cache.MutationResponse(entity.Name()),
+		Type: Cache.MutationResponse(entity.Name()),
 		Args: graphql.FieldConfigArgument{
 			consts.ARG_WHERE: &graphql.ArgumentConfig{
 				Type: Cache.WhereExp(entity.Name()),
@@ -127,7 +127,7 @@ func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
 	updateInput := Cache.UpdateInput(entity.Name())
 	if len(updateInput.Fields()) > 0 {
 		(feilds)[consts.UPDATE+name] = &graphql.Field{
-			Type: *Cache.MutationResponse(entity.Name()),
+			Type: Cache.MutationResponse(entity.Name()),
 			Args: graphql.FieldConfigArgument{
 				consts.ARG_OBJECTS: &graphql.ArgumentConfig{
 					Type: &graphql.NonNull{
