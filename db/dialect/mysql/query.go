@@ -52,6 +52,12 @@ func (b *MySQLBuilder) BuildBoolExp(argEntity *graph.ArgEntity, where map[string
 	for key, value := range where {
 		switch key {
 		case consts.ARG_AND:
+			ands := value.([]map[string]interface{})
+			for _, andValue := range ands {
+				andStr, andParam := b.BuildBoolExp(argEntity, andValue)
+				querys = append(querys, andStr)
+				params = append(params, andParam...)
+			}
 			break
 		case consts.ARG_NOT:
 			break

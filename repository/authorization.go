@@ -86,6 +86,18 @@ func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) i
 		}
 	}
 
+	if len(v.Abilities) == 0 && !v.IsSupper() && !v.IsDemo() {
+		rootAnd = append(rootAnd, map[string]interface{}{
+			consts.ID: map[string]interface{}{
+				consts.ARG_EQ: 0,
+			},
+		})
+
+		return map[string]interface{}{
+			consts.ARG_AND: rootAnd,
+		}
+	}
+
 	expArg := v.queryEntityArgsMap(entityUuid)
 	if len(expArg) > 0 {
 		rootAnd = append(rootAnd, expArg)
@@ -128,6 +140,7 @@ func (v *AbilityVerifier) FieldCan(entityData map[string]interface{}) bool {
 func (v *AbilityVerifier) queryEntityArgsMap(entityUuid string) map[string]interface{} {
 	expMap := map[string]interface{}{}
 	queryEntityExpressions := []string{}
+
 	for _, ability := range v.Abilities {
 		if ability.EntityUuid == entityUuid &&
 			ability.ColumnUuid == "" &&
