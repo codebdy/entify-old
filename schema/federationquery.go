@@ -12,24 +12,6 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-var allSDL = `
-extend schema
-@link(url: "https://specs.apollo.dev/federation/v2.0",
-	import: ["@key", "@shareable"])
-
-scalar JSON
-scalar DateTime
-
-extend type Query {
-%s
-}
-
-extend type Mutation {
-%s
-}
-%s
-`
-
 var queryFieldSDL = "\t%s(%s) : %s \n"
 
 var objectSDL = `
@@ -62,11 +44,8 @@ input %s{
 }
 `
 
-func makeFederationSDL() string {
-	sdl := allSDL
-
+func querySDL() (string, string) {
 	queryFields := ""
-	mutationFields := "review(date: String review: String): String"
 	types := ""
 	if config.AuthUrl() == "" {
 		queryFields = queryFields + makeAuthSDL()
@@ -131,27 +110,26 @@ func makeFederationSDL() string {
 	for _, selectColumn := range Cache.SelectColumnsMap {
 		types = types + inputToSDL(selectColumn)
 	}
-
-	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
+	return queryFields, types
 }
 
 func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryName(),
-		makeArgsSDL(quryeArgs(intf.Name())),
+		makeArgsSDL(queryArgs(intf.Name())),
 		queryResponseType(intf).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryOneName(),
-		makeArgsSDL(quryeArgs(intf.Name())),
+		makeArgsSDL(queryArgs(intf.Name())),
 		Cache.OutputType(intf.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryAggregateName(),
-		makeArgsSDL(quryeArgs(intf.Name())),
+		makeArgsSDL(queryArgs(intf.Name())),
 		(*AggregateType(intf)).String(),
 	)
 
@@ -162,19 +140,19 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryName(),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryOneName(),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryAggregateName(),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
 	)
 
@@ -185,19 +163,19 @@ func makeExteneralSDL(entity *graph.Entity) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryName(),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		queryResponseType(entity).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		consts.ONE+entity.Name(),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		Cache.OutputType(entity.Name()).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
-		makeArgsSDL(quryeArgs(entity.Name())),
+		makeArgsSDL(queryArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
 	)
 
