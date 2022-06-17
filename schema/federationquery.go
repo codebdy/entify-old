@@ -12,24 +12,6 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
-var allSDL = `
-extend schema
-@link(url: "https://specs.apollo.dev/federation/v2.0",
-	import: ["@key", "@shareable"])
-
-scalar JSON
-scalar DateTime
-
-extend type Query {
-%s
-}
-
-extend type Mutation {
-%s
-}
-%s
-`
-
 var queryFieldSDL = "\t%s(%s) : %s \n"
 
 var objectSDL = `
@@ -62,11 +44,8 @@ input %s{
 }
 `
 
-func makeFederationSDL() string {
-	sdl := allSDL
-
+func querySDL() (string, string) {
 	queryFields := ""
-	mutationFields := "review(date: String review: String): String"
 	types := ""
 	if config.AuthUrl() == "" {
 		queryFields = queryFields + makeAuthSDL()
@@ -131,8 +110,7 @@ func makeFederationSDL() string {
 	for _, selectColumn := range Cache.SelectColumnsMap {
 		types = types + inputToSDL(selectColumn)
 	}
-
-	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
+	return queryFields, types
 }
 
 func makeInterfaceSDL(intf *graph.Interface) string {
