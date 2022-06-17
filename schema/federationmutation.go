@@ -18,9 +18,6 @@ func mutationSDL() (string, string) {
 		queryFields = queryFields + makeLoginSDL()
 	}
 
-	for _, entity := range model.GlobalModel.Graph.Entities {
-		types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
-	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		queryFields = queryFields + makeEntityMutationSDL(entity)
 	}
@@ -29,6 +26,18 @@ func mutationSDL() (string, string) {
 	// 	queryFields = queryFields + makeExteneralSDL(exteneral)
 	// 	//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
 	// }
+	for _, input := range Cache.UpdateInputMap {
+		types = types + inputToSDL(input)
+	}
+	for _, input := range Cache.SaveInputMap {
+		types = types + inputToSDL(input)
+	}
+	for _, input := range Cache.HasManyInputMap {
+		types = types + inputToSDL(input)
+	}
+	for _, input := range Cache.HasOneInputMap {
+		types = types + inputToSDL(input)
+	}
 
 	for _, responseType := range Cache.MutationResponseMap {
 		types = types + objectToSDL(responseType)
