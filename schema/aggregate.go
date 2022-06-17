@@ -228,17 +228,20 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 
 	countFields := SelectFields(node)
 	if len(countFields) > 0 {
-		fields["count"] = &graphql.Field{
+		selectColumnName := node.Name() + "SelectColumn"
+		selectColumn := graphql.NewInputObject(
+			graphql.InputObjectConfig{
+				Name:   selectColumnName,
+				Fields: countFields,
+			},
+		)
+		Cache.SelectColumnsMap[selectColumnName] = selectColumn
+		fields[consts.ARG_COUNT] = &graphql.Field{
 			Args: graphql.FieldConfigArgument{
-				"columns": &graphql.ArgumentConfig{
-					Type: graphql.NewInputObject(
-						graphql.InputObjectConfig{
-							Name:   node.Name() + "SelectColumn",
-							Fields: countFields,
-						},
-					),
+				consts.ARG_COLUMNS: &graphql.ArgumentConfig{
+					Type: selectColumn,
 				},
-				"distinct": &graphql.ArgumentConfig{
+				consts.ARG_DISTINCT: &graphql.ArgumentConfig{
 					Type: graphql.Boolean,
 				},
 			},

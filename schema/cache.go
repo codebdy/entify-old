@@ -21,6 +21,7 @@ type TypeCache struct {
 	EnumComparisonExpMap map[string]*graphql.InputObjectFieldConfig
 	MutationResponseMap  map[string]*graphql.Object
 	AggregateMap         map[string]*graphql.Object
+	SelectColumnsMap     map[string]*graphql.InputObject
 }
 
 func (c *TypeCache) MakeCache() {
@@ -149,4 +150,5 @@ func (c *TypeCache) clearCache() {
 	c.EnumComparisonExpMap = make(map[string]*graphql.InputObjectFieldConfig)
 	c.MutationResponseMap = make(map[string]*graphql.Object)
 	c.AggregateMap = make(map[string]*graphql.Object)
+	c.SelectColumnsMap = make(map[string]*graphql.InputObject)
 }

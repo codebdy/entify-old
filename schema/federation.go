@@ -121,8 +121,12 @@ func makeFederationSDL() string {
 
 	for _, aggregate := range Cache.AggregateMap {
 		types = types + objectToSDL(aggregate)
-		fieldsType := aggregate.Fields()[consts.AGGREGATE].Type
-		types = types + objectToSDL(fieldsType.(*graphql.Object))
+		fieldsType := aggregate.Fields()[consts.AGGREGATE].Type.(*graphql.Object)
+		types = types + objectToSDL(fieldsType)
+	}
+
+	for _, selectColumn := range Cache.SelectColumnsMap {
+		types = types + inputToSDL(selectColumn)
 	}
 
 	return fmt.Sprintf(sdl, queryFields, mutationFields, types)
