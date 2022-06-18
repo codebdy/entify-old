@@ -22,15 +22,26 @@ func loadUser(loginName string) *common.User {
 		panic(err)
 	}
 	var user common.User
+	var isSupper sql.NullBool
+	var isDemo sql.NullBool
 
 	sqlBuilder := dialect.GetSQLBuilder()
-	err = con.Dbx.QueryRow(sqlBuilder.BuildMeSQL(), loginName).Scan(&user.Id, &user.Name, &user.LoginName)
+	err = con.Dbx.QueryRow(sqlBuilder.BuildMeSQL(), loginName).Scan(
+		&user.Id,
+		&user.Name,
+		&user.LoginName,
+		&isSupper,
+		&isDemo,
+	)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
 	case err != nil:
 		panic(err.Error())
 	}
+
+	user.IsSupper = isSupper.Bool
+	user.IsDemo = isDemo.Bool
 
 	rows, err := con.Dbx.Query(sqlBuilder.BuildRolesSQL(), user.Id)
 	if err != nil {

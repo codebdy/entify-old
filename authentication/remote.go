@@ -24,6 +24,8 @@ func meFromRemote(token string) (*common.User, error) {
 						id
 						name
 						loginName
+						isSupper
+						isDemo
 						roles {
 							id
 							name

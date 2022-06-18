@@ -74,6 +74,12 @@ var baseUserType = graphql.NewObject(
 			consts.LOGIN_NAME: &graphql.Field{
 				Type: graphql.String,
 			},
+			consts.IS_SUPPER: &graphql.Field{
+				Type: graphql.Boolean,
+			},
+			consts.IS_DEMO: &graphql.Field{
+				Type: graphql.Boolean,
+			},
 			"roles": &graphql.Field{
 				Type: &graphql.List{
 					OfType: baseRoleTye,

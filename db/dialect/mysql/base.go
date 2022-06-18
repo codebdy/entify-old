@@ -7,7 +7,7 @@ import (
 )
 
 func (*MySQLBuilder) BuildMeSQL() string {
-	return "select id, name, loginName from user where loginName = ?"
+	return "select id, name, loginName, isSupper, isDemo from user where loginName = ?"
 }
 
 func (*MySQLBuilder) BuildRolesSQL() string {

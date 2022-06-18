@@ -102,6 +102,9 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 }
 
 func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
+	if !con.v.CanReadEntity(entity.Uuid()) {
+		panic(consts.NO_PERMISSION)
+	}
 	sql, params := con.buildQueryEntitySQL(entity, args)
 	fmt.Println("doQueryEntity SQL:", sql, params)
 	rows, err := con.Dbx.Query(sql, params...)
