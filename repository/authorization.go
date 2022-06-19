@@ -14,7 +14,7 @@ import (
 )
 
 type AbilityVerifier struct {
-	Me        *common.User
+	me        *common.User
 	RoleIds   []string
 	Abilities []*common.Ability
 	// expression Key : 从Auth模块返回的结果
@@ -36,7 +36,7 @@ func NewSupperVerifier() *AbilityVerifier {
 
 func (v *AbilityVerifier) Init(p graphql.ResolveParams, entityUuids []string) {
 	me := authcontext.ParseContextValues(p).Me
-	v.Me = me
+	v.me = me
 	if me != nil {
 		for i := range me.Roles {
 			v.RoleIds = append(v.RoleIds, me.Roles[i].Id)
@@ -53,16 +53,16 @@ func (v *AbilityVerifier) IsSupper() bool {
 		return true
 	}
 
-	if v.Me != nil {
-		return v.Me.IsSupper
+	if v.me != nil {
+		return v.me.IsSupper
 	}
 
 	return false
 }
 
 func (v *AbilityVerifier) IsDemo() bool {
-	if v.Me != nil {
-		return v.Me.IsDemo
+	if v.me != nil {
+		return v.me.IsDemo
 	}
 
 	return false
@@ -86,6 +86,18 @@ func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) i
 		}
 	}
 
+	// if len(v.Abilities) == 0 && !v.IsSupper() && !v.IsDemo() {
+	// 	rootAnd = append(rootAnd, map[string]interface{}{
+	// 		consts.ID: map[string]interface{}{
+	// 			consts.ARG_EQ: 0,
+	// 		},
+	// 	})
+
+	// 	return map[string]interface{}{
+	// 		consts.ARG_AND: rootAnd,
+	// 	}
+	// }
+
 	expArg := v.queryEntityArgsMap(entityUuid)
 	if len(expArg) > 0 {
 		rootAnd = append(rootAnd, expArg)
@@ -103,9 +115,10 @@ func (v *AbilityVerifier) WeaveAuthInArgs(entityUuid string, args interface{}) i
 }
 
 func (v *AbilityVerifier) CanReadEntity(entityUuid string) bool {
-	if v.Me != nil && (v.Me.IsDemo || v.Me.IsSupper) {
+	if v.IsSupper() || v.IsDemo() {
 		return true
 	}
+
 	for _, ability := range v.Abilities {
 		if ability.EntityUuid == entityUuid &&
 			ability.ColumnUuid == "" &&
@@ -128,6 +141,7 @@ func (v *AbilityVerifier) FieldCan(entityData map[string]interface{}) bool {
 func (v *AbilityVerifier) queryEntityArgsMap(entityUuid string) map[string]interface{} {
 	expMap := map[string]interface{}{}
 	queryEntityExpressions := []string{}
+
 	for _, ability := range v.Abilities {
 		if ability.EntityUuid == entityUuid &&
 			ability.ColumnUuid == "" &&

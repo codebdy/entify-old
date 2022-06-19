@@ -11,6 +11,8 @@ const (
 	PASSWORD               = "password"
 	LOGOUT                 = "logout"
 	ME                     = "me"
+	IS_SUPPER              = "isSupper"
+	IS_DEMO                = "isDemo"
 	PUBLISH                = "publish"
 	ROLLBACK               = "rollback"
 	SYNC_META              = "syncMeta"
@@ -164,3 +166,5 @@ const (
 const GUEST_ROLE_ID = "1"
 const PREDEFINED_QUERYUSER = "$queryUser"
 const PREDEFINED_ME = "$me"
+
+const NO_PERMISSION = "No permission to access data"

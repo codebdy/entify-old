@@ -23,13 +23,14 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 	builder := dialect.GetSQLBuilder()
 	for i := range intf.Children {
 		entity := intf.Children[i]
+		whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
 		argEntity := graph.BuildArgEntity(
 			entity,
-			con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
+			whereArgs,
 			con,
 		)
 		queryStr := builder.BuildQuerySQLBody(argEntity, intf.AllAttributes())
-		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+		if where, ok := whereArgs.(graph.QueryArg); ok {
 			whereSQL, params := builder.BuildWhereSQL(argEntity, intf.AllAttributes(), where)
 			if whereSQL != "" {
 				queryStr = queryStr + " WHERE " + whereSQL
@@ -47,14 +48,15 @@ func (con *Connection) buildQueryInterfaceSQL(intf *graph.Interface, args map[st
 
 func (con *Connection) buildQueryEntitySQL(entity *graph.Entity, args map[string]interface{}) (string, []interface{}) {
 	var paramsList []interface{}
+	whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
 	argEntity := graph.BuildArgEntity(
 		entity,
-		con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
+		whereArgs,
 		con,
 	)
 	builder := dialect.GetSQLBuilder()
 	queryStr := builder.BuildQuerySQLBody(argEntity, entity.AllAttributes())
-	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+	if where, ok := whereArgs.(graph.QueryArg); ok {
 		whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
 		if whereSQL != "" {
 			queryStr = queryStr + " WHERE " + whereSQL
@@ -100,6 +102,9 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 }
 
 func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]interface{}) []InsanceData {
+	if !con.v.CanReadEntity(entity.Uuid()) {
+		panic(consts.NO_PERMISSION)
+	}
 	sql, params := con.buildQueryEntitySQL(entity, args)
 	fmt.Println("doQueryEntity SQL:", sql, params)
 	rows, err := con.Dbx.Query(sql, params...)
@@ -265,9 +270,10 @@ func (con *Connection) doBatchAbstractRealAssociations(
 	for i := range derivedAssociations {
 		derivedAsso := derivedAssociations[i]
 		entity := derivedAsso.TypeEntity()
+		whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
 		argEntity := graph.BuildArgEntity(
 			entity,
-			con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
+			whereArgs,
 			con,
 		)
 		queryStr := builder.BuildBatchAssociationBodySQL(argEntity,
@@ -277,7 +283,7 @@ func (con *Connection) doBatchAbstractRealAssociations(
 			derivedAsso.TypeEntity().TableName(),
 			ids,
 		)
-		if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+		if where, ok := whereArgs.(graph.QueryArg); ok {
 			whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
 			if whereSQL != "" {
 				queryStr = queryStr + " AND " + whereSQL
@@ -335,9 +341,10 @@ func (con *Connection) doBatchRealAssociations(
 	builder := dialect.GetSQLBuilder()
 	typeClass := association.TypeClass()
 	entity := association.TypeClass().Entity()
+	whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
 	argEntity := graph.BuildArgEntity(
 		entity,
-		con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE]),
+		whereArgs,
 		con,
 	)
 
@@ -349,7 +356,7 @@ func (con *Connection) doBatchRealAssociations(
 		ids,
 	)
 
-	if where, ok := args[consts.ARG_WHERE].(graph.QueryArg); ok {
+	if where, ok := whereArgs.(graph.QueryArg); ok {
 		whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
 		if whereSQL != "" {
 			queryStr = queryStr + " AND " + whereSQL

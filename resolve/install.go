@@ -75,7 +75,7 @@ func predefinedEntities() map[string]interface{} {
 							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME:   "isSupper",
+							consts.NAME:   consts.IS_SUPPER,
 							consts.TYPE:   "Boolean",
 							consts.UUID:   "RX_USER_ISSUPPER_UUID",
 							"typeLabel":   "Boolean",
@@ -83,7 +83,7 @@ func predefinedEntities() map[string]interface{} {
 							consts.SYSTEM: true,
 						},
 						{
-							consts.NAME:   "isDemo",
+							consts.NAME:   consts.IS_DEMO,
 							consts.TYPE:   "Boolean",
 							consts.UUID:   "RX_USER_ISDEMO_UUID",
 							"typeLabel":   "Boolean",
@@ -183,6 +183,7 @@ func adminInstance(name string, password string) map[string]interface{} {
 		consts.NAME:           "Admin",
 		consts.LOGIN_NAME:     name,
 		consts.PASSWORD:       bcryptEncode(password),
+		consts.IS_SUPPER:      true,
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}
@@ -193,6 +194,7 @@ func demoInstance() map[string]interface{} {
 		consts.NAME:           "Demo",
 		consts.LOGIN_NAME:     "demo",
 		consts.PASSWORD:       bcryptEncode("demo"),
+		consts.IS_DEMO:        true,
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}
