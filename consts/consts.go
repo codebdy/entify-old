@@ -52,6 +52,7 @@ const (
 	ARG_OR  string = "_or"
 )
 
+//EQ("="), GTE(">="), GT(">"), LT("<"), LTE("<=");
 const (
 	ARG_EQ     string = "_eq"
 	ARG_GT     string = "_gt"
