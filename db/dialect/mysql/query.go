@@ -72,10 +72,39 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 				queryStr = " true "
 			}
 			break
+		case consts.ARG_ILIKE:
+			queryStr = fieldName + " LIKE "
+			params = append(params, value)
+			break
+		case consts.ARG_LIKE:
+			queryStr = fieldName + " LIKE BINARY "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTILIKE:
+			queryStr = fieldName + " NOT LIKE "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTLIKE:
+			queryStr = fieldName + " NOT LIKE BINARY "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTREGEX:
+			queryStr = fieldName + " NOT REGEXP "
+			params = append(params, value)
+			break
+		// case consts.ARG_NOTSIMILAR:
+		// 	queryStr = fieldName + " SIMILAR "
+		// 	params = append(params, value)
+		// 	break
+		case consts.ARG_REGEX:
+			queryStr = fieldName + " REGEXP "
+			params = append(params, value)
+			break
 		default:
 			panic("Can not find token:" + key)
 		}
 	}
+
 	return "(" + queryStr + ")", params
 }
 
