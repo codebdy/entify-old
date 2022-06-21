@@ -15,8 +15,20 @@ import (
 
 var queryFieldSDL = "\t%s(%s) : %s \n"
 
+var objectWithKeySDL = `
+type %s%s @key(fields: "id"){
+	%s
+}
+`
+
+var externalSDL = `
+type %s @key(fields: "id", resolvable: false) {
+	id: ID!
+}
+`
+
 var objectSDL = `
-type %s%s{
+type %s%s {
 	%s
 }
 `
@@ -28,7 +40,7 @@ enum %s{
 `
 
 var interfaceSDL = `
-interface %s{
+interface %s {
 	%s
 }
 `
@@ -56,8 +68,8 @@ func querySDL() (string, string) {
 	types := ""
 	if config.AuthUrl() == "" {
 		queryFields = queryFields + makeAuthSDL()
-		types = types + objectToSDL(baseRoleTye)
-		types = types + objectToSDL(baseUserType)
+		types = types + objectToSDL(baseRoleTye, false)
+		types = types + objectToSDL(baseUserType, false)
 	}
 
 	for _, enum := range model.GlobalModel.Graph.Enums {
@@ -98,7 +110,7 @@ func querySDL() (string, string) {
 
 	for _, entity := range model.GlobalModel.Graph.Entities {
 		if notSystemEntity(entity) {
-			types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()))
+			types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()), true)
 		}
 	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
@@ -107,15 +119,14 @@ func querySDL() (string, string) {
 		}
 	}
 
-	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
-		queryFields = queryFields + makeExteneralSDL(exteneral)
-		//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
+	for _, exteneral := range model.GlobalModel.Graph.Externals {
+		types = types + fmt.Sprintf(externalSDL, exteneral.Name())
 	}
 
 	for _, aggregate := range Cache.AggregateMap {
-		types = types + objectToSDL(aggregate)
+		types = types + objectToSDL(aggregate, false)
 		fieldsType := aggregate.Fields()[consts.AGGREGATE].Type.(*graphql.Object)
-		types = types + objectToSDL(fieldsType)
+		types = types + objectToSDL(fieldsType, false)
 	}
 
 	for _, selectColumn := range Cache.SelectColumnsMap {
@@ -170,29 +181,6 @@ func makeEntitySDL(entity *graph.Entity) string {
 	return sdl
 }
 
-func makeExteneralSDL(entity *graph.Entity) string {
-	sdl := ""
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		entity.QueryName(),
-		makeArgsSDL(queryArgs(entity.Name())),
-		queryResponseType(entity).String(),
-	)
-
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		consts.ONE+entity.Name(),
-		makeArgsSDL(queryArgs(entity.Name())),
-		Cache.OutputType(entity.Name()).String(),
-	)
-
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
-		makeArgsSDL(queryArgs(entity.Name())),
-		(*AggregateType(entity)).String(),
-	)
-
-	return sdl
-}
-
 func makeArgsSDL(args graphql.FieldConfigArgument) string {
 	var sdls []string
 	for key := range args {
@@ -217,6 +205,7 @@ func serviceField() *graphql.Field {
 	return &graphql.Field{
 		Type: _ServiceType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			defer utils.PrintErrorStack()
 			return map[string]interface{}{
 				consts.ID:  config.ServiceId(),
 				consts.SDL: makeFederationSDL(),
@@ -225,7 +214,7 @@ func serviceField() *graphql.Field {
 	}
 }
 
-func objectToSDL(obj *graphql.Object) string {
+func objectToSDL(obj *graphql.Object, withKey bool) string {
 	var intfNames []string
 	implString := ""
 
@@ -237,6 +226,9 @@ func objectToSDL(obj *graphql.Object) string {
 	}
 
 	sdl := objectSDL
+	if withKey {
+		sdl = objectWithKeySDL
+	}
 	return fmt.Sprintf(sdl, obj.Name(), implString, fieldsToSDL(obj.Fields()))
 }
 

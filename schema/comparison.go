@@ -208,9 +208,9 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 				consts.ARG_IN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.String),
 				},
-				consts.ARG_IREGEX: &graphql.InputObjectFieldConfig{
-					Type: graphql.String,
-				},
+				// consts.ARG_IREGEX: &graphql.InputObjectFieldConfig{
+				// 	Type: graphql.String,
+				// },
 				consts.ARG_ISNULL: &graphql.InputObjectFieldConfig{
 					Type: graphql.Boolean,
 				},
@@ -232,24 +232,24 @@ var StringComparisonExp = graphql.InputObjectFieldConfig{
 				consts.ARG_NOTIN: &graphql.InputObjectFieldConfig{
 					Type: graphql.NewList(graphql.String),
 				},
-				consts.ARG_NOTIREGEX: &graphql.InputObjectFieldConfig{
-					Type: graphql.String,
-				},
+				// consts.ARG_NOTIREGEX: &graphql.InputObjectFieldConfig{
+				// 	Type: graphql.String,
+				// },
 				consts.ARG_NOTLIKE: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
 				consts.ARG_NOTREGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				consts.ARG_NOTSIMILAR: &graphql.InputObjectFieldConfig{
-					Type: graphql.String,
-				},
+				// consts.ARG_NOTSIMILAR: &graphql.InputObjectFieldConfig{
+				// 	Type: graphql.String,
+				// },
 				consts.ARG_REGEX: &graphql.InputObjectFieldConfig{
 					Type: graphql.String,
 				},
-				consts.ARG_SIMILAR: &graphql.InputObjectFieldConfig{
-					Type: graphql.String,
-				},
+				// consts.ARG_SIMILAR: &graphql.InputObjectFieldConfig{
+				// 	Type: graphql.String,
+				// },
 			},
 		},
 	),

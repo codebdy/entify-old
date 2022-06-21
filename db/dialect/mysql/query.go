@@ -21,6 +21,14 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 			queryStr = fieldName + "=?"
 			params = append(params, value)
 			break
+		case consts.ARG_GT:
+			queryStr = fieldName + ">"
+			params = append(params, value)
+			break
+		case consts.ARG_GTE:
+			queryStr = fieldName + ">="
+			params = append(params, value)
+			break
 		case consts.ARG_IN:
 			values := value.([]string)
 			placeHolders := []string{}
@@ -29,7 +37,7 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 				params = append(params, values[i])
 			}
 			if len(placeHolders) > 0 {
-				queryStr = fieldName + fmt.Sprintf(" in(%s)", strings.Join(placeHolders, ","))
+				queryStr = fieldName + fmt.Sprintf(" IN(%s)", strings.Join(placeHolders, ","))
 			} else {
 				queryStr = " false "
 			}
@@ -39,10 +47,64 @@ func (*MySQLBuilder) BuildFieldExp(fieldName string, fieldArgs map[string]interf
 				queryStr = "ISNULL(" + fieldName + ")"
 			}
 			break
+		case consts.ARG_LT:
+			queryStr = fieldName + "<"
+			params = append(params, value)
+			break
+		case consts.ARG_LTE:
+			queryStr = fieldName + "<="
+			params = append(params, value)
+			break
+		case consts.ARG_NOTEQ:
+			queryStr = fieldName + "<>"
+			params = append(params, value)
+			break
+		case consts.ARG_NOTIN:
+			values := value.([]string)
+			placeHolders := []string{}
+			for i := range values {
+				placeHolders = append(placeHolders, "?")
+				params = append(params, values[i])
+			}
+			if len(placeHolders) > 0 {
+				queryStr = fieldName + fmt.Sprintf(" NOT IN(%s)", strings.Join(placeHolders, ","))
+			} else {
+				queryStr = " true "
+			}
+			break
+		case consts.ARG_ILIKE:
+			queryStr = fieldName + " LIKE "
+			params = append(params, value)
+			break
+		case consts.ARG_LIKE:
+			queryStr = fieldName + " LIKE BINARY "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTILIKE:
+			queryStr = fieldName + " NOT LIKE "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTLIKE:
+			queryStr = fieldName + " NOT LIKE BINARY "
+			params = append(params, value)
+			break
+		case consts.ARG_NOTREGEX:
+			queryStr = fieldName + " NOT REGEXP "
+			params = append(params, value)
+			break
+		// case consts.ARG_NOTSIMILAR:
+		// 	queryStr = fieldName + " SIMILAR "
+		// 	params = append(params, value)
+		// 	break
+		case consts.ARG_REGEX:
+			queryStr = fieldName + " REGEXP "
+			params = append(params, value)
+			break
 		default:
 			panic("Can not find token:" + key)
 		}
 	}
+
 	return "(" + queryStr + ")", params
 }
 

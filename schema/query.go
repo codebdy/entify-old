@@ -58,9 +58,9 @@ func queryFields() graphql.Fields {
 		appendEntityToQueryFields(entity, queryFields)
 	}
 
-	for _, service := range model.GlobalModel.Graph.RootExternals() {
-		appendServiceQueryFields(service, queryFields)
-	}
+	// for _, service := range model.GlobalModel.Graph.RootExternals() {
+	// 	appendServiceQueryFields(service, queryFields)
+	// }
 
 	if config.AuthUrl() == "" {
 		appendAuthToQuery(queryFields)
