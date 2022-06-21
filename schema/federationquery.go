@@ -34,7 +34,7 @@ enum %s{
 `
 
 var interfaceSDL = `
-interface %s @key(fields: "id"){
+interface %s {
 	%s
 }
 `
@@ -223,6 +223,7 @@ func serviceField() *graphql.Field {
 	return &graphql.Field{
 		Type: _ServiceType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			defer utils.PrintErrorStack()
 			return map[string]interface{}{
 				consts.ID:  config.ServiceId(),
 				consts.SDL: makeFederationSDL(),
