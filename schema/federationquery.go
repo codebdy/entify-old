@@ -21,6 +21,12 @@ type %s%s @key(fields: "id"){
 }
 `
 
+var externalSDL = `
+type %s @key(fields: "id", resolvable: false) {
+	id: ID!
+}
+`
+
 var objectSDL = `
 type %s%s {
 	%s
@@ -114,8 +120,7 @@ func querySDL() (string, string) {
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
-		queryFields = queryFields + makeExteneralSDL(exteneral)
-		//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
+		types = types + fmt.Sprintf(externalSDL, exteneral.Name())
 	}
 
 	for _, aggregate := range Cache.AggregateMap {
@@ -169,29 +174,6 @@ func makeEntitySDL(entity *graph.Entity) string {
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryAggregateName(),
-		makeArgsSDL(queryArgs(entity.Name())),
-		(*AggregateType(entity)).String(),
-	)
-
-	return sdl
-}
-
-func makeExteneralSDL(entity *graph.Entity) string {
-	sdl := ""
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		entity.QueryName(),
-		makeArgsSDL(queryArgs(entity.Name())),
-		queryResponseType(entity).String(),
-	)
-
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		consts.ONE+entity.Name(),
-		makeArgsSDL(queryArgs(entity.Name())),
-		Cache.OutputType(entity.Name()).String(),
-	)
-
-	sdl = sdl + fmt.Sprintf(queryFieldSDL,
-		entity.Name()+utils.FirstUpper(consts.AGGREGATE),
 		makeArgsSDL(queryArgs(entity.Name())),
 		(*AggregateType(entity)).String(),
 	)
