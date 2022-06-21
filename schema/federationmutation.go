@@ -21,7 +21,7 @@ func mutationSDL() (string, string) {
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		if notSystemEntity(entity) {
 			queryFields = queryFields + makeEntityMutationSDL(entity)
-			types = types + objectToSDL(Cache.MutationResponse(entity.Name()))
+			types = types + objectToSDL(Cache.MutationResponse(entity.Name()), false)
 		}
 	}
 
