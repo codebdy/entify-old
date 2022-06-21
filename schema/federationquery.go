@@ -119,7 +119,7 @@ func querySDL() (string, string) {
 		}
 	}
 
-	for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
+	for _, exteneral := range model.GlobalModel.Graph.Externals {
 		types = types + fmt.Sprintf(externalSDL, exteneral.Name())
 	}
 

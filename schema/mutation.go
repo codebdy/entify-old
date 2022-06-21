@@ -59,9 +59,9 @@ func rootMutation() *graphql.Object {
 		}
 	}
 
-	for _, service := range model.GlobalModel.Graph.RootExternals() {
-		appendServiceMutationFields(service, mutationFields)
-	}
+	// for _, service := range model.GlobalModel.Graph.RootExternals() {
+	// 	appendServiceMutationFields(service, mutationFields)
+	// }
 
 	if config.AuthUrl() == "" {
 		appendAuthMutation(mutationFields)

@@ -231,18 +231,6 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
-func (m *Model) RootExternals() []*Entity {
-	classes := []*Entity{}
-	for i := range m.Externals {
-		serc := m.Externals[i]
-		if serc.Domain.Root {
-			classes = append(classes, serc)
-		}
-	}
-
-	return classes
-}
-
 func (m *Model) GetNodeByUuid(uuid string) Noder {
 	intf := m.GetInterfaceByUuid(uuid)
 
