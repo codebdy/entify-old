@@ -7,6 +7,7 @@ type Class struct {
 	InnerId     uint64
 	StereoType  string
 	Name        string
+	PartialName string
 	Description string
 	Root        bool
 	SoftDelete  bool
@@ -22,6 +23,7 @@ func NewClass(c *meta.ClassMeta) *Class {
 		InnerId:     c.InnerId,
 		StereoType:  c.StereoType,
 		Name:        c.Name,
+		PartialName: c.PartialName,
 		Description: c.Description,
 		Root:        c.Root,
 		SoftDelete:  c.SoftDelete,

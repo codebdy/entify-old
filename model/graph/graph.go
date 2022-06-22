@@ -11,7 +11,7 @@ import (
 type Model struct {
 	Enums        []*Enum
 	Interfaces   []*Interface
-	Entities     []*Entity
+	Entities     []*Entity // include Partials
 	ValueObjects []*Class
 	Externals    []*Entity
 	Relations    []*Relation
@@ -35,7 +35,7 @@ func New(m *domain.Model) *Model {
 
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY {
+		if cls.StereoType == meta.CLASSS_ENTITY || cls.StereoType == meta.CLASS_PARTIAL {
 			newEntity := NewEntity(cls)
 			model.Entities = append(model.Entities, newEntity)
 			//构建接口实现关系
@@ -71,123 +71,26 @@ func New(m *domain.Model) *Model {
 	//处理关联
 	for i := range m.Relations {
 		relation := m.Relations[i]
-		source := model.GetNodeByUuid(relation.Source.Uuid)
-		if source.Entity() == nil && source.Interface() == nil {
-			panic("Can not find souce by uuid:" + relation.Source.Uuid)
-		}
-		target := model.GetNodeByUuid(relation.Target.Uuid)
-		if target.Entity() == nil && target.Interface() == nil {
-			panic("Can not find target by uuid:" + relation.Target.Uuid)
-		}
-		r := NewRelation(relation, source, target)
-		model.Relations = append(model.Relations, r)
-		source.AddAssociation(NewAssociation(r, source.Uuid()))
-		if relation.RelationType == meta.TWO_WAY_AGGREGATION ||
-			relation.RelationType == meta.TWO_WAY_ASSOCIATION ||
-			relation.RelationType == meta.TWO_WAY_COMBINATION {
-			target.AddAssociation(NewAssociation(r, target.Uuid()))
-		}
-
 		//增加派生关联
-		sourceEntities := []*Entity{}
-		targetEntities := []*Entity{}
-
-		if source.IsInterface() {
-			sourceEntities = append(sourceEntities, source.Interface().Children...)
-		} else if target.IsInterface() {
-			sourceEntities = append(sourceEntities, source.Entity())
-		}
-
-		if target.IsInterface() {
-			targetEntities = append(targetEntities, target.Interface().Children...)
-		} else if source.IsInterface() {
-			targetEntities = append(targetEntities, target.Entity())
-		}
-
-		for i := range sourceEntities {
-			s := sourceEntities[i]
-			for j := range targetEntities {
-				t := targetEntities[j]
-				r.Children = append(r.Children, &DerivedRelation{
-					Parent: r,
-					Source: s,
-					Target: t,
-				})
-			}
-		}
+		model.makeRelation(relation)
 	}
 
 	//处理属性的实体类型跟枚举类型
 	for i := range model.Interfaces {
 		intf := model.Interfaces[i]
-		for j := range intf.attributes {
-			attr := intf.attributes[j]
-			if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
-				attr.EumnType = model.GetEnumByUuid(attr.TypeUuid)
-			}
-
-			if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
-				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
-			}
-
-			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
-				attr.ValueObjectType = model.GetValueObjectByUuid(attr.TypeUuid)
-			}
-		}
-		for j := range intf.methods {
-			method := intf.methods[j]
-			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
-				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
-			}
-
-			if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
-				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
-			}
-
-			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
-				method.ValueObjectType = model.GetValueObjectByUuid(method.Method.TypeUuid)
-			}
-		}
+		model.makeInterface(intf)
 
 	}
 
 	for i := range model.Entities {
 		ent := model.Entities[i]
-		for j := range ent.attributes {
-			attr := ent.attributes[j]
-			if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
-				attr.EumnType = model.GetEnumByUuid(attr.TypeUuid)
-			}
-
-			if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
-				attr.EnityType = model.GetEntityByUuid(attr.TypeUuid)
-			}
-
-			if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
-				attr.ValueObjectType = model.GetValueObjectByUuid(attr.TypeUuid)
-			}
-		}
-		for j := range ent.methods {
-			method := ent.methods[j]
-			if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
-				method.EumnType = model.GetEnumByUuid(method.Method.TypeUuid)
-			}
-
-			if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
-				method.EnityType = model.GetEntityByUuid(method.Method.TypeUuid)
-			}
-
-			if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
-				method.ValueObjectType = model.GetValueObjectByUuid(method.Method.TypeUuid)
-			}
-		}
+		model.makeEntity(ent)
 	}
+
 	//处理Table
 	for i := range model.Entities {
 		ent := model.Entities[i]
-		if ent.Domain.StereoType == meta.CLASSS_ENTITY {
-			model.Tables = append(model.Tables, NewEntityTable(ent))
-		}
+		model.Tables = append(model.Tables, NewEntityTable(ent, ent.Domain.StereoType == meta.CLASS_PARTIAL))
 	}
 
 	for i := range model.Relations {
@@ -196,6 +99,114 @@ func New(m *domain.Model) *Model {
 	}
 
 	return &model
+}
+
+func (m *Model) makeRelation(relation *domain.Relation) {
+	source := m.GetNodeByUuid(relation.Source.Uuid)
+	if source.Entity() == nil && source.Interface() == nil {
+		panic("Can not find souce by uuid:" + relation.Source.Uuid)
+	}
+	target := m.GetNodeByUuid(relation.Target.Uuid)
+	if target.Entity() == nil && target.Interface() == nil {
+		panic("Can not find target by uuid:" + relation.Target.Uuid)
+	}
+	r := NewRelation(relation, source, target)
+	m.Relations = append(m.Relations, r)
+	source.AddAssociation(NewAssociation(r, source.Uuid()))
+	if relation.RelationType == meta.TWO_WAY_AGGREGATION ||
+		relation.RelationType == meta.TWO_WAY_ASSOCIATION ||
+		relation.RelationType == meta.TWO_WAY_COMBINATION {
+		target.AddAssociation(NewAssociation(r, target.Uuid()))
+	}
+
+	sourceEntities := []*Entity{}
+	targetEntities := []*Entity{}
+
+	if source.IsInterface() {
+		sourceEntities = append(sourceEntities, source.Interface().Children...)
+	} else if target.IsInterface() {
+		sourceEntities = append(sourceEntities, source.Entity())
+	}
+
+	if target.IsInterface() {
+		targetEntities = append(targetEntities, target.Interface().Children...)
+	} else if source.IsInterface() {
+		targetEntities = append(targetEntities, target.Entity())
+	}
+
+	for i := range sourceEntities {
+		s := sourceEntities[i]
+		for j := range targetEntities {
+			t := targetEntities[j]
+			r.Children = append(r.Children, &DerivedRelation{
+				Parent: r,
+				Source: s,
+				Target: t,
+			})
+		}
+	}
+}
+
+func (m *Model) makeInterface(intf *Interface) {
+	for j := range intf.attributes {
+		attr := intf.attributes[j]
+		if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
+			attr.EumnType = m.GetEnumByUuid(attr.TypeUuid)
+		}
+
+		if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
+			attr.EnityType = m.GetEntityByUuid(attr.TypeUuid)
+		}
+
+		if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
+			attr.ValueObjectType = m.GetValueObjectByUuid(attr.TypeUuid)
+		}
+	}
+	for j := range intf.methods {
+		method := intf.methods[j]
+		if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
+			method.EumnType = m.GetEnumByUuid(method.Method.TypeUuid)
+		}
+
+		if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
+			method.EnityType = m.GetEntityByUuid(method.Method.TypeUuid)
+		}
+
+		if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
+			method.ValueObjectType = m.GetValueObjectByUuid(method.Method.TypeUuid)
+		}
+	}
+}
+
+func (m *Model) makeEntity(ent *Entity) {
+	for j := range ent.attributes {
+		attr := ent.attributes[j]
+		if attr.Type == meta.ENUM || attr.Type == meta.ENUM_ARRAY {
+			attr.EumnType = m.GetEnumByUuid(attr.TypeUuid)
+		}
+
+		if attr.Type == meta.ENTITY || attr.Type == meta.ENTITY_ARRAY {
+			attr.EnityType = m.GetEntityByUuid(attr.TypeUuid)
+		}
+
+		if attr.Type == meta.VALUE_OBJECT || attr.Type == meta.VALUE_OBJECT_ARRAY {
+			attr.ValueObjectType = m.GetValueObjectByUuid(attr.TypeUuid)
+		}
+	}
+	for j := range ent.methods {
+		method := ent.methods[j]
+		if method.Method.Type == meta.ENUM || method.Method.Type == meta.ENUM_ARRAY {
+			method.EumnType = m.GetEnumByUuid(method.Method.TypeUuid)
+		}
+
+		if method.Method.Type == meta.ENTITY || method.Method.Type == meta.ENTITY_ARRAY {
+			method.EnityType = m.GetEntityByUuid(method.Method.TypeUuid)
+		}
+
+		if method.Method.Type == meta.VALUE_OBJECT || method.Method.Type == meta.VALUE_OBJECT_ARRAY {
+			method.ValueObjectType = m.GetValueObjectByUuid(method.Method.TypeUuid)
+		}
+	}
 }
 
 func (m *Model) Validate() {

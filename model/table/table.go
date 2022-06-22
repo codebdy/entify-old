@@ -6,4 +6,5 @@ type Table struct {
 	EntityInnerId uint64
 	Columns       []*Column
 	PKString      string
+	Partial       bool
 }
