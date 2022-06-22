@@ -11,10 +11,9 @@ import (
 type Model struct {
 	Enums        []*Enum
 	Interfaces   []*Interface
-	Entities     []*Entity
+	Entities     []*Entity // include Partials
 	ValueObjects []*Class
 	Externals    []*Entity
-	Partials     []*Entity
 	Relations    []*Relation
 	Tables       []*table.Table
 }
@@ -36,7 +35,7 @@ func New(m *domain.Model) *Model {
 
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY {
+		if cls.StereoType == meta.CLASSS_ENTITY || cls.StereoType == meta.CLASS_PARTIAL {
 			newEntity := NewEntity(cls)
 			model.Entities = append(model.Entities, newEntity)
 			//构建接口实现关系
@@ -66,8 +65,6 @@ func New(m *domain.Model) *Model {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
 		} else if cls.StereoType == meta.CLASS_EXTERNAL {
 			model.Externals = append(model.Externals, NewEntity(cls))
-		} else if cls.StereoType == meta.CLASS_PARTIAL {
-			model.Partials = append(model.Partials, NewEntity(cls))
 		}
 	}
 
@@ -89,19 +86,11 @@ func New(m *domain.Model) *Model {
 		ent := model.Entities[i]
 		model.makeEntity(ent)
 	}
-	for i := range model.Partials {
-		ent := model.Partials[i]
-		model.makeEntity(ent)
-	}
+
 	//处理Table
 	for i := range model.Entities {
 		ent := model.Entities[i]
-		model.Tables = append(model.Tables, NewEntityTable(ent, false))
-	}
-
-	for i := range model.Partials {
-		ent := model.Partials[i]
-		model.Tables = append(model.Tables, NewEntityTable(ent, true))
+		model.Tables = append(model.Tables, NewEntityTable(ent, ent.Domain.StereoType == meta.CLASS_PARTIAL))
 	}
 
 	for i := range model.Relations {
