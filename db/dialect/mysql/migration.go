@@ -40,7 +40,7 @@ func (b *MySQLBuilder) BuildCreateTableSQL(table *table.Table) string {
 	sql = fmt.Sprintf(sql, table.Name, strings.Join(fieldSqls, ","))
 	fmt.Println("Create table sql:", sql)
 
-	if table.EntityInnerId > 0 {
+	if table.EntityInnerId > 0 && !table.Partial {
 		sql = sql + fmt.Sprintf(" AUTO_INCREMENT = %d", utils.EncodeBaseId(table.EntityInnerId))
 	}
 	return sql
@@ -190,7 +190,7 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *table.Column) string {
 
 func (b *MySQLBuilder) BuildColumnSQL(column *table.Column) string {
 	sql := "`" + column.Name + "` " + b.ColumnTypeSQL(column)
-	if column.Name == consts.ID {
+	if column.Name == consts.ID && !column.PartialId {
 		sql = fmt.Sprintf(sql + " AUTO_INCREMENT")
 	}
 	return sql

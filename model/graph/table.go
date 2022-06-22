@@ -8,26 +8,28 @@ import (
 	"rxdrag.com/entify/model/table"
 )
 
-func NewEntityTable(entity *Entity) *table.Table {
+func NewEntityTable(entity *Entity, partial bool) *table.Table {
 	table := &table.Table{
 		Uuid:          entity.Uuid(),
 		Name:          entity.TableName(),
 		EntityInnerId: entity.Domain.InnerId,
+		Partial:       false,
 	}
 
 	allAttrs := entity.AllAttributes()
 	for i := range allAttrs {
 		attr := allAttrs[i]
-		table.Columns = append(table.Columns, NewAttributeColumn(attr))
+		table.Columns = append(table.Columns, NewAttributeColumn(attr, partial))
 	}
 
 	entity.Table = table
 	return table
 }
 
-func NewAttributeColumn(attr *Attribute) *table.Column {
+func NewAttributeColumn(attr *Attribute, partial bool) *table.Column {
 	return &table.Column{
 		AttributeMeta: attr.AttributeMeta,
+		PartialId:     partial && attr.Name == consts.ID,
 	}
 }
 
