@@ -36,7 +36,7 @@ func New(m *domain.Model) *Model {
 
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY || cls.StereoType == meta.CLASS_PARTIAL {
+		if cls.StereoType == meta.CLASSS_ENTITY {
 			newEntity := NewEntity(cls)
 			model.Entities = append(model.Entities, newEntity)
 			//构建接口实现关系
@@ -64,8 +64,10 @@ func New(m *domain.Model) *Model {
 			}
 		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
+		} else if cls.StereoType == meta.CLASS_PARTIAL {
+			model.Partials = append(model.Partials, NewPartial(cls))
 		} else if cls.StereoType == meta.CLASS_EXTERNAL {
-			model.Externals = append(model.Externals, NewEntity(cls))
+			model.Externals = append(model.Externals, NewExternal(cls))
 		}
 	}
 

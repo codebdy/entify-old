@@ -2,11 +2,20 @@ package graph
 
 import (
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/model/domain"
 	"rxdrag.com/entify/utils"
 )
 
 type Partial struct {
 	Entity
+}
+
+func NewPartial(c *domain.Class) *Partial {
+	return &Partial{
+		Entity: Entity{
+			Class: *NewClass(c),
+		},
+	}
 }
 
 func (p *Partial) NameWithPartial() string {
