@@ -79,12 +79,12 @@ func (con *Connection) doQueryInterface(intf *graph.Interface, args map[string]i
 	}
 	var instances []InsanceData
 	for rows.Next() {
-		values := makeQueryValues(intf)
+		values := makeInterfaceQueryValues(intf)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instances = append(instances, convertValuesToObject(values, intf))
+		instances = append(instances, convertValuesToInterface(values, intf))
 	}
 
 	instancesIds := make([]interface{}, len(instances))
@@ -114,12 +114,12 @@ func (con *Connection) doQueryEntity(entity *graph.Entity, args map[string]inter
 	}
 	var instances []InsanceData
 	for rows.Next() {
-		values := makeQueryValues(entity)
+		values := makeEntityQueryValues(entity)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instances = append(instances, convertValuesToObject(values, entity))
+		instances = append(instances, convertValuesToEntity(values, entity))
 	}
 
 	return instances
@@ -137,7 +137,7 @@ func (con *Connection) QueryOneEntityById(entity *graph.Entity, id interface{}) 
 func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[string]interface{}) interface{} {
 	querySql, params := con.buildQueryInterfaceSQL(intf, args)
 
-	values := makeQueryValues(intf)
+	values := makeInterfaceQueryValues(intf)
 	err := con.Dbx.QueryRow(querySql, params...).Scan(values...)
 
 	switch {
@@ -147,7 +147,7 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 		panic(err.Error())
 	}
 
-	instance := convertValuesToObject(values, intf)
+	instance := convertValuesToInterface(values, intf)
 	for i := range intf.Children {
 		child := intf.Children[i]
 		oneEntityInstances := con.doQueryByIds(child, []interface{}{instance[consts.ID]})
@@ -161,7 +161,7 @@ func (con *Connection) doQueryOneInterface(intf *graph.Interface, args map[strin
 func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]interface{}) interface{} {
 	queryStr, params := con.buildQueryEntitySQL(entity, args)
 
-	values := makeQueryValues(entity)
+	values := makeEntityQueryValues(entity)
 	fmt.Println("doQueryOneEntity SQL:", queryStr)
 	err := con.Dbx.QueryRow(queryStr, params...).Scan(values...)
 	switch {
@@ -171,7 +171,7 @@ func (con *Connection) doQueryOneEntity(entity *graph.Entity, args map[string]in
 		panic(err.Error())
 	}
 
-	return convertValuesToObject(values, entity)
+	return convertValuesToEntity(values, entity)
 }
 
 func (con *Connection) doInsertOne(instance *data.Instance) (interface{}, error) {
@@ -220,12 +220,12 @@ func (con *Connection) doQueryAssociatedInstances(r data.Associationer, ownerId 
 	}
 
 	for rows.Next() {
-		values := makeQueryValues(entity)
+		values := makeEntityQueryValues(entity)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instances = append(instances, convertValuesToObject(values, entity))
+		instances = append(instances, convertValuesToEntity(values, entity))
 	}
 
 	return instances
@@ -241,12 +241,12 @@ func (con *Connection) doQueryByIds(entity *graph.Entity, ids []interface{}) []I
 		panic(err.Error())
 	}
 	for rows.Next() {
-		values := makeQueryValues(entity)
+		values := makeEntityQueryValues(entity)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instances = append(instances, convertValuesToObject(values, entity))
+		instances = append(instances, convertValuesToEntity(values, entity))
 	}
 
 	return instances
@@ -264,27 +264,27 @@ func (con *Connection) doBatchAbstractRealAssociations(
 		paramsList []interface{}
 	)
 	builder := dialect.GetSQLBuilder()
-	abstractTypeClass := association.TypeClass()
+	typeInterface := association.TypeInterface()
 
 	derivedAssociations := association.DerivedAssociations()
 	for i := range derivedAssociations {
 		derivedAsso := derivedAssociations[i]
-		entity := derivedAsso.TypeEntity()
-		whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
+		typeEntity := derivedAsso.TypeEntity()
+		whereArgs := con.v.WeaveAuthInArgs(typeEntity.Uuid(), args[consts.ARG_WHERE])
 		argEntity := graph.BuildArgEntity(
-			entity,
+			typeEntity,
 			whereArgs,
 			con,
 		)
 		queryStr := builder.BuildBatchAssociationBodySQL(argEntity,
-			abstractTypeClass.AllAttributes(),
+			typeInterface.AllAttributes(),
 			derivedAsso.Relation.Table.Name,
 			derivedAsso.Owner().TableName(),
 			derivedAsso.TypeEntity().TableName(),
 			ids,
 		)
 		if where, ok := whereArgs.(graph.QueryArg); ok {
-			whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
+			whereSQL, params := builder.BuildWhereSQL(argEntity, typeEntity.AllAttributes(), where)
 			if whereSQL != "" {
 				queryStr = queryStr + " AND " + whereSQL
 			}
@@ -303,14 +303,14 @@ func (con *Connection) doBatchAbstractRealAssociations(
 	}
 
 	for rows.Next() {
-		values := makeQueryValues(abstractTypeClass)
+		values := makeInterfaceQueryValues(typeInterface)
 		var idValue db.NullUint64
 		values = append(values, &idValue)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instance := convertValuesToObject(values, abstractTypeClass)
+		instance := convertValuesToInterface(values, typeInterface)
 		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
 		instances = append(instances, instance)
 	}
@@ -339,17 +339,16 @@ func (con *Connection) doBatchRealAssociations(
 	var paramsList []interface{}
 
 	builder := dialect.GetSQLBuilder()
-	typeClass := association.TypeClass()
-	entity := association.TypeClass().Entity()
-	whereArgs := con.v.WeaveAuthInArgs(entity.Uuid(), args[consts.ARG_WHERE])
+	typeEntity := association.TypeEntity()
+	whereArgs := con.v.WeaveAuthInArgs(typeEntity.Uuid(), args[consts.ARG_WHERE])
 	argEntity := graph.BuildArgEntity(
-		entity,
+		typeEntity,
 		whereArgs,
 		con,
 	)
 
 	queryStr := builder.BuildBatchAssociationBodySQL(argEntity,
-		typeClass.AllAttributes(),
+		typeEntity.AllAttributes(),
 		association.Relation.Table.Name,
 		association.Owner().TableName(),
 		association.TypeClass().TableName(),
@@ -357,7 +356,7 @@ func (con *Connection) doBatchRealAssociations(
 	)
 
 	if where, ok := whereArgs.(graph.QueryArg); ok {
-		whereSQL, params := builder.BuildWhereSQL(argEntity, entity.AllAttributes(), where)
+		whereSQL, params := builder.BuildWhereSQL(argEntity, typeEntity.AllAttributes(), where)
 		if whereSQL != "" {
 			queryStr = queryStr + " AND " + whereSQL
 		}
@@ -373,14 +372,14 @@ func (con *Connection) doBatchRealAssociations(
 	}
 
 	for rows.Next() {
-		values := makeQueryValues(typeClass)
+		values := makeEntityQueryValues(typeEntity)
 		var idValue db.NullUint64
 		values = append(values, &idValue)
 		err = rows.Scan(values...)
 		if err != nil {
 			panic(err.Error())
 		}
-		instance := convertValuesToObject(values, typeClass)
+		instance := convertValuesToEntity(values, typeEntity)
 		instance[consts.ASSOCIATION_OWNER_ID] = values[len(values)-1].(*db.NullUint64).Uint64
 		instances = append(instances, instance)
 	}
