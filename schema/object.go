@@ -3,6 +3,7 @@ package schema
 import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 )
 
 func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
@@ -11,6 +12,16 @@ func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
 		objType := c.ObjectType(entity)
 		c.ObjectTypeMap[entity.Name()] = objType
 		c.ObjectMapById[entity.InnerId()] = objType
+		if entity.Domain.StereoType == meta.CLASS_PARTIAL {
+			partialName := entity.Domain.Name
+			c.ObjectTypeMap[partialName] = graphql.NewObject(
+				graphql.ObjectConfig{
+					Name:        partialName,
+					Fields:      outputFields(entity),
+					Description: entity.Description(),
+				},
+			)
+		}
 	}
 }
 

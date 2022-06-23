@@ -82,9 +82,9 @@ func (c *TypeCache) makeInputRelations() {
 		for i := range associas {
 			assoc := associas[i]
 			if !assoc.IsAbstract() {
-				typeInput := c.SaveInput(assoc.Owner().Name())
+				typeInput := c.SaveInput(assoc.Owner().NameWithPartial())
 				if typeInput == nil {
-					panic("can not find save input:" + assoc.Owner().Name())
+					panic("can not find save input:" + assoc.Owner().NameWithPartial())
 				}
 				if len(typeInput.Fields()) == 0 {
 					fmt.Println("Fields == 0")
@@ -97,7 +97,7 @@ func (c *TypeCache) makeInputRelations() {
 					continue
 				}
 				if arrayType == nil {
-					panic("Can not get association type:" + assoc.Owner().Name() + "." + assoc.Name())
+					panic("Can not get association type:" + assoc.Owner().NameWithPartial() + "." + assoc.Name())
 				}
 				input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
 					Type:        arrayType,
@@ -139,9 +139,9 @@ func (c *TypeCache) makeDevrivedInputRelations(association *graph.Association,
 
 func (c *TypeCache) getAssociationType(association *graph.Association) *graphql.InputObject {
 	if association.IsArray() {
-		return c.HasManyInput(association.TypeClass().Name())
+		return c.HasManyInput(association.TypeClass().NameWithPartial())
 	} else {
-		return c.HasOneInput(association.TypeClass().Name())
+		return c.HasOneInput(association.TypeClass().NameWithPartial())
 	}
 }
 

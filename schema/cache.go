@@ -129,7 +129,7 @@ func (c *TypeCache) MutationResponse(name string) *graphql.Object {
 func (c *TypeCache) mapInterfaces(entities []*graph.Interface) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
-		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name()])
+		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Domain.Name])
 	}
 
 	return interfaces

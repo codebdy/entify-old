@@ -19,15 +19,15 @@ func (c *TypeCache) makeArgs() {
 
 func (c *TypeCache) makeOneEntityArgs(node graph.Noder) {
 	whereExp := makeWhereExp(node)
-	c.WhereExpMap[node.Name()] = whereExp
+	c.WhereExpMap[extractName(node)] = whereExp
 
 	orderByExp := makeOrderBy(node)
 	if len(orderByExp.Fields()) > 0 {
-		c.OrderByMap[node.Name()] = orderByExp
+		c.OrderByMap[extractName(node)] = orderByExp
 	}
 
 	distinctOnEnum := makeDistinctOnEnum(node)
-	c.DistinctOnEnumMap[node.Name()] = distinctOnEnum
+	c.DistinctOnEnumMap[extractName(node)] = distinctOnEnum
 }
 
 func (c *TypeCache) makeRelaionWhereExp() {
@@ -41,14 +41,14 @@ func (c *TypeCache) makeRelaionWhereExp() {
 		for i := range associations {
 			assoc := associations[i]
 			exp.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
-				Type: c.WhereExp(assoc.TypeClass().Name()),
+				Type: c.WhereExp(extractName(assoc.TypeClass())),
 			})
 		}
 	}
 }
 
 func makeWhereExp(node graph.Noder) *graphql.InputObject {
-	expName := node.Name() + consts.BOOLEXP
+	expName := extractName(node) + consts.BOOLEXP
 	andExp := graphql.InputObjectFieldConfig{}
 	notExp := graphql.InputObjectFieldConfig{}
 	orExp := graphql.InputObjectFieldConfig{}
@@ -95,7 +95,7 @@ func makeOrderBy(node graph.Noder) *graphql.InputObject {
 
 	orderByExp := graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   node.Name() + consts.ORDERBY,
+			Name:   extractName(node) + consts.ORDERBY,
 			Fields: fields,
 		},
 	)
@@ -123,7 +123,7 @@ func makeDistinctOnEnum(node graph.Noder) *graphql.Enum {
 
 	entEnum := graphql.NewEnum(
 		graphql.EnumConfig{
-			Name:   node.Name() + consts.DISTINCTEXP,
+			Name:   extractName(node) + consts.DISTINCTEXP,
 			Values: enumValueConfigMap,
 		},
 	)

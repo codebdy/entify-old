@@ -11,9 +11,10 @@ import (
 type Model struct {
 	Enums        []*Enum
 	Interfaces   []*Interface
-	Entities     []*Entity // include Partials
+	Entities     []*Entity
+	Partials     []*Partial
 	ValueObjects []*Class
-	Externals    []*Entity
+	Externals    []*External
 	Relations    []*Relation
 	Tables       []*table.Table
 }
@@ -102,11 +103,11 @@ func New(m *domain.Model) *Model {
 }
 
 func (m *Model) makeRelation(relation *domain.Relation) {
-	source := m.GetNodeByUuid(relation.Source.Uuid)
+	source := m.GetClassByUuid(relation.Source.Uuid)
 	if source.Entity() == nil && source.Interface() == nil {
 		panic("Can not find souce by uuid:" + relation.Source.Uuid)
 	}
-	target := m.GetNodeByUuid(relation.Target.Uuid)
+	target := m.GetClassByUuid(relation.Target.Uuid)
 	if target.Entity() == nil && target.Interface() == nil {
 		panic("Can not find target by uuid:" + relation.Target.Uuid)
 	}
@@ -216,6 +217,11 @@ func (m *Model) Validate() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name()))
 		}
 	}
+	for _, entity := range m.Partials {
+		if entity.IsEmperty() {
+			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name()))
+		}
+	}
 }
 
 func (m *Model) RootEnities() []*Entity {
@@ -242,26 +248,6 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
-func (m *Model) GetNodeByUuid(uuid string) Noder {
-	intf := m.GetInterfaceByUuid(uuid)
-
-	if intf != nil {
-		return intf
-	}
-
-	return m.GetEntityByUuid(uuid)
-}
-
-func (m *Model) GetNodeByName(name string) Noder {
-	intf := m.GetInterfaceByName(name)
-
-	if intf != nil {
-		return intf
-	}
-
-	return m.GetEntityByName(name)
-}
-
 func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
 	for i := range m.Interfaces {
 		intf := m.Interfaces[i]
@@ -280,6 +266,64 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 		}
 	}
 	return nil
+}
+
+func (m *Model) GetPartialByUuid(uuid string) *Partial {
+	for i := range m.Partials {
+		partial := m.Partials[i]
+		if partial.Uuid() == uuid {
+			return partial
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetExternalByUuid(uuid string) *External {
+	for i := range m.Externals {
+		external := m.Externals[i]
+		if external.Uuid() == uuid {
+			return external
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetClassByUuid(uuid string) *Class {
+	intf := m.GetInterfaceByUuid(uuid)
+
+	if intf != nil {
+		return &intf.Class
+	}
+
+	partial := m.GetPartialByUuid(uuid)
+	if partial != nil {
+		return &partial.Class
+	}
+
+	external := m.GetExternalByUuid(uuid)
+	if external != nil {
+		return &external.Class
+	}
+	return &m.GetEntityByUuid(uuid).Class
+}
+
+func (m *Model) GetClassByName(name string) *Class {
+	intf := m.GetInterfaceByName(name)
+	if intf != nil {
+		return &intf.Class
+	}
+
+	partial := m.GetPartialByName(name)
+	if partial != nil {
+		return &partial.Class
+	}
+
+	external := m.GetExternalByName(name)
+	if external != nil {
+		return &external.Class
+	}
+
+	return &m.GetEntityByName(name).Class
 }
 
 func (m *Model) GetValueObjectByUuid(uuid string) *Class {
@@ -307,6 +351,26 @@ func (m *Model) GetEntityByName(name string) *Entity {
 		ent := m.Entities[i]
 		if ent.Name() == name {
 			return ent
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetPartialByName(name string) *Partial {
+	for i := range m.Partials {
+		partial := m.Partials[i]
+		if partial.Name() == name {
+			return partial
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetExternalByName(name string) *External {
+	for i := range m.Externals {
+		external := m.Externals[i]
+		if external.Name() == name {
+			return external
 		}
 	}
 	return nil

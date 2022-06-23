@@ -40,7 +40,7 @@ func (c *Class) InnerId() uint64 {
 }
 
 func (c *Class) Name() string {
-	return c.Domain.Name + utils.FirstUpper(c.Domain.PartialName)
+	return c.Domain.Name
 }
 
 func (c *Class) Description() string {

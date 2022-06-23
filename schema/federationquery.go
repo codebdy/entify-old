@@ -101,7 +101,7 @@ func querySDL() (string, string) {
 	}
 
 	for _, intf := range model.GlobalModel.Graph.Interfaces {
-		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Name()))
+		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Domain.Name))
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
@@ -110,7 +110,7 @@ func querySDL() (string, string) {
 
 	for _, entity := range model.GlobalModel.Graph.Entities {
 		if notSystemEntity(entity) {
-			types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()), true)
+			types = types + objectToSDL(Cache.EntityeOutputType(entity.NameWithPartial()), true)
 		}
 	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
@@ -120,7 +120,7 @@ func querySDL() (string, string) {
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.Externals {
-		types = types + fmt.Sprintf(externalSDL, exteneral.Name())
+		types = types + fmt.Sprintf(externalSDL, exteneral.Domain.Name)
 	}
 
 	for _, aggregate := range Cache.AggregateMap {
@@ -139,19 +139,19 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryName(),
-		makeArgsSDL(queryArgs(intf.Name())),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
 		queryResponseType(intf).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryOneName(),
-		makeArgsSDL(queryArgs(intf.Name())),
-		Cache.OutputType(intf.Name()).String(),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
+		Cache.OutputType(intf.Domain.Name).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryAggregateName(),
-		makeArgsSDL(queryArgs(intf.Name())),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
 		(*AggregateType(intf)).String(),
 	)
 
@@ -219,7 +219,7 @@ func objectToSDL(obj *graphql.Object, withKey bool) string {
 	implString := ""
 
 	for _, intf := range obj.Interfaces() {
-		intfNames = append(intfNames, intf.Name())
+		intfNames = append(intfNames, intf.Domain.Name)
 	}
 	if len(intfNames) > 0 {
 		implString = " implements " + strings.Join(intfNames, " & ")
@@ -244,7 +244,7 @@ func enumToSDL(enum *graphql.Enum) string {
 
 func interfaceToSDL(intf *graphql.Interface) string {
 	sdl := interfaceSDL
-	return fmt.Sprintf(sdl, intf.Name(), fieldsToSDL(intf.Fields()))
+	return fmt.Sprintf(sdl, intf.Domain.Name, fieldsToSDL(intf.Fields()))
 }
 
 func inputToSDL(input *graphql.InputObject) string {

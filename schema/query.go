@@ -72,7 +72,7 @@ func queryFields() graphql.Fields {
 func queryResponseType(node graph.Noder) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
-			OfType: Cache.OutputType(node.Name()),
+			OfType: Cache.OutputType(node.NameWithPartial()),
 		},
 	}
 }

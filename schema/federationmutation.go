@@ -21,7 +21,7 @@ func mutationSDL() (string, string) {
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		if notSystemEntity(entity) {
 			queryFields = queryFields + makeEntityMutationSDL(entity)
-			types = types + objectToSDL(Cache.MutationResponse(entity.Name()), false)
+			types = types + objectToSDL(Cache.MutationResponse(entity.NameWithPartial()), false)
 		}
 	}
 
@@ -50,34 +50,34 @@ func makeEntityMutationSDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
 		entity.DeleteName(),
 		makeArgsSDL(deleteArgs(entity)),
-		Cache.MutationResponse(entity.Name()).Name(),
+		Cache.MutationResponse(entity.NameWithPartial()).Name(),
 	)
 
 	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
 		entity.DeleteByIdName(),
 		makeArgsSDL(deleteByIdArgs()),
-		Cache.OutputType(entity.Name()).String(),
+		Cache.OutputType(entity.NameWithPartial()).String(),
 	)
 
-	updateInput := Cache.UpdateInput(entity.Name())
+	updateInput := Cache.UpdateInput(entity.NameWithPartial())
 	if len(updateInput.Fields()) > 0 {
 		sdl = sdl + fmt.Sprintf(mutationFieldSDL,
 			entity.UpdateName(),
 			makeArgsSDL(updateArgs(entity)),
-			Cache.MutationResponse(entity.Name()).String(),
+			Cache.MutationResponse(entity.NameWithPartial()).String(),
 		)
 	}
 
 	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
 		entity.UpsertName(),
 		makeArgsSDL(upsertArgs(entity)),
-		(&graphql.List{OfType: Cache.OutputType(entity.Name())}).String(),
+		(&graphql.List{OfType: Cache.OutputType(entity.NameWithPartial())}).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
 		entity.UpsertOneName(),
 		makeArgsSDL(upsertOneArgs(entity)),
-		Cache.OutputType(entity.Name()).String(),
+		Cache.OutputType(entity.NameWithPartial()).String(),
 	)
 
 	return sdl

@@ -8,6 +8,14 @@ import (
 	"rxdrag.com/entify/utils"
 )
 
+func extractName(node graph.Noder) string {
+	if !node.IsInterface() {
+		return node.Entity().Domain.PartialName
+	} else {
+		return node.Interface().Domain.Name
+	}
+}
+
 func AvgFields(node graph.Noder) graphql.Fields {
 	fields := graphql.Fields{}
 	for _, column := range node.AllAttributes() {
@@ -195,7 +203,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["avg"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "AvgFields",
+					Name:   extractName(node) + "AvgFields",
 					Fields: avgFields,
 				},
 			),
@@ -207,7 +215,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["max"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "MaxFields",
+					Name:   extractName(node) + "MaxFields",
 					Fields: maxFields,
 				},
 			),
@@ -219,7 +227,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["min"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "MinFields",
+					Name:   extractName(node) + "MinFields",
 					Fields: minFields,
 				},
 			),
@@ -228,7 +236,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 
 	countFields := SelectFields(node)
 	if len(countFields) > 0 {
-		selectColumnName := node.Name() + "SelectColumn"
+		selectColumnName := extractName(node) + "SelectColumn"
 		selectColumn := graphql.NewInputObject(
 			graphql.InputObjectConfig{
 				Name:   selectColumnName,
@@ -254,7 +262,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["stddev"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevFields",
+					Name:   extractName(node) + "StddevFields",
 					Fields: stddevFields,
 				},
 			),
@@ -266,7 +274,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["stddevPop"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevPopFields",
+					Name:   extractName(node) + "StddevPopFields",
 					Fields: stddevPopFields,
 				},
 			),
@@ -278,7 +286,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["stddevSamp"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevSampFields",
+					Name:   extractName(node) + "StddevSampFields",
 					Fields: stddevSampFields,
 				},
 			),
@@ -290,7 +298,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["sum"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "SumFields",
+					Name:   extractName(node) + "SumFields",
 					Fields: sumFields,
 				},
 			),
@@ -301,7 +309,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["varPop"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarPopFields",
+					Name:   extractName(node) + "VarPopFields",
 					Fields: varPopFields,
 				},
 			),
@@ -312,7 +320,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["varSamp"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarSampFields",
+					Name:   extractName(node) + "VarSampFields",
 					Fields: varSampFields,
 				},
 			),
@@ -323,7 +331,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		fields["variance"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarianceFields",
+					Name:   extractName(node) + "VarianceFields",
 					Fields: varianceFields,
 				},
 			),
@@ -333,7 +341,7 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 }
 
 func AggregateType(node graph.Noder) *graphql.Object {
-	name := node.Name() + utils.FirstUpper(consts.AGGREGATE)
+	name := extractName(node) + utils.FirstUpper(consts.AGGREGATE)
 	if Cache.AggregateMap[name] != nil {
 		return Cache.AggregateMap[name]
 	}
@@ -343,7 +351,7 @@ func AggregateType(node graph.Noder) *graphql.Object {
 	fields := graphql.Fields{
 		consts.NODES: &graphql.Field{
 			Type: &graphql.List{
-				OfType: Cache.OutputType(node.Name()),
+				OfType: Cache.OutputType(extractName(node)),
 			},
 		},
 	}
@@ -354,7 +362,7 @@ func AggregateType(node graph.Noder) *graphql.Object {
 		fields[consts.AGGREGATE] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + utils.FirstUpper(consts.AGGREGATE) + consts.FIELDS,
+					Name:   extractName(node) + utils.FirstUpper(consts.AGGREGATE) + consts.FIELDS,
 					Fields: aggregateFields,
 				},
 			),

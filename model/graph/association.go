@@ -103,7 +103,7 @@ func (a *Association) GetName() string {
 }
 
 func (a *Association) Path() string {
-	return a.Owner().Name() + "." + a.Name()
+	return a.Owner().Entity().Domain.Name + "." + a.Name()
 }
 
 //对手实体类
@@ -129,6 +129,6 @@ func (d *DerivedAssociation) Name() string {
 	if d.TypeEntity().Uuid() == d.DerivedFrom.TypeClass().Uuid() {
 		return d.DerivedFrom.Name()
 	} else {
-		return d.DerivedFrom.Name() + "For" + d.TypeEntity().Name()
+		return d.DerivedFrom.Name() + "For" + d.TypeEntity().NameWithPartial()
 	}
 }

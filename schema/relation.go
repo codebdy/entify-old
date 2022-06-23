@@ -23,7 +23,7 @@ func (c *TypeCache) makeRelations() {
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
 				Resolve:     resolve.QueryAssociationFn(association),
-				Args:        queryArgs(association.TypeClass().Name()),
+				Args:        queryArgs(association.TypeClass().NameWithPartial()),
 			})
 		}
 	}
@@ -39,7 +39,7 @@ func (c *TypeCache) makeRelations() {
 				Type:        c.AssociationType(association),
 				Description: association.Description(),
 				Resolve:     resolve.QueryAssociationFn(association),
-				Args:        queryArgs(association.TypeClass().Name()),
+				Args:        queryArgs(association.TypeClass().NameWithPartial()),
 			})
 		}
 	}
@@ -49,10 +49,10 @@ func (c *TypeCache) AssociationType(association *graph.Association) graphql.Outp
 	if association.IsArray() {
 		return &graphql.NonNull{
 			OfType: &graphql.List{
-				OfType: c.OutputType(association.TypeClass().Name()),
+				OfType: c.OutputType(association.TypeClass().NameWithPartial()),
 			},
 		}
 	} else {
-		return c.OutputType(association.TypeClass().Name())
+		return c.OutputType(association.TypeClass().NameWithPartial())
 	}
 }

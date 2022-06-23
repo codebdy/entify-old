@@ -52,7 +52,7 @@ func (a *ArgEntity) GetAssociation(name string) *ArgAssociation {
 			return a.Associations[i]
 		}
 	}
-	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
+	panic("Can not find entity association:" + a.Entity.NameWithPartial() + "." + name)
 }
 
 func (a *ArgEntity) GetWithMakeAssociation(name string, ider Ider) *ArgAssociation {
@@ -74,7 +74,7 @@ func (a *ArgEntity) GetWithMakeAssociation(name string, ider Ider) *ArgAssociati
 			return asso
 		}
 	}
-	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
+	panic("Can not find entity association:" + a.Entity.NameWithPartial() + "." + name)
 }
 
 func (e *ArgEntity) Alise() string {

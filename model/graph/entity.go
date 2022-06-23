@@ -32,16 +32,6 @@ func (e *Entity) hasInterfaceWithSameName() bool {
 	return e.Domain.HasChildren()
 }
 
-func (e *Entity) IsInterface() bool {
-	return false
-}
-func (e *Entity) Interface() *Interface {
-	return nil
-}
-func (e *Entity) Entity() *Entity {
-	return e
-}
-
 //包含继承来的
 func (e *Entity) AllAttributes() []*Attribute {
 	attrs := []*Attribute{}
