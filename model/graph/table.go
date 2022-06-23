@@ -38,33 +38,33 @@ func NewRelationTables(relation *Relation) []*table.Table {
 	name := fmt.Sprintf(
 		"%s_%d_%d_%d",
 		consts.PIVOT,
-		relation.Source.InnerId(),
+		relation.SourceClass().InnerId(),
 		relation.InnerId,
-		relation.Target.InnerId(),
+		relation.TargetClass().InnerId(),
 	)
 	if relation.IsRealRelation() {
 		tab := &table.Table{
-			Uuid: relation.Source.Uuid() + relation.Uuid + relation.Target.Uuid(),
+			Uuid: relation.SourceClass().Uuid() + relation.Uuid + relation.TargetClass().Uuid(),
 			Name: name,
 			Columns: []*table.Column{
 				{
 					AttributeMeta: meta.AttributeMeta{
 						Type:  meta.ID,
-						Uuid:  relation.Source.Uuid() + relation.Uuid,
-						Name:  relation.Source.TableName(),
+						Uuid:  relation.SourceClass().Uuid() + relation.Uuid,
+						Name:  relation.SourceClass().TableName(),
 						Index: true,
 					},
 				},
 				{
 					AttributeMeta: meta.AttributeMeta{
 						Type:  meta.ID,
-						Uuid:  relation.Target.Uuid() + relation.Uuid,
-						Name:  relation.Target.TableName(),
+						Uuid:  relation.TargetClass().Uuid() + relation.Uuid,
+						Name:  relation.TargetClass().TableName(),
 						Index: true,
 					},
 				},
 			},
-			PKString: fmt.Sprintf("%s,%s", relation.Source.TableName(), relation.Target.TableName()),
+			PKString: fmt.Sprintf("%s,%s", relation.SourceClass().TableName(), relation.TargetClass().TableName()),
 		}
 		if relation.EnableAssociaitonClass {
 			for i := range relation.AssociationClass.Attributes {
@@ -89,32 +89,32 @@ func NewDerivedRelationTable(derived *DerivedRelation) *table.Table {
 	name := fmt.Sprintf(
 		"%s_%d_%d_%d",
 		consts.PIVOT,
-		derived.Source.InnerId(),
+		derived.SourceClass().InnerId(),
 		derived.Parent.InnerId,
-		derived.Target.InnerId(),
+		derived.TargetClass().InnerId(),
 	)
 	tab := &table.Table{
-		Uuid: derived.Source.Uuid() + derived.Parent.Uuid + derived.Target.Uuid(),
+		Uuid: derived.SourceClass().Uuid() + derived.Parent.Uuid + derived.TargetClass().Uuid(),
 		Name: name,
 		Columns: []*table.Column{
 			{
 				AttributeMeta: meta.AttributeMeta{
 					Type:  meta.ID,
-					Uuid:  derived.Source.Uuid() + derived.Parent.Uuid,
-					Name:  derived.Source.TableName(),
+					Uuid:  derived.SourceClass().Uuid() + derived.Parent.Uuid,
+					Name:  derived.SourceClass().TableName(),
 					Index: true,
 				},
 			},
 			{
 				AttributeMeta: meta.AttributeMeta{
 					Type:  meta.ID,
-					Uuid:  derived.Target.Uuid() + derived.Parent.Uuid,
-					Name:  derived.Target.TableName(),
+					Uuid:  derived.TargetClass().Uuid() + derived.Parent.Uuid,
+					Name:  derived.TargetClass().TableName(),
 					Index: true,
 				},
 			},
 		},
-		PKString: fmt.Sprintf("%s,%s", derived.Source.TableName(), derived.Target.TableName()),
+		PKString: fmt.Sprintf("%s,%s", derived.SourceClass().TableName(), derived.TargetClass().TableName()),
 	}
 	if derived.Parent.EnableAssociaitonClass {
 		for i := range derived.Parent.AssociationClass.Attributes {

@@ -120,3 +120,32 @@ func (r *Relation) IsRealRelation() bool {
 
 	return true
 }
+
+func (r *DerivedRelation) SourceClass() *Class {
+
+	if r.SourceEntity != nil {
+		return &r.SourceEntity.Class
+	}
+
+	if r.SourcePartial != nil {
+		return &r.SourcePartial.Class
+	}
+	if r.SourceExternal != nil {
+		return &r.SourceExternal.Class
+	}
+	return nil
+}
+
+func (r *DerivedRelation) TargetClass() *Class {
+	if r.TargetEntity != nil {
+		return &r.TargetEntity.Class
+	}
+
+	if r.TargetPartial != nil {
+		return &r.TargetPartial.Class
+	}
+	if r.TargetExternal != nil {
+		return &r.TargetExternal.Class
+	}
+	return nil
+}

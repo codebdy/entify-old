@@ -30,19 +30,19 @@ func (a *Association) Name() string {
 	}
 }
 
-func (a *Association) Owner() Noder {
+func (a *Association) Owner() *Class {
 	if a.IsSource() {
-		return a.Relation.Source
+		return a.Relation.SourceClass()
 	} else {
-		return a.Relation.Target
+		return a.Relation.TargetClass()
 	}
 }
 
-func (a *Association) TypeClass() Noder {
+func (a *Association) TypeClass() *Class {
 	if a.IsSource() {
-		return a.Relation.Target
+		return a.Relation.SourceClass()
 	} else {
-		return a.Relation.Source
+		return a.Relation.TargetClass()
 	}
 }
 
@@ -63,7 +63,7 @@ func (a *Association) IsArray() bool {
 }
 
 func (a *Association) IsSource() bool {
-	return a.Relation.Source.Uuid() == a.OwnerClassUuid
+	return a.Relation.SourceClass().Uuid() == a.OwnerClassUuid
 }
 
 func (a *Association) IsAbstract() bool {
@@ -74,9 +74,9 @@ func (a *Association) DerivedAssociations() []*DerivedAssociation {
 	associations := []*DerivedAssociation{}
 	for i := range a.Relation.Children {
 		derivedRelation := a.Relation.Children[i]
-		ownerUuid := derivedRelation.Source.Uuid()
-		if a.Relation.Target.Uuid() == a.OwnerClassUuid {
-			ownerUuid = derivedRelation.Target.Uuid()
+		ownerUuid := derivedRelation.SourceClass().Uuid()
+		if a.Relation.TargetClass().Uuid() == a.OwnerClassUuid {
+			ownerUuid = derivedRelation.TargetClass().Uuid()
 		}
 		associations = append(associations, &DerivedAssociation{
 			Relation:       derivedRelation,
@@ -103,32 +103,32 @@ func (a *Association) GetName() string {
 }
 
 func (a *Association) Path() string {
-	return a.Owner().Entity().Domain.Name + "." + a.Name()
+	return a.Owner().Domain.Name + "." + a.Name()
 }
 
 //对手实体类
-func (d *DerivedAssociation) TypeEntity() *Entity {
-	if d.Relation.Source.Uuid() == d.OwnerClassUuid {
-		return d.Relation.Target
+func (d *DerivedAssociation) TypeClass() *Class {
+	if d.Relation.SourceClass().Uuid() == d.OwnerClassUuid {
+		return d.Relation.TargetClass()
 	} else {
-		return d.Relation.Source
+		return d.Relation.SourceClass()
 	}
 
 }
 
-func (d *DerivedAssociation) Owner() *Entity {
-	if d.Relation.Source.Uuid() == d.OwnerClassUuid {
-		return d.Relation.Source
+func (d *DerivedAssociation) Owner() *Class {
+	if d.Relation.SourceClass().Uuid() == d.OwnerClassUuid {
+		return d.Relation.SourceClass()
 	} else {
-		return d.Relation.Target
+		return d.Relation.TargetClass()
 	}
 
 }
 
 func (d *DerivedAssociation) Name() string {
-	if d.TypeEntity().Uuid() == d.DerivedFrom.TypeClass().Uuid() {
+	if d.TypeClass().Uuid() == d.DerivedFrom.TypeClass().Uuid() {
 		return d.DerivedFrom.Name()
 	} else {
-		return d.DerivedFrom.Name() + "For" + d.TypeEntity().NameWithPartial()
+		return d.DerivedFrom.Name() + "For" + d.TypeClass().Name()
 	}
 }
