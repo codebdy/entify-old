@@ -3,11 +3,13 @@ package graph
 import "rxdrag.com/entify/model/domain"
 
 type External struct {
-	Class
+	Entity
 }
 
 func NewExternal(c *domain.Class) *External {
 	return &External{
-		Class: *NewClass(c),
+		Entity: Entity{
+			Class: *NewClass(c),
+		},
 	}
 }

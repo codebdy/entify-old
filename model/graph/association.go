@@ -70,6 +70,14 @@ func (a *Association) TypePartial() *Partial {
 	}
 }
 
+func (a *Association) TypeExternal() *External {
+	if !a.IsSource() {
+		return a.Relation.SourceExternal
+	} else {
+		return a.Relation.TargetExternal
+	}
+}
+
 func (a *Association) Description() string {
 	if a.IsSource() {
 		return a.Relation.DescriptionOnTarget
@@ -154,5 +162,29 @@ func (d *DerivedAssociation) Name() string {
 		return d.DerivedFrom.Name()
 	} else {
 		return d.DerivedFrom.Name() + "For" + d.TypeClass().Name()
+	}
+}
+
+func (a *DerivedAssociation) TypeEntity() *Entity {
+	if !a.DerivedFrom.IsSource() {
+		return a.Relation.SourceEntity
+	} else {
+		return a.Relation.TargetEntity
+	}
+}
+
+func (a *DerivedAssociation) TypePartial() *Partial {
+	if !a.DerivedFrom.IsSource() {
+		return a.Relation.SourcePartial
+	} else {
+		return a.Relation.TargetPartial
+	}
+}
+
+func (a *DerivedAssociation) TypeExternal() *External {
+	if !a.DerivedFrom.IsSource() {
+		return a.Relation.SourceExternal
+	} else {
+		return a.Relation.TargetExternal
 	}
 }
