@@ -22,28 +22,32 @@ type ArgAssociation struct {
 type ArgEntity struct {
 	Id             int
 	Entity         *Entity
+	Partial        *Partial
 	Associations   []*ArgAssociation
 	ExpressionArgs map[string]interface{}
 }
 
 func argEntitiesFromAssociation(associ *Association, ider Ider) []*ArgEntity {
-	var entities []*ArgEntity
-	noder := associ.TypeClass()
-	if noder.IsInterface() {
-		children := noder.Interface().Children
+	var argEntities []*ArgEntity
+	typeInterface := associ.TypeInterface()
+	typeEntity := associ.TypeEntity()
+	typePartial := associ.TypePartial()
+	if typeInterface != nil {
+		children := typeInterface.Children
 		for i := range children {
-			entities = append(entities, &ArgEntity{
+			argEntities = append(argEntities, &ArgEntity{
 				Id:     ider.CreateId(),
 				Entity: children[i],
 			})
 		}
 	} else {
-		entities = append(entities, &ArgEntity{
-			Id:     ider.CreateId(),
-			Entity: noder.Entity(),
+		argEntities = append(argEntities, &ArgEntity{
+			Id:      ider.CreateId(),
+			Entity:  typeEntity,
+			Partial: typePartial,
 		})
 	}
-	return entities
+	return argEntities
 }
 
 func (a *ArgEntity) GetAssociation(name string) *ArgAssociation {
@@ -52,7 +56,7 @@ func (a *ArgEntity) GetAssociation(name string) *ArgAssociation {
 			return a.Associations[i]
 		}
 	}
-	panic("Can not find entity association:" + a.Entity.NameWithPartial() + "." + name)
+	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
 }
 
 func (a *ArgEntity) GetWithMakeAssociation(name string, ider Ider) *ArgAssociation {
@@ -74,7 +78,7 @@ func (a *ArgEntity) GetWithMakeAssociation(name string, ider Ider) *ArgAssociati
 			return asso
 		}
 	}
-	panic("Can not find entity association:" + a.Entity.NameWithPartial() + "." + name)
+	panic("Can not find entity association:" + a.Entity.Name() + "." + name)
 }
 
 func (e *ArgEntity) Alise() string {

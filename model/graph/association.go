@@ -39,10 +39,34 @@ func (a *Association) Owner() *Class {
 }
 
 func (a *Association) TypeClass() *Class {
-	if a.IsSource() {
+	if !a.IsSource() {
 		return a.Relation.SourceClass()
 	} else {
 		return a.Relation.TargetClass()
+	}
+}
+
+func (a *Association) TypeInterface() *Interface {
+	if !a.IsSource() {
+		return a.Relation.SourceInterface
+	} else {
+		return a.Relation.TargetInterface
+	}
+}
+
+func (a *Association) TypeEntity() *Entity {
+	if !a.IsSource() {
+		return a.Relation.SourceEntity
+	} else {
+		return a.Relation.TargetEntity
+	}
+}
+
+func (a *Association) TypePartial() *Partial {
+	if !a.IsSource() {
+		return a.Relation.SourcePartial
+	} else {
+		return a.Relation.TargetPartial
 	}
 }
 
