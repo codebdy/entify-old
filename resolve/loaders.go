@@ -64,7 +64,7 @@ func QueryBatchFn(p graphql.ResolveParams, association *graph.Association, args 
 			if !association.IsArray() {
 				ln := len(associationInstances)
 				if ln > 1 {
-					panic(fmt.Sprintf("To many values for %s : %d", association.Owner().Entity().Domain.Name+"."+association.Name(), len(associationInstances)))
+					panic(fmt.Sprintf("To many values for %s : %d", association.Owner().Domain.Name+"."+association.Name(), len(associationInstances)))
 				} else if ln == 1 {
 					data = associationInstances[0]
 				} else {
