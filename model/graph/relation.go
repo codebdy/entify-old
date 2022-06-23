@@ -31,10 +31,14 @@ type Relation struct {
 }
 
 type DerivedRelation struct {
-	Parent *Relation
-	Source *Entity
-	Target *Entity
-	Table  *table.Table
+	Parent         *Relation
+	SourceEntity   *Entity
+	TargetEntity   *Entity
+	SourcePartial  *Partial
+	TargetPartial  *Partial
+	SourceExternal *External
+	TargetExternal *External
+	Table          *table.Table
 }
 
 func NewRelation(
@@ -48,7 +52,7 @@ func NewRelation(
 	sourceExternal *External,
 	targetExternal *External,
 ) *Relation {
-	return &Relation{
+	relation := &Relation{
 		Uuid:                   r.Uuid,
 		InnerId:                r.InnerId,
 		RelationType:           r.RelationType,
@@ -69,6 +73,44 @@ func NewRelation(
 		EnableAssociaitonClass: r.EnableAssociaitonClass,
 		AssociationClass:       r.AssociationClass,
 	}
+
+	return relation
+}
+
+func (r *Relation) SourceClass() *Class {
+	if r.SourceInterface != nil {
+		return &r.SourceInterface.Class
+	}
+
+	if r.SourceEntity != nil {
+		return &r.SourceEntity.Class
+	}
+
+	if r.SourcePartial != nil {
+		return &r.SourcePartial.Class
+	}
+	if r.SourceExternal != nil {
+		return &r.SourceExternal.Class
+	}
+	return nil
+}
+
+func (r *Relation) TargetClass() *Class {
+	if r.TargetInterface != nil {
+		return &r.TargetInterface.Class
+	}
+
+	if r.TargetEntity != nil {
+		return &r.TargetEntity.Class
+	}
+
+	if r.TargetPartial != nil {
+		return &r.TargetPartial.Class
+	}
+	if r.TargetExternal != nil {
+		return &r.TargetExternal.Class
+	}
+	return nil
 }
 
 func (r *Relation) IsRealRelation() bool {

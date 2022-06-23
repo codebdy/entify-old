@@ -121,8 +121,28 @@ func (m *Model) makeRelation(relation *domain.Relation) {
 	if targetInterface == nil && targetEntity == nil && targetPartial == nil && targetExternal == nil {
 		panic("Can not find target by uuid:" + relation.Target.Uuid)
 	}
-	r := NewRelation(relation, source, target)
+	r := NewRelation(
+		relation,
+		sourceInterface,
+		targetInterface,
+		sourceEntity,
+		targetEntity,
+		sourcePartial,
+		targetPartial,
+		sourceExternal,
+		targetExternal,
+	)
 	m.Relations = append(m.Relations, r)
+	source := r.SourceClass()
+	if source == nil {
+		panic("can not find souce class")
+	}
+
+	target := r.TargetClass()
+	if target == nil {
+		panic("can not find target class")
+	}
+
 	source.AddAssociation(NewAssociation(r, source.Uuid()))
 	if relation.RelationType == meta.TWO_WAY_AGGREGATION ||
 		relation.RelationType == meta.TWO_WAY_ASSOCIATION ||
@@ -133,28 +153,41 @@ func (m *Model) makeRelation(relation *domain.Relation) {
 	sourceEntities := []*Entity{}
 	targetEntities := []*Entity{}
 
-	if source.IsInterface() {
-		sourceEntities = append(sourceEntities, source.Interface().Children...)
-	} else if target.IsInterface() {
-		sourceEntities = append(sourceEntities, source.Entity())
+	if sourceInterface != nil {
+		sourceEntities = append(sourceEntities, sourceInterface.Children...)
 	}
 
-	if target.IsInterface() {
-		targetEntities = append(targetEntities, target.Interface().Children...)
-	} else if source.IsInterface() {
-		targetEntities = append(targetEntities, target.Entity())
+	if targetInterface != nil {
+		targetEntities = append(targetEntities, targetInterface.Children...)
 	}
 
 	for i := range sourceEntities {
-		s := sourceEntities[i]
-		for j := range targetEntities {
-			t := targetEntities[j]
+		sourceEntity = sourceEntities[i]
+		if targetInterface != nil {
+			for j := range targetEntities {
+				targetEntity = targetEntities[j]
+				r.Children = append(r.Children, &DerivedRelation{
+					Parent:         r,
+					SourceEntity:   sourceEntity,
+					TargetEntity:   targetEntity,
+					SourcePartial:  sourcePartial,
+					TargetPartial:  targetPartial,
+					SourceExternal: sourceExternal,
+					TargetExternal: targetExternal,
+				})
+			}
+		} else {
 			r.Children = append(r.Children, &DerivedRelation{
-				Parent: r,
-				Source: s,
-				Target: t,
+				Parent:         r,
+				SourceEntity:   sourceEntity,
+				TargetEntity:   targetEntity,
+				SourcePartial:  sourcePartial,
+				TargetPartial:  targetPartial,
+				SourceExternal: sourceExternal,
+				TargetExternal: targetExternal,
 			})
 		}
+
 	}
 }
 
