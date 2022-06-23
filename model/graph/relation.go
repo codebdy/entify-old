@@ -10,8 +10,14 @@ type Relation struct {
 	Uuid                   string
 	InnerId                uint64
 	RelationType           string
-	Source                 Noder
-	Target                 Noder
+	SourceInterface        *Interface
+	TargetInterface        *Interface
+	SourceEntity           *Entity
+	TargetEntity           *Entity
+	SourcePartial          *Partial
+	TargetPartial          *Partial
+	SourceExternal         *External
+	TargetExternal         *External
 	RoleOfTarget           string
 	RoleOfSource           string
 	DescriptionOnSource    string
@@ -31,13 +37,29 @@ type DerivedRelation struct {
 	Table  *table.Table
 }
 
-func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
+func NewRelation(
+	r *domain.Relation,
+	sourceInterface *Interface,
+	targetInterface *Interface,
+	sourceEntity *Entity,
+	targetEntity *Entity,
+	sourcePartial *Partial,
+	targetPartial *Partial,
+	sourceExternal *External,
+	targetExternal *External,
+) *Relation {
 	return &Relation{
 		Uuid:                   r.Uuid,
 		InnerId:                r.InnerId,
 		RelationType:           r.RelationType,
-		Source:                 s,
-		Target:                 t,
+		SourceInterface:        sourceInterface,
+		TargetInterface:        targetInterface,
+		SourceEntity:           sourceEntity,
+		TargetEntity:           targetEntity,
+		SourcePartial:          sourcePartial,
+		TargetPartial:          targetPartial,
+		SourceExternal:         sourceExternal,
+		TargetExternal:         targetExternal,
 		RoleOfTarget:           r.RoleOfTarget,
 		RoleOfSource:           r.RoleOfSource,
 		DescriptionOnSource:    r.DescriptionOnSource,
@@ -50,7 +72,7 @@ func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
 }
 
 func (r *Relation) IsRealRelation() bool {
-	if r.Source.IsInterface() || r.Target.IsInterface() {
+	if r.SourceInterface != nil || r.TargetInterface != nil {
 		return false
 	}
 

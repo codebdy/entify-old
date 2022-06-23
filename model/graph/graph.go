@@ -105,12 +105,20 @@ func New(m *domain.Model) *Model {
 }
 
 func (m *Model) makeRelation(relation *domain.Relation) {
-	source := m.GetClassByUuid(relation.Source.Uuid)
-	if source.Entity() == nil && source.Interface() == nil {
+	sourceInterface := m.GetInterfaceByUuid(relation.Source.Uuid)
+	sourceEntity := m.GetEntityByUuid(relation.Source.Uuid)
+	sourcePartial := m.GetPartialByUuid(relation.Source.Uuid)
+	sourceExternal := m.GetExternalByUuid(relation.Source.Uuid)
+
+	if sourceInterface == nil && sourceEntity == nil && sourcePartial == nil && sourceExternal == nil {
 		panic("Can not find souce by uuid:" + relation.Source.Uuid)
 	}
-	target := m.GetClassByUuid(relation.Target.Uuid)
-	if target.Entity() == nil && target.Interface() == nil {
+	targetInterface := m.GetInterfaceByUuid(relation.Target.Uuid)
+	targetEntity := m.GetEntityByUuid(relation.Target.Uuid)
+	targetPartial := m.GetPartialByUuid(relation.Target.Uuid)
+	targetExternal := m.GetExternalByUuid(relation.Target.Uuid)
+
+	if targetInterface == nil && targetEntity == nil && targetPartial == nil && targetExternal == nil {
 		panic("Can not find target by uuid:" + relation.Target.Uuid)
 	}
 	r := NewRelation(relation, source, target)
@@ -290,43 +298,43 @@ func (m *Model) GetExternalByUuid(uuid string) *External {
 	return nil
 }
 
-func (m *Model) GetClassByUuid(uuid string) *Class {
-	intf := m.GetInterfaceByUuid(uuid)
+// func (m *Model) GetClassByUuid(uuid string) *Class {
+// 	intf := m.GetInterfaceByUuid(uuid)
 
-	if intf != nil {
-		return &intf.Class
-	}
+// 	if intf != nil {
+// 		return &intf.Class
+// 	}
 
-	partial := m.GetPartialByUuid(uuid)
-	if partial != nil {
-		return &partial.Class
-	}
+// 	partial := m.GetPartialByUuid(uuid)
+// 	if partial != nil {
+// 		return &partial.Class
+// 	}
 
-	external := m.GetExternalByUuid(uuid)
-	if external != nil {
-		return &external.Class
-	}
-	return &m.GetEntityByUuid(uuid).Class
-}
+// 	external := m.GetExternalByUuid(uuid)
+// 	if external != nil {
+// 		return &external.Class
+// 	}
+// 	return &m.GetEntityByUuid(uuid).Class
+// }
 
-func (m *Model) GetClassByName(name string) *Class {
-	intf := m.GetInterfaceByName(name)
-	if intf != nil {
-		return &intf.Class
-	}
+// func (m *Model) GetClassByName(name string) *Class {
+// 	intf := m.GetInterfaceByName(name)
+// 	if intf != nil {
+// 		return &intf.Class
+// 	}
 
-	partial := m.GetPartialByName(name)
-	if partial != nil {
-		return &partial.Class
-	}
+// 	partial := m.GetPartialByName(name)
+// 	if partial != nil {
+// 		return &partial.Class
+// 	}
 
-	external := m.GetExternalByName(name)
-	if external != nil {
-		return &external.Class
-	}
+// 	external := m.GetExternalByName(name)
+// 	if external != nil {
+// 		return &external.Class
+// 	}
 
-	return &m.GetEntityByName(name).Class
-}
+// 	return &m.GetEntityByName(name).Class
+// }
 
 func (m *Model) GetValueObjectByUuid(uuid string) *Class {
 	for i := range m.ValueObjects {
