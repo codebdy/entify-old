@@ -99,8 +99,8 @@ func (c *Class) DeleteByIdName() string {
 	return consts.DELETE + utils.FirstUpper(c.Name()) + consts.BY_ID
 }
 
-func (c *Class) UpdateName() string {
-	return consts.UPDATE + utils.FirstUpper(c.Name())
+func (c *Class) SetName() string {
+	return consts.SET + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) UpsertName() string {

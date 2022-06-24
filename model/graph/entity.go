@@ -20,11 +20,11 @@ func NewEntity(c *domain.Class) *Entity {
 }
 
 func (e *Entity) GetHasManyName() string {
-	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_MANY
+	return utils.FirstUpper(consts.SET) + e.Name() + consts.HAS_MANY
 }
 
 func (e *Entity) GetHasOneName() string {
-	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_ONE
+	return utils.FirstUpper(consts.SET) + e.Name() + consts.HAS_ONE
 }
 
 //有同名接口

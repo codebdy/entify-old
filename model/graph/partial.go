@@ -42,16 +42,24 @@ func (p *Partial) DeleteByIdName() string {
 	return consts.DELETE + utils.FirstUpper(p.NameWithPartial()) + consts.BY_ID
 }
 
+func (p *Partial) SetName() string {
+	return consts.SET + utils.FirstUpper(p.NameWithPartial())
+}
+
+func (p *Partial) InsertName() string {
+	return consts.INSERT + utils.FirstUpper(p.NameWithPartial())
+}
+
+func (p *Partial) InsertOneName() string {
+	return consts.INSERT_ONE + utils.FirstUpper(p.NameWithPartial())
+}
+
 func (p *Partial) UpdateName() string {
 	return consts.UPDATE + utils.FirstUpper(p.NameWithPartial())
 }
 
-func (p *Partial) UpsertName() string {
-	return consts.UPSERT + utils.FirstUpper(p.NameWithPartial())
-}
-
-func (p *Partial) UpsertOneName() string {
-	return consts.UPSERT_ONE + utils.FirstUpper(p.NameWithPartial())
+func (p *Partial) UpdateOneName() string {
+	return consts.UPDATE_ONE + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) AggregateName() string {
