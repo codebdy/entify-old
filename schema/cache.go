@@ -29,7 +29,7 @@ func (c *TypeCache) MakeCache() {
 	c.makeEnums(model.GlobalModel.Graph.Enums)
 	c.makeOutputInterfaces(model.GlobalModel.Graph.Interfaces)
 	c.makeOutputObjects(model.GlobalModel.Graph.Entities)
-	c.makeArgs()
+	c.makeQueryArgs()
 	c.makeRelations()
 	c.makeInputs()
 }

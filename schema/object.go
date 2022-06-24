@@ -17,7 +17,7 @@ func (c *TypeCache) makeOutputObjects(nodes []*graph.Entity) {
 			c.ObjectTypeMap[partialName] = graphql.NewObject(
 				graphql.ObjectConfig{
 					Name:        partialName,
-					Fields:      outputFields(entity),
+					Fields:      outputFields(entity.AllAttributes(), entity.AllMethods()),
 					Description: entity.Description(),
 				},
 			)
@@ -33,7 +33,7 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity),
+				Fields:      outputFields(entity.AllAttributes(), entity.AllMethods()),
 				Description: entity.Description(),
 				Interfaces:  interfaces,
 			},
@@ -42,7 +42,7 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 		return graphql.NewObject(
 			graphql.ObjectConfig{
 				Name:        name,
-				Fields:      outputFields(entity),
+				Fields:      outputFields(entity.AllAttributes(), entity.AllMethods()),
 				Description: entity.Description(),
 			},
 		)
@@ -50,9 +50,9 @@ func (c *TypeCache) ObjectType(entity *graph.Entity) *graphql.Object {
 
 }
 
-func outputFields(node graph.Noder) graphql.Fields {
+func outputFields(attrs []*graph.Attribute, methods []*graph.Method) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		fields[attr.Name] = &graphql.Field{
 			Type:        AttributeType(attr),
 			Description: attr.Description,
@@ -63,7 +63,7 @@ func outputFields(node graph.Noder) graphql.Fields {
 		}
 	}
 
-	for _, method := range node.AllMethods() {
+	for _, method := range methods {
 		fields[method.Name()] = &graphql.Field{
 			Type:        MethodType(method),
 			Description: method.Method.Description,

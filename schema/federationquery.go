@@ -110,7 +110,7 @@ func querySDL() (string, string) {
 
 	for _, entity := range model.GlobalModel.Graph.Entities {
 		if notSystemEntity(entity) {
-			types = types + objectToSDL(Cache.EntityeOutputType(entity.NameWithPartial()), true)
+			types = types + objectToSDL(Cache.EntityeOutputType(entity.Name()), true)
 		}
 	}
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
@@ -140,7 +140,7 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryName(),
 		makeArgsSDL(queryArgs(intf.Domain.Name)),
-		queryResponseType(intf).String(),
+		queryResponseType(&intf.Class).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
@@ -152,7 +152,7 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryAggregateName(),
 		makeArgsSDL(queryArgs(intf.Domain.Name)),
-		(*AggregateType(intf)).String(),
+		(*AggregateInterfaceType(intf)).String(),
 	)
 
 	return sdl
@@ -163,7 +163,7 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryName(),
 		makeArgsSDL(queryArgs(entity.Name())),
-		queryResponseType(entity).String(),
+		queryResponseType(&entity.Class).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
@@ -175,7 +175,7 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryAggregateName(),
 		makeArgsSDL(queryArgs(entity.Name())),
-		(*AggregateType(entity)).String(),
+		(*AggregateEntityType(entity)).String(),
 	)
 
 	return sdl
@@ -219,7 +219,7 @@ func objectToSDL(obj *graphql.Object, withKey bool) string {
 	implString := ""
 
 	for _, intf := range obj.Interfaces() {
-		intfNames = append(intfNames, intf.Domain.Name)
+		intfNames = append(intfNames, intf.Name())
 	}
 	if len(intfNames) > 0 {
 		implString = " implements " + strings.Join(intfNames, " & ")
@@ -244,7 +244,7 @@ func enumToSDL(enum *graphql.Enum) string {
 
 func interfaceToSDL(intf *graphql.Interface) string {
 	sdl := interfaceSDL
-	return fmt.Sprintf(sdl, intf.Domain.Name, fieldsToSDL(intf.Fields()))
+	return fmt.Sprintf(sdl, intf.Name(), fieldsToSDL(intf.Fields()))
 }
 
 func inputToSDL(input *graphql.InputObject) string {

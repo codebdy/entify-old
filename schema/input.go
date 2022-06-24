@@ -22,7 +22,7 @@ func (c *TypeCache) makeInputs() {
 		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
 		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
 	}
-	c.makeInputRelations()
+	c.makeEntityInputRelations()
 }
 
 func (c *TypeCache) makeHasManyInput(entity *graph.Entity) *graphql.InputObject {
@@ -70,7 +70,7 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 	})
 }
 
-func (c *TypeCache) makeInputRelations() {
+func (c *TypeCache) makeEntityInputRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 
@@ -82,9 +82,9 @@ func (c *TypeCache) makeInputRelations() {
 		for i := range associas {
 			assoc := associas[i]
 			if !assoc.IsAbstract() {
-				typeInput := c.SaveInput(assoc.Owner().NameWithPartial())
+				typeInput := c.SaveInput(assoc.Owner().Name())
 				if typeInput == nil {
-					panic("can not find save input:" + assoc.Owner().NameWithPartial())
+					panic("can not find save input:" + assoc.Owner().Name())
 				}
 				if len(typeInput.Fields()) == 0 {
 					fmt.Println("Fields == 0")
@@ -93,11 +93,11 @@ func (c *TypeCache) makeInputRelations() {
 
 				arrayType := c.getAssociationType(assoc)
 				//如果是虚类，并且没有子类
-				if assoc.TypeClass().Interface() != nil && len(assoc.TypeClass().Interface().Children) == 0 {
+				if assoc.TypeInterface() != nil && len(assoc.TypeInterface().Children) == 0 {
 					continue
 				}
 				if arrayType == nil {
-					panic("Can not get association type:" + assoc.Owner().NameWithPartial() + "." + assoc.Name())
+					panic("Can not get association type:" + assoc.Owner().Name() + "." + assoc.Name())
 				}
 				input.AddFieldConfig(assoc.Name(), &graphql.InputObjectFieldConfig{
 					Type:        arrayType,
@@ -139,9 +139,9 @@ func (c *TypeCache) makeDevrivedInputRelations(association *graph.Association,
 
 func (c *TypeCache) getAssociationType(association *graph.Association) *graphql.InputObject {
 	if association.IsArray() {
-		return c.HasManyInput(association.TypeClass().NameWithPartial())
+		return c.HasManyInput(association.TypeClass().Name())
 	} else {
-		return c.HasOneInput(association.TypeClass().NameWithPartial())
+		return c.HasOneInput(association.TypeClass().Name())
 	}
 }
 

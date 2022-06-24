@@ -7,7 +7,7 @@ import (
 	"rxdrag.com/entify/model/graph"
 )
 
-func (c *TypeCache) makeArgs() {
+func (c *TypeCache) makeQueryArgs() {
 	for i := range model.GlobalModel.Graph.Interfaces {
 		c.makeOneInterfaceArgs(model.GlobalModel.Graph.Interfaces[i])
 	}
