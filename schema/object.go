@@ -17,16 +17,16 @@ func (c *TypeCache) makePartialOutputObjects(partials []*graph.Partial) {
 		patial := partials[i]
 		c.makeEntityObject(&patial.Entity)
 
-		partialName := patial.NameWithPartial()
+		// partialName := patial.NameWithPartial()
 
-		objType := graphql.NewObject(
-			graphql.ObjectConfig{
-				Name:        partialName,
-				Fields:      outputFields(patial.AllAttributes(), patial.AllMethods()),
-				Description: patial.Description(),
-			},
-		)
-		c.ObjectTypeMap[partialName] = objType
+		// objType := graphql.NewObject(
+		// 	graphql.ObjectConfig{
+		// 		Name:        partialName,
+		// 		Fields:      outputFields(patial.AllAttributes(), patial.AllMethods()),
+		// 		Description: patial.Description(),
+		// 	},
+		// )
+		// c.ObjectTypeMap[partialName] = objType
 	}
 }
 
