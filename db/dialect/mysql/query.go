@@ -283,7 +283,7 @@ func (b *MySQLBuilder) BuildQueryAssociatedInstancesSQL(
 	queryStr := "select %s from %s a INNER JOIN %s b ON a.id = b.%s WHERE b.%s=%d "
 	queryStr = fmt.Sprintf(queryStr,
 		associationFieldSQL(entity),
-		entity.Entity().TableName(),
+		entity.TableName(),
 		povitTableName,
 		typeFieldName,
 		ownerFieldName,

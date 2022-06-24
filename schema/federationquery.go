@@ -101,7 +101,7 @@ func querySDL() (string, string) {
 	}
 
 	for _, intf := range model.GlobalModel.Graph.Interfaces {
-		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Name()))
+		types = types + interfaceToSDL(Cache.InterfaceOutputType(intf.Domain.Name))
 	}
 
 	for _, intf := range model.GlobalModel.Graph.RootInterfaces() {
@@ -120,7 +120,7 @@ func querySDL() (string, string) {
 	}
 
 	for _, exteneral := range model.GlobalModel.Graph.Externals {
-		types = types + fmt.Sprintf(externalSDL, exteneral.Name())
+		types = types + fmt.Sprintf(externalSDL, exteneral.Domain.Name)
 	}
 
 	for _, aggregate := range Cache.AggregateMap {
@@ -139,20 +139,20 @@ func makeInterfaceSDL(intf *graph.Interface) string {
 	sdl := ""
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryName(),
-		makeArgsSDL(queryArgs(intf.Name())),
-		queryResponseType(intf).String(),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
+		queryResponseType(&intf.Class).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryOneName(),
-		makeArgsSDL(queryArgs(intf.Name())),
-		Cache.OutputType(intf.Name()).String(),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
+		Cache.OutputType(intf.Domain.Name).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		intf.QueryAggregateName(),
-		makeArgsSDL(queryArgs(intf.Name())),
-		(*AggregateType(intf)).String(),
+		makeArgsSDL(queryArgs(intf.Domain.Name)),
+		(*AggregateInterfaceType(intf)).String(),
 	)
 
 	return sdl
@@ -163,7 +163,7 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryName(),
 		makeArgsSDL(queryArgs(entity.Name())),
-		queryResponseType(entity).String(),
+		queryResponseType(&entity.Class).String(),
 	)
 
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
@@ -175,7 +175,7 @@ func makeEntitySDL(entity *graph.Entity) string {
 	sdl = sdl + fmt.Sprintf(queryFieldSDL,
 		entity.QueryAggregateName(),
 		makeArgsSDL(queryArgs(entity.Name())),
-		(*AggregateType(entity)).String(),
+		(*AggregateEntityType(entity)).String(),
 	)
 
 	return sdl

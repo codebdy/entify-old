@@ -11,9 +11,10 @@ import (
 type Model struct {
 	Enums        []*Enum
 	Interfaces   []*Interface
-	Entities     []*Entity // include Partials
+	Entities     []*Entity
+	Partials     []*Partial
 	ValueObjects []*Class
-	Externals    []*Entity
+	Externals    []*External
 	Relations    []*Relation
 	Tables       []*table.Table
 }
@@ -35,7 +36,7 @@ func New(m *domain.Model) *Model {
 
 	for i := range m.Classes {
 		cls := m.Classes[i]
-		if cls.StereoType == meta.CLASSS_ENTITY || cls.StereoType == meta.CLASS_PARTIAL {
+		if cls.StereoType == meta.CLASSS_ENTITY {
 			newEntity := NewEntity(cls)
 			model.Entities = append(model.Entities, newEntity)
 			//构建接口实现关系
@@ -63,8 +64,10 @@ func New(m *domain.Model) *Model {
 			}
 		} else if cls.StereoType == meta.CLASS_VALUE_OBJECT {
 			model.ValueObjects = append(model.ValueObjects, NewClass(cls))
+		} else if cls.StereoType == meta.CLASS_PARTIAL {
+			model.Partials = append(model.Partials, NewPartial(cls))
 		} else if cls.StereoType == meta.CLASS_EXTERNAL {
-			model.Externals = append(model.Externals, NewEntity(cls))
+			model.Externals = append(model.Externals, NewExternal(cls))
 		}
 	}
 
@@ -102,16 +105,44 @@ func New(m *domain.Model) *Model {
 }
 
 func (m *Model) makeRelation(relation *domain.Relation) {
-	source := m.GetNodeByUuid(relation.Source.Uuid)
-	if source.Entity() == nil && source.Interface() == nil {
+	sourceInterface := m.GetInterfaceByUuid(relation.Source.Uuid)
+	sourceEntity := m.GetEntityByUuid(relation.Source.Uuid)
+	sourcePartial := m.GetPartialByUuid(relation.Source.Uuid)
+	sourceExternal := m.GetExternalByUuid(relation.Source.Uuid)
+
+	if sourceInterface == nil && sourceEntity == nil && sourcePartial == nil && sourceExternal == nil {
 		panic("Can not find souce by uuid:" + relation.Source.Uuid)
 	}
-	target := m.GetNodeByUuid(relation.Target.Uuid)
-	if target.Entity() == nil && target.Interface() == nil {
+	targetInterface := m.GetInterfaceByUuid(relation.Target.Uuid)
+	targetEntity := m.GetEntityByUuid(relation.Target.Uuid)
+	targetPartial := m.GetPartialByUuid(relation.Target.Uuid)
+	targetExternal := m.GetExternalByUuid(relation.Target.Uuid)
+
+	if targetInterface == nil && targetEntity == nil && targetPartial == nil && targetExternal == nil {
 		panic("Can not find target by uuid:" + relation.Target.Uuid)
 	}
-	r := NewRelation(relation, source, target)
+	r := NewRelation(
+		relation,
+		sourceInterface,
+		targetInterface,
+		sourceEntity,
+		targetEntity,
+		sourcePartial,
+		targetPartial,
+		sourceExternal,
+		targetExternal,
+	)
 	m.Relations = append(m.Relations, r)
+	source := r.SourceClass()
+	if source == nil {
+		panic("can not find souce class")
+	}
+
+	target := r.TargetClass()
+	if target == nil {
+		panic("can not find target class")
+	}
+
 	source.AddAssociation(NewAssociation(r, source.Uuid()))
 	if relation.RelationType == meta.TWO_WAY_AGGREGATION ||
 		relation.RelationType == meta.TWO_WAY_ASSOCIATION ||
@@ -122,28 +153,41 @@ func (m *Model) makeRelation(relation *domain.Relation) {
 	sourceEntities := []*Entity{}
 	targetEntities := []*Entity{}
 
-	if source.IsInterface() {
-		sourceEntities = append(sourceEntities, source.Interface().Children...)
-	} else if target.IsInterface() {
-		sourceEntities = append(sourceEntities, source.Entity())
+	if sourceInterface != nil {
+		sourceEntities = append(sourceEntities, sourceInterface.Children...)
 	}
 
-	if target.IsInterface() {
-		targetEntities = append(targetEntities, target.Interface().Children...)
-	} else if source.IsInterface() {
-		targetEntities = append(targetEntities, target.Entity())
+	if targetInterface != nil {
+		targetEntities = append(targetEntities, targetInterface.Children...)
 	}
 
 	for i := range sourceEntities {
-		s := sourceEntities[i]
-		for j := range targetEntities {
-			t := targetEntities[j]
+		sourceEntity = sourceEntities[i]
+		if targetInterface != nil {
+			for j := range targetEntities {
+				targetEntity = targetEntities[j]
+				r.Children = append(r.Children, &DerivedRelation{
+					Parent:         r,
+					SourceEntity:   sourceEntity,
+					TargetEntity:   targetEntity,
+					SourcePartial:  sourcePartial,
+					TargetPartial:  targetPartial,
+					SourceExternal: sourceExternal,
+					TargetExternal: targetExternal,
+				})
+			}
+		} else {
 			r.Children = append(r.Children, &DerivedRelation{
-				Parent: r,
-				Source: s,
-				Target: t,
+				Parent:         r,
+				SourceEntity:   sourceEntity,
+				TargetEntity:   targetEntity,
+				SourcePartial:  sourcePartial,
+				TargetPartial:  targetPartial,
+				SourceExternal: sourceExternal,
+				TargetExternal: targetExternal,
 			})
 		}
+
 	}
 }
 
@@ -216,6 +260,11 @@ func (m *Model) Validate() {
 			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name()))
 		}
 	}
+	for _, entity := range m.Partials {
+		if entity.IsEmperty() {
+			panic(fmt.Sprintf("Entity %s should have one normal field at least", entity.Name()))
+		}
+	}
 }
 
 func (m *Model) RootEnities() []*Entity {
@@ -242,24 +291,15 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
-func (m *Model) GetNodeByUuid(uuid string) Noder {
-	intf := m.GetInterfaceByUuid(uuid)
-
-	if intf != nil {
-		return intf
+func (m *Model) RootPartails() []*Partial {
+	partials := []*Partial{}
+	for _, partial := range m.Partials {
+		if partial.Domain.Root {
+			partials = append(partials, partial)
+		}
 	}
 
-	return m.GetEntityByUuid(uuid)
-}
-
-func (m *Model) GetNodeByName(name string) Noder {
-	intf := m.GetInterfaceByName(name)
-
-	if intf != nil {
-		return intf
-	}
-
-	return m.GetEntityByName(name)
+	return partials
 }
 
 func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
@@ -281,6 +321,64 @@ func (m *Model) GetEntityByUuid(uuid string) *Entity {
 	}
 	return nil
 }
+
+func (m *Model) GetPartialByUuid(uuid string) *Partial {
+	for i := range m.Partials {
+		partial := m.Partials[i]
+		if partial.Uuid() == uuid {
+			return partial
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetExternalByUuid(uuid string) *External {
+	for i := range m.Externals {
+		external := m.Externals[i]
+		if external.Uuid() == uuid {
+			return external
+		}
+	}
+	return nil
+}
+
+// func (m *Model) GetClassByUuid(uuid string) *Class {
+// 	intf := m.GetInterfaceByUuid(uuid)
+
+// 	if intf != nil {
+// 		return &intf.Class
+// 	}
+
+// 	partial := m.GetPartialByUuid(uuid)
+// 	if partial != nil {
+// 		return &partial.Class
+// 	}
+
+// 	external := m.GetExternalByUuid(uuid)
+// 	if external != nil {
+// 		return &external.Class
+// 	}
+// 	return &m.GetEntityByUuid(uuid).Class
+// }
+
+// func (m *Model) GetClassByName(name string) *Class {
+// 	intf := m.GetInterfaceByName(name)
+// 	if intf != nil {
+// 		return &intf.Class
+// 	}
+
+// 	partial := m.GetPartialByName(name)
+// 	if partial != nil {
+// 		return &partial.Class
+// 	}
+
+// 	external := m.GetExternalByName(name)
+// 	if external != nil {
+// 		return &external.Class
+// 	}
+
+// 	return &m.GetEntityByName(name).Class
+// }
 
 func (m *Model) GetValueObjectByUuid(uuid string) *Class {
 	for i := range m.ValueObjects {
@@ -307,6 +405,26 @@ func (m *Model) GetEntityByName(name string) *Entity {
 		ent := m.Entities[i]
 		if ent.Name() == name {
 			return ent
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetPartialByName(name string) *Partial {
+	for i := range m.Partials {
+		partial := m.Partials[i]
+		if partial.Name() == name {
+			return partial
+		}
+	}
+	return nil
+}
+
+func (m *Model) GetExternalByName(name string) *External {
+	for i := range m.Externals {
+		external := m.Externals[i]
+		if external.Name() == name {
+			return external
 		}
 	}
 	return nil

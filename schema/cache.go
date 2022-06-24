@@ -28,8 +28,9 @@ func (c *TypeCache) MakeCache() {
 	c.clearCache()
 	c.makeEnums(model.GlobalModel.Graph.Enums)
 	c.makeOutputInterfaces(model.GlobalModel.Graph.Interfaces)
-	c.makeOutputObjects(model.GlobalModel.Graph.Entities)
-	c.makeArgs()
+	c.makeEntityOutputObjects(model.GlobalModel.Graph.Entities)
+	c.makePartialOutputObjects(model.GlobalModel.Graph.Partials)
+	c.makeQueryArgs()
 	c.makeRelations()
 	c.makeInputs()
 }
@@ -129,7 +130,7 @@ func (c *TypeCache) MutationResponse(name string) *graphql.Object {
 func (c *TypeCache) mapInterfaces(entities []*graph.Interface) []*graphql.Interface {
 	interfaces := []*graphql.Interface{}
 	for i := range entities {
-		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Name()])
+		interfaces = append(interfaces, c.InterfaceTypeMap[entities[i].Domain.Name])
 	}
 
 	return interfaces

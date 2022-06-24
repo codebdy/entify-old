@@ -20,7 +20,7 @@ func (c *TypeCache) InterfaceType(intf *graph.Interface) *graphql.Interface {
 	return graphql.NewInterface(
 		graphql.InterfaceConfig{
 			Name:        name,
-			Fields:      outputFields(intf),
+			Fields:      outputFields(intf.AllAttributes(), intf.AllMethods()),
 			Description: intf.Description(),
 			ResolveType: resolveTypeFn,
 		},

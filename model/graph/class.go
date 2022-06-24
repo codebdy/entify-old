@@ -110,3 +110,7 @@ func (c *Class) UpsertName() string {
 func (c *Class) UpsertOneName() string {
 	return consts.UPSERT_ONE + c.Name()
 }
+
+func (c *Class) AggregateName() string {
+	return c.Name() + utils.FirstUpper(consts.AGGREGATE)
+}

@@ -12,9 +12,9 @@ import (
 func (c *TypeCache) makeInputs() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
-		c.UpdateInputMap[entity.Name()] = makeUpdateInput(entity)
-		c.SaveInputMap[entity.Name()] = makeSaveInput(entity)
-		c.MutationResponseMap[entity.Name()] = makeMutationResponseType(entity)
+		c.UpdateInputMap[entity.Name()] = makeEntityUpdateInput(entity)
+		c.SaveInputMap[entity.Name()] = makeEntitySaveInput(entity)
+		c.MutationResponseMap[entity.Name()] = makeEntityMutationResponseType(entity)
 	}
 
 	for i := range model.GlobalModel.Graph.Entities {
@@ -22,7 +22,26 @@ func (c *TypeCache) makeInputs() {
 		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
 		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
 	}
-	c.makeInputRelations()
+
+	for i := range model.GlobalModel.Graph.Partials {
+		partail := model.GlobalModel.Graph.Partials[i]
+		c.UpdateInputMap[partail.Name()] = makePartialUpdateInput(partail)
+		c.SaveInputMap[partail.Name()] = makePartailSaveInput(partail)
+		c.MutationResponseMap[partail.Name()] = makePartialMutationResponseType(partail)
+	}
+
+	for i := range model.GlobalModel.Graph.Partials {
+		partial := model.GlobalModel.Graph.Partials[i]
+		c.HasManyInputMap[partial.Name()] = c.makeHasManyInput(&partial.Entity)
+		c.HasOneInputMap[partial.Name()] = c.makeHasOneInput(&partial.Entity)
+	}
+
+	for i := range model.GlobalModel.Graph.Externals {
+		external := model.GlobalModel.Graph.Externals[i]
+		c.HasManyInputMap[external.Name()] = c.makeHasManyInput(&external.Entity)
+		c.HasOneInputMap[external.Name()] = c.makeHasOneInput(&external.Entity)
+	}
+	c.makeEntityInputRelations()
 }
 
 func (c *TypeCache) makeHasManyInput(entity *graph.Entity) *graphql.InputObject {
@@ -70,7 +89,7 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 	})
 }
 
-func (c *TypeCache) makeInputRelations() {
+func (c *TypeCache) makeEntityInputRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 
@@ -93,7 +112,7 @@ func (c *TypeCache) makeInputRelations() {
 
 				arrayType := c.getAssociationType(assoc)
 				//如果是虚类，并且没有子类
-				if assoc.TypeClass().Interface() != nil && len(assoc.TypeClass().Interface().Children) == 0 {
+				if assoc.TypeInterface() != nil && len(assoc.TypeInterface().Children) == 0 {
 					continue
 				}
 				if arrayType == nil {
@@ -166,7 +185,7 @@ func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFie
 	return fields
 }
 
-func makeSaveInput(entity *graph.Entity) *graphql.InputObject {
+func makeEntitySaveInput(entity *graph.Entity) *graphql.InputObject {
 	name := entity.Name() + consts.INPUT
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
@@ -176,7 +195,17 @@ func makeSaveInput(entity *graph.Entity) *graphql.InputObject {
 	)
 }
 
-func makeUpdateInput(entity *graph.Entity) *graphql.InputObject {
+func makePartailSaveInput(partail *graph.Partial) *graphql.InputObject {
+	name := partail.NameWithPartial() + consts.INPUT
+	return graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   name,
+			Fields: inputFields(&partail.Entity, true),
+		},
+	)
+}
+
+func makeEntityUpdateInput(entity *graph.Entity) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
 			Name:   entity.Name() + consts.UPDATE_INPUT,
@@ -185,7 +214,16 @@ func makeUpdateInput(entity *graph.Entity) *graphql.InputObject {
 	)
 }
 
-func makeMutationResponseType(entity *graph.Entity) *graphql.Object {
+func makePartialUpdateInput(partial *graph.Partial) *graphql.InputObject {
+	return graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   partial.NameWithPartial() + consts.UPDATE_INPUT,
+			Fields: inputFields(&partial.Entity, false),
+		},
+	)
+}
+
+func makeEntityMutationResponseType(entity *graph.Entity) *graphql.Object {
 	var returnValue *graphql.Object
 
 	returnValue = graphql.NewObject(
@@ -199,6 +237,30 @@ func makeMutationResponseType(entity *graph.Entity) *graphql.Object {
 					Type: &graphql.NonNull{
 						OfType: &graphql.List{
 							OfType: Cache.OutputType(entity.Name()),
+						},
+					},
+				},
+			},
+		},
+	)
+
+	return returnValue
+}
+
+func makePartialMutationResponseType(partial *graph.Partial) *graphql.Object {
+	var returnValue *graphql.Object
+
+	returnValue = graphql.NewObject(
+		graphql.ObjectConfig{
+			Name: partial.NameWithPartial() + consts.MUTATION_RESPONSE,
+			Fields: graphql.Fields{
+				consts.RESPONSE_AFFECTEDROWS: &graphql.Field{
+					Type: graphql.Int,
+				},
+				consts.RESPONSE_RETURNING: &graphql.Field{
+					Type: &graphql.NonNull{
+						OfType: &graphql.List{
+							OfType: Cache.OutputType(partial.Name()),
 						},
 					},
 				},

@@ -5,19 +5,26 @@ import (
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/meta"
-	"rxdrag.com/entify/utils"
 )
 
-func AvgFields(node graph.Noder) graphql.Fields {
+func AggregateInterfaceType(intf *graph.Interface) *graphql.Object {
+	return aggregateType(intf.Name(), intf.AggregateName(), intf.AllAttributes())
+}
+
+func AggregateEntityType(entity *graph.Entity) *graphql.Object {
+	return aggregateType(entity.Name(), entity.AggregateName(), entity.AllAttributes())
+}
+
+func AggregatePartialType(partial *graph.Partial) *graphql.Object {
+	return aggregateType(partial.Name(), partial.AggregateName(), partial.AllAttributes())
+}
+
+func avgFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, column := range node.AllAttributes() {
+	for _, column := range attrs {
 		if column.Type == meta.INT || column.Type == meta.FLOAT {
 			fields[column.Name] = &graphql.Field{
 				Type: AttributeType(column),
-				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				// 	fmt.Println(p.Context.Value("data"))
-				// 	return "world", nil
-				// },
 			}
 		}
 
@@ -25,9 +32,22 @@ func AvgFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func MaxFields(node graph.Noder) graphql.Fields {
+func maxFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
+			}
+		}
+
+	}
+	return fields
+}
+
+func minFields(attrs []*graph.Attribute) graphql.Fields {
+	fields := graphql.Fields{}
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -42,26 +62,9 @@ func MaxFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func MinFields(node graph.Noder) graphql.Fields {
-	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
-		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
-			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
-				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				// 	fmt.Println(p.Context.Value("data"))
-				// 	return "world", nil
-				// },
-			}
-		}
-
-	}
-	return fields
-}
-
-func SelectFields(node graph.Noder) graphql.InputObjectConfigFieldMap {
+func selectFields(attrs []*graph.Attribute) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		fields[attr.Name] = &graphql.InputObjectFieldConfig{
 			Type: AttributeType(attr),
 		}
@@ -70,9 +73,9 @@ func SelectFields(node graph.Noder) graphql.InputObjectConfigFieldMap {
 	return fields
 }
 
-func StddevFields(node graph.Noder) graphql.Fields {
+func stddevFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -87,9 +90,9 @@ func StddevFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func StddevPopFields(node graph.Noder) graphql.Fields {
+func stddevPopFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -103,26 +106,9 @@ func StddevPopFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func StddevSampFields(node graph.Noder) graphql.Fields {
+func stddevSampFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
-		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
-			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
-				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				// 	fmt.Println(p.Context.Value("data"))
-				// 	return "world", nil
-				// },
-			}
-		}
-
-	}
-	return fields
-}
-
-func SumFields(node graph.Noder) graphql.Fields {
-	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -137,9 +123,9 @@ func SumFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func VarPopFields(node graph.Noder) graphql.Fields {
+func sumFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -154,9 +140,9 @@ func VarPopFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func VarSampFields(node graph.Noder) graphql.Fields {
+func varPopFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -171,9 +157,9 @@ func VarSampFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func VarianceFields(node graph.Noder) graphql.Fields {
+func varSampFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	for _, attr := range node.AllAttributes() {
+	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
 				Type: AttributeType(attr),
@@ -188,47 +174,64 @@ func VarianceFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func AggregateFields(node graph.Noder) graphql.Fields {
+func varianceFields(attrs []*graph.Attribute) graphql.Fields {
 	fields := graphql.Fields{}
-	avgFields := AvgFields(node)
+	for _, attr := range attrs {
+		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
+			fields[attr.Name] = &graphql.Field{
+				Type: AttributeType(attr),
+				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// 	fmt.Println(p.Context.Value("data"))
+				// 	return "world", nil
+				// },
+			}
+		}
+
+	}
+	return fields
+}
+
+func aggregateFields(name string, attrs []*graph.Attribute) graphql.Fields {
+	fields := graphql.Fields{}
+	avgFields := avgFields(attrs)
 	if len(avgFields) > 0 {
 		fields["avg"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "AvgFields",
+					Name:   name + "AvgFields",
 					Fields: avgFields,
 				},
 			),
 		}
 	}
 
-	maxFields := MaxFields(node)
+	maxFields := maxFields(attrs)
 	if len(maxFields) > 0 {
 		fields["max"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "MaxFields",
+					Name:   name + "MaxFields",
 					Fields: maxFields,
 				},
 			),
 		}
 	}
 
-	minFields := MinFields(node)
+	minFields := minFields(attrs)
 	if len(minFields) > 0 {
 		fields["min"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "MinFields",
+					Name:   name + "MinFields",
 					Fields: minFields,
 				},
 			),
 		}
 	}
 
-	countFields := SelectFields(node)
+	countFields := selectFields(attrs)
 	if len(countFields) > 0 {
-		selectColumnName := node.Name() + "SelectColumn"
+		selectColumnName := name + "SelectColumn"
 		selectColumn := graphql.NewInputObject(
 			graphql.InputObjectConfig{
 				Name:   selectColumnName,
@@ -249,81 +252,81 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 		}
 	}
 
-	stddevFields := StddevFields(node)
+	stddevFields := stddevFields(attrs)
 	if len(stddevFields) > 0 {
 		fields["stddev"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevFields",
+					Name:   name + "StddevFields",
 					Fields: stddevFields,
 				},
 			),
 		}
 	}
 
-	stddevPopFields := StddevPopFields(node)
+	stddevPopFields := stddevPopFields(attrs)
 	if len(stddevPopFields) > 0 {
 		fields["stddevPop"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevPopFields",
+					Name:   name + "StddevPopFields",
 					Fields: stddevPopFields,
 				},
 			),
 		}
 	}
 
-	stddevSampFields := StddevSampFields(node)
+	stddevSampFields := stddevSampFields(attrs)
 	if len(stddevSampFields) > 0 {
 		fields["stddevSamp"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "StddevSampFields",
+					Name:   name + "StddevSampFields",
 					Fields: stddevSampFields,
 				},
 			),
 		}
 	}
 
-	sumFields := SumFields(node)
+	sumFields := sumFields(attrs)
 	if len(sumFields) > 0 {
 		fields["sum"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "SumFields",
+					Name:   name + "SumFields",
 					Fields: sumFields,
 				},
 			),
 		}
 	}
-	varPopFields := VarPopFields(node)
+	varPopFields := varPopFields(attrs)
 	if len(varPopFields) > 0 {
 		fields["varPop"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarPopFields",
+					Name:   name + "VarPopFields",
 					Fields: varPopFields,
 				},
 			),
 		}
 	}
-	varSampFields := VarSampFields(node)
+	varSampFields := varSampFields(attrs)
 	if len(varSampFields) > 0 {
 		fields["varSamp"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarSampFields",
+					Name:   name + "VarSampFields",
 					Fields: varSampFields,
 				},
 			),
 		}
 	}
-	varianceFields := VarianceFields(node)
+	varianceFields := varianceFields(attrs)
 	if len(varianceFields) > 0 {
 		fields["variance"] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + "VarianceFields",
+					Name:   name + "VarianceFields",
 					Fields: varianceFields,
 				},
 			),
@@ -332,10 +335,9 @@ func AggregateFields(node graph.Noder) graphql.Fields {
 	return fields
 }
 
-func AggregateType(node graph.Noder) *graphql.Object {
-	name := node.Name() + utils.FirstUpper(consts.AGGREGATE)
-	if Cache.AggregateMap[name] != nil {
-		return Cache.AggregateMap[name]
+func aggregateType(name string, aggregateName string, attrs []*graph.Attribute) *graphql.Object {
+	if Cache.AggregateMap[aggregateName] != nil {
+		return Cache.AggregateMap[aggregateName]
 	}
 
 	var returnValue *graphql.Object
@@ -343,18 +345,18 @@ func AggregateType(node graph.Noder) *graphql.Object {
 	fields := graphql.Fields{
 		consts.NODES: &graphql.Field{
 			Type: &graphql.List{
-				OfType: Cache.OutputType(node.Name()),
+				OfType: Cache.OutputType(name),
 			},
 		},
 	}
 
-	aggregateFields := AggregateFields(node)
+	aggregateFields := aggregateFields(name, attrs)
 
 	if len(aggregateFields) > 0 {
 		fields[consts.AGGREGATE] = &graphql.Field{
 			Type: graphql.NewObject(
 				graphql.ObjectConfig{
-					Name:   node.Name() + utils.FirstUpper(consts.AGGREGATE) + consts.FIELDS,
+					Name:   aggregateName + consts.FIELDS,
 					Fields: aggregateFields,
 				},
 			),
@@ -363,11 +365,11 @@ func AggregateType(node graph.Noder) *graphql.Object {
 
 	returnValue = graphql.NewObject(
 		graphql.ObjectConfig{
-			Name:   name,
+			Name:   aggregateName,
 			Fields: fields,
 		},
 	)
 
-	Cache.AggregateMap[name] = returnValue
+	Cache.AggregateMap[aggregateName] = returnValue
 	return returnValue
 }

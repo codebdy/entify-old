@@ -10,8 +10,14 @@ type Relation struct {
 	Uuid                   string
 	InnerId                uint64
 	RelationType           string
-	Source                 Noder
-	Target                 Noder
+	SourceInterface        *Interface
+	TargetInterface        *Interface
+	SourceEntity           *Entity
+	TargetEntity           *Entity
+	SourcePartial          *Partial
+	TargetPartial          *Partial
+	SourceExternal         *External
+	TargetExternal         *External
 	RoleOfTarget           string
 	RoleOfSource           string
 	DescriptionOnSource    string
@@ -25,19 +31,39 @@ type Relation struct {
 }
 
 type DerivedRelation struct {
-	Parent *Relation
-	Source *Entity
-	Target *Entity
-	Table  *table.Table
+	Parent         *Relation
+	SourceEntity   *Entity
+	TargetEntity   *Entity
+	SourcePartial  *Partial
+	TargetPartial  *Partial
+	SourceExternal *External
+	TargetExternal *External
+	Table          *table.Table
 }
 
-func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
-	return &Relation{
+func NewRelation(
+	r *domain.Relation,
+	sourceInterface *Interface,
+	targetInterface *Interface,
+	sourceEntity *Entity,
+	targetEntity *Entity,
+	sourcePartial *Partial,
+	targetPartial *Partial,
+	sourceExternal *External,
+	targetExternal *External,
+) *Relation {
+	relation := &Relation{
 		Uuid:                   r.Uuid,
 		InnerId:                r.InnerId,
 		RelationType:           r.RelationType,
-		Source:                 s,
-		Target:                 t,
+		SourceInterface:        sourceInterface,
+		TargetInterface:        targetInterface,
+		SourceEntity:           sourceEntity,
+		TargetEntity:           targetEntity,
+		SourcePartial:          sourcePartial,
+		TargetPartial:          targetPartial,
+		SourceExternal:         sourceExternal,
+		TargetExternal:         targetExternal,
 		RoleOfTarget:           r.RoleOfTarget,
 		RoleOfSource:           r.RoleOfSource,
 		DescriptionOnSource:    r.DescriptionOnSource,
@@ -47,12 +73,79 @@ func NewRelation(r *domain.Relation, s Noder, t Noder) *Relation {
 		EnableAssociaitonClass: r.EnableAssociaitonClass,
 		AssociationClass:       r.AssociationClass,
 	}
+
+	return relation
+}
+
+func (r *Relation) SourceClass() *Class {
+	if r.SourceInterface != nil {
+		return &r.SourceInterface.Class
+	}
+
+	if r.SourceEntity != nil {
+		return &r.SourceEntity.Class
+	}
+
+	if r.SourcePartial != nil {
+		return &r.SourcePartial.Class
+	}
+	if r.SourceExternal != nil {
+		return &r.SourceExternal.Class
+	}
+	return nil
+}
+
+func (r *Relation) TargetClass() *Class {
+	if r.TargetInterface != nil {
+		return &r.TargetInterface.Class
+	}
+
+	if r.TargetEntity != nil {
+		return &r.TargetEntity.Class
+	}
+
+	if r.TargetPartial != nil {
+		return &r.TargetPartial.Class
+	}
+	if r.TargetExternal != nil {
+		return &r.TargetExternal.Class
+	}
+	return nil
 }
 
 func (r *Relation) IsRealRelation() bool {
-	if r.Source.IsInterface() || r.Target.IsInterface() {
+	if r.SourceInterface != nil || r.TargetInterface != nil {
 		return false
 	}
 
 	return true
+}
+
+func (r *DerivedRelation) SourceClass() *Class {
+
+	if r.SourceEntity != nil {
+		return &r.SourceEntity.Class
+	}
+
+	if r.SourcePartial != nil {
+		return &r.SourcePartial.Class
+	}
+	if r.SourceExternal != nil {
+		return &r.SourceExternal.Class
+	}
+	return nil
+}
+
+func (r *DerivedRelation) TargetClass() *Class {
+	if r.TargetEntity != nil {
+		return &r.TargetEntity.Class
+	}
+
+	if r.TargetPartial != nil {
+		return &r.TargetPartial.Class
+	}
+	if r.TargetExternal != nil {
+		return &r.TargetExternal.Class
+	}
+	return nil
 }

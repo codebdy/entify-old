@@ -35,10 +35,12 @@ type Associationer interface {
 	IsSource() bool
 	OwnerColumn() *table.Column
 	TypeColumn() *table.Column
+	//Entity, Partial and External
 	TypeEntity() *graph.Entity
 	IsCombination() bool
 }
 
+//没有继承关系的关联
 type Reference struct {
 	Association *graph.Association
 	Value       map[string]interface{}
@@ -83,7 +85,7 @@ func (r *Reference) Cascade() bool {
 func (r *Reference) SourceColumn() *table.Column {
 	for i := range r.Association.Relation.Table.Columns {
 		column := r.Association.Relation.Table.Columns[i]
-		if column.Name == r.Association.Relation.Source.TableName() {
+		if column.Name == r.Association.Relation.SourceClass().TableName() {
 			return column
 		}
 	}
@@ -93,7 +95,7 @@ func (r *Reference) SourceColumn() *table.Column {
 func (r *Reference) TargetColumn() *table.Column {
 	for i := range r.Association.Relation.Table.Columns {
 		column := r.Association.Relation.Table.Columns[i]
-		if column.Name == r.Association.Relation.Target.TableName() {
+		if column.Name == r.Association.Relation.TargetClass().TableName() {
 			return column
 		}
 	}
@@ -124,7 +126,23 @@ func (r *Reference) TypeColumn() *table.Column {
 }
 
 func (r *Reference) TypeEntity() *graph.Entity {
-	return r.Association.TypeClass().Entity()
+	entity := r.Association.TypeEntity()
+	if entity != nil {
+		return entity
+	}
+
+	partial := r.Association.TypePartial()
+
+	if partial != nil {
+		return &partial.Entity
+	}
+
+	external := r.Association.TypeExternal()
+
+	if external != nil {
+		return &external.Entity
+	}
+	panic("Can not find reference entity")
 }
 
 func (r *Reference) IsCombination() bool {
@@ -157,7 +175,7 @@ func (r *DerivedReference) Cascade() bool {
 func (r *DerivedReference) SourceColumn() *table.Column {
 	for i := range r.Association.Relation.Table.Columns {
 		column := r.Association.Relation.Table.Columns[i]
-		if column.Name == r.Association.Relation.Source.TableName() {
+		if column.Name == r.Association.Relation.SourceClass().TableName() {
 			return column
 		}
 	}
@@ -167,7 +185,7 @@ func (r *DerivedReference) SourceColumn() *table.Column {
 func (r *DerivedReference) TargetColumn() *table.Column {
 	for i := range r.Association.Relation.Table.Columns {
 		column := r.Association.Relation.Table.Columns[i]
-		if column.Name == r.Association.Relation.Target.TableName() {
+		if column.Name == r.Association.Relation.TargetClass().TableName() {
 			return column
 		}
 	}
@@ -198,7 +216,23 @@ func (r *DerivedReference) TypeColumn() *table.Column {
 }
 
 func (r *DerivedReference) TypeEntity() *graph.Entity {
-	return r.Association.TypeEntity()
+	entity := r.Association.TypeEntity()
+	if entity != nil {
+		return entity
+	}
+
+	partial := r.Association.TypePartial()
+
+	if partial != nil {
+		return &partial.Entity
+	}
+
+	external := r.Association.TypeExternal()
+
+	if external != nil {
+		return &external.Entity
+	}
+	panic("Can not find reference entity")
 }
 
 func (r *DerivedReference) IsCombination() bool {

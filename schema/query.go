@@ -57,7 +57,9 @@ func queryFields() graphql.Fields {
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		appendEntityToQueryFields(entity, queryFields)
 	}
-
+	for _, partial := range model.GlobalModel.Graph.RootPartails() {
+		appendPartailToQueryFields(partial, queryFields)
+	}
 	// for _, service := range model.GlobalModel.Graph.RootExternals() {
 	// 	appendServiceQueryFields(service, queryFields)
 	// }
@@ -69,10 +71,10 @@ func queryFields() graphql.Fields {
 	return queryFields
 }
 
-func queryResponseType(node graph.Noder) graphql.Output {
+func queryResponseType(class *graph.Class) graphql.Output {
 	return &graphql.NonNull{
 		OfType: &graphql.List{
-			OfType: Cache.OutputType(node.Name()),
+			OfType: Cache.OutputType(class.Name()),
 		},
 	}
 }
@@ -104,7 +106,7 @@ func queryArgs(name string) graphql.FieldConfigArgument {
 
 func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) {
 	(fields)[intf.QueryName()] = &graphql.Field{
-		Type:    queryResponseType(intf),
+		Type:    queryResponseType(&intf.Class),
 		Args:    queryArgs(intf.Name()),
 		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
@@ -115,7 +117,7 @@ func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) 
 	}
 
 	(fields)[intf.QueryAggregateName()] = &graphql.Field{
-		Type:    AggregateType(intf),
+		Type:    AggregateInterfaceType(intf),
 		Args:    queryArgs(intf.Name()),
 		Resolve: resolve.QueryInterfaceResolveFn(intf),
 	}
@@ -123,7 +125,7 @@ func appendInterfaceToQueryFields(intf *graph.Interface, fields graphql.Fields) 
 
 func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 	(fields)[entity.QueryName()] = &graphql.Field{
-		Type:    queryResponseType(entity),
+		Type:    queryResponseType(&entity.Class),
 		Args:    queryArgs(entity.Name()),
 		Resolve: resolve.QueryEntityResolveFn(entity),
 	}
@@ -135,10 +137,29 @@ func appendEntityToQueryFields(entity *graph.Entity, fields graphql.Fields) {
 
 	if notSystemEntity(entity) {
 		(fields)[entity.QueryAggregateName()] = &graphql.Field{
-			Type:    AggregateType(entity),
+			Type:    AggregateEntityType(entity),
 			Args:    queryArgs(entity.Name()),
 			Resolve: resolve.QueryEntityResolveFn(entity),
 		}
+	}
+}
+
+func appendPartailToQueryFields(partial *graph.Partial, fields graphql.Fields) {
+	(fields)[partial.QueryName()] = &graphql.Field{
+		Type:    queryResponseType(&partial.Class),
+		Args:    queryArgs(partial.Name()),
+		Resolve: resolve.QueryEntityResolveFn(&partial.Entity),
+	}
+	(fields)[partial.QueryOneName()] = &graphql.Field{
+		Type:    Cache.OutputType(partial.Name()),
+		Args:    queryArgs(partial.Name()),
+		Resolve: resolve.QueryOneEntityResolveFn(&partial.Entity),
+	}
+
+	(fields)[partial.QueryAggregateName()] = &graphql.Field{
+		Type:    AggregatePartialType(partial),
+		Args:    queryArgs(partial.Name()),
+		Resolve: resolve.QueryEntityResolveFn(&partial.Entity),
 	}
 }
 
