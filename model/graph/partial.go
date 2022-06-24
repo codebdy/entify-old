@@ -53,3 +53,7 @@ func (p *Partial) UpsertName() string {
 func (p *Partial) UpsertOneName() string {
 	return consts.UPSERT_ONE + p.NameWithPartial()
 }
+
+func (p *Partial) AggregateName() string {
+	return p.NameWithPartial() + utils.FirstUpper(consts.AGGREGATE)
+}

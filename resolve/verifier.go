@@ -31,15 +31,15 @@ func makeInterfaceAbilityVerifier(p graphql.ResolveParams, intf *graph.Interface
 
 func makeAssociAbilityVerifier(p graphql.ResolveParams, association *graph.Association) *repository.AbilityVerifier {
 	verifier := repository.NewVerifier()
-	if association.TypeClass().IsInterface() {
+	typeInterface := association.TypeInterface()
+	if typeInterface != nil {
 		var uuids []string
-		intf := association.TypeClass().Interface()
-		for i := range intf.Children {
-			uuids = append(uuids, intf.Children[i].Uuid())
+		for i := range typeInterface.Children {
+			uuids = append(uuids, typeInterface.Children[i].Uuid())
 		}
 		verifier.Init(p, uuids)
 	} else {
-		verifier.Init(p, []string{association.TypeClass().Entity().Uuid()})
+		verifier.Init(p, []string{association.TypeClass().Uuid()})
 	}
 	return verifier
 }
