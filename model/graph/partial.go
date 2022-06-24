@@ -27,7 +27,7 @@ func (p *Partial) QueryName() string {
 }
 
 func (p *Partial) QueryOneName() string {
-	return consts.ONE + p.NameWithPartial()
+	return consts.ONE + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) QueryAggregateName() string {
@@ -35,23 +35,23 @@ func (p *Partial) QueryAggregateName() string {
 }
 
 func (p *Partial) DeleteName() string {
-	return consts.DELETE + p.NameWithPartial()
+	return consts.DELETE + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) DeleteByIdName() string {
-	return consts.DELETE + p.NameWithPartial() + consts.BY_ID
+	return consts.DELETE + utils.FirstUpper(p.NameWithPartial()) + consts.BY_ID
 }
 
 func (p *Partial) UpdateName() string {
-	return utils.FirstLower(p.NameWithPartial())
+	return consts.UPDATE + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) UpsertName() string {
-	return consts.UPSERT + p.NameWithPartial()
+	return consts.UPSERT + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) UpsertOneName() string {
-	return consts.UPSERT_ONE + p.NameWithPartial()
+	return consts.UPSERT_ONE + utils.FirstUpper(p.NameWithPartial())
 }
 
 func (p *Partial) AggregateName() string {

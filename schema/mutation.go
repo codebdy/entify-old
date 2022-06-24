@@ -55,7 +55,13 @@ func rootMutation() *graphql.Object {
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {
 		if entity.Domain.Root {
-			appendToMutationFields(entity, mutationFields)
+			appendEntityMutationToFields(entity, mutationFields)
+		}
+	}
+
+	for _, partial := range model.GlobalModel.Graph.RootPartails() {
+		if partial.Domain.Root {
+			appendPartialMutationToFields(partial, mutationFields)
 		}
 	}
 
@@ -134,9 +140,7 @@ func updateArgs(entity *graph.Entity) graphql.FieldConfigArgument {
 	}
 }
 
-func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
-	name := utils.FirstUpper(entity.Name())
-
+func appendEntityMutationToFields(entity *graph.Entity, feilds graphql.Fields) {
 	(feilds)[entity.DeleteName()] = &graphql.Field{
 		Type: Cache.MutationResponse(entity.Name()),
 		Args: deleteArgs(entity),
@@ -160,9 +164,43 @@ func appendToMutationFields(entity *graph.Entity, feilds graphql.Fields) {
 
 	updateInput := Cache.UpdateInput(entity.Name())
 	if len(updateInput.Fields()) > 0 {
-		(feilds)[consts.UPDATE+name] = &graphql.Field{
+		(feilds)[entity.UpdateName()] = &graphql.Field{
 			Type: Cache.MutationResponse(entity.Name()),
 			Args: updateArgs(entity),
+			//Resolve: entity.QueryResolve(),
+		}
+	}
+
+}
+
+func appendPartialMutationToFields(partial *graph.Partial, feilds graphql.Fields) {
+
+	(feilds)[partial.DeleteName()] = &graphql.Field{
+		Type: Cache.MutationResponse(partial.Name()),
+		Args: deleteArgs(&partial.Entity),
+		//Resolve: entity.QueryResolve(),
+	}
+	(feilds)[partial.DeleteByIdName()] = &graphql.Field{
+		Type: Cache.OutputType(partial.Name()),
+		Args: deleteByIdArgs(),
+		//Resolve: entity.QueryResolve(),
+	}
+	(feilds)[partial.UpsertName()] = &graphql.Field{
+		Type: &graphql.List{OfType: Cache.OutputType(partial.Name())},
+		Args: upsertArgs(&partial.Entity),
+	}
+	//Resolve: entity.QueryResolve(),
+	(feilds)[partial.UpsertOneName()] = &graphql.Field{
+		Type:    Cache.OutputType(partial.Name()),
+		Args:    upsertOneArgs(&partial.Entity),
+		Resolve: resolve.PostOneResolveFn(&partial.Entity),
+	}
+
+	updateInput := Cache.UpdateInput(partial.Name())
+	if len(updateInput.Fields()) > 0 {
+		(feilds)[partial.UpdateName()] = &graphql.Field{
+			Type: Cache.MutationResponse(partial.Name()),
+			Args: updateArgs(&partial.Entity),
 			//Resolve: entity.QueryResolve(),
 		}
 	}
