@@ -125,13 +125,9 @@ func upsertOneArgs(entity *graph.Entity) graphql.FieldConfigArgument {
 func updateArgs(entity *graph.Entity) graphql.FieldConfigArgument {
 	updateInput := Cache.UpdateInput(entity.Name())
 	return graphql.FieldConfigArgument{
-		consts.ARG_OBJECTS: &graphql.ArgumentConfig{
+		consts.ARG_OBJECT: &graphql.ArgumentConfig{
 			Type: &graphql.NonNull{
-				OfType: &graphql.List{
-					OfType: &graphql.NonNull{
-						OfType: updateInput,
-					},
-				},
+				OfType: updateInput,
 			},
 		},
 		consts.ARG_WHERE: &graphql.ArgumentConfig{
