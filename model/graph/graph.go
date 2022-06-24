@@ -291,6 +291,17 @@ func (m *Model) RootInterfaces() []*Interface {
 	return interfaces
 }
 
+func (m *Model) RootPartails() []*Partial {
+	partials := []*Partial{}
+	for _, partial := range m.Partials {
+		if partial.Domain.Root {
+			partials = append(partials, partial)
+		}
+	}
+
+	return partials
+}
+
 func (m *Model) GetInterfaceByUuid(uuid string) *Interface {
 	for i := range m.Interfaces {
 		intf := m.Interfaces[i]
