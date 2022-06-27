@@ -77,6 +77,10 @@ func AuthUrl() string {
 	return GetString(consts.AUTH_URL)
 }
 
+func Upload() string {
+	return GetString(consts.UPLOAD)
+}
+
 func init() {
 	fileCfg = newFileConfig()
 	envCfg = newEnvConfig()

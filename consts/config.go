@@ -10,6 +10,13 @@ const (
 	DB_DATABASE   = "database"
 	SERVICE_ID    = "service_id"
 	AUTH_URL      = "auth_url"
+	UPLOAD        = "upload"
+	UPLOAD_PATH   = "uploads"
+)
+
+const (
+	LOCAL  = "local"
+	ALIYUN = "aliyun"
 )
 
 const (
