@@ -35,7 +35,7 @@ func parseLiteral(astValue ast.Value) interface{} {
 	}
 }
 
-// JSON json type
+// JSON type
 var JSONType = graphql.NewScalar(
 	graphql.ScalarConfig{
 		Name:        "JSON",

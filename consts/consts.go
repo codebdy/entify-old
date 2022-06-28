@@ -18,6 +18,7 @@ const (
 	SYNC_META              = "syncMeta"
 	NAME                   = "name"
 	INSTALLED              = "entifyInstalled"
+	SINGLE_UPLOAD          = "singleUpload"
 
 	ONE        = "one"
 	QUERY      = "query"
@@ -92,6 +93,7 @@ const (
 	RESPONSE_RETURNING    string = "returning"
 	RESPONSE_AFFECTEDROWS string = "affectedRows"
 	ARG_SET               string = "set"
+	ARG_FILE              string = "file"
 )
 
 const (
