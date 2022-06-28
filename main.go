@@ -38,7 +38,6 @@ func checkMetaInstall() {
 func checkMediaInstall() {
 	if !repository.IsEntityExists(consts.MEDIA_ENTITY_NAME) {
 		resolve.InstallMedia()
-		schema.InitSchema()
 	}
 }
 
@@ -46,14 +45,15 @@ func main() {
 	defer db.Close()
 	checkParams()
 	checkMetaInstall()
-
+	repository.InitGlobalModel()
+	repository.LoadModel()
+	if config.Storage() != "" {
+		checkMediaInstall()
+	}
 	if config.AuthUrl() == "" && !repository.IsEntityExists(consts.META_USER) {
 		schema.InitAuthInstallSchema()
 	} else {
 		schema.InitSchema()
-		if config.Storage() != "" {
-			checkMediaInstall()
-		}
 	}
 
 	h := handler.New(&handler.Config{

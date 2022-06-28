@@ -71,31 +71,32 @@ func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]
 		panic("Please pushish meta first then install new function ")
 	}
 
+	publishedMeta := repository.QueryPublishedMeta()
+
+	var createdAt interface{} = time.Now()
+	if publishedMeta != nil {
+		metaContent := *(publishedMeta.(map[string]interface{})[consts.META_CONTENT].(*utils.JSON))
+		createdAt = publishedMeta.(map[string]interface{})[consts.META_CREATEDAT]
+		clses := metaContent[consts.META_CLASSES].([]interface{})
+		for i := range clses {
+			classes = append(classes, clses[i].(map[string]interface{}))
+		}
+
+		relas := metaContent[consts.META_RELATIONS].([]interface{})
+		for i := range relas {
+			relations = append(relations, relas[i].(map[string]interface{}))
+		}
+	}
+
 	predefined := map[string]interface{}{
 		"content": map[string]interface{}{
 			"classes":   classes,
 			"relations": relations,
 		},
-		consts.META_CREATEDAT: time.Now(),
+		consts.META_CREATEDAT: createdAt,
 		consts.META_UPDATEDAT: time.Now(),
 	}
-	publishedMeta := repository.QueryPublishedMeta()
 
-	if publishedMeta != nil {
-		metaContent := *(publishedMeta.(map[string]interface{})[consts.META_CONTENT].(*utils.JSON))
-		predefined[consts.META_CREATEDAT] = publishedMeta.(map[string]interface{})[consts.META_CREATEDAT]
-		clses := metaContent[consts.META_CLASSES].([]interface{})
-		for i := range classes {
-			metaContent[consts.META_CLASSES] = append(clses, classes[i])
-		}
-
-		relas := metaContent[consts.META_RELATIONS].([]interface{})
-		for i := range relas {
-			metaContent[consts.META_RELATIONS] = append(relas, relas[i])
-		}
-
-		predefined[consts.META_CONTENT] = metaContent
-	}
 	//创建实体
 	instance := data.NewInstance(predefined, model.GlobalModel.Graph.GetMetaEntity())
 	_, err := repository.SaveOne(instance, verifier)
