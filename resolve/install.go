@@ -21,6 +21,79 @@ type InstallArg struct {
 
 const INPUT = "input"
 
+func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
+	defer utils.PrintErrorStack()
+	input := InstallArg{}
+	mapstructure.Decode(p.Args[INPUT], &input)
+	verifier := repository.NewSupperVerifier()
+	err := addAndPublishMeta(authClasses, authRelations)
+	if err != nil {
+		return nil, err
+	}
+	if input.Admin != "" {
+		instance := data.NewInstance(
+			adminInstance(input.Admin, input.Password),
+			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
+		)
+		_, err = repository.SaveOne(instance, verifier)
+		if err != nil {
+			return nil, err
+		}
+		if input.WithDemo {
+			instance = data.NewInstance(
+				demoInstance(),
+				model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
+			)
+			_, err = repository.SaveOne(instance, verifier)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return repository.IsEntityExists(consts.META_USER), nil
+}
+
+func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]interface{}) error {
+	verifier := repository.NewSupperVerifier()
+	nextMeta := repository.QueryNextMeta()
+	if nextMeta != nil {
+		panic("Please pushish meta first then install authentication ")
+	}
+
+	predefined := map[string]interface{}{
+		"content": map[string]interface{}{
+			"classes":   classes,
+			"relations": relations,
+		},
+		consts.META_CREATEDAT: time.Now(),
+		consts.META_UPDATEDAT: time.Now(),
+	}
+	publishedMeta := repository.QueryPublishedMeta()
+
+	if publishedMeta != nil {
+		metaContent := publishedMeta.(map[string]interface{})[consts.META_CONTENT]
+		predefined[consts.META_CREATEDAT] = publishedMeta.(map[string]interface{})[consts.META_CREATEDAT]
+		classes := metaContent.(map[string]interface{})[consts.META_CLASSES].([]map[string]interface{})
+		metaContent.(map[string]interface{})[consts.META_CLASSES] = append(classes, classes...)
+		relations := metaContent.(map[string]interface{})[consts.META_RELATIONS].([]map[string]interface{})
+		metaContent.(map[string]interface{})[consts.META_RELATIONS] = append(relations, relations...)
+		predefined[consts.META_CONTENT] = metaContent
+	}
+	//创建实体
+	instance := data.NewInstance(predefined, model.GlobalModel.Graph.GetMetaEntity())
+	_, err := repository.SaveOne(instance, verifier)
+
+	if err != nil {
+		return err
+	}
+	err = doPublish(verifier)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var authClasses = []map[string]interface{}{
 	{
 		consts.NAME:    consts.META_USER,
@@ -162,17 +235,6 @@ var authRelations = []map[string]interface{}{
 	},
 }
 
-func predefinedEntities() map[string]interface{} {
-	return map[string]interface{}{
-		"content": map[string]interface{}{
-			"classes":   authClasses,
-			"relations": authRelations,
-		},
-		consts.META_CREATEDAT: time.Now(),
-		consts.META_UPDATEDAT: time.Now(),
-	}
-}
-
 func bcryptEncode(value string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(value), bcrypt.DefaultCost)
 	if err != nil {
@@ -202,43 +264,4 @@ func demoInstance() map[string]interface{} {
 		consts.META_CREATEDAT: time.Now(),
 		consts.META_UPDATEDAT: time.Now(),
 	}
-}
-
-func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
-	defer utils.PrintErrorStack()
-	input := InstallArg{}
-	mapstructure.Decode(p.Args[INPUT], &input)
-	verifier := repository.NewSupperVerifier()
-	//创建实体
-	instance := data.NewInstance(predefinedEntities(), model.GlobalModel.Graph.GetMetaEntity())
-	_, err := repository.SaveOne(instance, verifier)
-
-	if err != nil {
-		return nil, err
-	}
-	err = doPublish(verifier)
-	if err != nil {
-		return nil, err
-	}
-	if input.Admin != "" {
-		instance = data.NewInstance(
-			adminInstance(input.Admin, input.Password),
-			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
-		)
-		_, err = repository.SaveOne(instance, verifier)
-		if err != nil {
-			return nil, err
-		}
-		if input.WithDemo {
-			instance = data.NewInstance(
-				demoInstance(),
-				model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
-			)
-			_, err = repository.SaveOne(instance, verifier)
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	return repository.IsEntityExists(consts.META_USER), nil
 }

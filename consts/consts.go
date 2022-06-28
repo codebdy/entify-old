@@ -112,7 +112,7 @@ const (
 	META_CREATEDAT   string = "createdAt"
 	META_UPDATEDAT   string = "updatedAt"
 
-	META_ENTITIES  string = "entities"
+	META_CLASSES   string = "classes"
 	META_RELATIONS string = "relations"
 )
 
@@ -125,9 +125,8 @@ const (
 )
 
 const (
-	CREATED_AT string = "createdAt"
-	ID         string = "id"
-	OF         string = "Of"
+	ID string = "id"
+	OF string = "Of"
 )
 
 const (
