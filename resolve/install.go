@@ -26,12 +26,15 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	input := InstallArg{}
 	mapstructure.Decode(p.Args[INPUT], &input)
 	verifier := repository.NewSupperVerifier()
-	err := addAndPublishMeta(authClasses, authRelations)
+	instance, err := addAndPublishMeta(authClasses, authRelations)
 	if err != nil {
 		return nil, err
 	}
+
+	repository.LoadModel()
+
 	if input.Admin != "" {
-		instance := data.NewInstance(
+		instance = data.NewInstance(
 			adminInstance(input.Admin, input.Password),
 			model.GlobalModel.Graph.GetEntityByName(consts.META_USER),
 		)
@@ -53,11 +56,19 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	return repository.IsEntityExists(consts.META_USER), nil
 }
 
-func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]interface{}) error {
+func InstallMedia() {
+	_, err := addAndPublishMeta(mediaClasses, []map[string]interface{}{})
+
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]interface{}) (*data.Instance, error) {
 	verifier := repository.NewSupperVerifier()
 	nextMeta := repository.QueryNextMeta()
 	if nextMeta != nil {
-		panic("Please pushish meta first then install authentication ")
+		panic("Please pushish meta first then install new function ")
 	}
 
 	predefined := map[string]interface{}{
@@ -71,12 +82,18 @@ func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]
 	publishedMeta := repository.QueryPublishedMeta()
 
 	if publishedMeta != nil {
-		metaContent := publishedMeta.(map[string]interface{})[consts.META_CONTENT]
+		metaContent := *(publishedMeta.(map[string]interface{})[consts.META_CONTENT].(*utils.JSON))
 		predefined[consts.META_CREATEDAT] = publishedMeta.(map[string]interface{})[consts.META_CREATEDAT]
-		classes := metaContent.(map[string]interface{})[consts.META_CLASSES].([]map[string]interface{})
-		metaContent.(map[string]interface{})[consts.META_CLASSES] = append(classes, classes...)
-		relations := metaContent.(map[string]interface{})[consts.META_RELATIONS].([]map[string]interface{})
-		metaContent.(map[string]interface{})[consts.META_RELATIONS] = append(relations, relations...)
+		clses := metaContent[consts.META_CLASSES].([]interface{})
+		for i := range classes {
+			metaContent[consts.META_CLASSES] = append(clses, classes[i])
+		}
+
+		relas := metaContent[consts.META_RELATIONS].([]interface{})
+		for i := range relas {
+			metaContent[consts.META_RELATIONS] = append(relas, relas[i])
+		}
+
 		predefined[consts.META_CONTENT] = metaContent
 	}
 	//创建实体
@@ -84,14 +101,96 @@ func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]
 	_, err := repository.SaveOne(instance, verifier)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = doPublish(verifier)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return instance, nil
+}
+
+var mediaClasses = []map[string]interface{}{
+	{
+		consts.NAME:    consts.MEDIA_ENTITY_NAME,
+		consts.UUID:    consts.MEDIA_UUID,
+		consts.INNERID: consts.MEDIA_INNER_ID,
+		consts.ROOT:    true,
+		consts.SYSTEM:  true,
+		"attributes": []map[string]interface{}{
+			{
+				consts.NAME:   "id",
+				consts.TYPE:   "ID",
+				consts.UUID:   "RX_MEDIA_ID_UUID",
+				"primary":     true,
+				"typeLabel":   "ID",
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "name",
+				consts.TYPE:   "String",
+				consts.UUID:   "RX_MEDIA_NAME_UUID",
+				"typeLabel":   "String",
+				"nullable":    true,
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "mimetype",
+				consts.TYPE:   "String",
+				consts.UUID:   "RX_MEDIA_MIMETYPE_UUID",
+				"typeLabel":   "String",
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "fileName",
+				consts.TYPE:   "String",
+				consts.UUID:   "RX_MEDIA_FILENAME_UUID",
+				"typeLabel":   "String",
+				"length":      128,
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "path",
+				consts.TYPE:   "String",
+				consts.UUID:   "RX_MEDIA_PATH_UUID",
+				"typeLabel":   "String",
+				"length":      256,
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "size",
+				consts.TYPE:   "Int",
+				consts.UUID:   "RX_MEDIA_SIZE_UUID",
+				"typeLabel":   "Int",
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:   "mediaType",
+				consts.TYPE:   "String",
+				consts.UUID:   "RX_MEDIA_MEDIATYPE_UUID",
+				"typeLabel":   "String",
+				consts.SYSTEM: true,
+			},
+			{
+				consts.NAME:       consts.META_CREATEDAT,
+				consts.TYPE:       "Date",
+				consts.UUID:       "RX_MEDIA_CREATEDAT_UUID",
+				"typeLabel":       "Date",
+				consts.CREATEDATE: true,
+				consts.SYSTEM:     true,
+			},
+			{
+				consts.NAME:       consts.META_UPDATEDAT,
+				consts.TYPE:       "Date",
+				consts.UUID:       "RX_MEDIA_UPDATEDAT_UUID",
+				"typeLabel":       "Date",
+				consts.UPDATEDATE: true,
+				consts.SYSTEM:     true,
+			},
+		},
+		"stereoType": "Entity",
+	},
 }
 
 var authClasses = []map[string]interface{}{
@@ -115,7 +214,6 @@ var authClasses = []map[string]interface{}{
 				consts.TYPE:   "String",
 				consts.UUID:   "RX_USER_NAME_UUID",
 				"typeLabel":   "String",
-				"length":      128,
 				"nullable":    true,
 				consts.SYSTEM: true,
 			},
@@ -162,7 +260,7 @@ var authClasses = []map[string]interface{}{
 			{
 				consts.NAME:       consts.META_UPDATEDAT,
 				consts.TYPE:       "Date",
-				consts.UUID:       "RX_USER_META_UPDATEDAT_UUID",
+				consts.UUID:       "RX_USER_UPDATEDAT_UUID",
 				"typeLabel":       "Date",
 				consts.UPDATEDATE: true,
 				consts.SYSTEM:     true,

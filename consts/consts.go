@@ -117,6 +117,11 @@ const (
 )
 
 const (
+	MEDIA_ENTITY_NAME = "Media"
+	MEDIA_UUID        = "MEDIA_ENTITY_UUID"
+)
+
+const (
 	ID_SUFFIX     string = "_id"
 	PIVOT         string = "pivot"
 	INDEX_SUFFIX  string = "_idx"
@@ -167,6 +172,7 @@ const (
 	Ability_INNER_ID              = 3
 	USER_INNER_ID                 = 4
 	ROLE_INNER_ID                 = 5
+	MEDIA_INNER_ID                = 6
 	ROLE_USER_RELATION_INNER_ID   = 101
 )
 

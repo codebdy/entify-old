@@ -35,6 +35,13 @@ func checkMetaInstall() {
 	}
 }
 
+func checkMediaInstall() {
+	if !repository.IsEntityExists(consts.MEDIA_ENTITY_NAME) {
+		resolve.InstallMedia()
+		schema.InitSchema()
+	}
+}
+
 func main() {
 	defer db.Close()
 	checkParams()
@@ -44,6 +51,9 @@ func main() {
 		schema.InitAuthInstallSchema()
 	} else {
 		schema.InitSchema()
+		if config.Storage() != "" {
+			checkMediaInstall()
+		}
 	}
 
 	h := handler.New(&handler.Config{

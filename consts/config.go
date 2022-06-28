@@ -10,7 +10,7 @@ const (
 	DB_DATABASE   = "database"
 	SERVICE_ID    = "service_id"
 	AUTH_URL      = "auth_url"
-	UPLOAD        = "upload"
+	STORAGE       = "storage"
 	UPLOAD_PATH   = "uploads"
 )
 
