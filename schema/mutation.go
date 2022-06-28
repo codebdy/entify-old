@@ -62,7 +62,7 @@ func rootMutation() *graphql.Object {
 					Type: &graphql.NonNull{OfType: scalars.UploadType},
 				},
 			},
-			//Resolve: resolve.SyncMetaResolve,
+			Resolve: resolve.SingleUploadResolve,
 		}
 	}
 
