@@ -61,8 +61,8 @@ func rootMutation() *graphql.Object {
 				consts.ARG_FILE: &graphql.ArgumentConfig{
 					Type: &graphql.NonNull{OfType: scalars.UploadType},
 				},
-				consts.NAME: &graphql.ArgumentConfig{
-					Type: graphql.String,
+				"mediaSet": &graphql.ArgumentConfig{
+					Type: Cache.SaveInput(consts.MEDIA_ENTITY_NAME),
 				},
 			},
 			Resolve: resolve.SingleUploadResolve,
