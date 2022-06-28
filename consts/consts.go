@@ -157,8 +157,11 @@ const (
 	CONTEXT_VALUES = "values"
 )
 
-const ABILITY_UUID = "META_ABILITY_UUID"
-
+const (
+	ABILITY_UUID = "META_ABILITY_UUID"
+	USER_UUID    = "META_USER_UUID"
+	ROLE_UUID    = "META_ROLE_UUID"
+)
 const (
 	META_INNER_ID                 = 1
 	ENTITY_AUTH_SETTINGS_INNER_ID = 2
@@ -167,6 +170,8 @@ const (
 	ROLE_INNER_ID                 = 5
 	ROLE_USER_RELATION_INNER_ID   = 101
 )
+
+const ROOT = "root"
 
 //普通角色的ID永远不会是1
 const GUEST_ROLE_ID = "1"
