@@ -186,3 +186,11 @@ const PREDEFINED_QUERYUSER = "$queryUser"
 const PREDEFINED_ME = "$me"
 
 const NO_PERMISSION = "No permission to access data"
+
+const (
+	FILE          = "File"
+	FILE_NAME     = "fileName"
+	FILE_SIZE     = "size"
+	FILE_MIMETYPE = "mimeType"
+	FILE_URL      = "url"
+)

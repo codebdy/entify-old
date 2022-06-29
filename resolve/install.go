@@ -56,13 +56,13 @@ func InstallResolve(p graphql.ResolveParams) (interface{}, error) {
 	return repository.IsEntityExists(consts.META_USER), nil
 }
 
-func InstallMedia() {
-	_, err := addAndPublishMeta(mediaClasses, []map[string]interface{}{})
+// func InstallMedia() {
+// 	_, err := addAndPublishMeta(mediaClasses, []map[string]interface{}{})
 
-	if err != nil {
-		panic(err.Error())
-	}
-}
+// 	if err != nil {
+// 		panic(err.Error())
+// 	}
+// }
 
 func addAndPublishMeta(classes []map[string]interface{}, relations []map[string]interface{}) (*data.Instance, error) {
 	verifier := repository.NewSupperVerifier()

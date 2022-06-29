@@ -35,11 +35,11 @@ func checkMetaInstall() {
 	}
 }
 
-func checkMediaInstall() {
-	if !repository.IsEntityExists(consts.MEDIA_ENTITY_NAME) {
-		resolve.InstallMedia()
-	}
-}
+// func checkMediaInstall() {
+// 	if !repository.IsEntityExists(consts.MEDIA_ENTITY_NAME) {
+// 		resolve.InstallMedia()
+// 	}
+// }
 
 func main() {
 	defer db.Close()
@@ -47,9 +47,9 @@ func main() {
 	checkMetaInstall()
 	repository.InitGlobalModel()
 	repository.LoadModel()
-	if config.Storage() != "" {
-		checkMediaInstall()
-	}
+	// if config.Storage() != "" {
+	// 	checkMediaInstall()
+	// }
 	if config.AuthUrl() == "" && !repository.IsEntityExists(consts.META_USER) {
 		schema.InitAuthInstallSchema()
 	} else {

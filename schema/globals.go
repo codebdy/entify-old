@@ -74,6 +74,27 @@ var installInputType = graphql.NewInputObject(
 	},
 )
 
+var fileOutputType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: consts.FILE,
+		Fields: graphql.Fields{
+			consts.FILE_NAME: &graphql.Field{
+				Type: graphql.String,
+			},
+			consts.FILE_SIZE: &graphql.Field{
+				Type: graphql.Int,
+			},
+			consts.FILE_MIMETYPE: &graphql.Field{
+				Type: graphql.String,
+			},
+			consts.FILE_URL: &graphql.Field{
+				Type: graphql.String,
+			},
+		},
+		Description: "File type",
+	},
+)
+
 var baseRoleTye = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "BaseRole",

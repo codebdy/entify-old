@@ -7,8 +7,8 @@ import (
 	"rxdrag.com/entify/scalars"
 )
 
-func AttributeType(attr *graph.Attribute) graphql.Output {
-	switch attr.Type {
+func PropertyType(property graph.Propertier) graphql.Output {
+	switch property.GetType() {
 	case meta.ID:
 		return graphql.ID
 	case meta.INT:
@@ -33,14 +33,16 @@ func AttributeType(attr *graph.Attribute) graphql.Output {
 		meta.ENTITY_ARRAY:
 		return scalars.JSONType
 	case meta.ENUM:
-		enum := attr.EumnType
+		enum := property.GetEumnType()
 		if enum == nil {
 			panic("Can not find enum entity")
 		}
 		return Cache.EnumType(enum.Name)
+	case meta.FILE:
+		return fileOutputType
 	}
 
-	panic("No column type:" + attr.Type)
+	panic("No column type:" + property.GetName())
 }
 
 func AttributeExp(column *graph.Attribute) *graphql.InputObjectFieldConfig {
@@ -64,7 +66,8 @@ func AttributeExp(column *graph.Attribute) *graphql.InputObjectFieldConfig {
 		meta.DATE_ARRAY,
 		meta.ENUM_ARRAY,
 		meta.VALUE_OBJECT_ARRAY,
-		meta.ENTITY_ARRAY:
+		meta.ENTITY_ARRAY,
+		meta.FILE:
 		return nil
 	case meta.ID:
 		return &IdComparisonExp

@@ -177,7 +177,7 @@ func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFie
 	for _, column := range entity.AllAttributes() {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type:        AttributeType(column),
+				Type:        PropertyType(column),
 				Description: column.Description,
 			}
 		}

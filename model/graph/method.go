@@ -19,10 +19,20 @@ func NewMethod(m *domain.Method, c *Class) *Method {
 	}
 }
 
-func (c *Method) Uuid() string {
-	return c.Method.Uuid
+func (m *Method) Uuid() string {
+	return m.Method.Uuid
 }
 
-func (e *Method) Name() string {
-	return e.Method.Name
+func (m *Method) GetName() string {
+	return m.Method.Name
+}
+
+func (m *Method) GetType() string {
+	return m.Method.Type
+}
+func (m *Method) GetEumnType() *Enum {
+	return m.EumnType
+}
+func (m *Method) GetEnityType() *Entity {
+	return m.EnityType
 }

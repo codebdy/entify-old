@@ -1,5 +1,7 @@
 package meta
 
+import "rxdrag.com/entify/consts"
+
 const (
 	ID                 string = "ID"
 	INT                string = "Int"
@@ -18,5 +20,5 @@ const (
 	ENUM_ARRAY         string = "EnumArray"
 	VALUE_OBJECT_ARRAY string = "ValueObjectArray"
 	ENTITY_ARRAY       string = "EntityArray"
-	FILE               string = "File"
+	FILE               string = consts.FILE
 )

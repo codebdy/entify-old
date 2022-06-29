@@ -16,3 +16,17 @@ func NewAttribute(a *domain.Attribute, c *Class) *Attribute {
 		Class:     c,
 	}
 }
+
+func (a *Attribute) GetName() string {
+	return a.Attribute.Name
+}
+
+func (a *Attribute) GetType() string {
+	return a.Attribute.Type
+}
+func (a *Attribute) GetEumnType() *Enum {
+	return a.EumnType
+}
+func (a *Attribute) GetEnityType() *Entity {
+	return a.EnityType
+}
