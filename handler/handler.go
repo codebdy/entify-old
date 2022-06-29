@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"mime/multipart"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -14,6 +13,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
 	"github.com/mitchellh/mapstructure"
+	"rxdrag.com/entify/storage"
 )
 
 func set(v interface{}, m interface{}, path string) error {
@@ -46,12 +46,6 @@ func set(v interface{}, m interface{}, path string) error {
 		}
 	}
 	return nil
-}
-
-type File struct {
-	File     multipart.File
-	Filename string
-	Size     int64
 }
 
 // Constants
@@ -155,7 +149,7 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 		}
 
 		// Unmarshal uploads
-		var uploads = map[File][]string{}
+		var uploads = map[storage.File][]string{}
 		var uploadsMap = map[string][]string{}
 		if err := json.Unmarshal([]byte(r.Form.Get("map")), &uploadsMap); err != nil {
 			panic(err)
@@ -166,7 +160,7 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 					//w.WriteHeader(http.StatusInternalServerError)
 					//return
 				} else {
-					uploads[File{
+					uploads[storage.File{
 						File:     file,
 						Size:     header.Size,
 						Filename: header.Filename,
