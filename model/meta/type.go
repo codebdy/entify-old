@@ -18,4 +18,5 @@ const (
 	ENUM_ARRAY         string = "EnumArray"
 	VALUE_OBJECT_ARRAY string = "ValueObjectArray"
 	ENTITY_ARRAY       string = "EntityArray"
+	FILE               string = "File"
 )
