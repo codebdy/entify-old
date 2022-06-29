@@ -58,11 +58,18 @@ func rootMutation() *graphql.Object {
 		mutationFields[consts.SINGLE_UPLOAD] = &graphql.Field{
 			Type: Cache.OutputType(consts.MEDIA_ENTITY_NAME),
 			Args: graphql.FieldConfigArgument{
-				consts.ARG_FILE: &graphql.ArgumentConfig{
-					Type: &graphql.NonNull{OfType: scalars.UploadType},
-				},
-				consts.NAME: &graphql.ArgumentConfig{
-					Type: graphql.String,
+				"media": &graphql.ArgumentConfig{
+					Type: graphql.NewInputObject(graphql.InputObjectConfig{
+						Name: "MediaUploadInput",
+						Fields: graphql.InputObjectConfigFieldMap{
+							consts.ARG_FILE: &graphql.InputObjectFieldConfig{
+								Type: &graphql.NonNull{OfType: scalars.UploadType},
+							},
+							consts.NAME: &graphql.InputObjectFieldConfig{
+								Type: graphql.String,
+							},
+						},
+					}),
 				},
 			},
 			Resolve: resolve.SingleUploadResolve,

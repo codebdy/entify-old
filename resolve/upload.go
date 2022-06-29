@@ -9,6 +9,6 @@ import (
 
 func SingleUploadResolve(p graphql.ResolveParams) (interface{}, error) {
 	defer utils.PrintErrorStack()
-	fmt.Println("呵呵:SingleUploadResolve", p.Args["file"])
+	fmt.Println("呵呵:SingleUploadResolve", p.Args["media"])
 	return nil, nil
 }
