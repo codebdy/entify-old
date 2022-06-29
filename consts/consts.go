@@ -17,8 +17,8 @@ const (
 	ROLLBACK               = "rollback"
 	SYNC_META              = "syncMeta"
 	NAME                   = "name"
-	INSTALLED              = "entifyInstalled"
-	SINGLE_UPLOAD          = "singleUpload"
+	INSTALLED              = "installed"
+	CAN_UPLOAD             = "canUpload"
 
 	ONE        = "one"
 	QUERY      = "query"

@@ -2,7 +2,9 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
+	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/utils"
 )
 
 var Cache TypeCache
@@ -11,15 +13,41 @@ var _ServiceType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: consts.SERVICE_TYPE,
 		Fields: graphql.Fields{
-			// consts.ID: &graphql.Field{ //扩展一个id字段
-			// 	Type: graphql.Int,
-			// },
+			consts.ID: &graphql.Field{ //扩展一个id字段
+				Type: graphql.Int,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					defer utils.PrintErrorStack()
+					return config.ServiceId(), nil
+				},
+			},
+
+			//扩展字段
+			consts.INSTALLED: &graphql.Field{
+				Type: graphql.Boolean,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					defer utils.PrintErrorStack()
+					return true, nil
+				},
+			},
+
+			consts.CAN_UPLOAD: &graphql.Field{
+				Type: graphql.Boolean,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					defer utils.PrintErrorStack()
+					return config.Storage() != "", nil
+				},
+			},
+
 			consts.SDL: &graphql.Field{
 				Type:        graphql.String,
 				Description: "Service SDL",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					defer utils.PrintErrorStack()
+					return makeFederationSDL(), nil
+				},
 			},
 		},
-		Description: "_Service type of federation schema specification",
+		Description: "_Service type of federation schema specification, and extends other fields",
 	},
 )
 

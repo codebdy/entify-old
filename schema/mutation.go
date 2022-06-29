@@ -55,7 +55,7 @@ func rootMutation() *graphql.Object {
 	}
 
 	if config.Storage() != "" {
-		mutationFields[consts.SINGLE_UPLOAD] = &graphql.Field{
+		mutationFields["singleUpload"] = &graphql.Field{
 			Type: Cache.OutputType(consts.MEDIA_ENTITY_NAME),
 			Args: graphql.FieldConfigArgument{
 				"media": &graphql.ArgumentConfig{
