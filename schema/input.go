@@ -172,10 +172,10 @@ func (c *TypeCache) getDerivedAssociationType(association *graph.DerivedAssociat
 	}
 }
 
-func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFieldMap {
+func inputFields(entity *graph.Entity, withId bool) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, column := range entity.AllAttributes() {
-		if column.Name != consts.ID || isPost {
+		if (column.Name != consts.ID || withId) && !column.DeleteDate && !column.CreateDate && !column.UpdateDate {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
 				Type:        InputPropertyType(column),
 				Description: column.Description,
