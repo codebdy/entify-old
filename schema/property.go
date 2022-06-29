@@ -7,6 +7,13 @@ import (
 	"rxdrag.com/entify/scalars"
 )
 
+func InputPropertyType(property graph.Propertier) graphql.Type {
+	if property.GetType() == meta.FILE {
+		return scalars.UploadType
+	}
+	return PropertyType(property)
+}
+
 func PropertyType(property graph.Propertier) graphql.Output {
 	switch property.GetType() {
 	case meta.ID:
@@ -39,6 +46,7 @@ func PropertyType(property graph.Propertier) graphql.Output {
 		}
 		return Cache.EnumType(enum.Name)
 	case meta.FILE:
+		//return graphql.String
 		return fileOutputType
 	}
 

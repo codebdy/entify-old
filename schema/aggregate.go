@@ -65,8 +65,10 @@ func minFields(attrs []*graph.Attribute) graphql.Fields {
 func selectFields(attrs []*graph.Attribute) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, attr := range attrs {
-		fields[attr.Name] = &graphql.InputObjectFieldConfig{
-			Type: PropertyType(attr),
+		if attr.Type != meta.FILE {
+			fields[attr.Name] = &graphql.InputObjectFieldConfig{
+				Type: InputPropertyType(attr),
+			}
 		}
 	}
 
