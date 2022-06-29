@@ -6,17 +6,54 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/gqlerrors"
+	"github.com/mitchellh/mapstructure"
+	"rxdrag.com/entify/storage"
 )
+
+func set(v interface{}, m interface{}, path string) error {
+	var parts []interface{}
+	for _, p := range strings.Split(path, ".") {
+		if isNumber, err := regexp.MatchString(`\d+`, p); err != nil {
+			return err
+		} else if isNumber {
+			index, _ := strconv.Atoi(p)
+			parts = append(parts, index)
+		} else {
+			parts = append(parts, p)
+		}
+	}
+	for i, p := range parts {
+		last := i == len(parts)-1
+		switch idx := p.(type) {
+		case string:
+			if last {
+				m.(map[string]interface{})[idx] = v
+			} else {
+				m = m.(map[string]interface{})[idx]
+			}
+		case int:
+			if last {
+				m.([]interface{})[idx] = v
+			} else {
+				m = m.([]interface{})[idx]
+			}
+		}
+	}
+	return nil
+}
 
 // Constants
 const (
-	ContentTypeJSON           = "application/json"
-	ContentTypeGraphQL        = "application/graphql"
-	ContentTypeFormURLEncoded = "application/x-www-form-urlencoded"
+	ContentTypeJSON              = "application/json"
+	ContentTypeGraphQL           = "application/graphql"
+	ContentTypeFormURLEncoded    = "application/x-www-form-urlencoded"
+	ContentTypeMultipartFormData = "multipart/form-data"
 )
 
 // ResultCallbackFn result callback
@@ -104,7 +141,51 @@ func NewRequestOptions(r *http.Request) *RequestOptions {
 		}
 
 		return &RequestOptions{}
+	case ContentTypeMultipartFormData:
+		var operations interface{}
+		// Parse multipart form
+		if err := r.ParseMultipartForm(1024); err != nil {
+			panic(err)
+		}
 
+		// Unmarshal uploads
+		var uploads = map[storage.File][]string{}
+		var uploadsMap = map[string][]string{}
+		if err := json.Unmarshal([]byte(r.Form.Get("map")), &uploadsMap); err != nil {
+			panic(err)
+		} else {
+			for key, path := range uploadsMap {
+				if file, header, err := r.FormFile(key); err != nil {
+					panic(err)
+					//w.WriteHeader(http.StatusInternalServerError)
+					//return
+				} else {
+					uploads[storage.File{
+						File:     file,
+						Size:     header.Size,
+						Filename: header.Filename,
+					}] = path
+				}
+			}
+		}
+
+		// Unmarshal operations
+		if err := json.Unmarshal([]byte(r.Form.Get("operations")), &operations); err != nil {
+			panic(err)
+		}
+
+		// set uploads to operations
+		for file, paths := range uploads {
+			for _, path := range paths {
+				if err := set(file, operations, path); err != nil {
+					panic(err)
+				}
+			}
+		}
+
+		var opts RequestOptions
+		mapstructure.Decode(operations, &opts)
+		return &opts
 	case ContentTypeJSON:
 		fallthrough
 	default:

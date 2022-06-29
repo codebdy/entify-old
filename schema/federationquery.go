@@ -206,10 +206,7 @@ func serviceField() *graphql.Field {
 		Type: _ServiceType,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			defer utils.PrintErrorStack()
-			return map[string]interface{}{
-				consts.ID:  config.ServiceId(),
-				consts.SDL: makeFederationSDL(),
-			}, nil
+			return map[string]interface{}{}, nil
 		},
 	}
 }

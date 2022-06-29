@@ -36,7 +36,7 @@ func doPublish(v *repository.AbilityVerifier) error {
 	if err != nil {
 		return err
 	}
-	repository.LoadModel()
+	//repository.LoadModel()
 
 	return nil
 }

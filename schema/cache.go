@@ -11,7 +11,7 @@ type TypeCache struct {
 	ObjectMapById        map[uint64]*graphql.Object
 	EnumTypeMap          map[string]*graphql.Enum
 	InterfaceTypeMap     map[string]*graphql.Interface
-	UpdateInputMap       map[string]*graphql.InputObject
+	SetInputMap          map[string]*graphql.InputObject
 	SaveInputMap         map[string]*graphql.InputObject
 	HasManyInputMap      map[string]*graphql.InputObject
 	HasOneInputMap       map[string]*graphql.InputObject
@@ -113,8 +113,8 @@ func (c *TypeCache) SaveInput(name string) *graphql.InputObject {
 	return c.SaveInputMap[name]
 }
 
-func (c *TypeCache) UpdateInput(name string) *graphql.InputObject {
-	return c.UpdateInputMap[name]
+func (c *TypeCache) SetInput(name string) *graphql.InputObject {
+	return c.SetInputMap[name]
 }
 func (c *TypeCache) HasManyInput(name string) *graphql.InputObject {
 	return c.HasManyInputMap[name]
@@ -141,7 +141,7 @@ func (c *TypeCache) clearCache() {
 	c.ObjectMapById = make(map[uint64]*graphql.Object)
 	c.EnumTypeMap = make(map[string]*graphql.Enum)
 	c.InterfaceTypeMap = make(map[string]*graphql.Interface)
-	c.UpdateInputMap = make(map[string]*graphql.InputObject)
+	c.SetInputMap = make(map[string]*graphql.InputObject)
 	c.SaveInputMap = make(map[string]*graphql.InputObject)
 	c.HasManyInputMap = make(map[string]*graphql.InputObject)
 	c.HasOneInputMap = make(map[string]*graphql.InputObject)

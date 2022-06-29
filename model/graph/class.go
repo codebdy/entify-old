@@ -84,7 +84,7 @@ func (c *Class) QueryName() string {
 }
 
 func (c *Class) QueryOneName() string {
-	return consts.ONE + c.Name()
+	return consts.ONE + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) QueryAggregateName() string {
@@ -92,23 +92,23 @@ func (c *Class) QueryAggregateName() string {
 }
 
 func (c *Class) DeleteName() string {
-	return consts.DELETE + c.Name()
+	return consts.DELETE + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) DeleteByIdName() string {
-	return consts.DELETE + c.Name() + consts.BY_ID
+	return consts.DELETE + utils.FirstUpper(c.Name()) + consts.BY_ID
 }
 
-func (c *Class) UpdateName() string {
-	return utils.FirstLower(c.Name())
+func (c *Class) SetName() string {
+	return consts.SET + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) UpsertName() string {
-	return consts.UPSERT + c.Name()
+	return consts.UPSERT + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) UpsertOneName() string {
-	return consts.UPSERT_ONE + c.Name()
+	return consts.UPSERT_ONE + utils.FirstUpper(c.Name())
 }
 
 func (c *Class) AggregateName() string {

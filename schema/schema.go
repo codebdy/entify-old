@@ -4,7 +4,6 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
-	"rxdrag.com/entify/repository"
 	"rxdrag.com/entify/scalars"
 	"rxdrag.com/entify/utils"
 )
@@ -83,8 +82,6 @@ func ResolveSchema() *graphql.Schema {
 }
 
 func InitSchema() {
-	repository.InitGlobalModel()
-	repository.LoadModel()
 	LoadModel()
 	MakeSchema()
 }

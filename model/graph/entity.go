@@ -20,11 +20,11 @@ func NewEntity(c *domain.Class) *Entity {
 }
 
 func (e *Entity) GetHasManyName() string {
-	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_MANY
+	return utils.FirstUpper(consts.SET) + e.Name() + consts.HAS_MANY
 }
 
 func (e *Entity) GetHasOneName() string {
-	return utils.FirstUpper(consts.UPDATE) + e.Name() + consts.HAS_ONE
+	return utils.FirstUpper(consts.SET) + e.Name() + consts.HAS_ONE
 }
 
 //有同名接口
@@ -53,7 +53,7 @@ func (e *Entity) AllMethods() []*Method {
 	for i := range e.Interfaces {
 		for j := range e.Interfaces[i].methods {
 			method := e.Interfaces[i].methods[j]
-			if findMethod(method.Name(), methods) == nil {
+			if findMethod(method.GetName(), methods) == nil {
 				methods = append(methods, method)
 			}
 		}
@@ -122,7 +122,7 @@ func findAttribute(name string, attrs []*Attribute) *Attribute {
 
 func findMethod(name string, methods []*Method) *Method {
 	for i := range methods {
-		if methods[i].Name() == name {
+		if methods[i].GetName() == name {
 			return methods[i]
 		}
 	}

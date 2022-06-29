@@ -29,7 +29,7 @@ func mutationSDL() (string, string) {
 	// 	queryFields = queryFields + makeExteneralSDL(exteneral)
 	// 	//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
 	// }
-	for _, input := range Cache.UpdateInputMap {
+	for _, input := range Cache.SetInputMap {
 		types = types + inputToSDL(input)
 	}
 	for _, input := range Cache.SaveInputMap {
@@ -59,11 +59,11 @@ func makeEntityMutationSDL(entity *graph.Entity) string {
 		Cache.OutputType(entity.Name()).String(),
 	)
 
-	updateInput := Cache.UpdateInput(entity.Name())
+	updateInput := Cache.SetInput(entity.Name())
 	if len(updateInput.Fields()) > 0 {
 		sdl = sdl + fmt.Sprintf(mutationFieldSDL,
-			entity.UpdateName(),
-			makeArgsSDL(updateArgs(entity)),
+			entity.SetName(),
+			makeArgsSDL(setArgs(entity)),
 			Cache.MutationResponse(entity.Name()).String(),
 		)
 	}

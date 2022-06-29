@@ -8,7 +8,6 @@ import (
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/scalars"
-	"rxdrag.com/entify/utils"
 )
 
 func rootQuery() *graphql.Object {
@@ -39,13 +38,6 @@ func queryFields() graphql.Fields {
 						},
 					},
 				},
-			},
-		},
-		consts.INSTALLED: &graphql.Field{
-			Type: graphql.Boolean,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				defer utils.PrintErrorStack()
-				return true, nil
 			},
 		},
 	}

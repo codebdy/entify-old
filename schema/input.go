@@ -12,7 +12,7 @@ import (
 func (c *TypeCache) makeInputs() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
-		c.UpdateInputMap[entity.Name()] = makeEntityUpdateInput(entity)
+		c.SetInputMap[entity.Name()] = makeEntitySetInput(entity)
 		c.SaveInputMap[entity.Name()] = makeEntitySaveInput(entity)
 		c.MutationResponseMap[entity.Name()] = makeEntityMutationResponseType(entity)
 	}
@@ -25,7 +25,7 @@ func (c *TypeCache) makeInputs() {
 
 	for i := range model.GlobalModel.Graph.Partials {
 		partail := model.GlobalModel.Graph.Partials[i]
-		c.UpdateInputMap[partail.Name()] = makePartialUpdateInput(partail)
+		c.SetInputMap[partail.Name()] = makePartialSetInput(partail)
 		c.SaveInputMap[partail.Name()] = makePartailSaveInput(partail)
 		c.MutationResponseMap[partail.Name()] = makePartialMutationResponseType(partail)
 	}
@@ -93,7 +93,7 @@ func (c *TypeCache) makeEntityInputRelations() {
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
 
-		input := c.UpdateInputMap[entity.Name()]
+		input := c.SetInputMap[entity.Name()]
 		update := c.SaveInputMap[entity.Name()]
 
 		associas := entity.AllAssociations()
@@ -177,7 +177,7 @@ func inputFields(entity *graph.Entity, isPost bool) graphql.InputObjectConfigFie
 	for _, column := range entity.AllAttributes() {
 		if column.Name != consts.ID || isPost {
 			fields[column.Name] = &graphql.InputObjectFieldConfig{
-				Type:        AttributeType(column),
+				Type:        InputPropertyType(column),
 				Description: column.Description,
 			}
 		}
@@ -205,19 +205,19 @@ func makePartailSaveInput(partail *graph.Partial) *graphql.InputObject {
 	)
 }
 
-func makeEntityUpdateInput(entity *graph.Entity) *graphql.InputObject {
+func makeEntitySetInput(entity *graph.Entity) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   entity.Name() + consts.UPDATE_INPUT,
+			Name:   entity.Name() + consts.SET_INPUT,
 			Fields: inputFields(entity, false),
 		},
 	)
 }
 
-func makePartialUpdateInput(partial *graph.Partial) *graphql.InputObject {
+func makePartialSetInput(partial *graph.Partial) *graphql.InputObject {
 	return graphql.NewInputObject(
 		graphql.InputObjectConfig{
-			Name:   partial.NameWithPartial() + consts.UPDATE_INPUT,
+			Name:   partial.NameWithPartial() + consts.SET_INPUT,
 			Fields: inputFields(&partial.Entity, false),
 		},
 	)

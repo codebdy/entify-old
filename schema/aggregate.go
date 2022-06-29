@@ -24,7 +24,7 @@ func avgFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, column := range attrs {
 		if column.Type == meta.INT || column.Type == meta.FLOAT {
 			fields[column.Name] = &graphql.Field{
-				Type: AttributeType(column),
+				Type: PropertyType(column),
 			}
 		}
 
@@ -37,7 +37,7 @@ func maxFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 			}
 		}
 
@@ -50,7 +50,7 @@ func minFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -65,8 +65,10 @@ func minFields(attrs []*graph.Attribute) graphql.Fields {
 func selectFields(attrs []*graph.Attribute) graphql.InputObjectConfigFieldMap {
 	fields := graphql.InputObjectConfigFieldMap{}
 	for _, attr := range attrs {
-		fields[attr.Name] = &graphql.InputObjectFieldConfig{
-			Type: AttributeType(attr),
+		if attr.Type != meta.FILE {
+			fields[attr.Name] = &graphql.InputObjectFieldConfig{
+				Type: InputPropertyType(attr),
+			}
 		}
 	}
 
@@ -78,7 +80,7 @@ func stddevFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -95,7 +97,7 @@ func stddevPopFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -111,7 +113,7 @@ func stddevSampFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -128,7 +130,7 @@ func sumFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -145,7 +147,7 @@ func varPopFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -162,7 +164,7 @@ func varSampFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil
@@ -179,7 +181,7 @@ func varianceFields(attrs []*graph.Attribute) graphql.Fields {
 	for _, attr := range attrs {
 		if attr.Type == meta.INT || attr.Type == meta.FLOAT {
 			fields[attr.Name] = &graphql.Field{
-				Type: AttributeType(attr),
+				Type: PropertyType(attr),
 				// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				// 	fmt.Println(p.Context.Value("data"))
 				// 	return "world", nil

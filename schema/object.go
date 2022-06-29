@@ -65,7 +65,7 @@ func outputFields(attrs []*graph.Attribute, methods []*graph.Method) graphql.Fie
 	fields := graphql.Fields{}
 	for _, attr := range attrs {
 		fields[attr.Name] = &graphql.Field{
-			Type:        AttributeType(attr),
+			Type:        PropertyType(attr),
 			Description: attr.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))
@@ -75,8 +75,8 @@ func outputFields(attrs []*graph.Attribute, methods []*graph.Method) graphql.Fie
 	}
 
 	for _, method := range methods {
-		fields[method.Name()] = &graphql.Field{
-			Type:        MethodType(method),
+		fields[method.GetName()] = &graphql.Field{
+			Type:        PropertyType(method),
 			Description: method.Method.Description,
 			// Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			// 	fmt.Println(p.Context.Value("data"))

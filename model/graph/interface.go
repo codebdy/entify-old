@@ -44,7 +44,7 @@ func (f *Interface) AllMethods() []*Method {
 	for i := range f.Parents {
 		for j := range f.Parents[i].methods {
 			method := f.Parents[i].methods[j]
-			if findMethod(method.Name(), methods) == nil {
+			if findMethod(method.GetName(), methods) == nil {
 				methods = append(methods, method)
 			}
 		}

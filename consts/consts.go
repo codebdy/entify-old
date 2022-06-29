@@ -17,23 +17,28 @@ const (
 	ROLLBACK               = "rollback"
 	SYNC_META              = "syncMeta"
 	NAME                   = "name"
-	INSTALLED              = "entifyInstalled"
+	INSTALLED              = "installed"
+	CAN_UPLOAD             = "canUpload"
 
-	ONE          = "one"
-	QUERY        = "query"
-	AGGREGATE    = "aggregate"
-	FIELDS       = "Fields"
-	NODES        = "nodes"
-	INPUT        = "Input"
-	UPDATE_INPUT = "UpdateInput"
-	UPSERT       = "upsert"
-	UPSERT_ONE   = "upsertOne"
-	DELETE       = "delete"
-	BY_ID        = "ById"
-	UPDATE       = "update"
-	HAS_MANY     = "HasMany"
-	HAS_ONE      = "HasOne"
-	ENTITY       = "Entity"
+	ONE        = "one"
+	QUERY      = "query"
+	AGGREGATE  = "aggregate"
+	FIELDS     = "Fields"
+	NODES      = "nodes"
+	INPUT      = "Input"
+	SET_INPUT  = "Set"
+	UPSERT     = "upsert"
+	UPSERT_ONE = "upsertOne"
+	INSERT     = "insert"
+	INSERT_ONE = "insertOne"
+	UPDATE     = "update"
+	UPDATE_ONE = "updateOne"
+	DELETE     = "delete"
+	BY_ID      = "ById"
+	SET        = "set"
+	HAS_MANY   = "HasMany"
+	HAS_ONE    = "HasOne"
+	ENTITY     = "Entity"
 
 	ARG_DISTINCTON string = "distinctOn"
 	ARG_LIMIT      string = "limit"
@@ -87,6 +92,8 @@ const (
 	ARG_OBJECTS           string = "objects"
 	RESPONSE_RETURNING    string = "returning"
 	RESPONSE_AFFECTEDROWS string = "affectedRows"
+	ARG_SET               string = "set"
+	ARG_FILE              string = "file"
 )
 
 const (
@@ -107,8 +114,13 @@ const (
 	META_CREATEDAT   string = "createdAt"
 	META_UPDATEDAT   string = "updatedAt"
 
-	META_ENTITIES  string = "entities"
+	META_CLASSES   string = "classes"
 	META_RELATIONS string = "relations"
+)
+
+const (
+	MEDIA_ENTITY_NAME = "Media"
+	MEDIA_UUID        = "MEDIA_ENTITY_UUID"
 )
 
 const (
@@ -120,9 +132,8 @@ const (
 )
 
 const (
-	CREATED_AT string = "createdAt"
-	ID         string = "id"
-	OF         string = "Of"
+	ID string = "id"
+	OF string = "Of"
 )
 
 const (
@@ -152,16 +163,22 @@ const (
 	CONTEXT_VALUES = "values"
 )
 
-const ABILITY_UUID = "META_ABILITY_UUID"
-
+const (
+	ABILITY_UUID = "META_ABILITY_UUID"
+	USER_UUID    = "META_USER_UUID"
+	ROLE_UUID    = "META_ROLE_UUID"
+)
 const (
 	META_INNER_ID                 = 1
 	ENTITY_AUTH_SETTINGS_INNER_ID = 2
 	Ability_INNER_ID              = 3
 	USER_INNER_ID                 = 4
 	ROLE_INNER_ID                 = 5
+	MEDIA_INNER_ID                = 6
 	ROLE_USER_RELATION_INNER_ID   = 101
 )
+
+const ROOT = "root"
 
 //普通角色的ID永远不会是1
 const GUEST_ROLE_ID = "1"
@@ -169,3 +186,11 @@ const PREDEFINED_QUERYUSER = "$queryUser"
 const PREDEFINED_ME = "$me"
 
 const NO_PERMISSION = "No permission to access data"
+
+const (
+	FILE          = "File"
+	FILE_NAME     = "fileName"
+	FILE_SIZE     = "size"
+	FILE_MIMETYPE = "mimeType"
+	FILE_URL      = "url"
+)
