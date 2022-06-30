@@ -1,6 +1,8 @@
 package data
 
 import (
+	"time"
+
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/table"
@@ -33,6 +35,11 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 			instance.Fields = append(instance.Fields, &Field{
 				Column: column,
 				Value:  object[column.Name],
+			})
+		} else if column.CreateDate || column.UpdateDate {
+			instance.Fields = append(instance.Fields, &Field{
+				Column: column,
+				Value:  time.Now(),
 			})
 		}
 	}
