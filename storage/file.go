@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"rxdrag.com/entify/consts"
 )
@@ -25,18 +24,26 @@ type FileInfo struct {
 	MimeType string `json:"mimeType"`
 }
 
+var mimeTypes = map[string]string{
+	".css":  "text/css; charset=utf-8",
+	".gif":  "image/gif",
+	".htm":  "text/html; charset=utf-8",
+	".html": "text/html; charset=utf-8",
+	".jpg":  "image/jpeg",
+	".js":   "application/x-javascript",
+	".pdf":  "application/pdf",
+	".png":  "image/png",
+	".xml":  "text/xml; charset=utf-8",
+}
+
 func (f *File) extName() string {
 	return filepath.Ext(f.Filename)
 }
 
 func (f *File) mimeType() string {
-	mtype, err := mimetype.DetectReader(f.File)
+	//mtype, err := mimetype.DetectReader(f.File)
 
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return mtype.String()
+	return mimeTypes[f.extName()]
 }
 
 func (f *File) Save() FileInfo {
