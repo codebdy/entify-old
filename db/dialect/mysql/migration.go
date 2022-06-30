@@ -181,7 +181,8 @@ func (b *MySQLBuilder) ColumnTypeSQL(column *table.Column) string {
 		meta.STRING_ARRAY,
 		meta.DATE_ARRAY,
 		meta.ENUM_ARRAY,
-		meta.VALUE_OBJECT_ARRAY:
+		meta.VALUE_OBJECT_ARRAY,
+		meta.FILE:
 		typeStr = "json"
 		break
 	}
