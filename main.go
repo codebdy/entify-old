@@ -70,6 +70,11 @@ func main() {
 		),
 	)
 	http.HandleFunc("/subscriptions", handler.NewFunc(schema.ResolveSchema))
+	if config.Storage() == consts.LOCAL {
+		fmt.Println(fmt.Sprintf("Running a file server at http://localhost:%d/uploads/", PORT))
+		http.Handle("/uploads/", http.StripPrefix("/uploads", http.FileServer(http.Dir(consts.UPLOAD_PATH))))
+	}
+
 	fmt.Println(fmt.Sprintf("Running a GraphQL API server at http://localhost:%d/graphql", PORT))
 	fmt.Println(fmt.Sprintf("Subscriptions endpoint is http://localhost:%d/subscriptions", PORT))
 	err2 := http.ListenAndServe(fmt.Sprintf(":%d", PORT), nil)

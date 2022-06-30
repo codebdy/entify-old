@@ -47,7 +47,7 @@ func (f *File) mimeType() string {
 }
 
 func (f *File) Save() FileInfo {
-	path := fmt.Sprintf("./%s/%s%s", consts.UPLOAD_PATH, uuid.New().String(), f.extName())
+	path := fmt.Sprintf("%s/%s%s", consts.UPLOAD_PATH, uuid.New().String(), f.extName())
 	file, err := os.OpenFile(
 		path,
 		os.O_WRONLY|os.O_CREATE,
