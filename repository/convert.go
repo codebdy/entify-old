@@ -3,11 +3,13 @@ package repository
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/storage"
 	"rxdrag.com/entify/utils"
 )
 
@@ -27,6 +29,10 @@ func makeSaveValues(fields []*data.Field) []interface{} {
 			column.Type == meta.VALUE_OBJECT_ARRAY ||
 			column.Type == meta.ENTITY_ARRAY {
 			value, _ = json.Marshal(value)
+		} else if column.Type == meta.FILE {
+			file := value.(storage.File)
+			value = file.Save()
+			fmt.Println("哈哈", file)
 		}
 		objValues = append(objValues, value)
 	}
