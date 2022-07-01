@@ -161,6 +161,7 @@ const (
 	AUTHORIZATION  = "Authorization"
 	BEARER         = "Bearer "
 	CONTEXT_VALUES = "values"
+	HOST           = "host"
 )
 
 const (
