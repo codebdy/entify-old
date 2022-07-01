@@ -96,6 +96,8 @@ func querySDL() (string, string) {
 		types = types + comparisonToSDL(comparision)
 	}
 
+	types = types + objectToSDL(fileOutputType, false)
+
 	for _, where := range Cache.WhereExpMap {
 		types = types + inputToSDL(where)
 	}
@@ -127,6 +129,13 @@ func querySDL() (string, string) {
 		types = types + objectToSDL(aggregate, false)
 		fieldsType := aggregate.Fields()[consts.AGGREGATE].Type.(*graphql.Object)
 		types = types + objectToSDL(fieldsType, false)
+
+		for key := range fieldsType.Fields() {
+			field := fieldsType.Fields()[key]
+			if field.Name != consts.ARG_COUNT {
+				types = types + objectToSDL(field.Type.(*graphql.Object), false)
+			}
+		}
 	}
 
 	for _, selectColumn := range Cache.SelectColumnsMap {
