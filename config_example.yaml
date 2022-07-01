@@ -1,8 +1,9 @@
-service_id: 1
+database: database_name
 driver: mysql
-database: database_ name
-host: host_name
-user: usename
-password: your_password
+host: localhost_name
+service_id: 1
+password: your password
 port: "3306"
-authentication: false
+user: root
+auth_url: ""
+storage: "local"
