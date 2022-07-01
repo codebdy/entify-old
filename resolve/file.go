@@ -13,7 +13,7 @@ func FileUrlResolve(p graphql.ResolveParams) (interface{}, error) {
 	if p.Source != nil {
 		fileInfo := p.Source.(storage.FileInfo)
 		if config.Storage() == consts.LOCAL {
-			return consts.UPLOAD_PRIFIX + "/" + fileInfo.Path, nil
+			return p.Context.Value(consts.HOST).(string) + consts.UPLOAD_PRIFIX + "/" + fileInfo.Path, nil
 		} else {
 			return fileInfo.Path, nil
 		}
