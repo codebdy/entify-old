@@ -8,7 +8,6 @@ import (
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/resolve"
-	"rxdrag.com/entify/scalars"
 	"rxdrag.com/entify/utils"
 )
 
@@ -52,28 +51,6 @@ func rootMutation() *graphql.Object {
 			Type:    Cache.OutputType(metaEntity.Name()),
 			Resolve: resolve.SyncMetaResolve,
 		},
-	}
-
-	if config.Storage() != "" {
-		mutationFields["singleUpload"] = &graphql.Field{
-			Type: Cache.OutputType(consts.MEDIA_ENTITY_NAME),
-			Args: graphql.FieldConfigArgument{
-				"media": &graphql.ArgumentConfig{
-					Type: graphql.NewInputObject(graphql.InputObjectConfig{
-						Name: "MediaUploadInput",
-						Fields: graphql.InputObjectConfigFieldMap{
-							consts.ARG_FILE: &graphql.InputObjectFieldConfig{
-								Type: &graphql.NonNull{OfType: scalars.UploadType},
-							},
-							consts.NAME: &graphql.InputObjectFieldConfig{
-								Type: graphql.String,
-							},
-						},
-					}),
-				},
-			},
-			Resolve: resolve.SingleUploadResolve,
-		}
 	}
 
 	for _, entity := range model.GlobalModel.Graph.RootEnities() {

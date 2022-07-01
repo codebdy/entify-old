@@ -22,6 +22,7 @@ type FileInfo struct {
 	Filename string `json:"fileName"`
 	Size     int64  `json:"size"`
 	MimeType string `json:"mimeType"`
+	ExtName  string `json:"extName"`
 }
 
 var mimeTypes = map[string]string{
@@ -58,5 +59,5 @@ func (f *File) Save() FileInfo {
 		panic(err.Error())
 	}
 	io.Copy(file, f.File)
-	return FileInfo{Path: path, Filename: f.Filename, Size: f.Size, MimeType: f.mimeType()}
+	return FileInfo{Path: path, Filename: f.Filename, Size: f.Size, MimeType: f.mimeType(), ExtName: f.extName()}
 }

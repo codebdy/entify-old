@@ -90,6 +90,23 @@ var fileOutputType = graphql.NewObject(
 			consts.FILE_URL: &graphql.Field{
 				Type: graphql.String,
 			},
+			consts.File_EXTNAME: &graphql.Field{
+				Type: graphql.String,
+			},
+			consts.FILE_THMUBNAIL: &graphql.Field{
+				Type: graphql.String,
+			},
+			consts.FILE_RESIZE: &graphql.Field{
+				Type: graphql.String,
+				Args: graphql.FieldConfigArgument{
+					consts.FILE_WIDTH: &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+					consts.FILE_HEIGHT: &graphql.ArgumentConfig{
+						Type: graphql.Int,
+					},
+				},
+			},
 		},
 		Description: "File type",
 	},
