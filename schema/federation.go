@@ -11,6 +11,7 @@ extend schema
 
 scalar JSON
 scalar DateTime
+scalar Upload
 
 type Query {
 %s
