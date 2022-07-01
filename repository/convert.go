@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 
+	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
@@ -92,7 +93,8 @@ func makeAttributeValue(attr *graph.Attribute) interface{} {
 		meta.DATE_ARRAY,
 		meta.ENUM_ARRAY,
 		meta.VALUE_OBJECT_ARRAY,
-		meta.ENTITY_ARRAY:
+		meta.ENTITY_ARRAY,
+		meta.FILE:
 		var value utils.JSON
 		return &value
 		// COLUMN_SIMPLE_ARRAY string = "simpleArray" ##待添加代码
@@ -169,7 +171,22 @@ func convertOneColumnValue(column *graph.Attribute, value interface{}) interface
 		meta.ENUM_ARRAY,
 		meta.VALUE_OBJECT_ARRAY,
 		meta.ENTITY_ARRAY:
+		if value != nil {
+			return *value.(*utils.JSON)
+		}
 		return value
+	case meta.FILE:
+		var file storage.FileInfo
+		if value != nil {
+			err := mapstructure.Decode(value, &file)
+			if err != nil {
+				panic(err.Error())
+			}
+			return file
+		} else {
+			return nil
+		}
+
 	default:
 		nullValue := value.(*sql.NullString)
 		if nullValue.Valid {

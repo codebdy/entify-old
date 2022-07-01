@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/config"
 	"rxdrag.com/entify/consts"
+	"rxdrag.com/entify/resolve"
 	"rxdrag.com/entify/utils"
 )
 
@@ -88,7 +89,8 @@ var fileOutputType = graphql.NewObject(
 				Type: graphql.String,
 			},
 			consts.FILE_URL: &graphql.Field{
-				Type: graphql.String,
+				Type:    graphql.String,
+				Resolve: resolve.FileUrlResolve,
 			},
 			consts.File_EXTNAME: &graphql.Field{
 				Type: graphql.String,

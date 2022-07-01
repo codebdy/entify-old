@@ -48,9 +48,10 @@ func (f *File) mimeType() string {
 }
 
 func (f *File) Save() FileInfo {
-	path := fmt.Sprintf("%s/%s%s", consts.UPLOAD_PATH, uuid.New().String(), f.extName())
+	name := fmt.Sprintf("%s%s", uuid.New().String(), f.extName())
+	localPath := fmt.Sprintf("%s/%s", consts.UPLOAD_PATH, name)
 	file, err := os.OpenFile(
-		path,
+		localPath,
 		os.O_WRONLY|os.O_CREATE,
 		0666,
 	)
@@ -59,5 +60,5 @@ func (f *File) Save() FileInfo {
 		panic(err.Error())
 	}
 	io.Copy(file, f.File)
-	return FileInfo{Path: path, Filename: f.Filename, Size: f.Size, MimeType: f.mimeType(), ExtName: f.extName()}
+	return FileInfo{Path: name, Filename: f.Filename, Size: f.Size, MimeType: f.mimeType(), ExtName: f.extName()}
 }

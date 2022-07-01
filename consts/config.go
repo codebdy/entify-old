@@ -12,6 +12,7 @@ const (
 	AUTH_URL      = "auth_url"
 	STORAGE       = "storage"
 	UPLOAD_PATH   = "./uploads"
+	UPLOAD_PRIFIX = "/uploads"
 )
 
 const (
