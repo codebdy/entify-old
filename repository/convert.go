@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 
+	"github.com/mitchellh/mapstructure"
 	"rxdrag.com/entify/db"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
 	"rxdrag.com/entify/model/meta"
+	"rxdrag.com/entify/storage"
 	"rxdrag.com/entify/utils"
 )
 
@@ -26,7 +28,18 @@ func makeSaveValues(fields []*data.Field) []interface{} {
 			column.Type == meta.ENUM_ARRAY ||
 			column.Type == meta.VALUE_OBJECT_ARRAY ||
 			column.Type == meta.ENTITY_ARRAY {
-			value, _ = json.Marshal(value)
+			jsonString, err := json.Marshal(value)
+			if err != nil {
+				panic(err.Error())
+			}
+			value = jsonString
+		} else if column.Type == meta.FILE {
+			file := value.(storage.File)
+			jsonString, err := json.Marshal(file.Save())
+			if err != nil {
+				panic(err.Error())
+			}
+			value = jsonString
 		}
 		objValues = append(objValues, value)
 	}
@@ -80,7 +93,8 @@ func makeAttributeValue(attr *graph.Attribute) interface{} {
 		meta.DATE_ARRAY,
 		meta.ENUM_ARRAY,
 		meta.VALUE_OBJECT_ARRAY,
-		meta.ENTITY_ARRAY:
+		meta.ENTITY_ARRAY,
+		meta.FILE:
 		var value utils.JSON
 		return &value
 		// COLUMN_SIMPLE_ARRAY string = "simpleArray" ##待添加代码
@@ -157,7 +171,22 @@ func convertOneColumnValue(column *graph.Attribute, value interface{}) interface
 		meta.ENUM_ARRAY,
 		meta.VALUE_OBJECT_ARRAY,
 		meta.ENTITY_ARRAY:
+		if value != nil {
+			return *value.(*utils.JSON)
+		}
 		return value
+	case meta.FILE:
+		var file storage.FileInfo
+		if value != nil {
+			err := mapstructure.Decode(value, &file)
+			if err != nil {
+				panic(err.Error())
+			}
+			return file
+		} else {
+			return nil
+		}
+
 	default:
 		nullValue := value.(*sql.NullString)
 		if nullValue.Valid {
