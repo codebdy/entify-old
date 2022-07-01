@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>SDL格式化</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <script>
+    const jsEscapeRegex = /\\(u\{([0-9A-Fa-f]+)\}|u([0-9A-Fa-f]{4})|x([0-9A-Fa-f]{2})|([1-7][0-7]{0,2}|[0-7]{2,3})|(['"tbrnfv0\\]))|\\U([0-9A-Fa-f]{8})/g;
+
+    const usualEscapeSequences = {
+      '0': '\0',
+      'b': '\b',
+      'f': '\f',
+      'n': '\n',
+      'r': '\r',
+      't': '\t',
+      'v': '\v',
+      '\'': '\'',
+      '"': '"',
+      '\\': '\\'
+    };
+
+    const fromHex = (str) => String.fromCodePoint(parseInt(str, 16));
+    const fromOct = (str) => String.fromCodePoint(parseInt(str, 8));
+    function unescape(string){
+      return string.replace(jsEscapeRegex, (_, __, varHex, longHex, shortHex, octal, specialCharacter, python) => {
+        if (varHex !== undefined) {
+            return fromHex(varHex);
+        } else if (longHex !== undefined) {
+            return fromHex(longHex);
+        } else if (shortHex !== undefined) {
+            return fromHex(shortHex);
+        } else if (octal !== undefined) {
+            return fromOct(octal);
+        } else if (python !== undefined) {
+            return fromHex(python);
+        } else {
+            return usualEscapeSequences[specialCharacter];
+        }
+    })
+    }
+    function convert() {
+      document.getElementById("outputstr").innerHTML = unescape(document.getElementById("inputstr").value)
+      console.log(document.getElementById("inputstr").value.replace("\\n\\t", "xxxx"))
+    }
+  </script>
+</head>
+
+<body>
+  <div class="inner">
+    <div class="inner-box">
+      <div class="inner-logo">
+        <h3>SDL格式化</h3>
+      </div>
+    </div>
+    <div class="container">
+      <div class="main" style="display: flex; flex-flow:column">
+        <textarea id="inputstr" name="inputstr" rows="16" spellcheck="false"></textarea>
+        <div style="padding: 20px;"><button type="button" id="convert" onclick="convert()">格式化</button></div>
+        <textarea id="outputstr" name="outputstr" rows="16" rows="10" spellcheck="false"></textarea>
+      </div>
+    </div>
+</body>
+
+</html>
