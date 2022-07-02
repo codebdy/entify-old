@@ -96,7 +96,9 @@ func querySDL() (string, string) {
 		types = types + comparisonToSDL(comparision)
 	}
 
-	types = types + objectToSDL(fileOutputType, false)
+	if config.Storage() != "" {
+		types = types + objectToSDL(fileOutputType, false)
+	}
 
 	for _, where := range Cache.WhereExpMap {
 		types = types + inputToSDL(where)

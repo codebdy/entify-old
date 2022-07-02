@@ -5,8 +5,10 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"rxdrag.com/entify/config"
+	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 )
 
 var mutationFieldSDL = "\t%s(%s) : %s \n"
@@ -30,7 +32,14 @@ func mutationSDL() (string, string) {
 	// 	//types = types + objectToSDL(Cache.EntityeOutputType(exteneral.Name()))
 	// }
 	for _, input := range Cache.SetInputMap {
-		types = types + inputToSDL(input)
+		if len(input.Fields()) > 0 &&
+			input.Name() != meta.MetaClass.Name &&
+			input.Name() != meta.MetaClass.Name+consts.SET &&
+			input.Name() != meta.AbilityClass.Name &&
+			input.Name() != meta.EntityAuthSettingsClass.Name {
+			types = types + inputToSDL(input)
+		}
+
 	}
 	for _, input := range Cache.SaveInputMap {
 		types = types + inputToSDL(input)
