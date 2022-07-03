@@ -19,8 +19,8 @@ func (c *TypeCache) makeInputs() {
 
 	for i := range model.GlobalModel.Graph.Entities {
 		entity := model.GlobalModel.Graph.Entities[i]
-		c.HasManyInputMap[entity.Name()] = c.makeHasManyInput(entity)
-		c.HasOneInputMap[entity.Name()] = c.makeHasOneInput(entity)
+		c.HasManyInputMap[entity.Name()] = c.makeEntityHasManyInput(entity)
+		c.HasOneInputMap[entity.Name()] = c.makeEntityHasOneInput(entity)
 	}
 
 	for i := range model.GlobalModel.Graph.Partials {
@@ -32,25 +32,25 @@ func (c *TypeCache) makeInputs() {
 
 	for i := range model.GlobalModel.Graph.Partials {
 		partial := model.GlobalModel.Graph.Partials[i]
-		c.HasManyInputMap[partial.Name()] = c.makeHasManyInput(&partial.Entity)
-		c.HasOneInputMap[partial.Name()] = c.makeHasOneInput(&partial.Entity)
+		c.HasManyInputMap[partial.Name()] = c.makePartailHasManyInput(partial)
+		c.HasOneInputMap[partial.Name()] = c.makePartialHasOneInput(partial)
 	}
 
 	for i := range model.GlobalModel.Graph.Externals {
 		external := model.GlobalModel.Graph.Externals[i]
-		c.HasManyInputMap[external.Name()] = c.makeHasManyInput(&external.Entity)
-		c.HasOneInputMap[external.Name()] = c.makeHasOneInput(&external.Entity)
+		c.HasManyInputMap[external.Name()] = c.makeEntityHasManyInput(&external.Entity)
+		c.HasOneInputMap[external.Name()] = c.makeEntityHasOneInput(&external.Entity)
 	}
 	c.makeEntityInputRelations()
 }
 
-func (c *TypeCache) makeHasManyInput(entity *graph.Entity) *graphql.InputObject {
+func (c *TypeCache) makeHasManyInput(entity *graph.Entity, hasManyname string) *graphql.InputObject {
 	typeInput := c.SaveInput(entity.Name())
 	listType := &graphql.List{
 		OfType: typeInput,
 	}
 	return graphql.NewInputObject(graphql.InputObjectConfig{
-		Name: entity.GetHasManyName(),
+		Name: hasManyname,
 		Fields: graphql.InputObjectConfigFieldMap{
 			consts.ARG_ADD: &graphql.InputObjectFieldConfig{
 				Type: listType,
@@ -71,10 +71,18 @@ func (c *TypeCache) makeHasManyInput(entity *graph.Entity) *graphql.InputObject 
 	})
 }
 
-func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
+func (c *TypeCache) makeEntityHasManyInput(entity *graph.Entity) *graphql.InputObject {
+	return c.makeHasManyInput(entity, entity.GetHasManyName())
+}
+
+func (c *TypeCache) makePartailHasManyInput(partial *graph.Partial) *graphql.InputObject {
+	return c.makeHasManyInput(&partial.Entity, partial.GetHasManyName())
+}
+
+func (c *TypeCache) makeHasOneInput(entity *graph.Entity, hasOneName string) *graphql.InputObject {
 	typeInput := c.SaveInput(entity.Name())
 	return graphql.NewInputObject(graphql.InputObjectConfig{
-		Name: entity.GetHasOneName(),
+		Name: hasOneName,
 		Fields: graphql.InputObjectConfigFieldMap{
 			consts.ARG_DELETE: &graphql.InputObjectFieldConfig{
 				Type: graphql.Boolean,
@@ -87,6 +95,14 @@ func (c *TypeCache) makeHasOneInput(entity *graph.Entity) *graphql.InputObject {
 			},
 		},
 	})
+}
+
+func (c *TypeCache) makeEntityHasOneInput(entity *graph.Entity) *graphql.InputObject {
+	return c.makeHasOneInput(entity, entity.GetHasOneName())
+}
+
+func (c *TypeCache) makePartialHasOneInput(partial *graph.Partial) *graphql.InputObject {
+	return c.makeHasOneInput(&partial.Entity, partial.GetHasOneName())
 }
 
 func (c *TypeCache) makeEntityInputRelations() {

@@ -127,6 +127,10 @@ func querySDL() (string, string) {
 		types = types + fmt.Sprintf(externalSDL, exteneral.Domain.Name)
 	}
 
+	for _, partial := range model.GlobalModel.Graph.RootPartails() {
+		types = types + objectToSDL(Cache.EntityeOutputType(partial.Name()), true)
+	}
+
 	for _, aggregate := range Cache.AggregateMap {
 		types = types + objectToSDL(aggregate, false)
 		fieldsType := aggregate.Fields()[consts.AGGREGATE].Type.(*graphql.Object)
