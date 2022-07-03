@@ -26,6 +26,10 @@ func mutationSDL() (string, string) {
 			types = types + objectToSDL(Cache.MutationResponse(entity.Name()), false)
 		}
 	}
+	for _, partial := range model.GlobalModel.Graph.RootPartails() {
+		queryFields = queryFields + makePartialMutationSDL(partial)
+		types = types + objectToSDL(Cache.MutationResponse(partial.Name()), false)
+	}
 
 	// for _, exteneral := range model.GlobalModel.Graph.RootExternals() {
 	// 	queryFields = queryFields + makeExteneralSDL(exteneral)
@@ -87,6 +91,56 @@ func makeEntityMutationSDL(entity *graph.Entity) string {
 		entity.UpsertOneName(),
 		makeArgsSDL(upsertOneArgs(entity)),
 		Cache.OutputType(entity.Name()).String(),
+	)
+
+	return sdl
+}
+
+func makePartialMutationSDL(partial *graph.Partial) string {
+	sdl := ""
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.DeleteName(),
+		makeArgsSDL(deleteArgs(&partial.Entity)),
+		Cache.MutationResponse(partial.Name()).Name(),
+	)
+
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.DeleteByIdName(),
+		makeArgsSDL(deleteByIdArgs()),
+		Cache.OutputType(partial.Name()).String(),
+	)
+
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.InsertName(),
+		makeArgsSDL(upsertArgs(&partial.Entity)),
+		(&graphql.List{OfType: Cache.OutputType(partial.Name())}).String(),
+	)
+
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.InsertOneName(),
+		makeArgsSDL(upsertOneArgs(&partial.Entity)),
+		Cache.OutputType(partial.Name()).String(),
+	)
+
+	updateInput := Cache.SetInput(partial.Name())
+	if len(updateInput.Fields()) > 0 {
+		sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+			partial.SetName(),
+			makeArgsSDL(setArgs(&partial.Entity)),
+			Cache.MutationResponse(partial.Name()).String(),
+		)
+	}
+
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.UpdateName(),
+		makeArgsSDL(upsertArgs(&partial.Entity)),
+		(&graphql.List{OfType: Cache.OutputType(partial.Name())}).String(),
+	)
+
+	sdl = sdl + fmt.Sprintf(mutationFieldSDL,
+		partial.UpdateOneName(),
+		makeArgsSDL(upsertOneArgs(&partial.Entity)),
+		Cache.OutputType(partial.Name()).String(),
 	)
 
 	return sdl
