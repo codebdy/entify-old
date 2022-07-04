@@ -6,4 +6,4 @@ password: your password
 port: "3306"
 user: root
 auth_url: ""
-storage: "local"
+#storage: "local"

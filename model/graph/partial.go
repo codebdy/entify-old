@@ -65,3 +65,11 @@ func (p *Partial) UpdateOneName() string {
 func (p *Partial) AggregateName() string {
 	return p.NameWithPartial() + utils.FirstUpper(consts.AGGREGATE)
 }
+
+func (p *Partial) GetHasManyName() string {
+	return utils.FirstUpper(consts.SET) + p.NameWithPartial() + consts.HAS_MANY
+}
+
+func (p *Partial) GetHasOneName() string {
+	return utils.FirstUpper(consts.SET) + p.NameWithPartial() + consts.HAS_ONE
+}

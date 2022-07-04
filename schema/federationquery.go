@@ -96,7 +96,9 @@ func querySDL() (string, string) {
 		types = types + comparisonToSDL(comparision)
 	}
 
-	types = types + objectToSDL(fileOutputType, false)
+	if config.Storage() != "" {
+		types = types + objectToSDL(fileOutputType, false)
+	}
 
 	for _, where := range Cache.WhereExpMap {
 		types = types + inputToSDL(where)
@@ -123,6 +125,10 @@ func querySDL() (string, string) {
 
 	for _, exteneral := range model.GlobalModel.Graph.Externals {
 		types = types + fmt.Sprintf(externalSDL, exteneral.Domain.Name)
+	}
+
+	for _, partial := range model.GlobalModel.Graph.RootPartails() {
+		types = types + objectToSDL(Cache.EntityeOutputType(partial.Name()), true)
 	}
 
 	for _, aggregate := range Cache.AggregateMap {
