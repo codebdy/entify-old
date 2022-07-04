@@ -126,42 +126,40 @@ func convertValuesToEntity(values []interface{}, ent *graph.Entity) map[string]i
 		attrName := names[i]
 		column := ent.GetAttributeByName(attrName)
 		object[column.Name] = convertOneColumnValue(column, value)
-
 	}
 	return object
 }
 
 func convertOneColumnValue(column *graph.Attribute, value interface{}) interface{} {
 	switch column.Type {
-	case meta.ID:
+	case meta.ID, meta.INT:
 		nullValue := value.(*db.NullUint64)
 		if nullValue.Valid {
 			return nullValue.Uint64
+		} else {
+			return 0
 		}
-	case meta.INT:
-		nullValue := value.(*sql.NullInt64)
-		if nullValue.Valid {
-			return nullValue.Int64
-		}
-		break
 	case meta.FLOAT:
 		nullValue := value.(*sql.NullFloat64)
 		if nullValue.Valid {
 			return nullValue.Float64
+		} else {
+			return 0
 		}
-		break
 	case meta.BOOLEAN:
 		nullValue := value.(*sql.NullBool)
 		if nullValue.Valid {
 			return nullValue.Bool
+		} else {
+			return false
 		}
-		break
 	case meta.DATE:
 		nullValue := value.(*sql.NullTime)
 		if nullValue.Valid {
 			return nullValue.Time
+		} else {
+			return nil
 		}
-		break
 	case meta.VALUE_OBJECT,
 		meta.ID_ARRAY,
 		meta.INT_ARRAY,
@@ -191,7 +189,8 @@ func convertOneColumnValue(column *graph.Attribute, value interface{}) interface
 		nullValue := value.(*sql.NullString)
 		if nullValue.Valid {
 			return nullValue.String
+		} else {
+			return nil
 		}
 	}
-	return value
 }
