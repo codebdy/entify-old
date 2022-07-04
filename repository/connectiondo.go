@@ -11,6 +11,7 @@ import (
 	"rxdrag.com/entify/db/dialect"
 	"rxdrag.com/entify/model/data"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 )
 
 type InsanceData = map[string]interface{}
@@ -435,6 +436,18 @@ func newAssociationPovit(r data.Associationer, ownerId uint64, tarId uint64) *da
 
 }
 
+func (con *Connection) saveAssociationInstance(ins *data.Instance) interface{} {
+	targetData := InsanceData{consts.ID: ins.Id}
+	if ins.Entity.Domain.StereoType != meta.CLASS_EXTERNAL {
+		saved, err := con.doSaveOne(ins)
+		if err != nil {
+			return err
+		}
+		targetData = saved.(InsanceData)
+	}
+	return targetData
+}
+
 func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) error {
 	for _, ins := range r.Deleted() {
 		if r.Cascade() {
@@ -446,12 +459,9 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 	}
 
 	for _, ins := range r.Added() {
-		saved, err := con.doSaveOne(ins)
-		if err != nil {
-			return err
-		}
+		targetData := con.saveAssociationInstance(ins)
 
-		if savedIns, ok := saved.(InsanceData); ok {
+		if savedIns, ok := targetData.(InsanceData); ok {
 			tarId := savedIns[consts.ID].(uint64)
 			relationInstance := newAssociationPovit(r, ownerId, tarId)
 			con.doSaveAssociationPovit(relationInstance)
@@ -465,12 +475,8 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		if ins.Id == 0 {
 			panic("Can not add new instance when update")
 		}
-		saved, err := con.doSaveOne(ins)
-		if err != nil {
-			return err
-		}
-
-		if savedIns, ok := saved.(InsanceData); ok {
+		targetData := con.saveAssociationInstance(ins)
+		if savedIns, ok := targetData.(InsanceData); ok {
 			tarId := savedIns[consts.ID].(uint64)
 			relationInstance := newAssociationPovit(r, ownerId, tarId)
 
@@ -491,12 +497,9 @@ func (con *Connection) doSaveAssociation(r data.Associationer, ownerId uint64) e
 		if ins.Id == 0 {
 			panic("Can not add new instance when update")
 		}
-		saved, err := con.doSaveOne(ins)
-		if err != nil {
-			return err
-		}
+		targetData := con.saveAssociationInstance(ins)
 
-		if savedIns, ok := saved.(InsanceData); ok {
+		if savedIns, ok := targetData.(InsanceData); ok {
 			tarId := savedIns[consts.ID].(uint64)
 			relationInstance := newAssociationPovit(r, ownerId, tarId)
 

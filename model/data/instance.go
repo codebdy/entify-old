@@ -7,6 +7,7 @@ import (
 
 	"rxdrag.com/entify/consts"
 	"rxdrag.com/entify/model/graph"
+	"rxdrag.com/entify/model/meta"
 	"rxdrag.com/entify/model/table"
 )
 
@@ -28,6 +29,10 @@ func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance 
 	}
 	if object[consts.ID] != nil {
 		instance.Id = parseId(object[consts.ID])
+	}
+
+	if entity.Domain.StereoType == meta.CLASS_EXTERNAL {
+		return &instance
 	}
 
 	columns := entity.Table.Columns
