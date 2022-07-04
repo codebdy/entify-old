@@ -23,7 +23,6 @@ type Instance struct {
 }
 
 func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance {
-	fmt.Println("哈哈", object)
 	instance := Instance{
 		Entity: entity,
 	}

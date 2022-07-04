@@ -30,6 +30,11 @@ func (c *TypeCache) makeInputs() {
 		c.MutationResponseMap[partail.Name()] = makePartialMutationResponseType(partail)
 	}
 
+	for i := range model.GlobalModel.Graph.Externals {
+		external := model.GlobalModel.Graph.Externals[i]
+		c.SaveInputMap[external.Name()] = makeExternalSaveInput(external)
+	}
+
 	for i := range model.GlobalModel.Graph.Partials {
 		partial := model.GlobalModel.Graph.Partials[i]
 		c.HasManyInputMap[partial.Name()] = c.makePartailHasManyInput(partial)
@@ -217,6 +222,16 @@ func makePartailSaveInput(partail *graph.Partial) *graphql.InputObject {
 		graphql.InputObjectConfig{
 			Name:   name,
 			Fields: inputFields(&partail.Entity, true),
+		},
+	)
+}
+
+func makeExternalSaveInput(external *graph.External) *graphql.InputObject {
+	name := external.Name() + consts.INPUT
+	return graphql.NewInputObject(
+		graphql.InputObjectConfig{
+			Name:   name,
+			Fields: inputFields(&external.Entity, true),
 		},
 	)
 }

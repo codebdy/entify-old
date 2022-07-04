@@ -16,7 +16,6 @@ func (c *TypeCache) makePartialOutputObjects(partials []*graph.Partial) {
 	for i := range partials {
 		patial := partials[i]
 		c.makeEntityObject(&patial.Entity)
-
 		// partialName := patial.NameWithPartial()
 
 		// objType := graphql.NewObject(
@@ -27,6 +26,13 @@ func (c *TypeCache) makePartialOutputObjects(partials []*graph.Partial) {
 		// 	},
 		// )
 		// c.ObjectTypeMap[partialName] = objType
+	}
+}
+
+func (c *TypeCache) makeExternalOutputObjects(externals []*graph.External) {
+	for i := range externals {
+		external := externals[i]
+		c.makeEntityObject(&external.Entity)
 	}
 }
 

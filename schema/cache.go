@@ -30,6 +30,7 @@ func (c *TypeCache) MakeCache() {
 	c.makeOutputInterfaces(model.GlobalModel.Graph.Interfaces)
 	c.makeEntityOutputObjects(model.GlobalModel.Graph.Entities)
 	c.makePartialOutputObjects(model.GlobalModel.Graph.Partials)
+	c.makeExternalOutputObjects(model.GlobalModel.Graph.Externals)
 	c.makeQueryArgs()
 	c.makeRelations()
 	c.makeInputs()
