@@ -51,31 +51,45 @@ type DerivedReference struct {
 	Value       map[string]interface{}
 }
 
-func convertToInstances(objects interface{}, entity *graph.Entity) []*Instance {
+func doConvertToInstances(data interface{}, isArray bool, entity *graph.Entity) []*Instance {
 	instances := []*Instance{}
-	if objects != nil {
-		objs := objects.([]interface{})
-		for i := range objs {
-			instances = append(instances, NewInstance(objs[i].(map[string]interface{}), entity))
-		}
+	if data == nil {
+		return []*Instance{}
 	}
+	if isArray {
+		objects := data.([]interface{})
+		for i := range objects {
+			instances = append(instances, NewInstance(objects[i].(map[string]interface{}), entity))
+		}
+	} else {
+		instances = append(instances, NewInstance(data.(map[string]interface{}), entity))
+	}
+
 	return instances
 }
 
+func (r *Reference) convertToInstances(data interface{}) []*Instance {
+	return doConvertToInstances(data, r.Association.IsArray(), r.TypeEntity())
+}
+
+func (r *DerivedReference) convertToInstances(data interface{}) []*Instance {
+	return doConvertToInstances(data, r.Association.DerivedFrom.IsArray(), r.TypeEntity())
+}
+
 func (r *Reference) Deleted() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_DELETE], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_DELETE])
 }
 
 func (r *Reference) Added() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_ADD], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_ADD])
 }
 
 func (r *Reference) Updated() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_UPDATE], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_UPDATE])
 }
 
 func (r *Reference) Synced() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_SYNC], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_SYNC])
 }
 
 func (r *Reference) Cascade() bool {
@@ -156,19 +170,19 @@ func (r *Reference) IsCombination() bool {
 
 //====derived
 func (r *DerivedReference) Deleted() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_DELETE], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_DELETE])
 }
 
 func (r *DerivedReference) Added() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_ADD], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_ADD])
 }
 
 func (r *DerivedReference) Updated() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_UPDATE], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_UPDATE])
 }
 
 func (r *DerivedReference) Synced() []*Instance {
-	return convertToInstances(r.Value[consts.ARG_SYNC], r.TypeEntity())
+	return r.convertToInstances(r.Value[consts.ARG_SYNC])
 }
 
 func (r *DerivedReference) Cascade() bool {
