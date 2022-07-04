@@ -79,7 +79,10 @@ func (r *Reference) Synced() []*Instance {
 }
 
 func (r *Reference) Cascade() bool {
-	return r.Value[consts.ARG_CASCADE].(bool)
+	if r.Value[consts.ARG_CASCADE] != nil {
+		return r.Value[consts.ARG_CASCADE].(bool)
+	}
+	return false
 }
 
 func (r *Reference) SourceColumn() *table.Column {

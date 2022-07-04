@@ -136,29 +136,21 @@ func convertOneColumnValue(column *graph.Attribute, value interface{}) interface
 		nullValue := value.(*db.NullUint64)
 		if nullValue.Valid {
 			return nullValue.Uint64
-		} else {
-			return 0
 		}
 	case meta.FLOAT:
 		nullValue := value.(*sql.NullFloat64)
 		if nullValue.Valid {
 			return nullValue.Float64
-		} else {
-			return 0
 		}
 	case meta.BOOLEAN:
 		nullValue := value.(*sql.NullBool)
 		if nullValue.Valid {
 			return nullValue.Bool
-		} else {
-			return false
 		}
 	case meta.DATE:
 		nullValue := value.(*sql.NullTime)
 		if nullValue.Valid {
 			return nullValue.Time
-		} else {
-			return nil
 		}
 	case meta.VALUE_OBJECT,
 		meta.ID_ARRAY,
@@ -181,16 +173,13 @@ func convertOneColumnValue(column *graph.Attribute, value interface{}) interface
 				panic(err.Error())
 			}
 			return file
-		} else {
-			return nil
 		}
-
 	default:
 		nullValue := value.(*sql.NullString)
 		if nullValue.Valid {
 			return nullValue.String
-		} else {
-			return nil
 		}
 	}
+
+	return nil
 }
