@@ -96,7 +96,7 @@ func (ins *Instance) Table() *table.Table {
 func parseId(id interface{}) uint64 {
 	switch v := id.(type) {
 	default:
-		panic(fmt.Sprintf("unexpected type %T", v))
+		panic(fmt.Sprintf("unexpected id type %T", v))
 	case uint64:
 		return id.(uint64)
 	case string:
