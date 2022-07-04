@@ -1,6 +1,8 @@
 package data
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
 	"rxdrag.com/entify/consts"
@@ -21,11 +23,12 @@ type Instance struct {
 }
 
 func NewInstance(object map[string]interface{}, entity *graph.Entity) *Instance {
+	fmt.Println("哈哈", object)
 	instance := Instance{
 		Entity: entity,
 	}
 	if object[consts.ID] != nil {
-		instance.Id = object[consts.ID].(uint64)
+		instance.Id = parseId(object[consts.ID])
 	}
 
 	columns := entity.Table.Columns
@@ -88,4 +91,19 @@ func (ins *Instance) IsInsert() bool {
 
 func (ins *Instance) Table() *table.Table {
 	return ins.Entity.Table
+}
+
+func parseId(id interface{}) uint64 {
+	switch v := id.(type) {
+	default:
+		panic(fmt.Sprintf("unexpected type %T", v))
+	case uint64:
+		return id.(uint64)
+	case string:
+		u, err := strconv.ParseUint(id.(string), 0, 64)
+		if err != nil {
+			panic(err.Error())
+		}
+		return u
+	}
 }
